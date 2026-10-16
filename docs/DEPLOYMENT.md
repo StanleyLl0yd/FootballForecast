@@ -17,3 +17,7 @@ For a credentials-free smoke of the built Next.js production server, run `npm ru
 ## Public M0 mode (2026-10-16)
 
 The public pages `/dashboard`, `/matches`, `/models`, `/analytics`, `/data` and `/archive` do not require login. Only `/admin` remains owner-only; all modifications are backend-only and disabled. Free Supabase Frankfurt (`eu-central-1`) project has been created. `0001_foundation.sql` was applied, and `0002_public_read.sql` exposes SELECT only on six public non-personal tables. Raw provider records, rights information and access grants are never exposed through anonymous RLS. No real matches or forecasts are imported yet. Previous OAuth configuration steps above apply only when administrative login is explicitly enabled, not to ordinary visitors.
+
+## Public read-only server data access
+
+Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the hosting environment. They are publishable credentials, **never service-role/secret keys**. The dashboard and matches pages use `@supabase/supabase-js` with no sessions to read only `ff_matches` and `ff_forecasts` (counts) and a limited future fixture/teams list through anonymous RLS. Queries run on each request with a six-second HTTP deadline and no-store caching; missing/broken settings never display fabricated zeros. Unit tests simulate REST responses. Actual Supabase REST checks, production deployment and licensed data ingestion are separate gates.
