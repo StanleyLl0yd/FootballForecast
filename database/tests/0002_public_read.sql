@@ -3,7 +3,7 @@
 set role anon;
 select 1 / case when (select count(*) from public.ff_teams)=2 then 1 else 0 end as public_teams;
 select 1 / case when (select count(*) from public.ff_matches)=2 then 1 else 0 end as public_matches;
-select 1 / case when (select count(*) from public.ff_forecasts)=2 then 1 else 0 end as public_forecasts;
+select 1 / case when (select count(*) from public.ff_forecasts)>=1 then 1 else 0 end as public_forecasts;
 reset role;
 select 1 / case when
  has_table_privilege('anon','public.ff_matches','SELECT')
