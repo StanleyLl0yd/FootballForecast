@@ -6,7 +6,7 @@
 - OAuth ownership check examines the verified GitHub provider identity `provider_id`/`sub`; this must be tested with real response shape before opening production access.
 - Core Poisson accepts input intensities; it has not learned team strengths, calibrated outcomes, or produced actual match forecasts.
 - No data ingestion permitted. Source catalog and usage rights require further verification.
-- Database migration not applied. PostgreSQL tests and disaster recovery tests outstanding.
+- Database migration is not applied to an actual Supabase project. CI uses a disposable PostgreSQL 16 database with simulated Supabase auth roles to check RLS and append-only forecast behavior; actual Supabase REST tests, restore and disaster recovery remain outstanding.
 - `forecast-v1` is a partial contract; final exchange schema needs full probability/tail and audit fields.
 - UI uses honest empty states; filters, charts, model jobs, match detail and reports are not yet implemented.
 - Required checks run on pull requests and protected `main`; do not confuse clean scans with complete production readiness. The high GHSA-vfj7-8cjw-p6xm in `braces` (transitive ESLint development tooling) has no published fix as of 2026-10-16: the CI enforces a production-only audit and reports the full audit as advisory, without treating that advisory as resolved. CSP hardening, attack-surface review and production deployment remain outstanding.
