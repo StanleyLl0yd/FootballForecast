@@ -118,9 +118,9 @@ async function testServer(name, overrides) {
 }
 
 await testServer('no Supabase configuration', {});
-await testServer('invalid owner ID with placeholder Supabase fields', {
-  // An unreachable loopback URL exercises the error UI without external DNS or slow timeouts.
-  NEXT_PUBLIC_SUPABASE_URL: 'https://127.0.0.1:9',
+await testServer('invalid owner ID and malformed Supabase endpoint', {
+  // Deliberately malformed public endpoint: reject locally, never resolve any hostname.
+  NEXT_PUBLIC_SUPABASE_URL: 'https://example.invalid/?invalid-project-url',
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'ci-only-placeholder',
   APP_OWNER_GITHUB_ID: 'not-a-numeric-github-id',
   APP_BASE_URL: 'https://example.invalid',
