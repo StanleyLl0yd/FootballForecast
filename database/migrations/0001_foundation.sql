@@ -193,13 +193,19 @@ drop trigger if exists ff_outcomes_immutable on public.ff_forecast_outcomes;
 create trigger ff_outcomes_immutable before update or delete on public.ff_forecast_outcomes
 for each row execute function public.ff_append_only_guard();
 
+-- Keep the RLS bypass helper outside the Data API's exposed public schema.
+-- Authenticated may invoke it *through* RLS policies; anon has no schema usage.
+create schema if not exists ff_private;
+revoke all on schema ff_private from public;
+grant usage on schema ff_private to authenticated;
+
 -- Only users explicitly provisioned by DB admin can read these tables.
-create or replace function public.ff_is_authorized() returns boolean
+create or replace function ff_private.ff_is_authorized() returns boolean
 language sql stable security definer set search_path = '' as $$
   select exists (select 1 from public.ff_access_grants where user_id = (select auth.uid()));
 $$;
-revoke all on function public.ff_is_authorized() from public;
-grant execute on function public.ff_is_authorized() to authenticated;
+revoke all on function ff_private.ff_is_authorized() from public, anon;
+grant execute on function ff_private.ff_is_authorized() to authenticated;
 
 alter table public.ff_access_grants enable row level security;
 create policy ff_grants_self on public.ff_access_grants for select to authenticated using (user_id = (select auth.uid()));
@@ -213,11 +219,21 @@ alter table public.ff_matches enable row level security;
 alter table public.ff_source_records enable row level security;
 alter table public.ff_forecasts enable row level security;
 alter table public.ff_forecast_outcomes enable row level security;
-create policy ff_sources_read on public.ff_sources for select to authenticated using (public.ff_is_authorized());
-create policy ff_competitions_read on public.ff_competitions for select to authenticated using (public.ff_is_authorized());
-create policy ff_seasons_read on public.ff_seasons for select to authenticated using (public.ff_is_authorized());
-create policy ff_teams_read on public.ff_teams for select to authenticated using (public.ff_is_authorized());
-create policy ff_matches_read on public.ff_matches for select to authenticated using (public.ff_is_authorized());
-create policy ff_source_records_read on public.ff_source_records for select to authenticated using (public.ff_is_authorized());
-create policy ff_forecasts_read on public.ff_forecasts for select to authenticated using (public.ff_is_authorized());
-create policy ff_outcomes_read on public.ff_forecast_outcomes for select to authenticated using (public.ff_is_authorized());
+create policy ff_sources_read on public.ff_sources for select to authenticated using (ff_private.ff_is_authorized());
+create policy ff_competitions_read on public.ff_competitions for select to authenticated using (ff_private.ff_is_authorized());
+create policy ff_seasons_read on public.ff_seasons for select to authenticated using (ff_private.ff_is_authorized());
+create policy ff_teams_read on public.ff_teams for select to authenticated using (ff_private.ff_is_authorized());
+create policy ff_matches_read on public.ff_matches for select to authenticated using (ff_private.ff_is_authorized());
+create policy ff_source_records_read on public.ff_source_records for select to authenticated using (ff_private.ff_is_authorized());
+create policy ff_forecasts_read on public.ff_forecasts for select to authenticated using (ff_private.ff_is_authorized());
+create policy ff_outcomes_read on public.ff_forecast_outcomes for select to authenticated using (ff_private.ff_is_authorized());
+
+-- Permission hygiene: RLS is a second gate, not a substitute for SQL GRANTs.
+-- No browser role may mutate source, match, grant, forecast or outcome records.
+-- Admin and backend service_role privileges are not modified here.
+revoke all on public.ff_access_grants, public.ff_sources, public.ff_competitions,
+  public.ff_seasons, public.ff_teams, public.ff_matches, public.ff_source_records,
+  public.ff_forecasts, public.ff_forecast_outcomes from public, anon, authenticated;
+grant select on public.ff_access_grants, public.ff_sources, public.ff_competitions,
+  public.ff_seasons, public.ff_teams, public.ff_matches, public.ff_source_records,
+  public.ff_forecasts, public.ff_forecast_outcomes to authenticated;

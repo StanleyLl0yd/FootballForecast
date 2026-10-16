@@ -25,3 +25,5 @@ M0 is not production-ready. Report vulnerabilities privately to the repository o
 - Race and jobs: add server-side allowlist of job types, idempotency tokens, bounded concurrency and spending caps before activation.
 
 No key, token, webhook signing secret, or service credential should ever be pasted into GitHub issues or chats.
+
+Supabase M0 database contract: keep the `ff_is_authorized()` SECURITY DEFINER helper in the non-exposed `ff_private` schema and grant its execution only to `authenticated`. Public tables expose SELECT only to that role, with explicit browser-DML REVOKEs and row-level policies. These safeguards are continuously regression-tested against disposable PostgreSQL; actual Supabase API surface and grant state still require verification before production use.
