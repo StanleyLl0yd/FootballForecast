@@ -42,7 +42,7 @@ The web interface is intended for private, authenticated use, even though the so
 ## Local development
 
 ```bash
-npm install
+npm ci
 npm run dev
 
 python -m pip install -e 'ml[test]'
