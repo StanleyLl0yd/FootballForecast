@@ -119,7 +119,8 @@ async function testServer(name, overrides) {
 
 await testServer('no Supabase configuration', {});
 await testServer('invalid owner ID with placeholder Supabase fields', {
-  NEXT_PUBLIC_SUPABASE_URL: 'https://example.invalid',
+  // An unreachable loopback URL exercises the error UI without external DNS or slow timeouts.
+  NEXT_PUBLIC_SUPABASE_URL: 'https://127.0.0.1:9',
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'ci-only-placeholder',
   APP_OWNER_GITHUB_ID: 'not-a-numeric-github-id',
   APP_BASE_URL: 'https://example.invalid',
