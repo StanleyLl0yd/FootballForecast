@@ -118,8 +118,9 @@ async function testServer(name, overrides) {
 }
 
 await testServer('no Supabase configuration', {});
-await testServer('invalid owner ID with placeholder Supabase fields', {
-  NEXT_PUBLIC_SUPABASE_URL: 'https://example.invalid',
+await testServer('invalid owner ID and malformed Supabase endpoint', {
+  // Deliberately malformed public endpoint: reject locally, never resolve any hostname.
+  NEXT_PUBLIC_SUPABASE_URL: 'https://example.invalid/?invalid-project-url',
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'ci-only-placeholder',
   APP_OWNER_GITHUB_ID: 'not-a-numeric-github-id',
   APP_BASE_URL: 'https://example.invalid',

@@ -10,3 +10,5 @@
 - `forecast-v1` is a partial contract; final exchange schema needs full probability/tail and audit fields.
 - UI uses honest empty states; filters, charts, model jobs, match detail and reports are not yet implemented.
 - Required checks run on pull requests and protected `main`; do not confuse clean scans with complete production readiness. The high GHSA-vfj7-8cjw-p6xm in `braces` (transitive ESLint development tooling) has no published fix as of 2026-10-16: the CI enforces a production-only audit and reports the full audit as advisory, without treating that advisory as resolved. CSP hardening, attack-surface review and production deployment remain outstanding.
+
+- The public dashboard and match list now support real anonymous Supabase REST reads when publishable credentials are configured, but the live database has zero imported matches. Mocked REST tests do not prove real HTTP reachability or browser network behaviour from Russia. No service-role credentials, user accounts or provider data are used in public routes.

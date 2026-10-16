@@ -23,6 +23,8 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [ ] Verify HTTP REST anon requests, migration permissions and backup/restore.
 - [ ] Apply and verify FK indexes and reassess performance advisors.
 - [ ] Connect and verify Vercel deployment, production auth, browser compatibility.
+- [x] Connect public read-only dashboard/matches to Supabase REST via publishable key with unconfigured/error/empty states and mocked REST contract tests.
+- [ ] Check live anonymous HTTP REST and Vercel deployed environment.
 - [ ] Confirm data acquisition and storage/distribution permissions in writing where necessary.
 - [x] Create M0 GitHub issues and activate main ruleset #25266406 (six required checks, no mandatory reviewers).
 - [x] Verify protected PR merges #15 and #16 and exact-head/post-merge CI/Security/CodeQL.
