@@ -105,7 +105,8 @@ create or replace function public.ff_guard_forecast_insert() returns trigger
 language plpgsql set search_path = '' as $$
 declare match_kickoff timestamptz;
 begin
-  select kickoff_at into match_kickoff from public.ff_matches where id = new.match_id;
+  -- Lock fixture to serialize publication with fixture edits.
+  select kickoff_at into match_kickoff from public.ff_matches where id = new.match_id for update;
   if match_kickoff is null or new.predicted_at >= match_kickoff
     or clock_timestamp() >= match_kickoff then
     raise exception 'Forecast must be published before match kickoff';
@@ -130,7 +131,7 @@ begin
   select m.home_goals, m.away_goals, m.status, m.kickoff_at
     into actual_home, actual_away, match_status, kickoff
   from public.ff_matches m join public.ff_forecasts f on f.match_id = m.id
-  where f.id = new.forecast_id;
+  where f.id = new.forecast_id for update of m;
   if match_status is distinct from 'finished'
     or new.result_home is distinct from actual_home
     or new.result_away is distinct from actual_away
@@ -141,6 +142,36 @@ begin
   return new;
 end;
 $$;
+
+-- Referenced fixture identity and kickoff are part of the published forecast contract.
+-- Once evaluation exists, the official recorded outcome must remain consistent.
+-- Corrections will require a versioned fixture revision (not implemented at M0).
+create or replace function public.ff_guard_match_update() returns trigger
+language plpgsql set search_path = '' as $$
+begin
+  if exists (select 1 from public.ff_forecasts where match_id = old.id)
+     and (new.season_id is distinct from old.season_id
+       or new.home_id is distinct from old.home_id
+       or new.away_id is distinct from old.away_id
+       or new.kickoff_at is distinct from old.kickoff_at) then
+    raise exception 'Forecast-referenced fixture identity and kickoff are immutable';
+  end if;
+  if exists (
+    select 1 from public.ff_forecasts f
+    join public.ff_forecast_outcomes o on o.forecast_id = f.id
+    where f.match_id = old.id
+  ) and (new.status is distinct from old.status
+      or new.home_goals is distinct from old.home_goals
+      or new.away_goals is distinct from old.away_goals) then
+    raise exception 'Evaluated fixture result is immutable';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists ff_matches_integrity on public.ff_matches;
+create trigger ff_matches_integrity before update on public.ff_matches
+for each row execute function public.ff_guard_match_update();
 
 create or replace function public.ff_append_only_guard() returns trigger
 language plpgsql set search_path = '' as $$
