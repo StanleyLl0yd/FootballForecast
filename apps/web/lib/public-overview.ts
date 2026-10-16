@@ -6,6 +6,17 @@ export type PublicOverview =
   | {state:'not_configured'|'unavailable'; matches:null; forecasts:null; fixtures:Fixture[]}
   | {state:'ready'; matches:number; forecasts:number; fixtures:Fixture[]};
 
+// A valid-looking public endpoint is not proof of network/database health.
+export function publicSettingsConfigured(env:Record<string,string|undefined> = process.env):boolean {
+  const url=env.NEXT_PUBLIC_SUPABASE_URL, key=env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) return false;
+  try {
+    const endpoint=new URL(url);
+    return endpoint.protocol==='https:' && !endpoint.username && !endpoint.password &&
+      !endpoint.search && !endpoint.hash;
+  } catch {return false;}
+}
+
 function teamName(value:unknown):string|null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const name=(value as {name?:unknown}).name;
@@ -22,9 +33,7 @@ export async function readPublicOverview(
   const key=env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) return {state:'not_configured',matches:null,forecasts:null,fixtures:[]};
   try {
-    const endpoint=new URL(url);
-    if (endpoint.protocol !== 'https:' || endpoint.username || endpoint.password ||
-      endpoint.search || endpoint.hash) throw new Error('Invalid Supabase project URL');
+    if (!publicSettingsConfigured(env)) throw new Error('Invalid Supabase project URL');
     const client=createClient(url,key,{
       auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},
       global:{fetch:(input,init)=>fetchImpl(input,{...init,cache:'no-store',

@@ -29,7 +29,8 @@ assert.equal(health.headers.get('x-frame-options'),'DENY');
 assert.match(health.headers.get('cache-control')??'',/no-store/);
 const status=await health.json();
 assert.equal(status.service,'footballforecast');
-assert.ok(['setup_required','configured'].includes(status.status));
+assert.ok(['public_configured','setup_required','configured'].includes(status.status));
+console.log('health status:',status.status,'(public endpoint presence only)');
 
 const dash=await get('/dashboard');
 assert.equal(dash.status,200,'public dashboard must render without Vercel authentication');
