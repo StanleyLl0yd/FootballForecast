@@ -1,29 +1,22 @@
 # Security policy
 
-M0 is not production-ready. Report vulnerabilities privately to the repository owner, not in public issues with secrets.
+FootballForecast currently provides **public, anonymous, read-only** non-commercial analytics. Report vulnerabilities privately to the repository owner, never in public issues with secrets.
 
-## Current controls
+## Active protections
 
-- Server-rendered routes enforce verified Supabase `getUser()` and match an immutable GitHub numeric provider ID through a pure negative-tested identity predicate. Blank configuration fails closed. Routes redirect to setup/login.
-- No service-role key or vendor API credentials are used in any client component.
-- Prepared Postgres RLS has no authenticated write policies. Forecast/outcome update and delete are rejected by triggers. **The migration has not been executed on a real database.**
-- Next response headers deny framing and sniffing. Full nonce-based CSP, rate limits and cross-route authorization tests remain required.
-- Secrets are prohibited in Git, runtime logs, fixtures, reports or external artifacts.
-- Data import and remote job execution are disabled; no arbitrary shell execution exposed in UI.
-- Actions are pinned to inspected full commit SHA. Initial exact-main CI, Security and CodeQL checks passed on GitHub.
-- An active repository ruleset protects `main`: PR required, six GitHub Actions checks required and up-to-date, branch deletion and force push denied, no bypass accounts, zero mandatory approvals.
+- All nine Supabase `ff_*` tables have RLS. Only six non-personal catalogs, fixtures and published forecast/evaluation tables grant `anon` SELECT with explicit read policies; `anon` cannot write or see grants, raw provider records, license metadata or the private authorization schema. This was checked in the real Frankfurt Free project.
+- Postgres live forecast and outcome records are append-only, with publication-time and fixture integrity guards. Untrusted browser clients are never provisioned as database writers.
+- Administrative `/admin` is denied unless an explicitly configured, verified owner-only GitHub OAuth identity is present. Owner login is optional and is **not yet enabled**; public pages do not require login.
+- No service-role key, privileged user token, third-party football provider credential or editable job API is present in the browser code. Next.js sets framing/sniffing restrictions and a minimal CSP.
+- Protected `main` requires PRs and six exact-head CI/security checks; actions are pinned. `npm ci`, Gitleaks, CodeQL and production dependency audit are enforced, with the dev-only `braces` advisory tracked separately.
+- External HTTP canary verifies public health/pages, anonymous Supabase availability through the rendered dashboard, and unauthenticated admin redirects. Do not confuse a passing canary with a complete security penetration test.
 
-## Threats and remaining controls
+## Open risks
 
-- Unauthorized OAuth accounts: enforce stable provider ID server-side, test negative cases and session refresh in a real Supabase project.
-- CSRF, redirect forgery and session fixation: OAuth uses Supabase PKCE; redirect is fixed, no user-provided callback URL. Verify in E2E. Add explicit origin checks for all future mutable endpoints.
-- RLS/IDOR: enforce RLS for all SQL tables; test with viewer, operator, administrator and unassigned accounts against direct REST APIs.
-- Supply chain: CI/Gitleaks/CodeQL run on pull requests and `main`; the production-dependency audit is enforced while the full developer dependency audit reports an unresolved upstream advisory. Use the committed npm lockfile and `npm ci` in CI for reproducible installs; continue reviewing transitive dependencies and Python packages.
-- SSR auth response cache: all authorized pages are dynamic and the session-refreshing proxy marks responses private/no-store. Verify CDN caching on Vercel.
-- Data source usage: no scraping FootyStats site or third-party copyrighted content without permission.
-- Model artifact ingestion: untrusted pickle/joblib and executable files prohibited.
-- Race and jobs: add server-side allowlist of job types, idempotency tokens, bounded concurrency and spending caps before activation.
+- Actual cross-network reachability from Russia and real browser security/compatibility tests.
+- Database backup and restore, outage/runbook practice, free-project pausing and hosting non-commercial limits.
+- Stronger CSP, CSRF/origin validation for future writes, rate limits and threat modeling before any worker, user account or mutable endpoint exists.
+- Optional future OAuth: exercise real sessions, callback allowlists, logout, failed/forged provider identities and row-level grants before enabling owner admin.
+- Explicit permission to retain/train on licensed football datasets, immutable upstream timestamp evidence and competition rights.
 
-No key, token, webhook signing secret, or service credential should ever be pasted into GitHub issues or chats.
-
-Supabase M0 database contract: keep the `ff_is_authorized()` SECURITY DEFINER helper in the non-exposed `ff_private` schema and grant its execution only to `authenticated`. Public tables expose SELECT only to that role, with explicit browser-DML REVOKEs and row-level policies. These safeguards are continuously regression-tested against disposable PostgreSQL; actual Supabase API surface and grant state still require verification before production use.
+Never paste authentication secrets into issues, files or public logs, enable paid tiers, or expose a mutation route without security acceptance.

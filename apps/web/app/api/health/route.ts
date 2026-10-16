@@ -1,6 +1,11 @@
 import {NextResponse} from 'next/server';
-import {configured} from '@/lib/auth';
+import {publicSettingsConfigured} from '@/lib/public-overview';
+
 export const dynamic = 'force-dynamic';
 export async function GET() {
-  return NextResponse.json({service: 'footballforecast', status: configured() ? 'configured' : 'setup_required'}, {headers: {'Cache-Control': 'no-store'}});
+  // Public app readiness is independent of optional, disabled owner OAuth.
+  return NextResponse.json(
+    {service:'footballforecast', status: publicSettingsConfigured() ? 'public_configured':'setup_required'},
+    {headers:{'Cache-Control':'no-store'}}
+  );
 }

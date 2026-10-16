@@ -13,18 +13,21 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Publish M0 source through reviewed PR #1; initial exact-main CI, Security and CodeQL PASS.
 - [x] Generate and commit a workspace npm lockfile on a network-enabled GitHub runner; install with `npm ci` in CI/Security.
 - [x] Run remote web lint, TypeScript typecheck and production build.
-- [ ] Run Safari/Firefox/Edge browser and real OAuth E2E plus Supabase-specific authorization tests.
+- [ ] Run Safari/Firefox/Edge browser tests, restore drill, and direct negative Supabase REST tests; real OAuth E2E deferred until admin login is approved.
 - [x] Run unconfigured Next.js browser smoke in real headless Chrome on CI.
 - [x] Unit-test stable GitHub identity decisions and negative non-owner/malformed provider cases in CI.
 - [x] Add built Next.js production HTTP smoke: unconfigured/invalid-owner environments, protected routes, health and callback denial.
 - [x] Exercise the M0 migration and negative RLS / forecast immutability checks against disposable PostgreSQL 16 in CI.
-- [ ] Configure Supabase, GitHub OAuth and owner stable provider ID.
+- [x] Configure public Supabase read-only environment; ordinary visitors need no registration.
+- [ ] Configure and test optional GitHub owner OAuth only if administrative login is enabled later.
 - [x] Apply foundation/public-read migrations to Free Frankfurt Supabase and verify RLS/security advisors.
-- [ ] Verify HTTP REST anon requests, migration permissions and backup/restore.
-- [ ] Apply and verify FK indexes and reassess performance advisors.
-- [ ] Connect and verify Vercel deployment, production auth, browser compatibility.
+- [ ] Verify REST negative-write attempts with an actual publishable key, and a repeatable backup/restore drill (not covered by read-only production canary).
+- [x] Apply and verify all three FK indexes; performance advisor no longer reports unindexed FKs.
+- [x] Deploy public Vercel Hobby to Frankfurt from protected GitHub main and verify anonymous pages/admin redirect from GitHub Actions.
+- [ ] Verify reachability from Russian networks without VPN and Safari/Firefox/Edge browser behavior.
 - [x] Connect public read-only dashboard/matches to Supabase REST via publishable key with unconfigured/error/empty states and mocked REST contract tests.
-- [ ] Check live anonymous HTTP REST and Vercel deployed environment, including external production canary from GitHub Actions and network reachability from Russia.
+- [x] Verify live anonymous Supabase REST via production dashboard and external GitHub Actions HTTP canary.
+- [ ] Verify Russian operator network reachability separately.
 - [ ] Confirm data acquisition and storage/distribution permissions in writing where necessary.
 - [x] Create M0 GitHub issues and activate main ruleset #25266406 (six required checks, no mandatory reviewers).
 - [x] Verify protected PR merges #15 and #16 and exact-head/post-merge CI/Security/CodeQL.

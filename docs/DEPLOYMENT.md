@@ -1,23 +1,33 @@
-# Deployment and account setup (not completed)
+# Hosting and deployment - public M0
 
-1. Public GitHub repository `StanleyLl0yd/FootballForecast` and branch protection are already configured. The application itself remains private through authentication.
-2. From the repository root use `npm ci` to install exactly the dependency tree recorded in `package-lock.json`. CI and Security use the same command. Review audits before updating the lockfile; use `npm install` only when intentionally changing dependencies.
-3. In Supabase create a Free project, enable GitHub social login with a registered GitHub OAuth App. Add `https://<your-app-domain>/auth/callback` to Supabase redirect allowlist and configure the GitHub app callback URL exactly as Supabase documents. Avoid broad wildcard redirect patterns.
-4. Get numeric GitHub account ID from authenticated `gh api user --jq .id` (not username). Set in **server-only** `APP_OWNER_GITHUB_ID` and a trusted `APP_BASE_URL=https://your-domain` (required to prevent redirects to untrusted hosts). Configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in Vercel environment (publishable, not service-role). Do not commit `.env.local`.
-5. Apply `database/migrations/0001_foundation.sql` through privileged Supabase SQL editor only after reviewing it; verify RLS with unauthenticated and unrelated authenticated users. Provision an owner row in `ff_access_grants` after first OAuth login using trusted SQL admin, not browser-side inserts.
-6. Import Vercel project with root `apps/web` and framework Next.js. npm workspaces install requires root lock file; verify Vercel monorepo build path. Configure production URL and test live auth flows.
-7. Keep active ruleset #25266406 and security scanning enabled. Protect secrets in GitHub Actions and Vercel. Verify exact commit CI, production smoke tests and rollback.
+## Verified infrastructure
 
-**Status:** GitHub source and CI exist; Supabase and Vercel are not connected to this application, and no migration or deployment has occurred. No paid resources should be enabled without explicit consent.
+- Repository: `StanleyLl0yd/FootballForecast`, protected `main`, six required exact-head checks.
+- Supabase: **Free** project `FootballForecast`, Frankfurt `eu-central-1`, PostgreSQL 17. Migration history: `foundation_m0`, `public_read_m0`, `match_fk_indexes_m0`.
+- Vercel: **Hobby** project `footballforecast` connected to GitHub `main`, `apps/web` root, Next.js, npm workspace install `npm ci`, server function region `fra1` (Frankfurt).
+- Production: https://footballforecast.vercel.app. Anonymous viewing enabled; Vercel Authentication disabled for production. A GitHub-hosted HTTP canary has verified health, dashboard, matches, archive, data and admin denial; no claim of Russian network reachability.
+- Deployment env: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` configured on Vercel. These are public/read-only client credentials; never use a service-role key in any browser-facing environment.
 
-Health endpoint `/api/health` reports only `setup_required` or `configured`, not provider secrets, and it is NOT a DB/live forecasting health probe.
+## Reproducible build and verification
 
-For a credentials-free smoke of the built Next.js production server, run `npm run build && npm run smoke:auth` from the repo root. On Linux with Chrome installed, use `FF_BROWSER_SMOKE=1 npm run smoke:auth` for a real headless browser redirect and mobile-viewport rendering smoke (required in CI). This exercises fail-closed server routes, callback refusal, basic security headers and cache behaviour with no valid Supabase setup. It does not replace real OAuth, Supabase RLS, real-browser or deployment tests.
+From the repository root:
 
-## Public M0 mode (2026-10-16)
+```sh
+npm ci
+npm run lint && npm run typecheck && npm run build
+npm run test:auth && npm run test:public-data
+npm run smoke:auth
+npm run smoke:production
+```
 
-The public pages `/dashboard`, `/matches`, `/models`, `/analytics`, `/data` and `/archive` do not require login. Only `/admin` remains owner-only; all modifications are backend-only and disabled. Free Supabase Frankfurt (`eu-central-1`) project has been created. `0001_foundation.sql` was applied, and `0002_public_read.sql` exposes SELECT only on six public non-personal tables. Raw provider records, rights information and access grants are never exposed through anonymous RLS. No real matches or forecasts are imported yet. Previous OAuth configuration steps above apply only when administrative login is explicitly enabled, not to ordinary visitors.
+The local `smoke:auth` checks fail-closed optional administrator OAuth and public routes under deliberately missing/malformed settings. With Google Chrome installed, `FF_BROWSER_SMOKE=1 npm run smoke:auth` also checks a real browser. The external `smoke:production` runs from GitHub Actions as a **non-gating** production canary, verifying real HTTP responses and successful public Supabase REST reads. Inspect its logs even when CI is green; follow through with exact Vercel deployment SHA and end-to-end manual browser checks.
 
-## Public read-only server data access
+## Runtime configuration and future administration
 
-Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the hosting environment. They are publishable credentials, **never service-role/secret keys**. The dashboard and matches pages use `@supabase/supabase-js` with no sessions to read only `ff_matches` and `ff_forecasts` (counts) and a limited future fixture/teams list through anonymous RLS. Queries run on each request with a six-second HTTP deadline and no-store caching; missing/broken settings never display fabricated zeros. Unit tests simulate REST responses. Actual Supabase REST checks, production deployment and licensed data ingestion are separate gates.
+The public site does **not** require a GitHub OAuth application, an account or cookies. `/admin` is deny-by-default and does not have enabled write actions. Its optional owner OAuth code requires `APP_OWNER_GITHUB_ID`, a trusted `APP_BASE_URL`, correctly configured Supabase GitHub provider/callback and live negative session tests **before** activation. Registration for regular visitors is intentionally deferred.
+
+Vercel Hobby supports personal non-commercial development; commercial operation requires a separately approved hosting/terms review. On Supabase Free, account for pausing, storage limits and lack of automatic daily backups. Before external/paid usage, verify restore and storage, provider rights and Russian personal-data obligations if user accounts are introduced. Do not enable paid tiers, commercial ingestion or bulk scraping on assumptions.
+
+## Current limitations
+
+The live database is empty (zero imported RPL matches and forecasts); no calibrated model or legal source feed is connected. Monitoring does not prove end-user connectivity from Russia or Firefox/Safari/Edge compatibility. See `ROADMAP.md`, `docs/KNOWN_LIMITATIONS.md` and tracked GitHub issues for unfinished acceptance criteria.

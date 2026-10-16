@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {readPublicOverview} from '../lib/public-overview.ts';
+import {readPublicOverview,publicSettingsConfigured} from '../lib/public-overview.ts';
 
 const env={NEXT_PUBLIC_SUPABASE_URL:'https://test.example.invalid',
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:'sb_publishable_test_only'};
@@ -52,4 +52,13 @@ test('an API error or invalid configuration must not produce fictitious zero met
   const invalid=await readPublicOverview(()=>{throw Error('never fetch');},
     {...env,NEXT_PUBLIC_SUPABASE_URL:'http://example.invalid'});
   assert.equal(invalid.state,'unavailable');
+});
+
+test('public health readiness follows anonymous endpoint, never owner login',()=>{
+  assert.equal(publicSettingsConfigured(env),true);
+  assert.equal(publicSettingsConfigured({...env,APP_OWNER_GITHUB_ID:'invalid'}),true);
+  assert.equal(publicSettingsConfigured({...env,NEXT_PUBLIC_SUPABASE_URL:'https://x.invalid/?injected'}),false);
+  assert.equal(publicSettingsConfigured({...env,NEXT_PUBLIC_SUPABASE_URL:'http://x.invalid'}),false);
+  assert.equal(publicSettingsConfigured({...env,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:''}),false);
+  assert.equal(publicSettingsConfigured({}),false);
 });
