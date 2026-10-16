@@ -1,15 +1,14 @@
 """Source and as-of contracts. All datetimes must be timezone-aware UTC/offsets."""
 from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
-from math import isfinite
+from enum import StrEnum
 
 
 class DataError(ValueError):
     """A source record fails provenance or chronological validation."""
 
 
-class MatchStatus(str, Enum):
+class MatchStatus(StrEnum):
     SCHEDULED = "scheduled"
     LIVE = "live"
     FINISHED = "finished"
@@ -76,7 +75,10 @@ class FinishedMatch:
             raise DataError("same team on both sides")
         if self.status != MatchStatus.FINISHED:
             raise DataError("technical results require a separate policy")
-        if not all(isinstance(g, int) and not isinstance(g, bool) for g in (self.home_goals, self.away_goals)):
+        if not all(
+            isinstance(g, int) and not isinstance(g, bool)
+            for g in (self.home_goals, self.away_goals)
+        ):
             raise DataError("goals must be integers")
         if self.home_goals < 0 or self.away_goals < 0:
             raise DataError("goals cannot be negative")

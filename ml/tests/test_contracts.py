@@ -1,17 +1,21 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
 from football_forecast.data.contracts import (
-    DataError, FinishedMatch, MatchStatus, SourceObservation,
+    DataError,
+    FinishedMatch,
+    MatchStatus,
+    SourceObservation,
 )
 
-UTC = timezone.utc
 T = datetime(2025, 9, 1, tzinfo=UTC)
 
 
 def test_strict_historical_requires_publication_and_ingestion() -> None:
-    record = SourceObservation('vendor', '321', T, T + timedelta(hours=2), T + timedelta(hours=3), 'v1')
+    record = SourceObservation(
+        'vendor', '321', T, T + timedelta(hours=2), T + timedelta(hours=3), 'v1'
+    )
     assert not record.eligible(T + timedelta(hours=2, minutes=30))
     assert record.eligible(T + timedelta(hours=3))
     assert not record.eligible(T + timedelta(hours=1))

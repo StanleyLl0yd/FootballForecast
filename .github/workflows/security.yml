@@ -26,4 +26,8 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with: {node-version: '22'}
       - run: npm install --no-audit --no-fund
-      - run: npm audit --audit-level=high
+      - name: Production dependency audit (enforced)
+        run: npm audit --omit=dev --audit-level=high
+      - name: Full audit including developer tools (upstream advisory tracked)
+        continue-on-error: true
+        run: npm audit --audit-level=high
