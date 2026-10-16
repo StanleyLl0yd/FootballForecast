@@ -31,6 +31,14 @@ A provider may enter `approved` in `ff_sources` **only** after documenting all o
 
 Until then: **zero provider adapters active, zero imported matches, zero trained models and zero real predictions**. Source changes should be recorded in this register, not in a repetitive README status log.
 
+## Free-tier fact check (2026-10-17)
+
+- [API-Football pricing](https://www.api-football.com/pricing/) advertises a $0 plan with **100 API requests/day** and all competition/endpoint categories, **but with available-season limitations**. Actual RPL 2026/27 fixture data, historical depth and field completeness have not been probed through an authorized account.
+- [API-Football terms](https://www.api-football.com/terms) permit creating apps/websites and prohibit data resale. They explicitly say the API subscription **does not grant competition-data publication rights**; league/club and third-party permissions remain the developer's responsibility. Free API access cannot automatically authorize public raw-data republishing or ML redistribution.
+- [football-data.org coverage](https://www.football-data.org/coverage) includes Russia / RFPL among **all competitions**, but RFPL is **not** in the provider's listed Free tier. [Pricing](https://www.football-data.org/pricing) separately restricts historical season/model fields to paid tiers. Do not assume the Russian league can be obtained under its €0 plan.
+
+No provider registration, data import or payments were performed by this terms review. All sources remain **unapproved**.
+
 ## Next decision
 
-For a private RPL/Zenit prototype, investigate the **FootyStats API** and **API-Football** through their authorized plan/coverage tools; compare legally usable fixture history and as-of evidence first. Historical Football-Data CSV may complement a licensed current feed only after separate terms and timestamp checks. Do not select a paid plan or bulk ingest data on assumptions.
+For the public read-only RPL/Zenit prototype, investigate the **FootyStats API** and **API-Football** through their authorized plan/coverage tools; compare legally usable fixture history and as-of evidence first. Historical Football-Data CSV may complement a licensed current feed only after separate terms and timestamp checks. Do not select a paid plan or bulk ingest data on assumptions.
