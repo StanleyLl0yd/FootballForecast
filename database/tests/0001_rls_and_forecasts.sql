@@ -22,7 +22,7 @@ begin
 end;
 $$;
 
-\\echo 'Supabase least-privilege contracts: helper is private and browser SQL grants are read-only'
+\echo 'Supabase least-privilege contracts: helper is private and browser SQL grants are read-only'
 select 1 / case when
   to_regprocedure('public.ff_is_authorized()') is null
   and to_regprocedure('ff_private.ff_is_authorized()') is not null
