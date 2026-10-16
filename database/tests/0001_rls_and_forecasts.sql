@@ -115,21 +115,45 @@ select pg_temp.expect_rejection(
   values ('14000000-0000-0000-0000-000000000001',1,0,.5,.4,.2)$sql$,
  'P0001','matching finished fixture');
 
--- Finish the fixture and confirm result matching before attaching evaluation.
+-- Even a forged 'finished' status must not allow scoring before actual kickoff.
 update public.ff_matches set status='finished',home_goals=1,away_goals=0
  where id='13000000-0000-0000-0000-000000000001';
 select pg_temp.expect_rejection(
  $sql$insert into public.ff_forecast_outcomes(forecast_id,result_home,result_away,log_loss,brier,rps)
-  values ('14000000-0000-0000-0000-000000000001',2,0,.5,.4,.2)$sql$,
+  values ('14000000-0000-0000-0000-000000000001',1,0,.5,.4,.2)$sql$,
+ 'P0001','matching finished fixture');
+
+-- Restore a *synthetic historical snapshot* in disposable CI only.
+-- The database owner must temporarily disable the live-publication trigger for
+-- fixture setup; application/worker paths may NEVER use this technique.
+insert into public.ff_matches(id,season_id,home_id,away_id,kickoff_at,status,home_goals,away_goals) values
+ ('13000000-0000-0000-0000-000000000002','11000000-0000-0000-0000-000000000001',
+  '12000000-0000-0000-0000-000000000001','12000000-0000-0000-0000-000000000002',
+  clock_timestamp()-interval '1 day','finished',1,0);
+alter table public.ff_forecasts disable trigger ff_forecast_preinsert;
+insert into public.ff_forecasts
+ (id,match_id,revision,predicted_at,as_of_at,model_version,dataset_sha256,model_sha256,
+  prediction_sha256,commit_sha,home_win,draw,away_win,expected_home,expected_away,score_distribution)
+values ('14000000-0000-0000-0000-000000000002','13000000-0000-0000-0000-000000000002',
+ 1,clock_timestamp()-interval '2 days',clock_timestamp()-interval '2 days 1 hour','historical-test-only',
+ repeat('a',64),repeat('b',64),repeat('c',64),repeat('d',40),
+ .4,.3,.3,1.2,.8,'{}');
+alter table public.ff_forecasts enable trigger ff_forecast_preinsert;
+
+-- Wrong score rejected even for a finished historical fixture.
+select pg_temp.expect_rejection(
+ $sql$insert into public.ff_forecast_outcomes(forecast_id,result_home,result_away,log_loss,brier,rps)
+  values ('14000000-0000-0000-0000-000000000002',2,0,.5,.4,.2)$sql$,
  'P0001','matching finished fixture');
 insert into public.ff_forecast_outcomes(forecast_id,result_home,result_away,log_loss,brier,rps)
- values ('14000000-0000-0000-0000-000000000001',1,0,.5,.4,.2);
+ values ('14000000-0000-0000-0000-000000000002',1,0,.5,.4,.2);
+select 1 / case when (select count(*) from public.ff_forecast_outcomes)=1 then 1 else 0 end as valid_historical_outcome;
 select pg_temp.expect_rejection(
  $sql$update public.ff_forecast_outcomes set result_home=2
- where forecast_id='14000000-0000-0000-0000-000000000001'$sql$,
+ where forecast_id='14000000-0000-0000-0000-000000000002'$sql$,
  'P0001','Append-only');
 select pg_temp.expect_rejection(
  $sql$delete from public.ff_forecast_outcomes
- where forecast_id='14000000-0000-0000-0000-000000000001'$sql$,
+ where forecast_id='14000000-0000-0000-0000-000000000002'$sql$,
  'P0001','Append-only');
 \echo 'PostgreSQL M0 negative and positive assertions complete.'
