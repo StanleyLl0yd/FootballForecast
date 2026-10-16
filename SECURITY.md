@@ -4,7 +4,7 @@ M0 is not production-ready. Report vulnerabilities privately to the repository o
 
 ## Current controls
 
-- Server-rendered routes enforce verified Supabase `getUser()` and match an immutable GitHub numeric provider ID. Blank configuration fails closed. Routes redirect to setup/login.
+- Server-rendered routes enforce verified Supabase `getUser()` and match an immutable GitHub numeric provider ID through a pure negative-tested identity predicate. Blank configuration fails closed. Routes redirect to setup/login.
 - No service-role key or vendor API credentials are used in any client component.
 - Prepared Postgres RLS has no authenticated write policies. Forecast/outcome update and delete are rejected by triggers. **The migration has not been executed on a real database.**
 - Next response headers deny framing and sniffing. Full nonce-based CSP, rate limits and cross-route authorization tests remain required.
