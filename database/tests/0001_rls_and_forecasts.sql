@@ -103,6 +103,16 @@ values ('14000000-0000-0000-0000-000000000001','13000000-0000-0000-0000-00000000
  .4,.3,.3,1.2,.8,'{}');
 select 1 / case when (select count(*) from public.ff_forecasts)=1 then 1 else 0 end as inserted_live_stub;
 
+\echo 'Referenced fixture changes cannot silently rewrite an archived prediction'
+select pg_temp.expect_rejection(
+ $sql$update public.ff_matches set kickoff_at = kickoff_at + interval '2 hours'
+ where id='13000000-0000-0000-0000-000000000001'$sql$,
+ 'P0001','Forecast-referenced fixture identity');
+select pg_temp.expect_rejection(
+ $sql$update public.ff_matches set away_id = home_id
+ where id='13000000-0000-0000-0000-000000000001'$sql$,
+ 'P0001','Forecast-referenced fixture identity');
+
 \echo 'Archive append-only guard: updates and deletes rejected even by database owner'
 select pg_temp.expect_rejection(
  $sql$update public.ff_forecasts set model_version='tampered' where id='14000000-0000-0000-0000-000000000001'$sql$,
@@ -156,4 +166,17 @@ select pg_temp.expect_rejection(
  $sql$delete from public.ff_forecast_outcomes
  where forecast_id='14000000-0000-0000-0000-000000000002'$sql$,
  'P0001','Append-only');
+\echo 'Evaluated results cannot be rewritten through mutable match rows'
+select pg_temp.expect_rejection(
+ $sql$update public.ff_matches set home_goals=2
+ where id='13000000-0000-0000-0000-000000000002'$sql$,
+ 'P0001','Evaluated fixture result');
+select pg_temp.expect_rejection(
+ $sql$update public.ff_matches set status='awarded'
+ where id='13000000-0000-0000-0000-000000000002'$sql$,
+ 'P0001','Evaluated fixture result');
+update public.ff_matches set updated_at=clock_timestamp()
+ where id='13000000-0000-0000-0000-000000000002';
+select 1 / case when (select home_goals from public.ff_matches
+ where id='13000000-0000-0000-0000-000000000002')=1 then 1 else 0 end as evaluated_score_preserved;
 \echo 'PostgreSQL M0 negative and positive assertions complete.'
