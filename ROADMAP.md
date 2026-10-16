@@ -21,7 +21,8 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Configure public Supabase read-only environment; ordinary visitors need no registration.
 - [ ] Configure and test optional GitHub owner OAuth only if administrative login is enabled later.
 - [x] Apply foundation/public-read migrations to Free Frankfurt Supabase and verify RLS/security advisors.
-- [ ] Verify REST negative-write attempts with an actual publishable key, and a repeatable backup/restore drill (not covered by read-only production canary).
+- [ ] Verify REST negative-write attempts with a real publishable key and backup/restore against an independently isolated real Free/PostgreSQL 17 instance.
+- [x] Add synthetic PostgreSQL 16 pg_dump/pg_restore round-trip proof in CI, including RLS, data and immutable-archive triggers.
 - [x] Apply and verify all three FK indexes; performance advisor no longer reports unindexed FKs.
 - [x] Deploy public Vercel Hobby to Frankfurt from protected GitHub main and verify anonymous pages/admin redirect from GitHub Actions.
 - [ ] Verify reachability from Russian networks without VPN and Safari/Firefox/Edge browser behavior.

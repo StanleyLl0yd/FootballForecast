@@ -1,3 +1,20 @@
-# Disaster recovery (unimplemented plan)
+# Disaster recovery (M0)
 
-M0 has no provisioned database or backups. Before publishing forecasts: document database export cadence, object-store versioning, encryption, separate access and retention, restore test schedule, recovery point/time objectives and key rotation. The immutable ledger requires snapshots and independently verified hashes, not only a single live SQL database. Failures in import, model training or API access must never overwrite the last known-good model or historical forecast revisions.
+The actual Supabase **Free** database is provisioned in Frankfurt (PostgreSQL 17) but the free plan does **not** include managed daily backups. **No live backup or restore has yet been demonstrated.** Do not treat CI fixtures as recoverable user/forecast data.
+
+## Reproducible local restore exercise
+
+The existing `python-core` CI job uses a disposable PostgreSQL 16 container and synthetic M0 fixtures only. After applying the three migrations and testing RLS/append-only guards, CI exports `public`, `auth` and `ff_private` schemas plus fixture rows to a custom-format `pg_dump` file, restores it into a newly created `ff_restore_ci` database on the same isolated container, then runs `database/tests/0004_restore_validation.sql`. The assertions verify rows, access rules, policies, five integrity triggers, indexes and archived forecast immutability.
+
+This proves a **test-fixture database round trip**, not a production backup, not an independent-zone recovery, and not cross-version PostgreSQL 17 restore.
+
+## Production backup acceptance still required
+
+Before loading valuable real data or moving to M1:
+1. Define owner-approved Free-compatible export cadence, independent encrypted storage, least-privilege export credentials and key rotation. Never put backup passwords, raw football provider records or personal data in GitHub Actions artifacts or this public repository.
+2. Select a secure, user-controlled destination outside the Supabase project; measure quota and retention without enabling paid features.
+3. Make the backup restorable into a **separately isolated** authorized PostgreSQL 17 environment; test actual schema/RLS/trigger state, integrity checksums and row counts without exposing production data.
+4. Record recovery point objective (RPO), recovery time objective (RTO), periodic restore schedule and recovery owner.
+5. Include model hashes, raw source records (only where licenses permit), storage objects, forecast archive revisions and immutable publication timestamps. Failure must never rewrite the last-good ledger.
+
+The public source repository and GitHub CI cannot by themselves guarantee recovery of the real Supabase Free database.
