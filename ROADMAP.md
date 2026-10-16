@@ -8,16 +8,17 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Initial Python package and deterministic Poisson/scoring math primitives.
 - [x] Initial RLS database schema and append-only prediction tables (NOT applied).
 - [x] Next.js Supabase OAuth owner-gate implementation (NOT integration-tested).
-- [x] Basic CI, Gitleaks v3, npm audit and Dependabot definitions (NOT executed remotely).
+- [x] Basic CI, Gitleaks v3, npm audit, Dependabot and CodeQL verified on the initial exact-main commit.
 - [x] Create public GitHub repo (`StanleyLl0yd/FootballForecast`).
-- [ ] Publish M0 source through reviewed PR (remote state to be verified).
+- [x] Publish M0 source through reviewed PR #1; initial exact-main CI, Security and CodeQL PASS.
 - [ ] Generate and commit npm lock file on network-enabled runner.
 - [ ] Run full web lint, typecheck, build, OAuth E2E and DB policy tests.
 - [ ] Configure Supabase, GitHub OAuth and owner stable provider ID.
 - [ ] Apply and test migration, permissions and backup.
 - [ ] Connect and verify Vercel deployment, production auth, browser compatibility.
 - [ ] Confirm data acquisition and storage/distribution permissions in writing where necessary.
-- [ ] Create GitHub issues, enforce branch protection, and verify CI/security exact-head + post-merge.
+- [x] Create M0 GitHub issues and activate main ruleset #25266406 (six required checks, no mandatory reviewers).
+- [ ] Complete a protected PR merge and verify exact-HEAD/post-merge behavior after branch-hygiene changes.
 
 ## M1 - Data Foundation (BLOCKED by M0 acceptance)
 Licensed adapters, provenance, normalized seasons and teams, timestamp checks, data center and sync.
