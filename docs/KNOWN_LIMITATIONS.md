@@ -3,7 +3,7 @@
 - Public source is maintained on a protected `main` branch. CI, Security and CodeQL passed after the initial M0 PRs. No deployment or database instance is verified.
 - A version 3 npm lockfile was generated and `npm ci` smoke-tested on a GitHub-hosted Node 22 runner; CI/Security now use `npm ci`. Remote web lint/typecheck/build previously passed; built-server HTTP smoke runs in CI, but real browser and OAuth E2E remain unavailable; local registry access is still unavailable.
 - Auth code prepared but not tested against real Supabase GitHub identities, callback allowlist, session expiry, or negative RLS policies.
-- OAuth ownership check examines the verified GitHub provider identity `provider_id`/`sub`; this must be tested with real response shape before opening production access.
+- OAuth ownership predicate now has explicit non-owner/malformed-identity unit tests; production access remains blocked until checked against real Supabase GitHub identity response shapes, callback/session lifecycle and actual unauthorized requests.
 - Core Poisson accepts input intensities; it has not learned team strengths, calibrated outcomes, or produced actual match forecasts.
 - No data ingestion permitted. Source catalog and usage rights require further verification.
 - Database migration is not applied to an actual Supabase project. CI uses a disposable PostgreSQL 16 database with simulated Supabase auth roles to check RLS and append-only forecast behavior; actual Supabase REST tests, restore and disaster recovery remain outstanding.

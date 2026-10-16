@@ -10,7 +10,8 @@
     "build": "npm run build --workspace @footballforecast/web",
     "lint": "npm run lint --workspace @footballforecast/web",
     "typecheck": "npm run typecheck --workspace @footballforecast/web",
-    "smoke:auth": "node scripts/smoke-auth.mjs"
+    "smoke:auth": "node scripts/smoke-auth.mjs",
+    "test:auth": "node --experimental-strip-types --test apps/web/tests/owner-identity.test.mjs"
   },
   "engines": {
     "node": ">=20.9.0"
