@@ -19,7 +19,9 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Add built Next.js production HTTP smoke: unconfigured/invalid-owner environments, protected routes, health and callback denial.
 - [x] Exercise the M0 migration and negative RLS / forecast immutability checks against disposable PostgreSQL 16 in CI.
 - [ ] Configure Supabase, GitHub OAuth and owner stable provider ID.
-- [ ] Apply and test migration, permissions and backup.
+- [x] Apply foundation/public-read migrations to Free Frankfurt Supabase and verify RLS/security advisors.
+- [ ] Verify HTTP REST anon requests, migration permissions and backup/restore.
+- [ ] Apply and verify FK indexes and reassess performance advisors.
 - [ ] Connect and verify Vercel deployment, production auth, browser compatibility.
 - [ ] Confirm data acquisition and storage/distribution permissions in writing where necessary.
 - [x] Create M0 GitHub issues and activate main ruleset #25266406 (six required checks, no mandatory reviewers).
