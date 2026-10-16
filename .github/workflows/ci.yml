@@ -30,7 +30,7 @@ jobs:
       - name: PostgreSQL RLS and immutable-forecast integration
         shell: bash
         run: |
-          cat database/tests/0000_ci_supabase_stub.sql database/migrations/0001_foundation.sql database/tests/0001_rls_and_forecasts.sql database/migrations/0002_public_read.sql database/tests/0002_public_read.sql |
+          cat database/tests/0000_ci_supabase_stub.sql database/migrations/0001_foundation.sql database/tests/0001_rls_and_forecasts.sql database/migrations/0002_public_read.sql database/tests/0002_public_read.sql database/migrations/0003_match_fk_indexes.sql database/tests/0003_match_fk_indexes.sql |
             docker exec -i "${{ job.services.postgres.id }}" psql -v ON_ERROR_STOP=1 -U postgres -d postgres
 
   web:
