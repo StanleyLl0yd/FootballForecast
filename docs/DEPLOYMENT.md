@@ -13,3 +13,7 @@
 Health endpoint `/api/health` reports only `setup_required` or `configured`, not provider secrets, and it is NOT a DB/live forecasting health probe.
 
 For a credentials-free smoke of the built Next.js production server, run `npm run build && npm run smoke:auth` from the repo root. On Linux with Chrome installed, use `FF_BROWSER_SMOKE=1 npm run smoke:auth` for a real headless browser redirect and mobile-viewport rendering smoke (required in CI). This exercises fail-closed server routes, callback refusal, basic security headers and cache behaviour with no valid Supabase setup. It does not replace real OAuth, Supabase RLS, real-browser or deployment tests.
+
+## Public M0 mode (2026-10-16)
+
+The public pages `/dashboard`, `/matches`, `/models`, `/analytics`, `/data` and `/archive` do not require login. Only `/admin` remains owner-only; all modifications are backend-only and disabled. Free Supabase Frankfurt (`eu-central-1`) project has been created. `0001_foundation.sql` was applied, and `0002_public_read.sql` exposes SELECT only on six public non-personal tables. Raw provider records, rights information and access grants are never exposed through anonymous RLS. No real matches or forecasts are imported yet. Previous OAuth configuration steps above apply only when administrative login is explicitly enabled, not to ordinary visitors.

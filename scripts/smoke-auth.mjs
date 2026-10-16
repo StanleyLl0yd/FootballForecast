@@ -37,8 +37,8 @@ async function checkChromeBrowser(origin) {
     const options = {timeout: 30000, maxBuffer: 5_000_000};
     const {stdout} = await execFileAsync(process.env.FF_BROWSER_BIN || 'google-chrome',
       [...flags, '--dump-dom', `${origin}/dashboard`], options);
-    assert.match(stdout, /Требуется настройка платформы/,
-      'Headless Chrome must follow the protected dashboard redirect to setup');
+    assert.match(stdout, /Футбольная аналитика/,
+      'Headless Chrome must render the public dashboard without credentials');
     await execFileAsync(process.env.FF_BROWSER_BIN || 'google-chrome',
       [...flags, '--window-size=390,844', `--screenshot=${screenshot}`, `${origin}/login`],
       options);
@@ -87,14 +87,13 @@ async function testServer(name, overrides) {
     assert.equal(health.headers.get('x-frame-options'), 'DENY');
     assert.equal(health.headers.get('x-content-type-options'), 'nosniff');
 
-    for (const path of ['/dashboard','/matches','/models','/analytics','/data','/archive','/admin']) {
+    for (const path of ['/dashboard','/matches','/models','/analytics','/data','/archive']) {
       const r = await get(path);
-      assert.ok([303, 307, 308].includes(r.status), `${name}: ${path} status ${r.status}`);
-      assert.equal(new URL(r.headers.get('location'), origin).pathname, '/setup',
-        `${name}: ${path} must fail closed`);
-      assert.match(r.headers.get('cache-control') ?? '', /no-store|private/,
-        `${name}: ${path} must not be public-cacheable`);
+      assert.equal(r.status, 200, `${name}: ${path} must be public`);
     }
+    const admin = await get('/admin');
+    assert.ok([303,307,308].includes(admin.status), `${name}: admin is protected`);
+    assert.equal(new URL(admin.headers.get('location'),origin).pathname, '/setup');
     const callback = await get('/auth/callback?code=ci-synthetic');
     assert.equal(callback.status, 503);
     assert.deepEqual(await callback.json(), {error: 'setup_required'});
@@ -104,7 +103,7 @@ async function testServer(name, overrides) {
     const setup = await get('/setup');
     assert.equal(setup.status, 200);
     assert.match(await setup.text(), /Требуется настройка платформы/);
-    console.log(`PASS ${name}: 7 protected routes fail closed, health and auth/setup endpoints safe`);
+    console.log(`PASS ${name}: six public routes accessible, admin still protected, health and callback safe`);
     if (process.env.FF_BROWSER_SMOKE === '1' && name === 'no Supabase configuration') {
       await checkChromeBrowser(origin);
     }
