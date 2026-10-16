@@ -32,6 +32,16 @@ jobs:
         run: |
           cat database/tests/0000_ci_supabase_stub.sql database/migrations/0001_foundation.sql database/tests/0001_rls_and_forecasts.sql database/migrations/0002_public_read.sql database/tests/0002_public_read.sql database/migrations/0003_match_fk_indexes.sql database/tests/0003_match_fk_indexes.sql |
             docker exec -i "${{ job.services.postgres.id }}" psql -v ON_ERROR_STOP=1 -U postgres -d postgres
+      - name: Backup and restore disposable PostgreSQL fixture
+        shell: bash
+        run: |
+          docker exec "${{ job.services.postgres.id }}" bash -euc '
+            pg_dump -U postgres -d postgres -Fc -n auth -n ff_private -n public -f /tmp/ff_m0_fixture.dump
+            sha256sum /tmp/ff_m0_fixture.dump
+            createdb -U postgres ff_restore_ci
+            pg_restore -U postgres --no-owner --exit-on-error -d ff_restore_ci /tmp/ff_m0_fixture.dump
+          '
+          docker exec -i "${{ job.services.postgres.id }}" psql -v ON_ERROR_STOP=1 -U postgres -d ff_restore_ci < database/tests/0004_restore_validation.sql
 
   web:
     runs-on: ubuntu-latest
