@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/footballforecast/forecast-v1.schema.json",
+  "title": "FootballForecast Forecast v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "match_id", "predicted_at", "as_of_at", "model_version", "dataset_sha256", "home_win", "draw", "away_win"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "match_id": {"type":"string", "format":"uuid"},
+    "predicted_at": {"type":"string", "format":"date-time"},
+    "as_of_at": {"type":"string", "format":"date-time"},
+    "model_version": {"type":"string", "minLength":1},
+    "dataset_sha256": {"type":"string", "pattern":"^[a-f0-9]{64}$"},
+    "home_win": {"type":"number", "minimum":0, "maximum":1},
+    "draw": {"type":"number", "minimum":0, "maximum":1},
+    "away_win": {"type":"number", "minimum":0, "maximum":1},
+    "expected_home": {"type":"number", "minimum":0},
+    "expected_away": {"type":"number", "minimum":0},
+    "warnings": {"type":"array", "items":{"type":"string"}}
+  },
+  "$comment": "Cross-field probability sum, as-of, and append-only constraints enforced in application+DB, not JSON Schema."
+}

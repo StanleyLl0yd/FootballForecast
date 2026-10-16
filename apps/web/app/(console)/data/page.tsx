@@ -1,0 +1,2 @@
+import {EmptyState,PageHeading} from '@/components/empty-state';
+export default function Page(){return <><PageHeading eyebrow="DATA CENTER" title="Центр данных" subtitle="Источники, лицензии, покрытие сезонов, временная корректность и синхронизация."/><section className="panel"><EmptyState title="Источники ещё не подключены" description="Поставщики проходят проверку лицензий и исторического покрытия. Автоматический импорт выключен."/></section></>}

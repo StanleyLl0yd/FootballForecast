@@ -1,0 +1,38 @@
+# Roadmap
+
+Updated 2026-10-16. Milestone acceptance requires verification, not code presence.
+
+## M0 - Architecture & Web Foundation (OPEN)
+- [x] Research preliminary RPL data source coverage and terms; candidates NOT approved.
+- [x] Local monorepo and Next.js browser-first design with navigation and honest empty states.
+- [x] Initial Python package and deterministic Poisson/scoring math primitives.
+- [x] Initial RLS database schema and append-only prediction tables (NOT applied).
+- [x] Next.js Supabase OAuth owner-gate implementation (NOT integration-tested).
+- [x] Basic CI, Gitleaks v3, npm audit and Dependabot definitions (NOT executed remotely).
+- [x] Create public GitHub repo (`StanleyLl0yd/FootballForecast`).
+- [ ] Publish M0 source through reviewed PR (remote state to be verified).
+- [ ] Generate and commit npm lock file on network-enabled runner.
+- [ ] Run full web lint, typecheck, build, OAuth E2E and DB policy tests.
+- [ ] Configure Supabase, GitHub OAuth and owner stable provider ID.
+- [ ] Apply and test migration, permissions and backup.
+- [ ] Connect and verify Vercel deployment, production auth, browser compatibility.
+- [ ] Confirm data acquisition and storage/distribution permissions in writing where necessary.
+- [ ] Create GitHub issues, enforce branch protection, and verify CI/security exact-head + post-merge.
+
+## M1 - Data Foundation (BLOCKED by M0 acceptance)
+Licensed adapters, provenance, normalized seasons and teams, timestamp checks, data center and sync.
+
+## M2 - Statistical Baselines
+Train Poisson/Dixon-Coles/Elo on proven historical data; strict chronological walk-forward; view results in browser.
+
+## M3 - Calibration & Evaluation
+Independent calibration validation, Log Loss, Brier, RPS, uncertainty and baseline comparisons.
+
+## M4 - Production Forecasting
+Immutable revisions, scheduled match updates, browser-triggered jobs, Zenit reports only for corresponding RPL fixtures, reliable monitoring.
+
+## M5 - Advanced Models
+CatBoost, validated ensembles, champion/challenger and market comparison if data and rights permit.
+
+## M6 - Multiple Leagues
+Generic adapters and independently evaluated league-specific workflows.
