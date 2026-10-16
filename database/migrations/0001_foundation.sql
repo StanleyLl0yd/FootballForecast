@@ -147,7 +147,7 @@ $$;
 -- Once evaluation exists, the official recorded outcome must remain consistent.
 -- Corrections will require a versioned fixture revision (not implemented at M0).
 create or replace function public.ff_guard_match_update() returns trigger
-language plpgsql set search_path = '' as $
+language plpgsql set search_path = '' as $$
 begin
   if exists (select 1 from public.ff_forecasts where match_id = old.id)
      and (new.season_id is distinct from old.season_id
@@ -167,7 +167,7 @@ begin
   end if;
   return new;
 end;
-$;
+$$;
 
 drop trigger if exists ff_matches_integrity on public.ff_matches;
 create trigger ff_matches_integrity before update on public.ff_matches
