@@ -39,6 +39,9 @@ jobs:
             pg_dump -U postgres -d postgres -Fc -n auth -n ff_private -n public -f /tmp/ff_m0_fixture.dump
             sha256sum /tmp/ff_m0_fixture.dump
             createdb -U postgres ff_restore_ci
+            # Fresh PostgreSQL databases include public by default; drop that empty schema
+            # so the backup can restore its original ACLs and ownership cleanly.
+            psql -U postgres -d ff_restore_ci -v ON_ERROR_STOP=1 -c "DROP SCHEMA public;"
             pg_restore -U postgres --no-owner --exit-on-error -d ff_restore_ci /tmp/ff_m0_fixture.dump
           '
           docker exec -i "${{ job.services.postgres.id }}" psql -v ON_ERROR_STOP=1 -U postgres -d ff_restore_ci < database/tests/0004_restore_validation.sql
