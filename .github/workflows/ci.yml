@@ -52,3 +52,17 @@ jobs:
         env:
           FF_BROWSER_SMOKE: '1'
         run: npm run smoke:auth
+
+  production-smoke:
+    # Diagnostic canary only; external service outages must not bypass or
+    # deadlock the six required exact-head PR checks.
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: {node-version: '22'}
+      - name: Check deployed public site from outside Vercel
+        run: node scripts/smoke-production.mjs

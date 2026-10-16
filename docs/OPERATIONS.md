@@ -12,3 +12,9 @@ Use Europe/Moscow; record actual start times and never assume GitHub cron execut
 Do not substitute Cup/friendly fixtures. Machine JSON and Markdown exports must be versioned. ChatGPT delivery cannot be claimed without an implemented and tested connector/delivery mechanism.
 
 Before production: design jobs table, idempotency, allowlisted dispatch, rate limits, trusted worker identity, safe callback/polling, retriable errors, artifact durability, quotas and operator authorization. Tests to verify restoring last good model and immutable forecast revisions.
+
+## External production verification (M0)
+
+The existing CI workflow runs a diagnostic `production-smoke` job from a GitHub-hosted runner, calling `https://footballforecast.vercel.app` without tokens. It checks HTTP health/security headers, public dashboard and matches pages, server-side anonymous Supabase REST connectivity (the dashboard's verified-data banner), protection of `/admin`, and public archive/data screens. Run locally with `npm run smoke:production` where the domain is reachable. **This job is non-gating** (`continue-on-error: true`), so a hosting outage does not make unrelated code PRs impossible to merge. Its outcome/logs must still be inspected before claiming production acceptance.
+
+It is not a Russia-network reachability test, a browser UI E2E, an authenticated account test, an RLS write-attack test, or a guarantee that the deployment SHA matches the PR SHA. Confirm Vercel's deployed exact SHA independently. Never add a service role or provider-paid API credential to this smoke.
