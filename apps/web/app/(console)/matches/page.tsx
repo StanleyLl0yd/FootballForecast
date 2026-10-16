@@ -1,0 +1,2 @@
+import {EmptyState,PageHeading} from '@/components/empty-state';
+export default function Page(){return <><PageHeading eyebrow="МАТЧИ" title="Матчи и прогнозы" subtitle="Каталог матчей, вероятности П1 / Х / П2, ожидаемые голы и точные счёты."/><section className="panel"><EmptyState title="Каталог пуст" description="Матчи появятся после импорта верифицированного календаря РПЛ. Демонстрационные результаты скрыты."/></section></>}

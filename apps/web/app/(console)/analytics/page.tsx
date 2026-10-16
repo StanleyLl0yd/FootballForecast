@@ -1,0 +1,2 @@
+import {EmptyState,PageHeading} from '@/components/empty-state';
+export default function Page(){return <><PageHeading eyebrow="ANALYTICS" title="Качество прогнозов" subtitle="Log Loss, Brier Score, RPS и независимая оценка калибровки."/><section className="panel"><EmptyState title="Нет исторических испытаний" description="Размеры выборок и доверительные интервалы будут показаны после walk-forward backtesting."/></section></>}

@@ -1,0 +1,2 @@
+import {EmptyState,PageHeading} from '@/components/empty-state';
+export default function Page(){return <><PageHeading eyebrow="ARCHIVE" title="Архив прогнозов" subtitle="Неизменяемые предматчевые прогнозы, ревизии, хэши и постматчевые оценки."/><section className="panel"><EmptyState title="Архив пуст" description="Ни один прогноз пока не опубликован. Новые ревизии никогда не перезаписывают прежние."/></section></>}

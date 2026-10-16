@@ -1,0 +1,2 @@
+import {EmptyState,PageHeading} from '@/components/empty-state';
+export default function Page(){return <><PageHeading eyebrow="MODEL LAB" title="Лаборатория моделей" subtitle="Обучение, тестирование, калибровка, сравнение и безопасная активация моделей."/><section className="panel"><EmptyState title="Модели ещё не обучены" description="Обучение недоступно, пока отсутствуют лицензированный датасет и контролируемый исполнитель задач."/></section></>}
