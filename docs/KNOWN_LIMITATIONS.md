@@ -1,7 +1,7 @@
 # Known limitations - M0
 
 - Public source is maintained on a protected `main` branch. CI, Security and CodeQL passed after the initial M0 PRs. No deployment or database instance is verified.
-- A version 3 npm lockfile was generated and `npm ci` smoke-tested on a GitHub-hosted Node 22 runner; CI/Security now use `npm ci`. Remote web lint/typecheck/build previously passed; browser E2E and local registry access are still unavailable.
+- A version 3 npm lockfile was generated and `npm ci` smoke-tested on a GitHub-hosted Node 22 runner; CI/Security now use `npm ci`. Remote web lint/typecheck/build previously passed; built-server HTTP smoke runs in CI, but real browser and OAuth E2E remain unavailable; local registry access is still unavailable.
 - Auth code prepared but not tested against real Supabase GitHub identities, callback allowlist, session expiry, or negative RLS policies.
 - OAuth ownership check examines the verified GitHub provider identity `provider_id`/`sub`; this must be tested with real response shape before opening production access.
 - Core Poisson accepts input intensities; it has not learned team strengths, calibrated outcomes, or produced actual match forecasts.

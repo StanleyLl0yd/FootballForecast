@@ -14,6 +14,7 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Generate and commit a workspace npm lockfile on a network-enabled GitHub runner; install with `npm ci` in CI/Security.
 - [x] Run remote web lint, TypeScript typecheck and production build.
 - [ ] Run real browser smoke, OAuth E2E and Supabase-specific authorization tests.
+- [x] Add built Next.js production HTTP smoke: unconfigured/invalid-owner environments, protected routes, health and callback denial.
 - [x] Exercise the M0 migration and negative RLS / forecast immutability checks against disposable PostgreSQL 16 in CI.
 - [ ] Configure Supabase, GitHub OAuth and owner stable provider ID.
 - [ ] Apply and test migration, permissions and backup.
