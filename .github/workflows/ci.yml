@@ -46,5 +46,7 @@ jobs:
       - name: Reject non-owner GitHub identity fixtures
         run: npm run test:auth
       - run: npm run lint && npm run typecheck && npm run build
-      - name: Fail-closed production server HTTP smoke
+      - name: Fail-closed production server and Chrome browser smoke
+        env:
+          FF_BROWSER_SMOKE: '1'
         run: npm run smoke:auth

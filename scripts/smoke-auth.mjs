@@ -1,15 +1,19 @@
 // Node 22 HTTP integration smoke for a built Next.js production server.
 // No Supabase account, OAuth token, real user or external network access needed.
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { spawn, execFile } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { createServer } from 'node:net';
-import { resolve } from 'node:path';
+import { resolve, join } from 'node:path';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { promisify } from 'node:util';
 import { setTimeout as delay } from 'node:timers/promises';
 
 const require = createRequire(import.meta.url);
 const appDir = resolve('apps/web');
 const nextBin = require.resolve('next/dist/bin/next');
+const execFileAsync = promisify(execFile);
 
 async function availablePort() {
   const server = createServer();
@@ -17,6 +21,35 @@ async function availablePort() {
   const port = server.address().port;
   await new Promise((ok, fail) => server.close(err => err ? fail(err) : ok()));
   return port;
+}
+
+async function checkChromeBrowser(origin) {
+  // ubuntu-24.04 GitHub-hosted runners include Google Chrome.
+  // Optional locally: FF_BROWSER_SMOKE=1 npm run smoke:auth.
+  const profile = await mkdtemp(join(tmpdir(), 'footballforecast-chrome-'));
+  const screenshot = join(profile, 'mobile-login.png');
+  const flags = [
+    '--headless=new', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage',
+    '--disable-background-networking', '--no-first-run', '--no-default-browser-check',
+    `--user-data-dir=${profile}`, '--virtual-time-budget=2000',
+  ];
+  try {
+    const options = {timeout: 30000, maxBuffer: 5_000_000};
+    const {stdout} = await execFileAsync(process.env.FF_BROWSER_BIN || 'google-chrome',
+      [...flags, '--dump-dom', `${origin}/dashboard`], options);
+    assert.match(stdout, /Требуется настройка платформы/,
+      'Headless Chrome must follow the protected dashboard redirect to setup');
+    await execFileAsync(process.env.FF_BROWSER_BIN || 'google-chrome',
+      [...flags, '--window-size=390,844', `--screenshot=${screenshot}`, `${origin}/login`],
+      options);
+    const png = await readFile(screenshot);
+    assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+    assert.ok(png.readUInt32BE(16) >= 320 && png.readUInt32BE(20) >= 400,
+      'Chrome must produce a nonempty mobile-sized screenshot');
+    console.log('PASS real headless Chrome: protected redirect and mobile viewport screenshot');
+  } finally {
+    await rm(profile, {recursive: true, force: true});
+  }
 }
 
 async function testServer(name, overrides) {
@@ -72,6 +105,9 @@ async function testServer(name, overrides) {
     assert.equal(setup.status, 200);
     assert.match(await setup.text(), /Требуется настройка платформы/);
     console.log(`PASS ${name}: 7 protected routes fail closed, health and auth/setup endpoints safe`);
+    if (process.env.FF_BROWSER_SMOKE === '1' && name === 'no Supabase configuration') {
+      await checkChromeBrowser(origin);
+    }
   } finally {
     if (proc.exitCode === null) {
       try {
@@ -89,4 +125,4 @@ await testServer('invalid owner ID with placeholder Supabase fields', {
   APP_OWNER_GITHUB_ID: 'not-a-numeric-github-id',
   APP_BASE_URL: 'https://example.invalid',
 });
-console.log('M0 HTTP production-server auth smoke complete. Real OAuth and browser E2E remain pending.');
+console.log('M0 HTTP production-server auth smoke complete. Live OAuth and cross-browser E2E remain pending.');

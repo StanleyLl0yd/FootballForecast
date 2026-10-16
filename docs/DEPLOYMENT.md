@@ -12,4 +12,4 @@
 
 Health endpoint `/api/health` reports only `setup_required` or `configured`, not provider secrets, and it is NOT a DB/live forecasting health probe.
 
-For a credentials-free smoke of the built Next.js production server, run `npm run build && npm run smoke:auth` from the repo root. This exercises fail-closed server routes, callback refusal, basic security headers and cache behaviour with no valid Supabase setup. It does not replace real OAuth, Supabase RLS, real-browser or deployment tests.
+For a credentials-free smoke of the built Next.js production server, run `npm run build && npm run smoke:auth` from the repo root. On Linux with Chrome installed, use `FF_BROWSER_SMOKE=1 npm run smoke:auth` for a real headless browser redirect and mobile-viewport rendering smoke (required in CI). This exercises fail-closed server routes, callback refusal, basic security headers and cache behaviour with no valid Supabase setup. It does not replace real OAuth, Supabase RLS, real-browser or deployment tests.
