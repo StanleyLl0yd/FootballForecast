@@ -22,6 +22,28 @@ begin
 end;
 $$;
 
+\\echo 'Supabase least-privilege contracts: helper is private and browser SQL grants are read-only'
+select 1 / case when
+  to_regprocedure('public.ff_is_authorized()') is null
+  and to_regprocedure('ff_private.ff_is_authorized()') is not null
+  and has_schema_privilege('authenticated','ff_private','USAGE')
+  and not has_schema_privilege('anon','ff_private','USAGE')
+  and has_function_privilege('authenticated','ff_private.ff_is_authorized()','EXECUTE')
+  and not has_function_privilege('anon','ff_private.ff_is_authorized()','EXECUTE')
+then 1 else 0 end as private_authorization_helper;
+select 1 / case when
+  has_table_privilege('authenticated','public.ff_matches','SELECT')
+  and has_table_privilege('authenticated','public.ff_forecasts','SELECT')
+  and not has_table_privilege('anon','public.ff_matches','SELECT')
+  and not has_table_privilege('authenticated','public.ff_access_grants','INSERT')
+  and not has_table_privilege('authenticated','public.ff_matches','UPDATE')
+  and not has_table_privilege('authenticated','public.ff_forecast_outcomes','DELETE')
+then 1 else 0 end as browser_roles_read_only_by_grant;
+select 1 / case when
+  (select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+   where n.nspname='public' and p.prosecdef and p.proname like 'ff_%')=0
+then 1 else 0 end as no_public_security_definer_helpers;
+
 -- Hard-coded identifiers are CI-only fixtures, not actual users, matches or predictions.
 insert into auth.users (id) values
  ('00000000-0000-0000-0000-000000000001'),
