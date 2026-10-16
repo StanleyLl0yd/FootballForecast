@@ -2,7 +2,17 @@
   "name": "football-forecast",
   "private": true,
   "version": "0.1.0",
-  "workspaces": ["apps/web"],
-  "scripts": {"dev": "npm run dev --workspace @footballforecast/web", "build": "npm run build --workspace @footballforecast/web", "lint": "npm run lint --workspace @footballforecast/web", "typecheck": "npm run typecheck --workspace @footballforecast/web"},
-  "engines": {"node": ">=20.9.0"}
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @footballforecast/web",
+    "build": "npm run build --workspace @footballforecast/web",
+    "lint": "npm run lint --workspace @footballforecast/web",
+    "typecheck": "npm run typecheck --workspace @footballforecast/web",
+    "smoke:auth": "node scripts/smoke-auth.mjs"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
 }
