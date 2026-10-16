@@ -1,2 +1,7 @@
+import {requireOwner} from '@/lib/auth';
 import {PageHeading} from '@/components/empty-state';
-export default function Page(){return <><PageHeading eyebrow="ADMIN" title="Состояние системы" subtitle="Безопасная настройка интеграций и диагностическая информация без раскрытия секретов."/><section className="panel informative"><h2>Начальная конфигурация M0</h2><p>Авторизация владельца: GitHub OAuth через Supabase. Включены server-side gate и проверка стабильного GitHub ID.</p><p>Импорт, обучение и управляемые задания не активируются до проверки прав доступа, RLS, квот и источников данных.</p><span className="status-chip">Подготовка</span></section></>}
+export const dynamic = 'force-dynamic';
+export default async function Page(){
+  await requireOwner();
+  return <><PageHeading eyebrow="ADMIN" title="Состояние системы" subtitle="Административный раздел доступен только владельцу."/><section className="panel informative"><h2>M0: разработка</h2><p>Импорт, обучение и управление источниками остаются выключенными до разрешения прав и отдельной проверки доступа.</p></section></>;
+}

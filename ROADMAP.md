@@ -6,8 +6,8 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Research preliminary RPL data source coverage and terms; candidates NOT approved.
 - [x] Local monorepo and Next.js browser-first design with navigation and honest empty states.
 - [x] Initial Python package and deterministic Poisson/scoring math primitives.
-- [x] Initial RLS database schema and append-only prediction tables (NOT applied).
-- [x] Next.js Supabase OAuth owner-gate implementation (NOT integration-tested).
+- [x] Initial RLS database schema and append-only prediction tables (applied to Free Supabase Frankfurt, with post-deployment verification pending).
+- [x] Public read-only dashboard and protected administrator-only route; optional owner OAuth not yet integrated.
 - [x] Basic CI, Gitleaks v3, npm audit, Dependabot and CodeQL verified on the initial exact-main commit.
 - [x] Create public GitHub repo (`StanleyLl0yd/FootballForecast`).
 - [x] Publish M0 source through reviewed PR #1; initial exact-main CI, Security and CodeQL PASS.
