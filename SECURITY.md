@@ -18,7 +18,7 @@ M0 is not production-ready. Report vulnerabilities privately to the repository o
 - Unauthorized OAuth accounts: enforce stable provider ID server-side, test negative cases and session refresh in a real Supabase project.
 - CSRF, redirect forgery and session fixation: OAuth uses Supabase PKCE; redirect is fixed, no user-provided callback URL. Verify in E2E. Add explicit origin checks for all future mutable endpoints.
 - RLS/IDOR: enforce RLS for all SQL tables; test with viewer, operator, administrator and unassigned accounts against direct REST APIs.
-- Supply chain: CI/Gitleaks/CodeQL run on pull requests and `main`; the production-dependency audit is enforced while the full developer dependency audit reports an unresolved upstream advisory. Generate the npm lockfile and switch to `npm ci` for reproducible CI; re-check transitive dependencies and Python packages.
+- Supply chain: CI/Gitleaks/CodeQL run on pull requests and `main`; the production-dependency audit is enforced while the full developer dependency audit reports an unresolved upstream advisory. Use the committed npm lockfile and `npm ci` in CI for reproducible installs; continue reviewing transitive dependencies and Python packages.
 - SSR auth response cache: all authorized pages are dynamic and the session-refreshing proxy marks responses private/no-store. Verify CDN caching on Vercel.
 - Data source usage: no scraping FootyStats site or third-party copyrighted content without permission.
 - Model artifact ingestion: untrusted pickle/joblib and executable files prohibited.

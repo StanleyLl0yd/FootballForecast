@@ -23,6 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 verified 2026-10-16
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4 verified 2026-10-16
-        with: {node-version: '22'}
-      - run: npm install --no-audit --no-fund # LOCKFILE TODO: switch to npm ci after committing package-lock.json
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
       - run: npm run lint && npm run typecheck && npm run build
