@@ -19,12 +19,12 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Run unconfigured Next.js browser smoke in real headless Chrome on CI.
 - [x] Unit-test stable GitHub identity decisions and negative non-owner/malformed provider cases in CI.
 - [x] Add built Next.js production HTTP smoke: unconfigured/invalid-owner environments, protected routes, health and callback denial.
-- [x] Exercise the M0 migration and negative RLS / forecast immutability checks against disposable PostgreSQL 16 in CI.
+- [x] Exercise the M0 migration and negative RLS / forecast immutability checks against disposable PostgreSQL 17 in CI.
 - [x] Configure public Supabase read-only environment; ordinary visitors need no registration.
 - [ ] Configure and test optional GitHub owner OAuth only if administrative login is enabled later.
 - [x] Apply foundation/public-read migrations to Free Frankfurt Supabase and verify RLS/security advisors.
 - [ ] Verify REST negative-write attempts with a real publishable key and backup/restore against an independently isolated real Free/PostgreSQL 17 instance.
-- [x] Add synthetic PostgreSQL 16 pg_dump/pg_restore round-trip proof in CI, including RLS, data and immutable-archive triggers.
+- [x] Add synthetic PostgreSQL 17 pg_dump/pg_restore round-trip proof in CI, including RLS, data and immutable-archive triggers.
 - [x] Apply and verify all three FK indexes; performance advisor no longer reports unindexed FKs.
 - [x] Deploy public Vercel Hobby to Frankfurt from protected GitHub main and verify anonymous pages/admin redirect from GitHub Actions.
 - [ ] Verify reachability from Russian networks without VPN and Safari/Firefox/Edge browser behavior.
@@ -56,3 +56,5 @@ Generic adapters and independently evaluated league-specific workflows.
 - [x] Read published forecast archive (latest 20) through bounded anonymous REST, including revisions, model identity and SHA-256; avoid fictitious rows and distinguish upstream outages.
 
 - [x] Generate TypeScript schema definitions from Frankfurt Supabase and type anonymous public REST clients; validate through required web typecheck/build.
+
+- [x] Align disposable PostgreSQL SQL/RLS/integrity and dump/restore CI with the real Supabase PostgreSQL 17 major release.
