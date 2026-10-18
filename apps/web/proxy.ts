@@ -5,7 +5,8 @@ export async function proxy(request: NextRequest) {
   let response = NextResponse.next({request});
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) return response;
+  // M0 public visitor paths bypass all session-refresh logic.
+  if (!url || !key || !process.env.APP_OWNER_GITHUB_ID) return response;
   const client = createServerClient(url, key, {
     cookies: {
       getAll() { return request.cookies.getAll(); },
@@ -20,4 +21,5 @@ export async function proxy(request: NextRequest) {
   response.headers.set('Cache-Control', 'private, no-store');
   return response;
 }
-export const config = { matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'] };
+// Next.js requires a statically analyzable matcher. Only /admin needs OAuth refresh.
+export const config = { matcher: ['/admin/:path*'] };

@@ -10,3 +10,5 @@
 - Vercel deployment status and canary success do not establish availability under Russian operator filtering, future scalability or legality of storage/processing for possible future Russian user accounts.
 
 M0 remains OPEN. M1 may not start until the owner accepts M0.
+
+- Optional OAuth token refresh is scoped to administrator requests; ordinary visitors do not need an auth session. Real owner OAuth E2E remains deferred.
