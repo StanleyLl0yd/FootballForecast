@@ -60,6 +60,8 @@ jobs:
         run: npm run test:auth
       - name: Validate anonymous Supabase REST integration without credentials
         run: npm run test:public-data
+      - name: Validate public forecast archive schema and read-only REST
+        run: npm run test:archive
       - run: npm run lint && npm run typecheck && npm run build
       - name: Fail-closed production server and Chrome browser smoke
         env:

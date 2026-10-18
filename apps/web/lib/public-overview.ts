@@ -23,6 +23,19 @@ function teamName(value:unknown):string|null {
   return typeof name === 'string' && name.trim().length>0 ? name : null;
 }
 
+// Shared read-only client for public server components only, never service_role.
+export function createAnonymousReadClient(
+  fetchImpl:typeof fetch = fetch,
+  env:Record<string,string|undefined> = process.env
+) {
+  if (!publicSettingsConfigured(env)) throw new Error('Invalid Supabase project URL');
+  return createClient(env.NEXT_PUBLIC_SUPABASE_URL!,env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,{
+    auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},
+    global:{fetch:(input,init)=>fetchImpl(input,{...init,cache:'no-store',
+      signal:AbortSignal.timeout(6000)})}
+  });
+}
+
 // fetchImpl injection keeps live HTTP contract testable without contacting a vendor.
 // NEXT_PUBLIC values are publishable by design, not a service secret.
 export async function readPublicOverview(
@@ -33,12 +46,7 @@ export async function readPublicOverview(
   const key=env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) return {state:'not_configured',matches:null,forecasts:null,fixtures:[]};
   try {
-    if (!publicSettingsConfigured(env)) throw new Error('Invalid Supabase project URL');
-    const client=createClient(url,key,{
-      auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},
-      global:{fetch:(input,init)=>fetchImpl(input,{...init,cache:'no-store',
-        signal:AbortSignal.timeout(6000)})}
-    });
+    const client=createAnonymousReadClient(fetchImpl,env);
     const [matchCount,forecastCount,upcoming]=await Promise.all([
       client.from('ff_matches').select('id',{count:'exact',head:true}),
       client.from('ff_forecasts').select('id',{count:'exact',head:true}),

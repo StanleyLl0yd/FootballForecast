@@ -50,8 +50,18 @@ const location=new URL(admin.headers.get('location')??'',origin);
 assert.equal(location.origin,origin,'admin redirects must stay same-origin');
 assert.ok(['/login','/setup'].includes(location.pathname),'admin must redirect to setup/login');
 
-for (const path of ['/archive','/data']) {
-  const res=await get(path);
-  assert.equal(res.status,200, path+' should be public');
+const archive=await get('/archive');
+assert.equal(archive.status,200,'public archive must render');
+const archivePage=await archive.text();
+// PR smoke checks currently deployed main, which predates the archive feature.
+// Post-merge production smoke will exercise the new read-only archive.
+if(archivePage.includes('История публикаций')) {
+  assert.doesNotMatch(archivePage,/Архив временно недоступен/,
+    'archive database errors must not masquerade as empty records');
+} else {
+  assert.match(archivePage,/Архив пуст/,
+    'older production must still render accurate empty archive');
 }
+const data=await get('/data');
+assert.equal(data.status,200,'data center must remain public');
 console.log('PASS: live production HTTP health, public Supabase reads, protected admin, archive/data');
