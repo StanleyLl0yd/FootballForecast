@@ -14,3 +14,5 @@ M0 remains OPEN. M1 may not start until the owner accepts M0.
 - Optional OAuth token refresh is scoped to administrator requests; ordinary visitors do not need an auth session. Real owner OAuth E2E remains deferred.
 
 - Public archive now queries the last 20 immutable predictions with timestamp, model, hash and 1X2 probabilities; evaluation charts, match details, source rights and actual historical forecasts remain missing. The real archive has zero records until a licensed pipeline exists.
+
+- Automated headless Firefox and Edge browser diagnostics are configured on GitHub Ubuntu 24.04. Their successful execution must be confirmed separately; they do not substitute Safari or real Russian ISP connectivity.
