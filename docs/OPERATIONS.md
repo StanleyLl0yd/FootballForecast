@@ -22,3 +22,7 @@ It is not a Russia-network reachability test, a browser UI E2E, an authenticated
 ## Cross-browser diagnostics (M0)
 
 An independent, non-gating `browser-compatibility` CI job exercises the published site with stable Firefox + Edge installed on the Ubuntu 24.04 runner, using Edge headless DOM/screenshot and native Firefox WebDriver/geckodriver. It checks public dashboard data, blocked `/admin` and mobile-sized screenshots. It runs without provider secrets and requires no browser npm packages. The result must be reviewed in workflow job logs. A diagnostic failure does not waive M0 browser acceptance and does not change six strict PR checks. Safari and connectivity from real Russian operators remain separate manual acceptance tests.
+
+## macOS Safari browser diagnostic (M0)
+
+The non-gating `safari-compatibility` job runs on a **standard** GitHub-hosted `macos-15` runner (free for public repositories). The job enables built-in stable Safari WebDriver with `sudo safaridriver --enable`, then uses pure Node WebDriver HTTP calls to verify the public dashboard, unauthenticated admin denial and a PNG screenshot. No Selenium/Playwright install, proprietary credentials, custom paid runner or user account. Failure remains visible and must be investigated before claiming Safari acceptance. Real ISP connectivity from Russia still requires separate testing.
