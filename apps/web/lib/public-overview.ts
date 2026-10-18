@@ -1,4 +1,5 @@
 import {createClient} from '@supabase/supabase-js';
+import type {Database} from './database.types';
 
 // Only public SELECT operations. No cookies, user sessions or service-role keys.
 export type Fixture = {id:string; kickoffAt:string; home:string; away:string; status:string};
@@ -29,7 +30,7 @@ export function createAnonymousReadClient(
   env:Record<string,string|undefined> = process.env
 ) {
   if (!publicSettingsConfigured(env)) throw new Error('Invalid Supabase project URL');
-  return createClient(env.NEXT_PUBLIC_SUPABASE_URL!,env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,{
+  return createClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL!,env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,{
     auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},
     global:{fetch:(input,init)=>fetchImpl(input,{...init,cache:'no-store',
       signal:AbortSignal.timeout(6000)})}
