@@ -95,3 +95,19 @@ jobs:
         with: {node-version: '22'}
       - name: Verify production on stable Firefox and Microsoft Edge
         run: node scripts/smoke-cross-browser.mjs
+
+  safari-compatibility:
+    # macOS standard hosted runners are free for public repositories.
+    # Separate non-gating real Safari/WebKit production diagnostic.
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: macos-15
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Enable standard Safari WebDriver
+        run: sudo /usr/bin/safaridriver --enable
+      - name: Check live anonymous public pages and denied administrator path
+        run: node scripts/smoke-safari.mjs

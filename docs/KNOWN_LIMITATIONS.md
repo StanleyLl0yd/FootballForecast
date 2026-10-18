@@ -16,3 +16,5 @@ M0 remains OPEN. M1 may not start until the owner accepts M0.
 - Public archive now queries the last 20 immutable predictions with timestamp, model, hash and 1X2 probabilities; evaluation charts, match details, source rights and actual historical forecasts remain missing. The real archive has zero records until a licensed pipeline exists.
 
 - Automated headless Firefox and Edge browser diagnostics are configured on GitHub Ubuntu 24.04. Their successful execution must be confirmed separately; they do not substitute Safari or real Russian ISP connectivity.
+
+- Safari native WebDriver on standard macOS runner is now configured as a non-gating diagnostic; success must be verified in exact GitHub job logs. Safari screenshot tests do not prove Russian ISP reachability.
