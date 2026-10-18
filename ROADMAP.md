@@ -51,3 +51,5 @@ CatBoost, validated ensembles, champion/challenger and market comparison if data
 
 ## M6 - Multiple Leagues
 Generic adapters and independently evaluated league-specific workflows.
+
+- [x] Read published forecast archive (latest 20) through bounded anonymous REST, including revisions, model identity and SHA-256; avoid fictitious rows and distinguish upstream outages.

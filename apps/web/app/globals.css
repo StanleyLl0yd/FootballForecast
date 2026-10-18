@@ -25,3 +25,13 @@
 @media(max-width:720px){.topbar-actions{display:flex!important}.topbar-actions{font-size:0}.topbar-actions .theme-toggle{font-size:12px}}
 
 .fixture-list{list-style:none;margin:20px 0 0;padding:0}.fixture-list li{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid var(--line);font-size:13px}.fixture-list li:last-child{border-bottom:0}.fixture-list span{color:var(--muted);font-size:12px;white-space:nowrap}@media(max-width:720px){.fixture-list li{align-items:flex-start;flex-direction:column}.fixture-list span{white-space:normal}}
+
+.forecast-list{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:14px}
+.forecast-list li{border:1px solid var(--line);border-radius:12px;padding:18px}
+.forecast-record-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.forecast-record-head span,.forecast-provenance{font-size:12px;color:var(--muted)}
+.forecast-probabilities{display:flex;flex-wrap:wrap;gap:18px;margin:16px 0}
+.forecast-probabilities span{display:flex;gap:8px;align-items:center;font-size:13px}
+.forecast-probabilities strong{font-variant-numeric:tabular-nums}
+.forecast-provenance{margin:0;overflow-wrap:anywhere}
+@media(max-width:720px){.forecast-record-head{flex-direction:column;align-items:flex-start}.forecast-probabilities{gap:14px}}

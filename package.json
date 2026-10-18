@@ -13,7 +13,8 @@
     "smoke:auth": "node scripts/smoke-auth.mjs",
     "test:auth": "node --experimental-strip-types --test apps/web/tests/owner-identity.test.mjs",
     "test:public-data": "node --experimental-strip-types --test apps/web/tests/public-overview.test.mjs",
-    "smoke:production": "node scripts/smoke-production.mjs"
+    "smoke:production": "node scripts/smoke-production.mjs",
+    "test:archive": "node --experimental-strip-types --test apps/web/tests/public-archive.test.mjs"
   },
   "engines": {
     "node": ">=20.9.0"
