@@ -31,3 +31,7 @@ The public browser never receives a service-role key or writes directly to Supab
 No public accounts, user-data profile store, bulk data ingestion, forecasting worker, licensed-feed subscription, production model claims or paid infrastructure. M1 stays blocked until M0 is explicitly accepted.
 
 Contracts remain under `packages/contracts/`; full archival, feature and evaluation semantics are specified in `docs/` and require tests before activation.
+
+### Auth middleware scope (M0)
+
+Next.js `proxy.ts` is matched only for `/admin/:path*`. All public pages, health checks and ordinary visitor requests bypass Supabase OAuth claims refresh, avoiding unnecessary auth overhead and cookie processing. An enabled administrator must still pass independent server-side `requireOwner()` identity verification. The GitHub OAuth capability itself remains disabled until separately approved.

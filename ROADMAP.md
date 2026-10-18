@@ -8,6 +8,7 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Initial Python package and deterministic Poisson/scoring math primitives.
 - [x] Initial RLS database schema and append-only prediction tables (applied to Free Supabase Frankfurt, with post-deployment verification pending).
 - [x] Public read-only dashboard and protected administrator-only route; optional owner OAuth not yet integrated.
+- [x] Keep optional OAuth middleware out of public routes and add regression tests for bad visitor cookies.
 - [x] Basic CI, Gitleaks v3, npm audit, Dependabot and CodeQL verified on the initial exact-main commit.
 - [x] Create public GitHub repo (`StanleyLl0yd/FootballForecast`).
 - [x] Publish M0 source through reviewed PR #1; initial exact-main CI, Security and CodeQL PASS.

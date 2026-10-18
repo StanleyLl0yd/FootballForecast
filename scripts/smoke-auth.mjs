@@ -99,11 +99,18 @@ async function testServer(name, overrides) {
     assert.deepEqual(await callback.json(), {error: 'setup_required'});
     const login = await get('/login');
     assert.equal(login.status, 200);
-    assert.match(await login.text(), /Сначала подключить Supabase/);
+    assert.match(await login.text(), /Административный вход пока не настроен/);
     const setup = await get('/setup');
     assert.equal(setup.status, 200);
-    assert.match(await setup.text(), /Требуется настройка платформы/);
-    console.log(`PASS ${name}: six public routes accessible, admin still protected, health and callback safe`);
+    assert.match(await setup.text(), /Административный вход пока не настроен/);
+    for (const path of ['/dashboard','/matches','/archive']) {
+      const response = await fetch(origin + path, {
+        headers:{cookie:'sb-fake-auth-token=not-a-jwt'},
+        redirect:'manual',signal:AbortSignal.timeout(5000)
+      });
+      assert.equal(response.status,200,`${name}: ${path} ignores corrupt optional auth cookies`);
+    }
+    console.log(`PASS ${name}: public pages including corrupt cookies, admin still protected`);
     if (process.env.FF_BROWSER_SMOKE === '1' && name === 'no Supabase configuration') {
       await checkChromeBrowser(origin);
     }
