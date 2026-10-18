@@ -14,7 +14,8 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Publish M0 source through reviewed PR #1; initial exact-main CI, Security and CodeQL PASS.
 - [x] Generate and commit a workspace npm lockfile on a network-enabled GitHub runner; install with `npm ci` in CI/Security.
 - [x] Run remote web lint, TypeScript typecheck and production build.
-- [ ] Run Safari/Firefox/Edge browser tests, restore drill, and direct negative Supabase REST tests; real OAuth E2E deferred until admin login is approved.
+- [ ] Run Safari browser tests, real PostgreSQL 17 restore, and direct negative Supabase REST checks; optional OAuth E2E deferred until needed.
+- [ ] Validate Firefox and Edge headless cross-browser checks from GitHub Ubuntu 24.04 diagnostic job (results recorded after execution).
 - [x] Run unconfigured Next.js browser smoke in real headless Chrome on CI.
 - [x] Unit-test stable GitHub identity decisions and negative non-owner/malformed provider cases in CI.
 - [x] Add built Next.js production HTTP smoke: unconfigured/invalid-owner environments, protected routes, health and callback denial.
