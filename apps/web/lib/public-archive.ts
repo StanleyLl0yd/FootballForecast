@@ -1,4 +1,4 @@
-import {createAnonymousReadClient, publicSettingsConfigured} from './public-overview';
+import {createAnonymousReadClient, publicSettingsConfigured} from './public-overview.ts';
 
 export type PublishedForecast = {
   id:string; revision:number; predictedAt:string; asOfAt:string;
