@@ -7,14 +7,12 @@ export type ConnectivityResult={
   elapsedMs:number|null;
 };
 
+// M0 checks one explicitly provisioned, public Free project, never a caller-supplied URL.
+// Public Supabase project references and publishable keys are not secrets.
+const projectOrigin='https://upulkesaiwnwfagjgteh.supabase.co';
+const readOnlyMatchesUrl='https://upulkesaiwnwfagjgteh.supabase.co/rest/v1/ff_matches?select=id&limit=1';
 export function validPublishableEndpoint(url:string|undefined,key:string|undefined):boolean {
-  if(!url||!key||!(key.startsWith('sb_publishable_')||key.startsWith('eyJ')))return false;
-  try{
-    const parsed=new URL(url);
-    return parsed.protocol==='https:'&&parsed.hostname.endsWith('.supabase.co')&&
-      !parsed.port&&!parsed.username&&!parsed.password&&!parsed.search&&!parsed.hash&&
-      !parsed.pathname.replace(/\/+$/,'');
-  }catch{return false;}
+  return url===projectOrigin&&typeof key==='string'&&key.startsWith('sb_publishable_');
 }
 
 export async function runConnectivityChecks(
@@ -48,7 +46,7 @@ export async function runConnectivityChecks(
     })
   ];
   if(validPublishableEndpoint(supabaseUrl,publishableKey)){
-    const endpoint=new URL('/rest/v1/ff_matches?select=id&limit=1',supabaseUrl).href;
+    const endpoint=readOnlyMatchesUrl;
     checks.push(probe('supabase','Supabase: прямое чтение',endpoint,
       {apikey:publishableKey!,Accept:'application/json'},async response=>{
         if(!response.headers.get('content-type')?.toLowerCase().includes('application/json'))return false;
