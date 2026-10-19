@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 15
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_PASSWORD: ci-only-postgres-password
         options: >-
@@ -30,6 +30,7 @@ jobs:
       - name: PostgreSQL RLS and immutable-forecast integration
         shell: bash
         run: |
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c "show server_version_num" | grep -E '^17[0-9]{4}$'
           cat database/tests/0000_ci_supabase_stub.sql database/migrations/0001_foundation.sql database/tests/0001_rls_and_forecasts.sql database/migrations/0002_public_read.sql database/tests/0002_public_read.sql database/migrations/0003_match_fk_indexes.sql database/tests/0003_match_fk_indexes.sql |
             docker exec -i "${{ job.services.postgres.id }}" psql -v ON_ERROR_STOP=1 -U postgres -d postgres
       - name: Backup and restore disposable PostgreSQL fixture

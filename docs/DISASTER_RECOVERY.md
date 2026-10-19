@@ -4,9 +4,9 @@ The actual Supabase **Free** database is provisioned in Frankfurt (PostgreSQL 17
 
 ## Reproducible local restore exercise
 
-The existing `python-core` CI job uses a disposable PostgreSQL 16 container and synthetic M0 fixtures only. After applying the three migrations and testing RLS/append-only guards, CI exports `public`, `auth` and `ff_private` schemas plus fixture rows to a custom-format `pg_dump` file, restores it into a newly created `ff_restore_ci` database on the same isolated container, then runs `database/tests/0004_restore_validation.sql`. The assertions verify rows, access rules, policies, five integrity triggers, indexes and archived forecast immutability.
+The existing `python-core` CI job uses a disposable PostgreSQL 17 container and synthetic M0 fixtures only. After applying the three migrations and testing RLS/append-only guards, CI exports `public`, `auth` and `ff_private` schemas plus fixture rows to a custom-format `pg_dump` file, restores it into a newly created `ff_restore_ci` database on the same isolated container, then runs `database/tests/0004_restore_validation.sql`. The assertions verify rows, access rules, policies, five integrity triggers, indexes and archived forecast immutability.
 
-This proves a **test-fixture database round trip**, not a production backup, not an independent-zone recovery, and not cross-version PostgreSQL 17 restore.
+This proves a **PostgreSQL 17 test-fixture database round trip on the same major release as production**, not a production backup, not an independent-zone recovery and not a true externally stored restore.
 
 ## Production backup acceptance still required
 
