@@ -64,6 +64,17 @@ if(archivePage.includes('История публикаций')) {
 }
 const data=await get('/data');
 assert.equal(data.status,200,'data center must remain public');
+const dataPage=await data.text();
+assert.match(dataPage,/Центр данных/);
+if(dataPage.includes('Официальные первоисточники')){
+  // The PR HTTP canary targets deployed main; enforce full catalog after merge.
+  assert.match(dataPage,/Источников в реестре/);
+  assert.match(dataPage,/Точность не измерена/);
+  assert.match(dataPage,/Ни один источник пока не одобрен/);
+}else{
+  assert.match(dataPage,/Источники ещё не подключены/,
+    'older deployed main must still accurately say no feeds are connected');
+}
 
 const connectivity=await get('/connectivity');
 assert.equal(connectivity.status,200,'browser connectivity self-check must remain public');
