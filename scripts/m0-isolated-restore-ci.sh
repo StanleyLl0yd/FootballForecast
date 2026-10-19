@@ -27,19 +27,20 @@ docker run --rm -d --name "$restore_container" \
 # server, then shuts it down before launching the final TCP-enabled server.
 # Default pg_isready on the Unix socket can therefore pass during bootstrap,
 # only for the next psql to fail in the shutdown/restart gap.
-# Require an actual authenticated SQL reply over TCP, which the bootstrap
-# server cannot provide. This is a readiness probe, not a weakened restore test.
+# Require final-server TCP readiness first, then an actual SQL reply through
+# the container's local socket (no TCP password in CI logs or environment).
+# This is a readiness probe, not a weakened restore test.
 ready=0
 for i in $(seq 1 40); do
   if docker exec "$restore_container" pg_isready -h 127.0.0.1 -U postgres -d postgres >/dev/null 2>&1 &&
-     docker exec "$restore_container" psql -h 127.0.0.1 -U postgres -d postgres -Atqc 'SELECT 1' 2>/dev/null | grep -qx '1'; then
+     docker exec "$restore_container" psql -U postgres -d postgres -Atqc 'SELECT 1' 2>/dev/null | grep -qx '1'; then
     ready=1
     break
   fi
   sleep 1
 done
 test "$ready" -eq 1
-docker exec "$restore_container" psql -h 127.0.0.1 -U postgres -d postgres -At \
+docker exec "$restore_container" psql -U postgres -d postgres -At \
   -c 'show server_version_num' | grep -E '^17[0-9][0-9][0-9][0-9][0-9]
 
 # pg_dump of selected schemas does not export these external role globals.
