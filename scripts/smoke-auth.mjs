@@ -35,12 +35,38 @@ async function checkChromeBrowser(origin) {
   ];
   try {
     const options = {timeout: 30000, maxBuffer: 5_000_000};
-    const {stdout} = await execFileAsync(process.env.FF_BROWSER_BIN || 'google-chrome',
-      [...flags, '--dump-dom', `${origin}/dashboard`], options);
-    assert.match(stdout, /Футбольная аналитика/,
-      'Headless Chrome must render the public dashboard without credentials');
+    // GitHub's headless Chrome sometimes exits zero with an empty --dump-dom
+    // during renderer startup. A blank capture is retryable; wrong HTML is NOT.
+    // Give each browser launch a fresh profile to avoid cross-run locks.
+    let captured = false;
+    let lastFailure = '';
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const {stdout, stderr} = await execFileAsync(process.env.FF_BROWSER_BIN || 'google-chrome',
+          [...flags.filter(flag => !flag.startsWith('--user-data-dir=')),
+            `--user-data-dir=${join(profile, 'dom-' + attempt)}`,
+            '--no-proxy-server', '--dump-dom', `${origin}/dashboard`], options);
+        if (stdout.length === 0) {
+          lastFailure = `Chrome returned blank DOM on launch ${attempt}; stderr: ${stderr.slice(-400)}`;
+          console.warn(lastFailure);
+          continue;
+        }
+        assert.match(stdout, /Футбольная аналитика/,
+          'Headless Chrome returned HTML but did not render the public dashboard');
+        captured = true;
+        break;
+      } catch (err) {
+        const e = err;
+        if (e?.code !== 'ETIMEDOUT' && e?.killed !== true) throw err;
+        lastFailure = `Chrome launch ${attempt} timed out without DOM`;
+        console.warn(lastFailure);
+      }
+    }
+    assert.ok(captured, `Headless Chrome could not render dashboard in 3 attempts: ${lastFailure}`);
     await execFileAsync(process.env.FF_BROWSER_BIN || 'google-chrome',
-      [...flags, '--window-size=390,844', `--screenshot=${screenshot}`, `${origin}/login`],
+      [...flags.filter(flag => !flag.startsWith('--user-data-dir=')),
+        `--user-data-dir=${join(profile, 'screenshot')}`, '--no-proxy-server',
+        '--window-size=390,844', `--screenshot=${screenshot}`, `${origin}/login`],
       options);
     const png = await readFile(screenshot);
     assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');

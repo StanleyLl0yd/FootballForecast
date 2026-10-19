@@ -26,3 +26,7 @@ An independent, non-gating `browser-compatibility` CI job exercises the publishe
 ## macOS Safari browser diagnostic (M0)
 
 The non-gating `safari-compatibility` job runs on a **standard** GitHub-hosted `macos-15` runner (free for public repositories). The job enables built-in stable Safari WebDriver with `sudo safaridriver --enable`, then uses pure Node WebDriver HTTP calls to verify the public dashboard, unauthenticated admin denial and a PNG screenshot. No Selenium/Playwright install, proprietary credentials, custom paid runner or user account. Failure remains visible and must be investigated before claiming Safari acceptance. Real ISP connectivity from Russia still requires separate testing.
+
+### Chrome smoke reliability (2026-10-19)
+
+On exact-main `336497252c03c89f19144ab2d3a1249a2fa85140` the required web job failed once because Google Chrome `--dump-dom` returned **empty stdout** despite a successful HTTP smoke and Next.js build. The test now retries **only** empty captures/timeouts, at most three launches, with independent browser profiles and local proxy disabled. Nonempty incorrect HTML remains an immediate hard failure; the check is still part of the required `web` job. This does not relax CI or substitute success based on the server-only HTTP checks. Inspect smoke logs if empty DOM recurs.
