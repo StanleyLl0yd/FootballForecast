@@ -1,7 +1,7 @@
 // M0 deterministic offline comparison of *supplied* evidence only.
 // Not authentication of official facts, source independence, rights or as-of history.
 import {createHash} from 'node:crypto';
-import {readFileSync} from 'node:fs';
+import {readFileSync,openSync,fstatSync,closeSync,constants} from 'node:fs';
 import {pathToFileURL} from 'node:url';
 
 const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
@@ -151,8 +151,15 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     process.exitCode=2;
   }else{
     try{
-      const bytes=readFileSync(process.argv[2]);
-      if(bytes.byteLength>4*1024*1024)throw new Error('Evidence file exceeds 4 MiB');
+      const fd=openSync(process.argv[2],constants.O_RDONLY|(constants.O_NOFOLLOW??0));
+      let bytes;
+      try{
+        const info=fstatSync(fd);
+        if(!info.isFile()||info.size>4*1024*1024)
+          throw new Error('Evidence file must be a regular file <=4 MiB');
+        bytes=readFileSync(fd);
+        if(bytes.byteLength>4*1024*1024)throw new Error('Evidence file exceeds 4 MiB');
+      }finally{closeSync(fd)}
       const result=evaluateSourceEvidence(JSON.parse(bytes.toString('utf8')));
       console.log(JSON.stringify(result,null,2));
     }catch(error){
