@@ -67,6 +67,18 @@ node scripts/m0-multi-source-quality.mjs /absolute/path/to/private-evidence.json
 
 The output contains source IDs, counts, field-specific error rates, 95% Wilson intervals, a digest of supplied JSON and **explicit false flags** for authenticity, rights, independence and training. It does not include team IDs, source match rows or private paths. Do not commit the evidence file, vendor data, tokens or unapproved third-party datasets; use a private local working directory.
 
+## Browser-only investigation interface (M0)
+
+The public [Data Center](https://footballforecast.vercel.app/data) includes a local JSON-file investigator. It is an **optional graphical alternative** to the existing Node CLI, not a new backend endpoint or automatic provider import:
+
+1. On `/data`, choose **one JSON evidence file** with the documented schema and size no greater than **4 MiB**. A local browser File API reads it into memory; it is **never sent by this application** through fetch, form submission, analytics, browser storage, Supabase or a worker job.
+2. The browser uses the **same pure deterministic code** as the Node CLI; tests require exact matching result metrics and reject unknown provider IDs, impossible time sequences, invalid scores and forbidden paid-source entries. The browser computes and displays **SHA-256 of the original selected file bytes** through local Web Crypto. The CLI continues to report `inputDigestSHA256` of canonical `JSON.stringify` content, which can differ from a byte-level hash when whitespace/order differs.
+3. The browser displays descriptive comparison counts, missing fixtures, full-match integrity errors and matched-score errors, plus *preliminary* rankings **only after at least 30 finished reference fixtures**. Different sample composition, overlapping confidence intervals, upstream dependencies and source-use permissions still invalidate any sweeping claim about a provider being objectively superior.
+4. The private file is **not stored or uploaded**, but its derived summary remains visible in that browser tab until a new file is chosen or the page is closed. The site itself requires an initial internet connection, and browser extensions/OS components are outside this application's privacy boundary.
+5. Error reports contain no raw team names or provider match rows: only source names from the public 18-entry research catalog, source-level error counts and the file digest. The same path remains executable with the CLI for reproducible research or closed-browser environments.
+
+The site's default view contains **no real provider observations**, no empirical percentage, no model predictions and no source-rights approval. A user's self-supplied sample cannot prove that the cited `officialEvidenceUrl` is an authentic official protocol; evidence must be independently checked before any study is accepted. The interactive report has **no** action to mark a source trusted, upload records, publish predictions or change the M0 exit gate.
+
 ## Ranking and limits
 
 A field-specific leaderboard is emitted only for candidates with **at least 30 comparable field observations** (an arbitrary minimum descriptive threshold, *not* a statistical certification). The **complete fixture integrity** ranking uses the same finished-match reference denominator (including missing/incorrect cases), preventing a sparse provider from looking perfect by dropping failed fixtures. Conditional score/kickoff/status rankings can still use different covered-match samples and be biased. Even at 240 comparisons, Wilson intervals can overlap; no definitive accuracy winner follows without paired comparisons and uncertainty accounting. Empty/unavailable data produce **no numerical accuracy rank**.
