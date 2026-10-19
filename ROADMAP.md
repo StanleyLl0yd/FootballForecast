@@ -62,3 +62,5 @@ Generic adapters and independently evaluated league-specific workflows.
 - [ ] Verify Chrome headless DOM smoke stability after exact-main run 39217943833 returned empty stdout in otherwise successful web build; retain required web status gating.
 
 - [x] Add pure offline Football.TXT fixture structural auditor and synthetic CI regression detecting the observed 2023/24 duplicate/missing directed pairing, with no data import or rights approval.
+
+- [ ] Verify the Edge Chromium headless blank-DOM retry on post-merge exact-main diagnostics; preserve strict dashboard/admin DOM and mobile screenshot checks.
