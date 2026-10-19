@@ -70,7 +70,7 @@ Generic adapters and independently evaluated league-specific workflows.
 
 ## Remaining external M0 acceptance (no M1 transition)
 
-- [ ] #2: authenticated, licensed current RPL feed and defensible historical provenance; 2023/24 OpenFootball source remains quarantined, and all historical seasons remain unapproved for ingestion.
+- [ ] #2: **$0-only** legitimately reusable current RPL data and defensible historical provenance, triangulated through all available lawful free sources using the ranked registry (docs/M0_FREE_SOURCE_REGISTRY.json); 2023/24 OpenFootball source remains quarantined and no seasons are approved for ingestion. No purchased feeds, subscriptions, paid upgrades or fallbacks.
 - [ ] #5: live public-key PostgREST negative probe, offsite encrypted Free backup and isolated actual restore.
 - [ ] #6: two independent Russian residential/mobile provider network checks without VPN, including total site-load failures.
 - [ ] #8: supported patched dependency or documented accepted remediation for the unresolved dev-only `braces` advisory; enforced production audit stays active.
