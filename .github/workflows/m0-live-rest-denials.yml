@@ -1,0 +1,26 @@
+name: M0 Live REST Denial Proof
+on:
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: m0-live-rest-boundary
+  cancel-in-progress: false
+jobs:
+  anonymous-rest-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5, pinned
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5, pinned
+        with: {node-version: '22'}
+      - name: Verify anonymous REST refusals, no data mutations
+        env:
+          FF_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.FF_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "${FF_SUPABASE_PUBLISHABLE_KEY:-}" ]; then
+            echo 'Missing FF_SUPABASE_PUBLISHABLE_KEY Actions secret; no REST requests made'
+            exit 1
+          fi
+          node scripts/m0-rest-denials.mjs
