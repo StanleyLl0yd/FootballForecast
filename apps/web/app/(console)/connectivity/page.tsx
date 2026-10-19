@@ -16,8 +16,7 @@ export default function ConnectivityPage(){
     setCopied(false);
     try{
       // NEXT_PUBLIC keys are intentionally browser-publishable; never use a service role.
-      const next=await runConnectivityChecks(window.location.origin,
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
+      const next=await runConnectivityChecks(process.env.NEXT_PUBLIC_SUPABASE_URL,
         process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
       setResults(next);
       setReport(formatConnectivityReport(next,new Date().toISOString()));
