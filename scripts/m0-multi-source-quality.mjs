@@ -35,7 +35,8 @@ function interval(errors,n){
 }
 const metric=(errors,n)=>({compared:n,errors,errorRate:n?errors/n:null,interval95:interval(errors,n)});
 const counters=()=>({missing:0,reported:0,orientation:0,kickoff:0,status:0,
-  eligibleScore:0,scoreDifferences:0,temporalDemonstrated:0,temporalNotDemonstrated:0,
+  eligibleScore:0,scoreDifferences:0,completedReference:0,completeErrors:0,
+  temporalDemonstrated:0,temporalNotDemonstrated:0,
   upstreamGroups:new Set(),unresolvedUpstream:0});
 
 /** Strict local comparison. A supplied official URL is not verified by this function.
@@ -86,6 +87,16 @@ export function evaluateSourceEvidence(input,{minimumScoredMatches=30}={}){
     const official=entry.official;
     for(const [id,t] of totals){
       const row=rows.get(id);
+      // Every finished official-reference case contributes to the same denominator.
+      // Missing, reversed, incorrectly dated/statused or wrong-scored observations
+      // are full-fixture errors, never removed from the ranking sample.
+      if(['played','awarded'].includes(official.status)){
+        t.completedReference++;
+        if(!row||row.homeId!==official.homeId||row.awayId!==official.awayId||
+          row.kickoffAt!==official.kickoffAt||row.status!==official.status||
+          row.homeGoals!==official.homeGoals||row.awayGoals!==official.awayGoals)
+          t.completeErrors++;
+      }
       if(!row){t.missing++;continue}
       t.reported++;
       const reversed=row.homeId!==official.homeId||row.awayId!==official.awayId;
@@ -110,6 +121,7 @@ export function evaluateSourceEvidence(input,{minimumScoredMatches=30}={}){
     coverageRate:input.cases.length?t.reported/input.cases.length:null,
     matchOrientation:metric(t.orientation,t.reported),kickoff:metric(t.kickoff,t.reported),
     status:metric(t.status,t.reported),finalScore:metric(t.scoreDifferences,t.eligibleScore),
+    fixtureIntegrity:metric(t.completeErrors,t.completedReference),
     unscoredFinals:t.reported-t.eligibleScore,
     temporalAvailability:{demonstratedBySuppliedTimestamps:t.temporalDemonstrated,
       notDemonstrated:t.temporalNotDemonstrated,historicalProvenanceAuthenticated:false},
@@ -118,7 +130,7 @@ export function evaluateSourceEvidence(input,{minimumScoredMatches=30}={}){
     provisionalScoreRankEligible:t.eligibleScore>=minimumScoredMatches
   })).sort((a,b)=>a.sourceId.localeCompare(b.sourceId));
   // Distinct field-specific provisional rankings with denominators. No synthetic global score.
-  const fieldRankings=Object.fromEntries(['finalScore','matchOrientation','kickoff','status']
+  const fieldRankings=Object.fromEntries(['fixtureIntegrity','finalScore','matchOrientation','kickoff','status']
     .map(field=>[field,sources.filter(s=>s[field].compared>=minimumScoredMatches)
       .sort((a,b)=>a[field].errorRate-b[field].errorRate||
         b[field].compared-a[field].compared||a.sourceId.localeCompare(b.sourceId))
@@ -129,7 +141,7 @@ export function evaluateSourceEvidence(input,{minimumScoredMatches=30}={}){
     sourceApproval:false,sourceRightsApproved:false,officialReferenceAuthenticityVerified:false,
     upstreamIndependenceVerified:false,enabledForTraining:false,eligibleForProduction:false,
     observationCount:input.cases.length,sources,fieldRankings,
-    rankingBasis:'Field-specific supplied comparisons only; shared upstream sources are not independent',
+    rankingBasis:'Fixture integrity uses identical finished reference denominator, counting missing/reversed/wrong-score as errors; per-field conditional rates are separate. All research-only',
     minimumScoredMatches,inputDigestSHA256:digest(JSON.stringify(input))
   };
 }
