@@ -2,6 +2,8 @@
 
 Updated 2026-10-19. This is a **public documentation and terms review**, not a provider contract or an authenticated API coverage test. Every source stays **UNAPPROVED**; automatic ingestion/training remains disabled. Provider terms can change.
 
+The strictly local, fail-closed [multi-source empirical accuracy protocol](M0_SOURCE_ACCURACY_PROTOCOL.md) implements field-specific matched official-reference comparisons, Wilson uncertainty and independent-upstream warnings. It does **not** yet contain empirical RPL source observations or activate an ingestion pipeline.
+
 ## Owner's $0-only source strategy (binding, 2026-10-19)
 
 **No purchases, paid subscriptions, paid historical files, API overages, paid account upgrades, credit-card billing, paid-hosting fallback, or trial-to-paid conversion.** A future provider's premium-only RPL dataset is **unavailable**, not a reason to change tiers. Retain the current Free/Hobby hosting limits. API registration is eligible only if the exact intended operation is permanently priced at $0 within permitted quotas, with no required payment details or unexpected charges. If nothing lawfully usable covers a feature, show an honest "data unavailable" state; never fabricate it.
