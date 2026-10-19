@@ -78,7 +78,9 @@ test('research example and exported report contain no real match rows or uploade
   assert.match(code,/SYNTHETIC-NOT-A-REAL-MATCH-001/);
   assert.match(code,/example\.org\/fictional\/001/);
   assert.match(code,/Fictional-Home/);
-  assert.match(code,/originalFileSHA256:fileHash/);
+  assert.match(code,/originalFileSHA256:hash/);
+  assert.match(code,/declaredGroupCount:declaredGroups\.length/);
+  assert.match(code,/anonymizedSummary\(result,fileHash\)/);
   assert.match(code,/URL\.createObjectURL\(new Blob/);
   assert.match(code,/URL\.revokeObjectURL\(url\)/);
   assert.match(code,/footballforecast-synthetic-example\.json/);
