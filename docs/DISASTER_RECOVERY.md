@@ -8,6 +8,10 @@ The existing `python-core` CI job uses a disposable PostgreSQL 17 container and 
 
 This proves a **PostgreSQL 17 test-fixture database round trip on the same major release as production**, not a production backup, not an independent-zone recovery and not a true externally stored restore.
 
+## Real REST role-refusal proof
+
+The independent, **manually dispatched** public-key REST test is specified in [M0 REST Denial Proof](M0_REST_DENIAL_PROOF.md). It uses one allowed read and seven safe denied probes without inserting production data. Passing disposable PostgreSQL RLS tests is insufficient for the HTTP acceptance gate. This test is independent of the backup/restore gate below; neither proves the other.
+
 ## Production backup acceptance still required
 
 Before loading valuable real data or moving to M1:
