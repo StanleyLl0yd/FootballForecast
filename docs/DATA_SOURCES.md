@@ -70,6 +70,24 @@ It checks 30 matchdays with 8 fixtures each, detects `[awarded]` outcomes, rejec
 
 The checked source includes match-day dates and scheduled kickoff text, **not independently validated actual kickoff timezones or pre-match publication timestamps**. For example, [FBref's 2023/24 fixture list](https://fbref.com/en/comps/30/2023-2024/schedule/) and [Russian 2023/24 schedule](https://www.rusfootball.info/matchcenter/tournaments/rpl/season_2023_2024/matches/113985) independently place **Spartak at home** against Sochi on 2023-09-16. These observations do not establish comprehensive source correctness, rights, a strict historical as-of dataset or permission to publish a public RPL fixture feed.
 
+## Local match-by-match independent reference gate (M0)
+
+`scripts/m0-fixture-reconcile.mjs` compares **each** Football.TXT fixture against a second, independently and lawfully obtained **local JSON Lines** reference file. It accepts exactly two local filenames and never retrieves external data or writes to Supabase:
+
+```sh
+node scripts/m0-fixture-reconcile.mjs /path/to/pinned-season_ru1.txt /path/to/independent-season.jsonl
+```
+
+Reference records must provide the *full* season's unique directed fixtures, one JSON object per line, with exact team names mapped **manually and transparently** to the Football.TXT spelling (no hidden fuzzy matching or auto-corrections). Minimal synthetic shape, **not an actual match**:
+
+```json
+{"date":"2027-01-01","home":"A Club","away":"B Club","homeGoals":1,"awayGoals":0,"resultType":"played"}
+```
+
+`resultType` is `played` or `awarded`; `date` is an ISO calendar date, **not** publication time or a timezone-aware kickoff. The comparator rejects missing/duplicate directed pairs, malformed references, conflicting scores, award flags, calendar dates and invalid/unanchored/weekday-contradictory Football.TXT dates. It includes the earlier round and fixture-structure quality gate and reports both file **SHA-256 hashes**, exact mismatch locations and a machine-readable `comparisonPassed` indicator. Exit codes: 0 for mechanically matched, 1 for mismatch, 2 for invocation/read failure. Unit tests are **synthetic only**.
+
+**Independent provenance is not something code can infer from agreement:** record the actual second provider, license, extraction authorization, retrieved timestamp, original provider record IDs, the raw-reference SHA-256 and every explicit club-name mapping *outside this repository* before relying on a comparison. `comparisonPassed=true` expressly implies **neither** verified independence, legal clearance, strict pre-match `as_of` snapshots nor permission to import the files. For the quarantined 2023/24 season, do not silently reverse/repair the two Sochi/Spartak entries; the raw-source error must remain visible until independently resolved and an authorized correction is versioned.
+
 ## Two important distinctions
 
 1. **Website != API.** FootyStats explicitly directs programmatic use to its API, and the API has different conditions from the website. API model/app permission does **not** authorize publishing a copy of the vendor's dataset or third-party team assets.
