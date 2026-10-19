@@ -22,13 +22,15 @@ Updated 2026-10-19. This is a **public documentation and terms review**, not a p
 
 | Season | Repository file | Status |
 | --- | --- | --- |
-| 2018/19 | `russia/2018-19_ru1.txt` | File present, content validation pending |
-| 2019/20 | `russia/2019-20_ru1.txt` | File present, content validation pending |
-| 2020/21 | `russia/2020-21_ru1.txt` | File present, content validation pending |
-| 2023/24 | `russia/2023-24_ru1.txt` | File present, declares 16 teams / 240 matches |
-| 2024/25 | `russia/2024-25_ru1.txt` | File present, declares 16 teams / 240 matches |
+| 2018/19 | `russia/2018-19_ru1.txt` | 240 scored matches, 16 teams, 240 distinct ordered home/away pairs in preliminary scan |
+| 2019/20 | `russia/2019-20_ru1.txt` | 240 scored matches, 16 teams, 240 distinct ordered home/away pairs in preliminary scan |
+| 2020/21 | `russia/2020-21_ru1.txt` | 240 scored matches, 16 teams, 240 distinct ordered home/away pairs in preliminary scan |
+| 2023/24 | `russia/2023-24_ru1.txt` | 240 score rows, 16 teams but **239 distinct ordered home/away pairs**: one duplicate, one missing reverse fixture; FAIL independent structural check |
+| 2024/25 | `russia/2024-25_ru1.txt` | 240 scored matches, 16 teams, 240 distinct ordered home/away pairs in preliminary scan |
 
-**Not continuous.** The checked upstream tree contains no listed top-division files for 2021/22, 2022/23, 2025/26 or 2026/27. No validated feed for this season emerges from CC0 alone. The sampled Football.TXT 2024/25 file records match dates, clubs, scores and some half-time scores; it does not demonstrate trustworthy pre-match source-publication timestamps, injury/lineup histories or xG for chronological forecasts. Its reported 240 matches is source-supplied header metadata, **not yet an independently checked completeness assertion**.
+**Important source integrity failure (found by direct inspection, 2026-10-19).** An offline read-only scan of the five original Football.TXT sources matched each of the 240 stated fixture lines, parsed score and teams, and counted home/away pair uniqueness. All five have 16 team names and 240 score rows. Four seasons have 240 unique ordered fixtures; **2023/24 has only 239**. The September 16, 2023 line in the upstream file says `FK Sochi v Spartak Moskva 0-1`; the same pairing reappears April 13, 2024 as `FK Sochi v Spartak Moskva 1-0`. It thereby lacks `Spartak Moskva v FK Sochi`. An [independent match log](https://fbref.com/en/squads/8c635914/2023-2024/matchlogs/c30/schedule/Spartak-Moscow-Scores-and-Fixtures-Russian-Premier-League) lists September 16 as **Spartak's home match**, 1-0 vs Sochi. This likely reflects a copied home/away reversal plus inverted score on the September line. That repair is **not applied** to the external source or our production data. Quarantine 2023/24 pending independent fixture-by-fixture reconciliation and explicit source correction; do not silently patch the result in the model pipeline. The other four seasons pass only *structural row uniqueness*, not validated external factual accuracy or true point-in-time provenance.
+
+**Not continuous.** The checked upstream tree contains no listed top-division files for 2021/22, 2022/23, 2025/26 or 2026/27. No validated feed for this season emerges from CC0 alone. The sampled Football.TXT 2024/25 file records match dates, clubs, scores and some half-time scores; it does not demonstrate trustworthy pre-match source-publication timestamps, injury/lineup histories or xG for chronological forecasts. The 240-row and 240-ordered-fixture properties above are independently counted from the repository text, but that does **not** prove factual correctness, rights of upstream contributors or temporal provenance.
 
 Before approving for any import: freeze an exact upstream commit and raw SHA-256, audit any original-source attribution/third-party database rights, parse all candidates independently, check 240 unique fixtures per applicable season, team identities, schedule/score contradictions, historical corrections and independent match reconciliation. Training must be marked *retrospective without point-in-time guarantee* unless timestamp provenance is demonstrated. Never conflate public-domain repo licensing with rights to club logos or league-owned media.
 
