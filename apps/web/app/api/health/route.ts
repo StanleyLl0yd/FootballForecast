@@ -6,6 +6,6 @@ export async function GET() {
   // Public app readiness is independent of optional, disabled owner OAuth.
   return NextResponse.json(
     {service:'footballforecast', status: publicSettingsConfigured() ? 'public_configured':'setup_required'},
-    {headers:{'Cache-Control':'no-store'}}
+    {headers:{'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'}}
   );
 }

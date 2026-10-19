@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https://footballforecast.vercel.app; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>FootballForecast M0 - автономная проверка оператора</title>
+<style>
+:root{font:16px/1.5 system-ui,sans-serif;color-scheme:light dark}
+body{max-width:730px;margin:2rem auto;padding:0 1rem}
+h1{font-size:1.6rem}label{display:block;margin:1rem 0 .25rem}
+input,select,textarea,button{font:inherit;box-sizing:border-box;max-width:100%}
+input,select,textarea{width:100%;padding:.5rem}
+textarea{min-height:230px;resize:vertical}
+button{padding:.55rem 1rem;cursor:pointer;margin:.6rem .5rem .6rem 0}
+button:disabled{cursor:wait;opacity:.55}
+small,.note{opacity:.8}
+fieldset{margin-top:1rem}fieldset label{margin:.3rem}
+fieldset input{width:auto}
+#result{margin:1rem 0;font-weight:600}
+</style>
+</head>
+<body>
+<h1>FootballForecast: проверка из сети оператора</h1>
+<p>Автономная проверка M0. Сохраните этот HTML-файл <strong>до</strong> перехода на проверяемую сеть. Его можно открыть локально, даже если сайт FootballForecast там вообще не загружается. Никакие приложения или аккаунты не нужны.</p>
+<p class="note">Проверяется только <code>https://footballforecast.vercel.app/api/health</code>. Успех подтверждает HTTP-ответ публичного health API, но <strong>не</strong> доказывает загрузку страниц, связь браузера с Supabase или отсутствие VPN. Для приёмки M0 дополнительно откройте сайт и проверьте <code>/connectivity</code> через два независимых российских оператора.</p>
+<label for="provider">Оператор (вручную, необязательно)</label>
+<input id="provider" maxlength="60" autocomplete="off" placeholder="Название оператора">
+<label for="city">Город (вручную, необязательно)</label>
+<input id="city" maxlength="60" autocomplete="off" placeholder="Город">
+<label for="network">Тип подключения</label>
+<select id="network"><option value="не указано">Не указано</option><option value="домашний интернет">Домашний интернет</option><option value="мобильный интернет">Мобильный интернет</option></select>
+<fieldset><legend>Условия проверки</legend>
+<label><input id="no-vpn" type="checkbox"> Подтверждаю, что VPN/прокси отключены (отметка тестировщика, автоматически не проверяется)</label>
+</fieldset>
+<button id="run" type="button">Проверить публичный API</button>
+<p id="result" role="status" aria-live="polite">Тест ещё не запускался.</p>
+<label for="report">Локальный отчёт (никуда автоматически не отправляется)</label>
+<textarea id="report" readonly spellcheck="false" placeholder="Результат появится после запуска."></textarea>
+<button id="copy" type="button" disabled>Скопировать отчёт</button>
+<p id="copy-help" class="note">Если кнопка копирования недоступна, выделите текст отчёта и скопируйте вручную.</p>
+<p><small>Ни IP-адрес, ни геолокация, ни данные устройства не собираются. Отправляется ровно один GET на фиксированный адрес без cookies и ключей. Обычные журналы инфраструктуры могут фиксировать запрос.</small></p>
+<script>
+(()=>{
+'use strict';
+const ORIGIN='https://footballforecast.vercel.app';
+const $=id=>document.getElementById(id);
+const clean=text=>text.trim().replace(/[\r\n]/g,' ').slice(0,60)||'не указано';
+$('run').addEventListener('click',async()=>{
+  const button=$('run');
+  button.disabled=true;
+  $('copy').disabled=true;
+  $('result').textContent='Проверка выполняется…';
+  const started=Date.now();
+  let status='FAIL',http='нет HTTP-ответа',detail='тайм-аут, сбой связи или CORS';
+  try{
+    const response=await fetch(ORIGIN+'/api/health',{
+      method:'GET',mode:'cors',credentials:'omit',cache:'no-store',
+      redirect:'error',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(12000)
+    });
+    http='HTTP '+response.status;
+    detail='неожиданный ответ';
+    if(response.status===200&&response.headers.get('content-type')?.includes('application/json')){
+      const payload=await response.json();
+      if(payload?.service==='footballforecast'&&payload?.status==='public_configured'){
+        status='PASS';
+        detail='публичный health API доступен';
+      }else{detail='неверный health JSON или сервис не настроен';}
+    }
+  }catch{
+    // Errors can contain local IPs, paths and browser details. Do not serialize.
+  }
+  const elapsed=Date.now()-started;
+  const report=[
+    'FootballForecast M0 offline carrier health check',
+    'Время UTC: '+new Date().toISOString(),
+    'Оператор: '+clean($('provider').value),
+    'Город: '+clean($('city').value),
+    'Сеть: '+$('network').value,
+    'Без VPN/прокси: '+($('no-vpn').checked?'подтверждено тестировщиком':'не подтверждено'),
+    'Цель: '+ORIGIN+'/api/health',
+    'Результат: '+status+' / '+http+' / '+elapsed+' ms / '+detail,
+    'Область проверки: только один публичный API endpoint, не вся веб-страница.',
+    'Отчёт не отправлялся автоматически. Для M0 требуются два независимых оператора.'
+  ].join('\n');
+  $('report').value=report;
+  $('result').textContent=status+': '+detail+' ('+http+', '+elapsed+' мс)';
+  $('copy').disabled=false;
+  button.disabled=false;
+});
+$('copy').addEventListener('click',async()=>{
+  const report=$('report');
+  if(!report.value)return;
+  try{
+    await navigator.clipboard.writeText(report.value);
+    $('copy-help').textContent='Отчёт скопирован в буфер обмена.';
+  }catch{
+    report.focus();report.select();
+    $('copy-help').textContent='Выделено. Нажмите Ctrl+C (на Mac: Cmd+C).';
+  }
+});
+})();
+</script>
+</body>
+</html>
