@@ -1,4 +1,5 @@
 import {PageHeading} from '@/components/empty-state';
+import {SourceEvidenceLab} from '@/components/source-evidence-lab';
 import sourceRegistry from '../../../../../docs/M0_FREE_SOURCE_REGISTRY.json';
 
 const categories=[
@@ -42,6 +43,7 @@ export default function DataCenter(){
       <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M0_SOURCE_ACCURACY_PROTOCOL.md"
         target="_blank" rel="noopener noreferrer">Методика проверки точности <span aria-hidden="true">↗</span></a>
     </section>
+    <SourceEvidenceLab/>
     <div className="source-groups">
       {categories.map(category=>{
         const entries=sources.filter(source=>source.priority===category.priority);
