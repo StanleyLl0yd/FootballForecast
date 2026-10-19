@@ -35,3 +35,15 @@
 .forecast-probabilities strong{font-variant-numeric:tabular-nums}
 .forecast-provenance{margin:0;overflow-wrap:anywhere}
 @media(max-width:720px){.forecast-record-head{flex-direction:column;align-items:flex-start}.forecast-probabilities{gap:14px}}
+
+/* Public, user-initiated network diagnostics. */
+.connectivity-panel{margin-bottom:22px;min-height:0}
+.connectivity-panel>p{font-size:13px;color:var(--muted);line-height:1.7;max-width:780px}
+.connectivity-note{font-size:12px!important}
+.connectivity-list{list-style:none;padding:0;margin:24px 0;display:grid;gap:0}
+.connectivity-list li{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:13px 0;font-size:13px}
+.connectivity-list span{color:var(--muted);text-align:right}
+.connectivity-list .connectivity-success{color:var(--accent)}
+.connectivity-list .connectivity-problem{color:#f6b484}
+.connectivity-report{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;line-height:1.65;color:var(--muted);margin:18px 0 0;padding:15px;border:1px solid var(--line);border-radius:9px}
+@media(max-width:720px){.connectivity-list li{align-items:flex-start;flex-direction:column}.connectivity-list span{text-align:left}}
