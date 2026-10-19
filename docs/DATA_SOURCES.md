@@ -2,6 +2,34 @@
 
 Updated 2026-10-19. This is a **public documentation and terms review**, not a provider contract or an authenticated API coverage test. Every source stays **UNAPPROVED**; automatic ingestion/training remains disabled. Provider terms can change.
 
+## Owner's $0-only source strategy (binding, 2026-10-19)
+
+**No purchases, paid subscriptions, paid historical files, API overages, paid account upgrades, credit-card billing, paid-hosting fallback, or trial-to-paid conversion.** A future provider's premium-only RPL dataset is **unavailable**, not a reason to change tiers. Retain the current Free/Hobby hosting limits. API registration is eligible only if the exact intended operation is permanently priced at $0 within permitted quotas, with no required payment details or unexpected charges. If nothing lawfully usable covers a feature, show an honest "data unavailable" state; never fabricate it.
+
+Every currently identified free, openly published or manual corroboration candidate is in the machine-readable **[16-source ranking registry](M0_FREE_SOURCE_REGISTRY.json)**. The catalog has `priority` **1-4**, `zeroCost` classification, role(s), source terms and known quality warnings. All `active=false` at M0, meaning **no provider integrations or model training** have been enabled. Adding a source requires documenting its exact free access and legal scope; the CI policy tests reject paid/unknown tiers and invented measured error rates. An article readable without charge may be **manual citation only**, not a free bulk API.
+
+### Preliminary reliability and accuracy priorities (specific to data fields)
+
+| Authority rank | When it is useful | Providers | Known evidence and limitations |
+| --- | --- | --- | --- |
+| **1: primary match fact** | Official scores, kickoffs, completed/postponed/awarded status, venue switches, formal line-ups | Dated RFU/RPL match protocols and specific official club reports | Best **evidentiary authority**, *not* a measured 100% accuracy or ingestion license. Two websites repeating one RPL protocol count as **one underlying primary source**. |
+| **2: historical structured candidate** | Source-specific league seasons, home/away goals, fixture completeness | **OpenFootball Europe**, **Footbolno** | OpenFootball 2024/25: 240 fixtures and matching published aggregates, but a confirmed 2023/24 venue error. Footbolno: publisher claims free CC BY 4.0 and post-2016 data; exact actual RPL season rows, rights chain and error rate unverified. **Neither is approved yet.** |
+| **3: free complementary/corroboration** | Current fixture discovery, independent score comparison, season totals | **SportScore** (attribution required), **API-Football Free** (strict quota), RSSSF, Чемпионат, Sportbox, Wikidata (personnel facts only) | Coverage varies; API providers aggregate upstream sources and may share the same feed. API free-tier availability is not proof of RPL field/season access or a license to redistribute records. |
+| **4: secondary or restricted reference** | Detecting anomalies and collecting leads, not authoritative selection | Wikipedia revisions, Rusfootball, Football-Data.co.uk (restricted personal/academic), TheSportsDB free development API, FootyStats public catalog | Known Rusfootball Zenit–Akhmat discrepancy; some terms prohibit production data training or site scraping. Never activate restricted/reference-only providers for the forecasting pipeline. |
+
+A numeric accuracy leaderboard is **not yet justified**. For each eligible source and relevant time window, compare matches against date-versioned primary evidence, recording `n_compared`, `n_missing`, `n_wrong_score`, `n_reversed_home_away`, `n_wrong_status`, `n_wrong_kickoff`, `n_late_corrections`, source revision and observed update latency. Report denominators and uncertainty, not an unsupported percentage. Accuracy must be **field-specific**: a source can be correct on final scores but unusable for as-of pre-kickoff injuries or historical line-ups.
+
+**Multi-source resolution algorithm (not activated at M0):**
+1. Only access permitted free endpoints/files within documented quotas; preserve unmodified revision/hash, retrieval and original publication timestamps (if available).
+2. Normalize source match identities, competition/season, exact team and home/away roles, kickoff, status and match events. Quarantine ambiguous ID links, canceled/postponed games and incompatible scoring rules.
+3. Establish a **provenance graph**: publisher → upstream provider → official primary document. Three mirrors copying the same feed do **not** count as three independent confirmations. Track unresolved upstream dependency as `UNKNOWN`.
+4. For official formal match facts, prefer the relevant **dated RFU/RPL protocol or corrected official decision** over editorial aggregates. If official sources themselves conflict, quarantine and record competing timestamps rather than majority vote or silently picking the newest source.
+5. For non-official observations, select a provider **per field** based on *measured* error rates, available match count, independent corroboration, coverage, freshness and permissions. Missing is not zero, and discrepancies stay visible with original provenance.
+6. Enforce strict pre-match temporal cutoff for backtests. Present-day snapshots cannot be labeled as evidence of what was known before an old kickoff. Retroactive corrections may resolve **evaluation labels**, never leak backward into original forecasting features.
+7. Keep a visible source/attribution ledger wherever required (especially SportScore's "Powered by SportScore" dofollow link on any page using its API). Never republish unapproved raw data or train on unapproved provider records.
+
+**Practical priority:** inspect and rights-review Footbolno and OpenFootball as historical candidates, pursue both legitimate $0 current-fixture APIs for complementary observations, and retain the official/manual references for independent checking. All are useful within their legal scope; "all available" does **not** authorize prohibited crawling, bot evasion, premium upgrades or rights assumptions.
+
 ## Candidate decision table
 
 | Provider | Public coverage evidence | Permissions established from published terms | Current decision |
