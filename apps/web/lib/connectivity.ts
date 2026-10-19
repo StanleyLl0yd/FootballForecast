@@ -11,8 +11,9 @@ export function validPublishableEndpoint(url:string|undefined,key:string|undefin
   if(!url||!key||!(key.startsWith('sb_publishable_')||key.startsWith('eyJ')))return false;
   try{
     const parsed=new URL(url);
-    return parsed.protocol==='https:'&&!parsed.username&&!parsed.password&&
-      !parsed.search&&!parsed.hash&&!parsed.pathname.replace(/\/+$/,'');
+    return parsed.protocol==='https:'&&parsed.hostname.endsWith('.supabase.co')&&
+      !parsed.port&&!parsed.username&&!parsed.password&&!parsed.search&&!parsed.hash&&
+      !parsed.pathname.replace(/\/+$/,'');
   }catch{return false;}
 }
 
