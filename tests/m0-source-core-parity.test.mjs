@@ -72,3 +72,16 @@ test('shared pure evaluator avoids filesystem, network, crypto and host-specific
   assert.doesNotMatch(code,/\breadFileSync\s*\(/);
   assert.equal(evaluateSourceEvidenceCore({schemaVersion:1,cases:[]},registry).observationCount,0);
 });
+
+test('research example and exported report contain no real match rows or uploaded raw evidence',()=>{
+  const code=readFileSync(new URL('../apps/web/components/source-evidence-lab.tsx',import.meta.url),'utf8');
+  assert.match(code,/SYNTHETIC-NOT-A-REAL-MATCH-001/);
+  assert.match(code,/example\.org\/fictional\/001/);
+  assert.match(code,/Fictional-Home/);
+  assert.match(code,/originalFileSHA256:fileHash/);
+  assert.match(code,/URL\.createObjectURL\(new Blob/);
+  assert.match(code,/URL\.revokeObjectURL\(url\)/);
+  assert.match(code,/footballforecast-synthetic-example\.json/);
+  assert.match(code,/footballforecast-research-report\.json/);
+  assert.doesNotMatch(code,/downloadLocalJson\([^)]*candidate/);
+});
