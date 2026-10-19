@@ -4,7 +4,7 @@ import {PageHeading} from '@/components/empty-state';
 import {formatConnectivityReport,runConnectivityChecks} from '@/lib/connectivity';
 import type {ConnectivityResult} from '@/lib/connectivity';
 
-const titles={passed:'Доступно',failed:'Нет подтверждения связи',not_configured:'Не настроено'};
+const titles={passed:'Доступно',failed:'Нет подтверждения связи'};
 
 export default function ConnectivityPage(){
   const [results,setResults]=useState<ConnectivityResult[]|null>(null);
@@ -15,9 +15,7 @@ export default function ConnectivityPage(){
     setBusy(true);
     setCopied(false);
     try{
-      // NEXT_PUBLIC keys are intentionally browser-publishable; never use a service role.
-      const next=await runConnectivityChecks(process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+      const next=await runConnectivityChecks();
       setResults(next);
       setReport(formatConnectivityReport(next,new Date().toISOString()));
     }finally{setBusy(false);}
@@ -29,14 +27,14 @@ export default function ConnectivityPage(){
   return <>
     <PageHeading eyebrow="M0 / ПРОВЕРКА ДОСТУПНОСТИ"
       title="Проверка соединения"
-      subtitle="Проверяет только доступность FootballForecast и публичной базы из этого браузера. Запускается вручную, без регистрации."/>
+      subtitle="Проверяет доступность FootballForecast и серверное чтение публичной базы. Запускается вручную, без регистрации."/>
     <section className="panel connectivity-panel">
       <h2>Проверка из вашей сети</h2>
       <p>Для проверки российских операторов отключите VPN и запустите тест через нужный Wi-Fi или мобильный интернет. Результаты зависят от оператора, браузера и времени проверки. Успех одного подключения не означает доступность у всех.</p>
       <button type="button" className="primary-action" onClick={run} disabled={busy}>
         {busy?'Проверка выполняется…':'Проверить соединение'}
       </button>
-      <p className="connectivity-note">Отправляются только три обычных GET-запроса. Приложение не сохраняет отчёт и не отправляет его разработчику. Обычные сетевые журналы Vercel и Supabase могут содержать технические сведения о запросах.</p>
+      <p className="connectivity-note">Отправляются три GET-запроса только на текущий сайт. Браузер не обращается к Supabase напрямую и не передаёт ключи. Отчёт не сохраняется в приложении; обычные серверные журналы запросов могут сохраняться.</p>
     </section>
     {results&&<section className="panel connectivity-panel" aria-live="polite">
       <h2>Результаты</h2>
@@ -49,7 +47,7 @@ export default function ConnectivityPage(){
           </span>
         </li>
       )}</ul>
-      <p className="connectivity-note">Ошибка может означать блокировку, сбой сети, CORS, тайм-аут или проблему сервиса. Этот тест не определяет конкретную причину и не измеряет доступность других операторов.</p>
+      <p className="connectivity-note">Ошибка может означать блокировку, сбой сети, тайм-аут или проблему сервиса. Этот тест не определяет конкретную причину и не измеряет доступность других операторов.</p>
       <button type="button" className="primary-action" onClick={copy}>
         {copied?'Отчёт скопирован':'Скопировать отчёт'}
       </button>
