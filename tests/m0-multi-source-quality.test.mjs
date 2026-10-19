@@ -32,6 +32,11 @@ test('report does not certify supplied data and counts orientation, errors, cove
   assert.equal(byId['openfootball-europe'].matchOrientation.errors,1);
   assert.equal(byId['openfootball-europe'].finalScore.compared,2);
   assert.equal(byId['openfootball-europe'].unscoredFinals,1);
+  assert.equal(byId.footbolno.fixtureIntegrity.compared,3);
+  assert.equal(byId.footbolno.fixtureIntegrity.errors,0);
+  assert.equal(byId['openfootball-europe'].fixtureIntegrity.errors,1);
+  assert.equal(byId.championat.fixtureIntegrity.errors,2);
+  assert.equal(report.fieldRankings.fixtureIntegrity[0].sourceId,'footbolno');
   assert.equal(byId.championat.missing,1);
   assert.equal(byId.championat.finalScore.errors,1);
   assert.equal(byId.championat.finalScore.compared,2);
@@ -47,6 +52,7 @@ test('report does not certify supplied data and counts orientation, errors, cove
 test('tiny samples never get ranked and Wilson intervals are never exactly certain',()=>{
   const report=evaluateSourceEvidence(sample(2));
   assert.ok(report.sources.every(x=>!x.provisionalScoreRankEligible));
+  assert.equal(report.fieldRankings.fixtureIntegrity.length,0);
   assert.equal(report.fieldRankings.finalScore.length,0);
   assert.ok(report.sources.every(x=>x.finalScore.interval95!==null));
 });
@@ -105,6 +111,8 @@ test('seeded 20-match perturbations preserve accounting and field error boundari
   const report=evaluateSourceEvidence(input,{minimumScoredMatches:10});
   for(const s of report.sources){
     assert.equal(s.observed+s.missing,20);
+    assert.equal(s.fixtureIntegrity.compared,20);
+    assert.ok(s.fixtureIntegrity.errors>=s.missing);
     assert.ok(s.finalScore.compared<=s.observed);
     assert.ok(s.finalScore.errors<=s.finalScore.compared);
     assert.ok(s.finalScore.errorRate===null||(s.finalScore.errorRate>=0&&s.finalScore.errorRate<=1));
