@@ -1,68 +1,56 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {runConnectivityChecks,formatConnectivityReport,validPublishableEndpoint} from '../lib/connectivity.ts';
+import {runConnectivityChecks,formatConnectivityReport} from '../lib/connectivity.ts';
 
-const origin='https://forecast.example';
-const project='https://upulkesaiwnwfagjgteh.supabase.co';
-const key='sb_publishable_synthetic_test_only';
-test('three read-only user-initiated probes do not send credentials to the public site',async()=>{
-  const requests=[];
-  const mock=async(input,init)=>{
-    const url=new URL(input,origin);
-    requests.push({url,init});
-    if(url.pathname==='/api/health')
-      return new Response(JSON.stringify({service:'footballforecast',status:'public_configured'}),{status:200});
-    if(url.pathname==='/dashboard')
-      return new Response('Футбольная аналитика Публичная база подключена',{status:200});
-    if(url.pathname==='/rest/v1/ff_matches')
-      return new Response('[]',{status:200,headers:{'content-type':'application/json'}});
-    throw new Error('Unexpected URL');
-  };
-  const result=await runConnectivityChecks(project,key,mock);
-  assert.deepEqual(result.map(x=>x.state),['passed','passed','passed']);
-  assert.equal(requests.length,3);
-  assert.ok(requests.every(x=>x.init.method==='GET'&&x.init.cache==='no-store'));
-  assert.equal(requests[0].init.headers?.apikey,undefined);
-  assert.equal(requests[1].init.headers?.apikey,undefined);
-  assert.equal(requests[2].init.headers.apikey,key);
-  assert.equal(requests[2].url.searchParams.get('limit'),'1');
-  assert.equal(requests[2].url.origin,project);
-  const report=formatConnectivityReport(result,'2026-10-19T00:00:00Z');
-  assert.ok(!report.includes(key));
-  assert.ok(!report.includes(project));
-  assert.ok(report.includes('PASS HTTP 200'));
-});
-test('unavailable database and HTTP failure report accurately without guessing network cause',async()=>{
-  const mock=async input=>{
-    if(String(input).includes('/api/health'))return new Response('{}',{status:200});
-    if(String(input).includes('/dashboard'))throw new Error('private DNS diagnostic must not leak');
-    return new Response('blocked',{status:403});
-  };
-  const result=await runConnectivityChecks(project,key,mock);
-  assert.deepEqual(result.map(x=>x.state),['failed','failed','failed']);
-  assert.equal(result[1].httpStatus,null);
-  assert.equal(result[2].httpStatus,403);
-  assert.ok(!formatConnectivityReport(result,'now').includes('private DNS diagnostic'));
-});
-test('missing or malformed publishable settings never initiate a third-party request',async()=>{
+test('all three probes are same-origin GETs and do not expose any Supabase key',async()=>{
   const calls=[];
-  const mock=async input=>{calls.push(input);return new Response('{}',{status:200});};
-  const result=await runConnectivityChecks('http://database.example','private_secret',mock);
-  assert.equal(calls.length,2);
-  assert.equal(result[2].state,'not_configured');
-  assert.equal(validPublishableEndpoint(project+'/path',key),false);
-  assert.equal(validPublishableEndpoint(project+'?token=1',key),false);
-  assert.equal(validPublishableEndpoint(project,key),true);
-  assert.equal(validPublishableEndpoint('https://upulkesaiwnwfagjgteh.supabase.co.attacker.example',key),false);
+  const fetchMock=async(url,options)=>{
+    calls.push({url,options});
+    if(url==='/api/health')return new Response(
+      JSON.stringify({service:'footballforecast',status:'public_configured'}),
+      {status:200,headers:{'content-type':'application/json'}});
+    if(url==='/dashboard')return new Response('Футбольная аналитика Публичная база подключена',{status:200});
+    if(url==='/archive')return new Response('История публикаций Архив пуст',{status:200});
+    throw new Error('Unexpected request');
+  };
+  const results=await runConnectivityChecks(fetchMock);
+  assert.deepEqual(results.map(x=>x.state),['passed','passed','passed']);
+  assert.deepEqual(calls.map(x=>x.url),['/api/health','/dashboard','/archive']);
+  assert.ok(calls.every(x=>x.options.method==='GET'&&
+    x.options.cache==='no-store'&&x.options.redirect==='error'&&
+    !x.options.headers));
+  const report=formatConnectivityReport(results,'2026-10-19T00:00:00Z');
+  assert.match(report,/PASS HTTP 200/);
+  assert.ok(!report.includes('sb_publishable_'));
+  assert.ok(!report.includes('supabase.co'));
 });
 
-test('a misleading HTTP 200 non-JSON response does not count as Supabase success',async()=>{
-  const mock=async input=>{
-    if(String(input).includes('/api/health'))
-      return new Response(JSON.stringify({service:'footballforecast',status:'public_configured'}),{status:200});
-    if(String(input).includes('/dashboard'))return new Response('Футбольная аналитика Публичная база подключена',{status:200});
-    return new Response('<html>gateway response</html>',{status:200,headers:{'content-type':'text/html'}});
+test('bad API body, server database outage and rejection are distinct failed probes',async()=>{
+  const fetchMock=async url=>{
+    if(url==='/api/health')return new Response('not JSON',{status:200,headers:{'content-type':'text/plain'}});
+    if(url==='/dashboard')return new Response('Футбольная аналитика Данные временно недоступны',{status:200});
+    throw new Error('network private detail');
   };
-  const result=await runConnectivityChecks(project,key,mock);
+  const result=await runConnectivityChecks(fetchMock);
+  assert.deepEqual(result.map(x=>x.state),['failed','failed','failed']);
+  assert.equal(result[0].httpStatus,200);
+  assert.equal(result[2].httpStatus,null);
+  assert.doesNotMatch(formatConnectivityReport(result,'now'),/network private detail/);
+});
+
+test('archive reports HTTP success only with real public REST status',async()=>{
+  const fetchMock=async url=>{
+    if(url==='/api/health')return new Response('{"service":"footballforecast","status":"public_configured"}',
+      {status:200,headers:{'content-type':'application/json'}});
+    if(url==='/dashboard')return new Response('Футбольная аналитика Публичная база подключена',{status:200});
+    return new Response('История публикаций Архив временно недоступен',{status:200});
+  };
+  const result=await runConnectivityChecks(fetchMock);
   assert.deepEqual(result.map(x=>x.state),['passed','passed','failed']);
+});
+
+test('false HTTP 200 for an archive login page does not count as accessible',async()=>{
+  const fetchMock=async()=>new Response('<html>Login required</html>',{status:200});
+  const result=await runConnectivityChecks(fetchMock);
+  assert.deepEqual(result.map(x=>x.state),['failed','failed','failed']);
 });
