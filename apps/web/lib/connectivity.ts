@@ -52,7 +52,11 @@ export async function runConnectivityChecks(
   ];
   if(validPublishableEndpoint(supabaseUrl,publishableKey)){
     const endpoint=new URL('/rest/v1/ff_matches?select=id&limit=1',supabaseUrl).href;
-    checks.push(probe('supabase','Supabase: прямое чтение',endpoint,{apikey:publishableKey!}));
+    checks.push(probe('supabase','Supabase: прямое чтение',endpoint,
+      {apikey:publishableKey!,Accept:'application/json'},async response=>{
+        if(!response.headers.get('content-type')?.toLowerCase().includes('application/json'))return false;
+        return Array.isArray(await response.json());
+      }));
   }else{
     checks.push(Promise.resolve({id:'supabase',label:'Supabase: прямое чтение',
       state:'not_configured',httpStatus:null,elapsedMs:null} as ConnectivityResult));
