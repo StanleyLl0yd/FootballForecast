@@ -59,6 +59,8 @@ jobs:
         run: npm run test:archive
       - name: Enforce free-only source register and zero-cost rank evidence
         run: node --test tests/m0-free-source-policy.test.mjs
+      - name: Test offline cross-provider score, status, venue and temporal accuracy logic
+        run: node --check scripts/m0-multi-source-quality.mjs && node --test tests/m0-multi-source-quality.test.mjs
       - name: Validate historical fixture and score-annotation diagnostics without provider data
         run: node --test tests/m0-fixture-structure.test.mjs tests/m0-source-quality.test.mjs tests/m0-fixture-reconcile.test.mjs
       - name: Verify non-mutating PostgREST HTTP refusal contract (synthetic mocks only)
