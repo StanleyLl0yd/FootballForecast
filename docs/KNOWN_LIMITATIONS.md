@@ -2,7 +2,7 @@
 
 - The public, anonymous read-only prototype is deployed to Vercel Hobby, functions in Frankfurt; GitHub-hosted HTTP smoke verified the live site and the server-side Supabase REST read. **Access from Russian ISPs without VPN is not measured**. No commercial hosting is approved.
 - Supabase Free PostgreSQL 17 in Frankfurt has three applied migrations and nine RLS tables. Six are anonymous SELECT-only; source rights, raw records and access grants remain private. The real database is empty, so there are no licensed RPL matches, model results or forecasts.
-- Reproducible npm lockfile and `npm ci`, GitHub CI/Security/CodeQL, disposable PostgreSQL RLS tests, Node HTTP tests, and headless Chrome smoke pass. Safari/Firefox/Edge, real Supabase Free PostgreSQL 17 backup/recovery and real GitHub OAuth lifecycle tests are not yet demonstrated (synthetic pg_dump/pg_restore is exercised in CI).
+- Reproducible npm lockfile and `npm ci`, GitHub CI/Security/CodeQL, disposable PostgreSQL RLS tests, Node HTTP tests, and headless Chrome smoke pass. Headless Safari, Firefox and Edge have passed automated diagnostics, but real Russian-network/browser combinations, an offsite actual Supabase Free PostgreSQL 17 backup/restore and optional owner OAuth lifecycle tests are not demonstrated. The synthetic dump is restored to a **separate** PostgreSQL 17 container within one CI runner.
 - Accounts are intentionally deferred. The optional owner-only OAuth route remains fail-closed and administrative mutations are disabled. Do not require owner login for ordinary public pages or claim operational admin access.
 - Python Poisson primitives accept input intensities but have not learned strengths, been calibrated or passed real historical backtests. Data sources lack final rights approval: **no scraping, import, paid feed or fabricated fixtures**.
 - Evaluation and model contracts are partial; filters, detailed match predictions, independently validated charts and user profiles are not yet implemented. Publication/temporal-integrity guards are in SQL, but a functioning authorized prediction worker and backup/restore acceptance remain future work.
@@ -15,6 +15,4 @@ M0 remains OPEN. M1 may not start until the owner accepts M0.
 
 - Public archive now queries the last 20 immutable predictions with timestamp, model, hash and 1X2 probabilities; evaluation charts, match details, source rights and actual historical forecasts remain missing. The real archive has zero records until a licensed pipeline exists.
 
-- Automated headless Firefox and Edge browser diagnostics are configured on GitHub Ubuntu 24.04. Their successful execution must be confirmed separately; they do not substitute Safari or real Russian ISP connectivity.
-
-- Safari native WebDriver on standard macOS runner is now configured as a non-gating diagnostic; success must be verified in exact GitHub job logs. Safari screenshot tests do not prove Russian ISP reachability.
+- Cross-browser CI success does not prove availability from Russian residential or mobile carriers without a VPN. Real end-user reachability requires independent operator observations.
