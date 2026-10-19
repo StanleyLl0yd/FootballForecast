@@ -67,6 +67,8 @@ jobs:
         run: npm run test:archive
       - name: Validate historical fixture and score-annotation diagnostics without provider data
         run: node --test tests/m0-fixture-structure.test.mjs tests/m0-source-quality.test.mjs tests/m0-fixture-reconcile.test.mjs
+      - name: Verify non-mutating PostgREST HTTP refusal contract (synthetic mocks only)
+        run: node --test tests/m0-rest-denials.test.mjs
       - run: npm run lint && npm run typecheck && npm run build
       - name: Fail-closed production server and Chrome browser smoke
         env:
