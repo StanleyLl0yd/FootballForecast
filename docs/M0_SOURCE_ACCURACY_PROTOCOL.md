@@ -13,6 +13,7 @@ For each candidate, it separately measures:
 - **kickoff**: disagreement with the canonical kickoff timestamp;
 - **status**: played / awarded / postponed / cancelled disagreement;
 - **final score**: error rate **only** when the club orientation is correct and both matches have the same completed status; mismatched orientation or status cannot hide as a valid score comparison;
+- **complete fixture integrity**: every finished canonical match is in the **same denominator for every observed source**; missing matches, reversed home/away, wrong kickoff, status or final score each count as an incorrect fixture (counted once); separate conditional field metrics remain available;
 - **source dependence**: declared upstream publisher groups and unknown-provider count, without claiming independent origin;
 - **temporal evidence**: only timestamps both published and actually observed no later than the source-specific kickoff can support historical pre-match availability. Modern snapshots never backdate themselves.
 
@@ -68,7 +69,7 @@ The output contains source IDs, counts, field-specific error rates, 95% Wilson i
 
 ## Ranking and limits
 
-A field-specific leaderboard is emitted only for candidates with **at least 30 comparable field observations** (an arbitrary minimum descriptive threshold, *not* a statistical certification). Rankings with different covered match samples are potentially biased. Even at 240 comparisons, Wilson intervals can overlap; no definitive accuracy winner follows without paired comparisons and uncertainty accounting. Empty/unavailable data produce **no numerical accuracy rank**.
+A field-specific leaderboard is emitted only for candidates with **at least 30 comparable field observations** (an arbitrary minimum descriptive threshold, *not* a statistical certification). The **complete fixture integrity** ranking uses the same finished-match reference denominator (including missing/incorrect cases), preventing a sparse provider from looking perfect by dropping failed fixtures. Conditional score/kickoff/status rankings can still use different covered-match samples and be biased. Even at 240 comparisons, Wilson intervals can overlap; no definitive accuracy winner follows without paired comparisons and uncertainty accounting. Empty/unavailable data produce **no numerical accuracy rank**.
 
 The preliminary source priority of official RFU/RPL/club documents, OpenFootball/Footbolno and other lawful free corroborators remains a **research priority**, not a statistical accuracy estimate. Official match evidence should be checked for original primary-document provenance, corrections, timing and possible contradictions before counting as an accepted reference. Never double-count mirrors of ESPN or the same federation bulletin as independent verification. In the event of conflicting official documents, quarantine the case rather than deciding by majority.
 
