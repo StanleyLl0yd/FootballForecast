@@ -15,7 +15,7 @@ test('three read-only user-initiated probes do not send credentials to the publi
     if(url.pathname==='/dashboard')
       return new Response('Футбольная аналитика Публичная база подключена',{status:200});
     if(url.pathname==='/rest/v1/ff_matches')
-      return new Response('[]',{status:200});
+      return new Response('[]',{status:200,headers:{'content-type':'application/json'}});
     throw new Error('Unexpected URL');
   };
   const result=await runConnectivityChecks(origin,project,key,mock);
