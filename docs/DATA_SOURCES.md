@@ -36,6 +36,10 @@ Before approving for any import: freeze an exact upstream commit and raw SHA-256
 
 Unlike free-claim APIs with ambiguous retention and competition publication rights, this CC0 dataset is worth prioritizing for **offline research first**, but is not an authorized current RPL fixture source and cannot on its own close M0 issue #2. No Git clone, scraping, automatic download, production database seed, model training or license-status change was made by this review.
 
+## Reusable offline structural gate
+
+`scripts/m0-fixture-structure.mjs` exports a pure `auditFootballTxt()` function that inspects match rows, header team/match counts, malformed or negative scores, 16 distinct clubs, all 240 directed home/away pairs and any duplicate/missing inverse. Required web CI runs synthetic positive/negative unit fixtures; **it never fetches vendor data**. This is a safety gate for evaluating a manual candidate **before** any M1 approval, not an importer, validator of legal provenance or authorization to use live/paid data. A passing structural audit is necessary but not sufficient to approve any provider.
+
 ## Two important distinctions
 
 1. **Website != API.** FootyStats explicitly directs programmatic use to its API, and the API has different conditions from the website. API model/app permission does **not** authorize publishing a copy of the vendor's dataset or third-party team assets.
