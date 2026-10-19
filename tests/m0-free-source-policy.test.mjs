@@ -7,7 +7,7 @@ const required = [
   'rfs-official','rpl-official','club-official','openfootball-europe','footbolno',
   'sportscore','api-football-free','rsssf','championat','sportbox',
   'wikidata','wikipedia','rusfootball','football-data-uk',
-  'thesportsdb-free','footystats-website'
+  'thesportsdb-free','footystats-website','understat-public-mirror','open-matchday-rpl'
 ];
 const freeModes = new Set([
   'public-reference','public-open-data','documented-free-tier',
@@ -27,7 +27,7 @@ test('the owner rule is strictly zero-cost, without provider billing or fallback
   assert.equal(registry.policy.activeProviderIntegrations,0);
 });
 
-test('all 16 known source classes are retained with stable unique IDs and evidence',()=>{
+test('all 18 known source classes are retained with stable unique IDs and evidence',()=>{
   assert.ok(Array.isArray(registry.sources));
   const ids=registry.sources.map(source=>source.id);
   assert.equal(new Set(ids).size,ids.length);
@@ -73,6 +73,8 @@ test('restricted or development-only sources cannot be treated as production fee
   }
   const byId=Object.fromEntries(registry.sources.map(source=>[source.id,source]));
   assert.equal(byId['footystats-website'].access,'restricted-reference');
+  assert.equal(byId['understat-public-mirror'].access,'restricted-reference');
+  assert.equal(byId['open-matchday-rpl'].access,'restricted-reference');
   assert.equal(byId['football-data-uk'].access,'restricted-reference');
   assert.equal(byId['thesportsdb-free'].access,'restricted-reference');
   assert.match(byId.sportscore.limitations,/link/);
