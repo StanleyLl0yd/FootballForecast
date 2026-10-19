@@ -23,9 +23,13 @@ test -n "$source_hash"
 
 docker run --rm -d --name "$restore_container" \
   -e POSTGRES_PASSWORD=ci-only-postgres-password postgres:17
+# Docker entrypoint's temporary init server accepts socket connections,
+# then stops before the final PostgreSQL service starts. Probe TCP first:
+# the temporary server has NO TCP listener, the final server does.
 ready=0
 for i in $(seq 1 40); do
-  if docker exec "$restore_container" pg_isready -U postgres -d postgres >/dev/null 2>&1; then
+  if docker exec "$restore_container" pg_isready -h 127.0.0.1 -U postgres -d postgres >/dev/null 2>&1 &&
+     docker exec "$restore_container" psql -U postgres -d postgres -Atqc 'SELECT 1' 2>/dev/null | grep -qx '1'; then
     ready=1
     break
   fi
@@ -33,7 +37,7 @@ for i in $(seq 1 40); do
 done
 test "$ready" -eq 1
 docker exec "$restore_container" psql -U postgres -d postgres -At \
-  -c 'show server_version_num' | grep -E '^17[0-9][0-9][0-9][0-9]'
+  -c 'show server_version_num' | grep -E '^17[0-9]{4}$'
 
 # pg_dump of selected schemas does not export these external role globals.
 docker exec "$restore_container" psql -v ON_ERROR_STOP=1 -U postgres -d postgres \
