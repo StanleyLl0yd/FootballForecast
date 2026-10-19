@@ -5,12 +5,12 @@ import {setTimeout as sleep} from 'node:timers/promises';
 
 const origin = 'https://footballforecast.vercel.app';
 const attempts = 3;
-async function get(path) {
+async function get(path,extraHeaders={}) {
   let previous;
   for (let i=0;i<attempts;i++) {
     try {
       const res=await fetch(origin+path, {redirect:'manual',cache:'no-store',
-        signal:AbortSignal.timeout(12000),headers:{'user-agent':'FootballForecast-M0-Canary/1'}});
+        signal:AbortSignal.timeout(12000),headers:{'user-agent':'FootballForecast-M0-Canary/1',...extraHeaders}});
       console.log(path, 'HTTP', res.status, 'redirect',res.headers.get('location')||'none');
       return res;
     } catch(err) {
@@ -72,5 +72,24 @@ assert.match(connectivityHtml,/Проверка соединения/,
   'browser connectivity page must server-render the diagnostic heading');
 assert.match(connectivityHtml,/Проверить соединение/,
   'browser connectivity page must offer its user-initiated probe action');
+
+// Verify the actual deployed static offline fallback and file:// CORS boundary.
+// Node sends the same Origin:null used by a local-file browser; no secret or login.
+const offline=await get('/m0-carrier-check.html');
+assert.equal(offline.status,200,'standalone carrier fallback HTML must be public');
+assert.match(offline.headers.get('content-type')??'',/text\\/html/i);
+const offlineHtml=await offline.text();
+assert.match(offlineHtml,/FootballForecast: проверка из сети оператора/);
+assert.match(offlineHtml,/credentials:'omit'/);
+assert.match(offlineHtml,/fetch\\(ORIGIN\\+'\\/api\\/health'/);
+
+const cors=await get('/api/health',{Origin:'null'});
+assert.equal(cors.status,200,'health must answer from a file-origin probe');
+assert.equal(cors.headers.get('access-control-allow-origin'),'*',
+  'public health JSON must explicitly allow offline file-origin CORS');
+const corsStatus=await cors.json();
+assert.equal(corsStatus.service,'footballforecast');
+assert.equal(corsStatus.status,'public_configured');
+console.log('PASS: offline HTML delivered and local-file Origin:null health CORS validated');
 
 console.log('PASS: live production HTTP health, public Supabase reads, protected admin, archive/data/connectivity');
