@@ -30,14 +30,38 @@ async function edge() {
       '--disable-dev-shm-usage','--disable-background-networking','--no-first-run',
       '--no-default-browser-check',`--user-data-dir=${dir}`,'--window-size=390,844'];
     const opts={timeout:45000,maxBuffer:12000000};
+    // Edge/Chromium can exit zero with an empty --dump-dom on hosted runners.
+    // Retry ONLY blank captures or actual launch timeouts. Incorrect nonempty
+    // page HTML is an immediate failure and never retried or hidden.
     for(const path of ['/dashboard','/admin']) {
-      const {stdout}=await execFileAsync(process.env.FF_EDGE_BIN||'microsoft-edge',
-        [...flags,'--dump-dom',origin+path],opts);
-      expectPage(stdout,path);
+      let captured=false,lastFailure='';
+      for(let attempt=1;attempt<=3;attempt++) {
+        try {
+          const {stdout,stderr}=await execFileAsync(process.env.FF_EDGE_BIN||'microsoft-edge',
+            [...flags.filter(flag=>!flag.startsWith('--user-data-dir=')),
+              `--user-data-dir=${join(dir,'dom-'+path.slice(1)+'-'+attempt)}`,
+              '--no-proxy-server','--dump-dom',origin+path],opts);
+          if(stdout.length===0) {
+            lastFailure=`Edge ${path} returned blank DOM on attempt ${attempt}; stderr: ${stderr.slice(-400)}`;
+            console.warn(lastFailure);
+            continue;
+          }
+          expectPage(stdout,path);
+          captured=true;
+          break;
+        } catch(error) {
+          if(error?.code!=='ETIMEDOUT' && error?.killed!==true) throw error;
+          lastFailure=`Edge launch timed out for ${path}, attempt ${attempt}`;
+          console.warn(lastFailure);
+        }
+      }
+      assert.ok(captured,`Edge failed to render ${path} after 3 launches: ${lastFailure}`);
     }
     const screenshot=join(dir,'mobile-dashboard.png');
     await execFileAsync(process.env.FF_EDGE_BIN||'microsoft-edge',
-      [...flags,`--screenshot=${screenshot}`,origin+'/dashboard'],opts);
+      [...flags.filter(flag=>!flag.startsWith('--user-data-dir=')),
+        `--user-data-dir=${join(dir,'mobile-screenshot')}`, '--no-proxy-server',
+        `--screenshot=${screenshot}`,origin+'/dashboard'],opts);
     const png=await readFile(screenshot);
     assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
     assert.ok(png.readUInt32BE(16)>=320 && png.readUInt32BE(20)>=400,

@@ -30,3 +30,7 @@ The non-gating `safari-compatibility` job runs on a **standard** GitHub-hosted `
 ### Chrome smoke reliability (2026-10-19)
 
 On exact-main `336497252c03c89f19144ab2d3a1249a2fa85140` the required web job failed once because Google Chrome `--dump-dom` returned **empty stdout** despite a successful HTTP smoke and Next.js build. The test now retries **only** empty captures/timeouts, at most three launches, with independent browser profiles and local proxy disabled. Nonempty incorrect HTML remains an immediate hard failure; the check is still part of the required `web` job. This does not relax CI or substitute success based on the server-only HTTP checks. Inspect smoke logs if empty DOM recurs.
+
+### Microsoft Edge blank-DOM diagnostic retry (2026-10-19)
+
+The non-gating Edge/Firefox production browser job returned an empty `microsoft-edge --dump-dom` stdout twice (including exact-main CI 39221222354), though rerunning once succeeded and all required web/SQL/security checks passed. Chromium's hosted headless launches are now isolated by user-data directory; only a genuinely blank DOM or launch timeout may retry up to three times. Nonempty incorrect HTML fails immediately. The Edge mobile PNG and Firefox native WebDriver checks remain enforced within the diagnostic job; do not treat the diagnostic as passing unless job logs confirm success.
