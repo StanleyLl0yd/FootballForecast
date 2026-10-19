@@ -77,11 +77,13 @@ assert.match(connectivityHtml,/Проверить соединение/,
 // Node sends the same Origin:null used by a local-file browser; no secret or login.
 const offline=await get('/m0-carrier-check.html');
 assert.equal(offline.status,200,'standalone carrier fallback HTML must be public');
-assert.match(offline.headers.get('content-type')??'',/text\\/html/i);
+assert.ok((offline.headers.get('content-type')??'').includes('text/html'),
+  'offline checker must be served as HTML');
 const offlineHtml=await offline.text();
 assert.match(offlineHtml,/FootballForecast: проверка из сети оператора/);
 assert.match(offlineHtml,/credentials:'omit'/);
-assert.match(offlineHtml,/fetch\\(ORIGIN\\+'\\/api\\/health'/);
+assert.ok(offlineHtml.includes("fetch(ORIGIN+'/api/health'"),
+  'offline checker must request only the fixed health origin');
 
 const cors=await get('/api/health',{Origin:'null'});
 assert.equal(cors.status,200,'health must answer from a file-origin probe');
