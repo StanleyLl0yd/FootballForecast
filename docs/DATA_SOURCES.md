@@ -8,7 +8,7 @@ The strictly local, fail-closed [multi-source empirical accuracy protocol](M0_SO
 
 **No purchases, paid subscriptions, paid historical files, API overages, paid account upgrades, credit-card billing, paid-hosting fallback, or trial-to-paid conversion.** A future provider's premium-only RPL dataset is **unavailable**, not a reason to change tiers. Retain the current Free/Hobby hosting limits. API registration is eligible only if the exact intended operation is permanently priced at $0 within permitted quotas, with no required payment details or unexpected charges. If nothing lawfully usable covers a feature, show an honest "data unavailable" state; never fabricate it.
 
-Every currently identified free, openly published or manual corroboration candidate is in the machine-readable **[16-source ranking registry](M0_FREE_SOURCE_REGISTRY.json)**. The catalog has `priority` **1-4**, `zeroCost` classification, role(s), source terms and known quality warnings. All `active=false` at M0, meaning **no provider integrations or model training** have been enabled. Adding a source requires documenting its exact free access and legal scope; the CI policy tests reject paid/unknown tiers and invented measured error rates. An article readable without charge may be **manual citation only**, not a free bulk API.
+Every currently identified free, openly published or manual corroboration candidate is in the machine-readable **[18-source ranking registry](M0_FREE_SOURCE_REGISTRY.json)**. The catalog has `priority` **1-4**, `zeroCost` classification, role(s), source terms and known quality warnings. All `active=false` at M0, meaning **no provider integrations or model training** have been enabled. Adding a source requires documenting its exact free access and legal scope; the CI policy tests reject paid/unknown tiers and invented measured error rates. An article readable without charge may be **manual citation only**, not a free bulk API.
 
 ### Preliminary reliability and accuracy priorities (specific to data fields)
 
@@ -48,6 +48,19 @@ A numeric accuracy leaderboard is **not yet justified**. For each eligible sourc
 | Understat | RPL 2026/27 coverage/rights not verified | No permission for automated acquisition or redistribution established | No adapter or scraping |
 | Official RPL / club sites | Public fixtures/results may be visible | Public visibility is **not** permission for bulk scraping or reuse of photographs, badges or protected databases | Reference only until a permitted feed/license is established |
 
+
+## Additional $0 source discovery and direct-data verification boundary (2026-10-19)
+
+The 18-entry [free/source research register](M0_FREE_SOURCE_REGISTRY.json) now includes two additional **restricted-reference-only** candidates, pinned to the inspected GitHub state:
+
+- [`vibedatascience/understat_players_aggregated`](https://github.com/vibedatascience/understat_players_aggregated/tree/768b7ca0b977a5e6b4b429c7b0cf750e8269f2fc) says its public CSV/Parquet includes **RFPL player-season** goals, shots, xG, xA and minutes, for historical 2014/15–2024/25. This is a potential lead for data-field *existence*, **not** a licensed dataset: GitHub reports no repository license; the README credits Understat as the upstream owner and includes scrape timestamps, not verified pre-match revisions. Do not fetch, train on, ship or promote its player rows under M0.
+- [`oladeeayo/open-matchday`](https://github.com/oladeeayo/open-matchday/tree/282de2bf3564611ed7062d295f4a8d1fa0654d7f) includes a **2026/27 RPL directory** in its league index. Its own source table marks the RPL fixture spine as **Soccerway schedule-page only** rather than a full-season independent official record. The [disclaimer](https://github.com/oladeeayo/open-matchday/blob/master/DISCLAIMER.md) restricts use to informational noncommercial research and preserves upstream publisher rights. It cannot be counted as a separate independent feed or assumed to allow automated Soccerway scraping, raw publication or training.
+
+The [Footbolno open-data page](https://footbolno.ru/otkrytye-dannye) explicitly documents source `updated` values, separate UTC/Moscow times, a `time_confirmed` flag, season derived from the match date, and the `scheduled/live/finished/cancelled` status vocabulary. Their published CSV advertises scores, events and attendance but **not match-level xG, lineups or referee records**. Verify the concrete RPL 2026/27 sample/schema and upstream rights before deriving our own status/season adapter. A manifest `updated` timestamp is a **file refresh time**, not proof that each historical row existed before kickoff.
+
+The website's advertised direct `/data/index.json` and `/data/league/235-matches.csv` were not retrievable through the available research HTTP environment on 2026-10-19; this is **not proof of a provider outage, CSV absence or RPL season coverage**. No raw bytes, actual CSV SHA-256 or real provider match-error counts have been obtained in FootballForecast. Keep source coverage/accuracy `UNKNOWN` rather than inferring it from the landing-page catalog.
+
+The [RSSSF current European domestic results index](https://rsssf.org/results-eur.html) also lists Russia 2026/27. It is a free-to-read historical/editorial source for manual cross-checks, **not** a licensed bulk or independent primary match feed. Similarly, [football-data.org free plan](https://www.football-data.org/coverage) does **not** list RFPL among its 12 no-cost competitions, so it is not a permitted RPL integration under the owner's strictly $0 policy.
 
 ## Reused source investigations from FootClubSim (2026-10-19)
 
