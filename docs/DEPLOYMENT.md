@@ -22,6 +22,12 @@ npm run smoke:production
 
 The local `smoke:auth` checks fail-closed optional administrator OAuth and public routes under deliberately missing/malformed settings. With Google Chrome installed, `FF_BROWSER_SMOKE=1 npm run smoke:auth` also checks a real browser. The external `smoke:production` runs from GitHub Actions as a **non-gating** production canary, verifying real HTTP responses and successful public Supabase REST reads. Inspect its logs even when CI is green; follow through with exact Vercel deployment SHA and end-to-end manual browser checks.
 
+## Browser network self-check (M0)
+
+The public `/connectivity` page offers a **user-initiated, no-registration GUI** for three fixed *same-origin GET-only* probes: the Vercel health endpoint, the public dashboard and the forecast archive. The last two routes verify whether the **Next.js server can read the anonymous Supabase API**. The browser sends no API keys and does not make a cross-origin request to Supabase, consistent with the server-rendered application architecture. The client displays response statuses and local elapsed time and can copy a short diagnostic report, but it does not send that report or device identifiers to FootballForecast. Normal infrastructure request logs still apply.
+
+To investigate access from Russia, open the **actual site** in a Russian residential or mobile operator network **without VPN**, run the test and preserve the copied report with the operator/city supplied separately by the tester if they consent. Compare at least two independent carriers. A successful GitHub runner, European browser, datacenter proxy, VPN or even one Russian carrier does **not** satisfy cross-operator availability acceptance. If the website itself cannot load, record that as a failed reachability observation: the self-check cannot bootstrap an inaccessible website.
+
 ## Runtime configuration and future administration
 
 The public site does **not** require a GitHub OAuth application, an account or cookies. `/admin` is deny-by-default and does not have enabled write actions. Its optional owner OAuth code requires `APP_OWNER_GITHUB_ID`, a trusted `APP_BASE_URL`, correctly configured Supabase GitHub provider/callback and live negative session tests **before** activation. Registration for regular visitors is intentionally deferred.
@@ -30,4 +36,4 @@ Vercel Hobby supports personal non-commercial development; commercial operation 
 
 ## Current limitations
 
-The live database is empty (zero imported RPL matches and forecasts); no calibrated model or legal source feed is connected. Monitoring does not prove end-user connectivity from Russia or Firefox/Safari/Edge compatibility. See `ROADMAP.md`, `docs/KNOWN_LIMITATIONS.md` and tracked GitHub issues for unfinished acceptance criteria.
+The live database is empty (zero imported RPL matches and forecasts); no calibrated model or legal source feed is connected. GitHub Actions browser diagnostics have run Chrome, Firefox, Edge and Safari successfully, but they do not prove end-user connectivity from Russian residential/mobile networks or all client browser combinations. See `ROADMAP.md`, `docs/KNOWN_LIMITATIONS.md` and tracked GitHub issues for unfinished acceptance criteria.

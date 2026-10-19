@@ -113,7 +113,7 @@ async function testServer(name, overrides) {
     assert.equal(health.headers.get('x-frame-options'), 'DENY');
     assert.equal(health.headers.get('x-content-type-options'), 'nosniff');
 
-    for (const path of ['/dashboard','/matches','/models','/analytics','/data','/archive']) {
+    for (const path of ['/dashboard','/matches','/models','/analytics','/data','/archive','/connectivity']) {
       const r = await get(path);
       assert.equal(r.status, 200, `${name}: ${path} must be public`);
     }

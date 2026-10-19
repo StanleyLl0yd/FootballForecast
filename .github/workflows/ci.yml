@@ -59,6 +59,8 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - name: Reject non-owner GitHub identity fixtures
         run: npm run test:auth
+      - name: Verify browser connectivity probes are read-only and privacy-preserving
+        run: node --experimental-strip-types --test apps/web/tests/connectivity.test.mjs
       - name: Validate anonymous Supabase REST integration without credentials
         run: npm run test:public-data
       - name: Validate public forecast archive schema and read-only REST
