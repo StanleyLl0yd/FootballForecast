@@ -7,12 +7,29 @@ export type ConnectivityResult={
   elapsedMs:number|null;
 };
 
-// M0 checks one explicitly provisioned, public Free project, never a caller-supplied URL.
-// Public Supabase project references and publishable keys are not secrets.
+// Current publicly provisioned M0 Supabase Free project, not a caller-controlled URL.
 const projectOrigin='https://upulkesaiwnwfagjgteh.supabase.co';
-const readOnlyMatchesUrl='https://upulkesaiwnwfagjgteh.supabase.co/rest/v1/ff_matches?select=id&limit=1';
+const matchesEndpoint='https://upulkesaiwnwfagjgteh.supabase.co/rest/v1/ff_matches?select=id&limit=1';
+
 export function validPublishableEndpoint(url:string|undefined,key:string|undefined):boolean {
   return url===projectOrigin&&typeof key==='string'&&key.startsWith('sb_publishable_');
+}
+async function check(
+  id:ConnectivityResult['id'],
+  label:string,
+  request:()=>Promise<Response>,
+  validate:(response:Response)=>Promise<boolean>
+):Promise<ConnectivityResult>{
+  const started=Date.now();
+  try{
+    const response=await request();
+    const valid=response.ok&&await validate(response);
+    return {id,label,state:valid?'passed':'failed',
+      httpStatus:response.status,elapsedMs:Date.now()-started};
+  }catch{
+    // Errors can contain private network details; never include them in reports.
+    return {id,label,state:'failed',httpStatus:null,elapsedMs:Date.now()-started};
+  }
 }
 
 export async function runConnectivityChecks(
@@ -20,43 +37,31 @@ export async function runConnectivityChecks(
   publishableKey:string|undefined,
   fetchImpl:typeof fetch=fetch
 ):Promise<ConnectivityResult[]> {
-
-  async function probe(id:ConnectivityResult['id'],label:string,url:string,
-    headers:Record<string,string>={},validate?:(response:Response)=>Promise<boolean>):Promise<ConnectivityResult>{
-    const started=Date.now();
-    try{
-      const response=await fetchImpl(url,{method:'GET',cache:'no-store',redirect:'error',
-        signal:AbortSignal.timeout(10000),headers});
-      const valid=response.ok&&(!validate||await validate(response));
-      return {id,label,state:valid?'passed':'failed',httpStatus:response.status,
-        elapsedMs:Date.now()-started};
-    }catch{
-      // Never serialize provider errors, paths, user agent, network details or API keys.
-      return {id,label,state:'failed',httpStatus:null,elapsedMs:Date.now()-started};
-    }
-  }
-  const checks=[
-    probe('health','Vercel: проверка API','/api/health',{},async response=>{
-      const json=await response.json();
-      return json?.service==='footballforecast'&&json?.status==='public_configured';
-    }),
-    probe('dashboard','Vercel: публичная страница','/dashboard',{},async response=>{
-      const html=await response.text();
-      return html.includes('Футбольная аналитика')&&html.includes('Публичная база подключена');
-    })
-  ];
-  if(validPublishableEndpoint(supabaseUrl,publishableKey)){
-    const endpoint=readOnlyMatchesUrl;
-    checks.push(probe('supabase','Supabase: прямое чтение',endpoint,
-      {apikey:publishableKey!,Accept:'application/json'},async response=>{
+  const options={method:'GET' as const,cache:'no-store' as const,
+    redirect:'error' as const};
+  const health=check('health','Vercel: проверка API',
+    ()=>fetchImpl('/api/health',{...options,signal:AbortSignal.timeout(10000)}),
+    async response=>{
+      const value=await response.json();
+      return value?.service==='footballforecast'&&value?.status==='public_configured';
+    });
+  const dashboard=check('dashboard','Vercel: публичная страница',
+    ()=>fetchImpl('/dashboard',{...options,signal:AbortSignal.timeout(10000)}),
+    async response=>{
+      const text=await response.text();
+      return text.includes('Футбольная аналитика')&&text.includes('Публичная база подключена');
+    });
+  const supabase=validPublishableEndpoint(supabaseUrl,publishableKey)
+    ?check('supabase','Supabase: прямое чтение',
+      ()=>fetchImpl(matchesEndpoint,{...options,signal:AbortSignal.timeout(10000),
+        headers:{apikey:publishableKey!,Accept:'application/json'}}),
+      async response=>{
         if(!response.headers.get('content-type')?.toLowerCase().includes('application/json'))return false;
         return Array.isArray(await response.json());
-      }));
-  }else{
-    checks.push(Promise.resolve({id:'supabase',label:'Supabase: прямое чтение',
-      state:'not_configured',httpStatus:null,elapsedMs:null} as ConnectivityResult));
-  }
-  return Promise.all(checks);
+      })
+    :Promise.resolve({id:'supabase',label:'Supabase: прямое чтение',
+      state:'not_configured',httpStatus:null,elapsedMs:null} as ConnectivityResult);
+  return Promise.all([health,dashboard,supabase]);
 }
 
 export function formatConnectivityReport(items:ConnectivityResult[],time:string):string{
