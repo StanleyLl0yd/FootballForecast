@@ -102,21 +102,23 @@ async function firefox() {
     return response.value;
   }
   try {
-    let session;
+    // A POST /session may succeed even if the response is lost. Retrying it
+    // creates a second session request and triggers "Session is already started".
+    // Poll only the idempotent GET /status, then create exactly one session.
+    let ready=false;
     for(let i=0;i<50;i++){
       if(driver.exitCode!==null)throw new Error('geckodriver exited before startup');
       try {
-        session=await request('/session',{
-          capabilities:{alwaysMatch:{browserName:'firefox',
-            'moz:firefoxOptions':{args:['-headless']}}}
-        });
-        break;
-      }catch(e){
-        // Retry only while the driver port is still starting, not after errors.
-        if(i>=49)throw e;
-        await delay(200);
-      }
+        const status=await request('/status',undefined,'GET');
+        if(status?.ready===true){ready=true;break}
+      }catch{ /* driver HTTP listener is still starting */ }
+      await delay(200);
     }
+    assert.ok(ready,'geckodriver must report ready before session creation');
+    const session=await request('/session',{
+      capabilities:{alwaysMatch:{browserName:'firefox',
+        'moz:firefoxOptions':{args:['-headless']}}}
+    });
     assert.ok(session?.sessionId,'WebDriver session required');
     id=session.sessionId;
     await request(`/session/${id}/window/rect`,{width:390,height:844},'POST');
