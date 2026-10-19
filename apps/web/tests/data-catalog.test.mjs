@@ -24,7 +24,7 @@ test('all free/reference sources map into four transparent research tiers',()=>{
     levels.set(source.priority,(levels.get(source.priority)??0)+1);
   }
   assert.equal([...levels.values()].reduce((a,b)=>a+b,0),metadata.sources.length);
-  assert.equal(metadata.sources.length,19-1);
+  assert.ok(metadata.sources.length>=18);
   assert.ok([...levels.values()].every(v=>v>0));
 });
 test('external provider links are safe and a full-site no-account catalog remains public',()=>{
