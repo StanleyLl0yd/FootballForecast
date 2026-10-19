@@ -8,7 +8,7 @@ const key='sb_publishable_synthetic_test_only';
 test('three read-only user-initiated probes do not send credentials to the public site',async()=>{
   const requests=[];
   const mock=async(input,init)=>{
-    const url=new URL(input);
+    const url=new URL(input,origin);
     requests.push({url,init});
     if(url.pathname==='/api/health')
       return new Response(JSON.stringify({service:'footballforecast',status:'public_configured'}),{status:200});
@@ -18,7 +18,7 @@ test('three read-only user-initiated probes do not send credentials to the publi
       return new Response('[]',{status:200,headers:{'content-type':'application/json'}});
     throw new Error('Unexpected URL');
   };
-  const result=await runConnectivityChecks(origin,project,key,mock);
+  const result=await runConnectivityChecks(project,key,mock);
   assert.deepEqual(result.map(x=>x.state),['passed','passed','passed']);
   assert.equal(requests.length,3);
   assert.ok(requests.every(x=>x.init.method==='GET'&&x.init.cache==='no-store'));
@@ -37,7 +37,7 @@ test('unavailable database and HTTP failure report accurately without guessing n
     if(String(input).includes('/dashboard'))throw new Error('private DNS diagnostic must not leak');
     return new Response('blocked',{status:403});
   };
-  const result=await runConnectivityChecks(origin,project,key,mock);
+  const result=await runConnectivityChecks(project,key,mock);
   assert.deepEqual(result.map(x=>x.state),['failed','failed','failed']);
   assert.equal(result[1].httpStatus,null);
   assert.equal(result[2].httpStatus,403);
@@ -46,13 +46,12 @@ test('unavailable database and HTTP failure report accurately without guessing n
 test('missing or malformed publishable settings never initiate a third-party request',async()=>{
   const calls=[];
   const mock=async input=>{calls.push(input);return new Response('{}',{status:200});};
-  const result=await runConnectivityChecks(origin,'http://database.example','private_secret',mock);
+  const result=await runConnectivityChecks('http://database.example','private_secret',mock);
   assert.equal(calls.length,2);
   assert.equal(result[2].state,'not_configured');
   assert.equal(validPublishableEndpoint('https://db.example/path',key),false);
   assert.equal(validPublishableEndpoint('https://db.example?token=1',key),false);
   assert.equal(validPublishableEndpoint('https://db.example',key),true);
-  await assert.rejects(runConnectivityChecks('http://remote.example',project,key,mock));
 });
 
 test('a misleading HTTP 200 non-JSON response does not count as Supabase success',async()=>{
@@ -62,6 +61,6 @@ test('a misleading HTTP 200 non-JSON response does not count as Supabase success
     if(String(input).includes('/dashboard'))return new Response('Футбольная аналитика Публичная база подключена',{status:200});
     return new Response('<html>gateway response</html>',{status:200,headers:{'content-type':'text/html'}});
   };
-  const result=await runConnectivityChecks(origin,project,key,mock);
+  const result=await runConnectivityChecks(project,key,mock);
   assert.deepEqual(result.map(x=>x.state),['passed','passed','failed']);
 });
