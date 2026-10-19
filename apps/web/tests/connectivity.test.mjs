@@ -54,3 +54,14 @@ test('missing or malformed publishable settings never initiate a third-party req
   assert.equal(validPublishableEndpoint('https://db.example',key),true);
   await assert.rejects(runConnectivityChecks('http://remote.example',project,key,mock));
 });
+
+test('a misleading HTTP 200 non-JSON response does not count as Supabase success',async()=>{
+  const mock=async input=>{
+    if(String(input).includes('/api/health'))
+      return new Response(JSON.stringify({service:'footballforecast',status:'public_configured'}),{status:200});
+    if(String(input).includes('/dashboard'))return new Response('Футбольная аналитика Публичная база подключена',{status:200});
+    return new Response('<html>gateway response</html>',{status:200,headers:{'content-type':'text/html'}});
+  };
+  const result=await runConnectivityChecks(origin,project,key,mock);
+  assert.deepEqual(result.map(x=>x.state),['passed','passed','failed']);
+});
