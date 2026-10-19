@@ -40,6 +40,32 @@ Unlike free-claim APIs with ambiguous retention and competition publication righ
 
 `scripts/m0-fixture-structure.mjs` exports a pure `auditFootballTxt()` function that inspects match rows, header team/match counts, malformed or negative scores, 16 distinct clubs, all 240 directed home/away pairs and any duplicate/missing inverse. Required web CI runs synthetic positive/negative unit fixtures; **it never fetches vendor data**. This is a safety gate for evaluating a manual candidate **before** any M1 approval, not an importer, validator of legal provenance or authorization to use live/paid data. A passing structural audit is necessary but not sufficient to approve any provider.
 
+## Reproducible OpenFootball M0 read-only quality snapshot (2026-10-19)
+
+The inspected upstream revision is [`openfootball/europe@63df627f3c87ce71708f016522ea236cf74332c3`](https://github.com/openfootball/europe/commit/63df627f3c87ce71708f016522ea236cf74332c3). The following Git **blob SHA-1** values identify individual source files at that revision (they are not SHA-256 file checksums and not source-authenticity certifications).
+
+| RPL season | `russia/*_ru1.txt` Git blob SHA-1 | Scheduled fixture rows | Technical `[awarded]` results | Mechanical observations |
+| --- | --- | ---: | ---: | --- |
+| 2018/19 | `e5efe22ce8ac11b76d0b8aa31527533a44d5a325` | 240 | 0 | 30 rounds of 8; 240 directed pairs |
+| 2019/20 | `233597390aeb5b4cf4cd2a0a3279ae4fc6e02c68` | 240 | **4** | 30 rounds of 8; 240 directed pairs; only **236** ordinary score rows |
+| 2020/21 | `272185a808d69ce90574e9eff40ff6d53bf7f322` | 240 | **2** | 30 rounds of 8; 240 directed pairs; only **238** ordinary score rows |
+| 2023/24 | `3ea6829a971d1cbdf56552be0519cc125707bd99` | 240 | 0 | **FAIL**: 239 directed pairs, duplicate Sochi/Spartak and missing inverse |
+| 2024/25 | `6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc` | 240 | 0 | 30 rounds of 8; 240 directed pairs |
+
+The six **administratively awarded** scores are explicitly marked in the original Football.TXT files: 2019/20 Orenburg–Krasnodar, Orenburg–Ural, Tambov–Sochi and Krylia Sovetov–Sochi; 2020/21 Rotor–Krasnodar and Rostov–Rotor. They count in *official competition results*, but they are **not observed played goal totals**. The [2019/20 results table](https://fbref.com/en/comps/30/2019-2020/schedule/) and [Rotor 2020/21 log](https://fbref.com/en/squads/257195fa/2020-2021/Rotor-Volgograd-Stats) independently describe some of these as awarded. This is a targeted check of classifications, **not** a full external reconciliation of 1,200 results.
+
+**Policy:** preserve the official score/status for league tables, and separately exclude or explicitly model non-played awards in any future empirical goal-rate/Poisson fitting. Never silently turn an administrative 3-0 into three observed goals. The existing 2023/24 quarantine still applies independently. No model, data ingestion or production behavior changes here.
+
+`scripts/m0-source-quality.mjs` adds a dependency-free, local-file-only diagnostics command:
+
+```sh
+node scripts/m0-source-quality.mjs /path/to/2019-20_ru1.txt
+```
+
+It checks 30 matchdays with 8 fixtures each, detects `[awarded]` outcomes, rejects unknown score annotations and impossible half-time/final-score combinations, and delegates duplicate/missing fixtures to the existing `auditFootballTxt()`. Output is JSON; it reports `mechanicalChecksPassed`, **never** `approved`. The CLI returns exit code 1 for mechanical failures and 2 for usage/read errors. CI uses **synthetic fixtures only** and never downloads upstream data. To reproduce historical observations, a maintainer must intentionally obtain the five CC0 files at the pinned upstream revision, validate their immutable blob identities independently, then inspect each local file. No provider records are committed.
+
+The checked source includes match-day dates and scheduled kickoff text, **not independently validated actual kickoff timezones or pre-match publication timestamps**. For example, [FBref's 2023/24 fixture list](https://fbref.com/en/comps/30/2023-2024/schedule/) and [Russian 2023/24 schedule](https://www.rusfootball.info/matchcenter/tournaments/rpl/season_2023_2024/matches/113985) independently place **Spartak at home** against Sochi on 2023-09-16. These observations do not establish comprehensive source correctness, rights, a strict historical as-of dataset or permission to publish a public RPL fixture feed.
+
 ## Two important distinctions
 
 1. **Website != API.** FootyStats explicitly directs programmatic use to its API, and the API has different conditions from the website. API model/app permission does **not** authorize publishing a copy of the vendor's dataset or third-party team assets.
