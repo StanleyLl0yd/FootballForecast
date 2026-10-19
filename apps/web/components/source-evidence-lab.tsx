@@ -12,6 +12,39 @@ const sha256=async(bytes:ArrayBuffer)=>{
   return Array.from(new Uint8Array(hash),v=>v.toString(16).padStart(2,'0')).join('');
 };
 
+// This download contains ONLY invented clubs and an example.org placeholder URL.
+const syntheticExample={
+  schemaVersion:1,
+  cases:[{
+    key:'SYNTHETIC-NOT-A-REAL-MATCH-001',
+    officialEvidenceUrl:'https://example.org/fictional/001',
+    official:{
+      homeId:'Fictional-Home',awayId:'Fictional-Away',
+      kickoffAt:'2025-01-01T12:00:00Z',
+      status:'played',homeGoals:2,awayGoals:1
+    },
+    observations:[{
+      sourceId:'footbolno',publisherGroup:null,publishedAt:null,
+      observedAt:'2026-10-19T12:00:00Z',
+      homeId:'Fictional-Home',awayId:'Fictional-Away',
+      kickoffAt:'2025-01-01T12:00:00Z',
+      status:'played',homeGoals:2,awayGoals:1
+    }]
+  }]
+};
+function downloadLocalJson(filename:string,payload:unknown){
+  const data=JSON.stringify(payload,null,2)+'\n';
+  const url=URL.createObjectURL(new Blob([data],{type:'application/json;charset=utf-8'}));
+  const link=document.createElement('a');
+  link.href=url;
+  link.download=filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  // Defer revocation so Safari/Firefox can finish the user-initiated download.
+  window.setTimeout(()=>URL.revokeObjectURL(url),4000);
+}
+
 export function SourceEvidenceLab(){
   const [result,setResult]=useState<QualityReport|null>(null);
   const [fileHash,setFileHash]=useState<string|null>(null);
@@ -54,6 +87,10 @@ export function SourceEvidenceLab(){
       Нужен формат из <a href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M0_SOURCE_ACCURACY_PROTOCOL.md"
         target="_blank" rel="noopener noreferrer">документации</a>. Проверяются структура, ошибки и интервалы неопределённости, но не подлинность ссылок, лицензии или независимость публикаций.
     </p>
+    <button type="button" className="source-lab-download" onClick={()=>downloadLocalJson(
+      'footballforecast-synthetic-example.json',syntheticExample)}>
+      Скачать пример формата (вымышленный матч)
+    </button>
     {working?<p role="status" className="source-lab-note">Проверка файла в браузере…</p>:null}
     {error?<p role="alert" className="source-lab-error">Не удалось проверить данные: {error}</p>:null}
     {result?<div className="source-lab-results" aria-live="polite">
@@ -62,6 +99,11 @@ export function SourceEvidenceLab(){
         Представлено источников: <strong>{result.sources.length}</strong>.
         Расчёт не включает новые сетевые запросы.</p>
       <p className="source-lab-note">SHA-256 загруженного файла: <code>{fileHash}</code></p>
+      <button type="button" className="source-lab-download" onClick={()=>downloadLocalJson(
+        'footballforecast-research-report.json',{
+          ...result,originalFileSHA256:fileHash,
+          warning:'RESEARCH ONLY: source rights, references, independence and as-of history are NOT authenticated'
+        })}>Сохранить обезличенный JSON-отчёт</button>
       {result.fieldRankings.fixtureIntegrity.length===0?<p className="source-lab-warning">
         Для предварительного ранжирования требуется не менее {result.minimumScoredMatches} завершённых эталонных матчей. Ошибки ниже носят только описательный характер.
       </p>:<p className="source-lab-warning">
