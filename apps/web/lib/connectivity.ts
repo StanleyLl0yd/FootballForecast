@@ -17,14 +17,10 @@ export function validPublishableEndpoint(url:string|undefined,key:string|undefin
 }
 
 export async function runConnectivityChecks(
-  origin:string,
   supabaseUrl:string|undefined,
   publishableKey:string|undefined,
   fetchImpl:typeof fetch=fetch
 ):Promise<ConnectivityResult[]> {
-  const site=new URL(origin);
-  if(site.protocol!=='https:'&&site.hostname!=='localhost')
-    throw new Error('Connectivity test requires an HTTPS site');
 
   async function probe(id:ConnectivityResult['id'],label:string,url:string,
     headers:Record<string,string>={},validate?:(response:Response)=>Promise<boolean>):Promise<ConnectivityResult>{
@@ -41,11 +37,11 @@ export async function runConnectivityChecks(
     }
   }
   const checks=[
-    probe('health','Vercel: проверка API',new URL('/api/health',site).href,{},async response=>{
+    probe('health','Vercel: проверка API','/api/health',{},async response=>{
       const json=await response.json();
       return json?.service==='footballforecast'&&json?.status==='public_configured';
     }),
-    probe('dashboard','Vercel: публичная страница',new URL('/dashboard',site).href,{},async response=>{
+    probe('dashboard','Vercel: публичная страница','/dashboard',{},async response=>{
       const html=await response.text();
       return html.includes('Футбольная аналитика')&&html.includes('Публичная база подключена');
     })
