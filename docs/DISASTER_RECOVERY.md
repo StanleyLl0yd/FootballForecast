@@ -4,9 +4,9 @@ The actual Supabase **Free** database is provisioned in Frankfurt (PostgreSQL 17
 
 ## Reproducible local restore exercise
 
-The existing `python-core` CI job uses a disposable PostgreSQL 17 container and synthetic M0 fixtures only. After applying the three migrations and testing RLS/append-only guards, CI exports `public`, `auth` and `ff_private` schemas plus fixture rows to a custom-format `pg_dump` file, restores it into a newly created `ff_restore_ci` database on the same isolated container, then runs `database/tests/0004_restore_validation.sql`. The assertions verify rows, access rules, policies, five integrity triggers, indexes and archived forecast immutability.
+The `python-core` CI job starts from a disposable PostgreSQL 17 database with synthetic M0 fixtures only. After migrations and RLS/append-only tests, it creates a custom-format `pg_dump -Fc` of `public`, `auth` and `ff_private`. It then **copies the archive to a distinct, newly started PostgreSQL 17 server container**, confirms source/staged copy SHA-256 agreement, provisions only the CI-only `anon`/`authenticated` NOLOGIN roles missing from a schema-only dump, restores into `ff_restore_ci` and executes `database/tests/0004_restore_validation.sql`. The assertions verify rows, access policies and grants, five integrity triggers, foreign-key indexes and archived forecast immutability.
 
-This proves a **PostgreSQL 17 test-fixture database round trip on the same major release as production**, not a production backup, not an independent-zone recovery and not a true externally stored restore.
+This proves a **clean restore across two distinct PostgreSQL 17 server instances**, not merely two databases in one instance. Both containers still share the *same ephemeral GitHub runner*, so this is **not offsite retention, not cross-zone disaster recovery, not a production backup** and not proof that real Free Supabase data can be recovered independently. The synthetic dump is removed after verification and is never uploaded as an Actions artifact.
 
 ## Real REST role-refusal proof
 
