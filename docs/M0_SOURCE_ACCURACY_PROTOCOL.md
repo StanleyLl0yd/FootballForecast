@@ -77,6 +77,8 @@ The public [Data Center](https://footballforecast.vercel.app/data) includes a lo
 4. The private file is **not stored or uploaded**, but its derived summary remains visible in that browser tab until a new file is chosen or the page is closed. The site itself requires an initial internet connection, and browser extensions/OS components are outside this application's privacy boundary.
 5. Error reports contain no raw team names or provider match rows: only source names from the public 18-entry research catalog, source-level error counts and the file digest. The same path remains executable with the CLI for reproducible research or closed-browser environments.
 
+The interface also offers **two local-only downloads**: a single **obviously fictional** JSON example to edit as a starting format and an anonymized summary JSON of the current calculations, including original file-byte SHA-256. The downloaded report deliberately contains no imported raw rows, club names from the evidence file, user-entered publisher-group text or provider responses; it replaces such publisher-group labels with an aggregate count. all source IDs resolve only against the public registry. Generated synthetic examples are **not** counted as real comparison evidence or used to certify sources.
+
 The site's default view contains **no real provider observations**, no empirical percentage, no model predictions and no source-rights approval. A user's self-supplied sample cannot prove that the cited `officialEvidenceUrl` is an authentic official protocol; evidence must be independently checked before any study is accepted. The interactive report has **no** action to mark a source trusted, upload records, publish predictions or change the M0 exit gate.
 
 ## Ranking and limits

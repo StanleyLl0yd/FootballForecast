@@ -53,6 +53,8 @@ jobs:
         run: node --check scripts/smoke-production.mjs
       - name: Reject non-owner GitHub identity fixtures
         run: npm run test:auth
+      - name: Prevent WebDriver duplicate Firefox session creation
+        run: node --check scripts/smoke-cross-browser.mjs && node --test tests/m0-webdriver-session.test.mjs
       - name: Verify browser connectivity probes are read-only and privacy-preserving
         run: node --experimental-strip-types --test apps/web/tests/connectivity.test.mjs apps/web/tests/offline-carrier-check.test.mjs
       - name: Validate anonymous Supabase REST integration without credentials

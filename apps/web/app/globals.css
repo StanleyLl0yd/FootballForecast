@@ -93,3 +93,8 @@
 .source-lab-table thead{color:var(--muted)}
 .source-lab-table td small{display:block;color:var(--accent);margin-top:5px}
 @media(max-width:600px){.source-lab{padding:16px}.source-lab-table{min-width:600px}}
+
+.source-lab-download{display:inline-flex;margin:9px 14px 10px 0;align-items:center;justify-content:center;
+  max-width:100%;border:1px solid var(--line);border-radius:8px;background:var(--panel2);
+  color:var(--text);font-size:12px;padding:10px 13px}
+.source-lab-download:hover,.source-lab-download:focus-visible{color:var(--accent);border-color:var(--accent)}
