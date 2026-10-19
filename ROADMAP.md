@@ -58,3 +58,5 @@ Generic adapters and independently evaluated league-specific workflows.
 - [x] Generate TypeScript schema definitions from Frankfurt Supabase and type anonymous public REST clients; validate through required web typecheck/build.
 
 - [x] Align disposable PostgreSQL SQL/RLS/integrity and dump/restore CI with the real Supabase PostgreSQL 17 major release.
+
+- [ ] Verify Chrome headless DOM smoke stability after exact-main run 39217943833 returned empty stdout in otherwise successful web build; retain required web status gating.
