@@ -47,6 +47,8 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci --no-audit --no-fund
+      - name: Syntax-check non-gating production HTTP probe
+        run: node --check scripts/smoke-production.mjs
       - name: Reject non-owner GitHub identity fixtures
         run: npm run test:auth
       - name: Verify browser connectivity probes are read-only and privacy-preserving
