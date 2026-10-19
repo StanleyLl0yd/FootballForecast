@@ -32,6 +32,19 @@ const syntheticExample={
     }]
   }]
 };
+function anonymizedSummary(report:QualityReport,hash:string|null){
+  return {
+    ...report,
+    sources:report.sources.map(source=>{
+      // User-entered publisherGroup values can contain private text:
+      // retain only aggregate group counts, never names/labels from evidence.
+      const {declaredGroups,...upstream}=source.upstream;
+      return {...source,upstream:{...upstream,declaredGroupCount:declaredGroups.length}};
+    }),
+    originalFileSHA256:hash,
+    warning:'RESEARCH ONLY: source rights, references, independence and as-of history are NOT authenticated'
+  };
+}
 function downloadLocalJson(filename:string,payload:unknown){
   const data=JSON.stringify(payload,null,2)+'\n';
   const url=URL.createObjectURL(new Blob([data],{type:'application/json;charset=utf-8'}));
@@ -100,10 +113,9 @@ export function SourceEvidenceLab(){
         Расчёт не включает новые сетевые запросы.</p>
       <p className="source-lab-note">SHA-256 загруженного файла: <code>{fileHash}</code></p>
       <button type="button" className="source-lab-download" onClick={()=>downloadLocalJson(
-        'footballforecast-research-report.json',{
-          ...result,originalFileSHA256:fileHash,
-          warning:'RESEARCH ONLY: source rights, references, independence and as-of history are NOT authenticated'
-        })}>Сохранить обезличенный JSON-отчёт</button>
+        'footballforecast-research-report.json',anonymizedSummary(result,fileHash))}>
+        Сохранить обезличенный JSON-отчёт
+      </button>
       {result.fieldRankings.fixtureIntegrity.length===0?<p className="source-lab-warning">
         Для предварительного ранжирования требуется не менее {result.minimumScoredMatches} завершённых эталонных матчей. Ошибки ниже носят только описательный характер.
       </p>:<p className="source-lab-warning">
