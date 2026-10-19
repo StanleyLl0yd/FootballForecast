@@ -3,7 +3,7 @@ import test from 'node:test';
 import {runConnectivityChecks,formatConnectivityReport,validPublishableEndpoint} from '../lib/connectivity.ts';
 
 const origin='https://forecast.example';
-const project='https://project.supabase.co';
+const project='https://upulkesaiwnwfagjgteh.supabase.co';
 const key='sb_publishable_synthetic_test_only';
 test('three read-only user-initiated probes do not send credentials to the public site',async()=>{
   const requests=[];
@@ -26,6 +26,7 @@ test('three read-only user-initiated probes do not send credentials to the publi
   assert.equal(requests[1].init.headers.apikey,undefined);
   assert.equal(requests[2].init.headers.apikey,key);
   assert.equal(requests[2].url.searchParams.get('limit'),'1');
+  assert.equal(requests[2].url.origin,project);
   const report=formatConnectivityReport(result,'2026-10-19T00:00:00Z');
   assert.ok(!report.includes(key));
   assert.ok(!report.includes(project));
@@ -49,10 +50,10 @@ test('missing or malformed publishable settings never initiate a third-party req
   const result=await runConnectivityChecks('http://database.example','private_secret',mock);
   assert.equal(calls.length,2);
   assert.equal(result[2].state,'not_configured');
-  assert.equal(validPublishableEndpoint('https://db.supabase.co/path',key),false);
-  assert.equal(validPublishableEndpoint('https://db.supabase.co?token=1',key),false);
-  assert.equal(validPublishableEndpoint('https://db.supabase.co',key),true);
-  assert.equal(validPublishableEndpoint('https://db.supabase.co.attacker.example',key),false);
+  assert.equal(validPublishableEndpoint(project+'/path',key),false);
+  assert.equal(validPublishableEndpoint(project+'?token=1',key),false);
+  assert.equal(validPublishableEndpoint(project,key),true);
+  assert.equal(validPublishableEndpoint('https://upulkesaiwnwfagjgteh.supabase.co.attacker.example',key),false);
 });
 
 test('a misleading HTTP 200 non-JSON response does not count as Supabase success',async()=>{
