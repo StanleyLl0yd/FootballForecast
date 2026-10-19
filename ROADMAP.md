@@ -60,3 +60,5 @@ Generic adapters and independently evaluated league-specific workflows.
 - [x] Align disposable PostgreSQL SQL/RLS/integrity and dump/restore CI with the real Supabase PostgreSQL 17 major release.
 
 - [ ] Verify Chrome headless DOM smoke stability after exact-main run 39217943833 returned empty stdout in otherwise successful web build; retain required web status gating.
+
+- [x] Add pure offline Football.TXT fixture structural auditor and synthetic CI regression detecting the observed 2023/24 duplicate/missing directed pairing, with no data import or rights approval.
