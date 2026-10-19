@@ -22,8 +22,8 @@ test('three read-only user-initiated probes do not send credentials to the publi
   assert.deepEqual(result.map(x=>x.state),['passed','passed','passed']);
   assert.equal(requests.length,3);
   assert.ok(requests.every(x=>x.init.method==='GET'&&x.init.cache==='no-store'));
-  assert.equal(requests[0].init.headers.apikey,undefined);
-  assert.equal(requests[1].init.headers.apikey,undefined);
+  assert.equal(requests[0].init.headers?.apikey,undefined);
+  assert.equal(requests[1].init.headers?.apikey,undefined);
   assert.equal(requests[2].init.headers.apikey,key);
   assert.equal(requests[2].url.searchParams.get('limit'),'1');
   assert.equal(requests[2].url.origin,project);
