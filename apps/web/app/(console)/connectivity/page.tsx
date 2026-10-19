@@ -34,6 +34,7 @@ export default function ConnectivityPage(){
       <button type="button" className="primary-action" onClick={run} disabled={busy}>
         {busy?'Проверка выполняется…':'Проверить соединение'}
       </button>
+      <p className="connectivity-note">Если сайт вообще не открывается из нужной сети, заранее <a href="/m0-carrier-check.html" download="footballforecast-carrier-check.html">скачайте автономную HTML-проверку</a> на доступном подключении и откройте файл без интернета. Она проверяет только публичный health API, поэтому не заменяет тест всей страницы.</p>
       <p className="connectivity-note">Отправляются три GET-запроса только на текущий сайт. Браузер не обращается к Supabase напрямую и не передаёт ключи. Отчёт не сохраняется в приложении; обычные серверные журналы запросов могут сохраняться.</p>
     </section>
     {results&&<section className="panel connectivity-panel" aria-live="polite">
