@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 2026-10-16. Milestone acceptance requires verification, not code presence.
+Updated 2026-10-19. Milestone acceptance requires verification, not code presence.
 
 ## M0 - Architecture & Web Foundation (OPEN)
 - [x] Research preliminary RPL data source coverage and terms; candidates NOT approved.
@@ -14,7 +14,10 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Publish M0 source through reviewed PR #1; initial exact-main CI, Security and CodeQL PASS.
 - [x] Generate and commit a workspace npm lockfile on a network-enabled GitHub runner; install with `npm ci` in CI/Security.
 - [x] Run remote web lint, TypeScript typecheck and production build.
-- [ ] Verify Safari WebDriver compatibility diagnostic, real PostgreSQL 17 restore, and direct negative Supabase REST checks; optional OAuth E2E deferred until needed.
+- [x] Verify Safari native WebDriver on hosted macOS, plus Firefox/Edge and Chrome in automated cross-browser diagnostics.
+- [x] Restore synthetic PostgreSQL 17 schema/data into a **separate** PostgreSQL 17 container on the same CI runner, with SHA-256 agreement and RLS/trigger verification.
+- [ ] Prove actual Free-project encrypted offsite backup and independent recovery; synthetic CI restoration does not count.
+- [ ] Execute the manually dispatched real publishable-key REST refusal proof; local SQL-denial and mock HTTP tests do not count. Optional OAuth E2E remains deferred until enabled.
 - [x] Confirm Firefox and Edge headless cross-browser diagnostics on Ubuntu 24.04: PASS on public dashboard, denied admin and mobile screenshots (PR #35).
 - [x] Run unconfigured Next.js browser smoke in real headless Chrome on CI.
 - [x] Unit-test stable GitHub identity decisions and negative non-owner/malformed provider cases in CI.
@@ -23,7 +26,7 @@ Updated 2026-10-16. Milestone acceptance requires verification, not code presenc
 - [x] Configure public Supabase read-only environment; ordinary visitors need no registration.
 - [ ] Configure and test optional GitHub owner OAuth only if administrative login is enabled later.
 - [x] Apply foundation/public-read migrations to Free Frankfurt Supabase and verify RLS/security advisors.
-- [ ] Verify REST negative-write attempts with a real publishable key and backup/restore against an independently isolated real Free/PostgreSQL 17 instance.
+- [ ] Finish issue #5 only with recorded, successful real PostgREST denial evidence and independently restorable offsite Free database backup.
 - [x] Add synthetic PostgreSQL 17 pg_dump/pg_restore round-trip proof in CI, including RLS, data and immutable-archive triggers.
 - [x] Apply and verify all three FK indexes; performance advisor no longer reports unindexed FKs.
 - [x] Deploy public Vercel Hobby to Frankfurt from protected GitHub main and verify anonymous pages/admin redirect from GitHub Actions.
@@ -59,8 +62,17 @@ Generic adapters and independently evaluated league-specific workflows.
 
 - [x] Align disposable PostgreSQL SQL/RLS/integrity and dump/restore CI with the real Supabase PostgreSQL 17 major release.
 
-- [ ] Verify Chrome headless DOM smoke stability after exact-main run 39217943833 returned empty stdout in otherwise successful web build; retain required web status gating.
+- [x] Stabilize Chrome headless DOM smoke (PR #39), then verify exact-head and post-merge web/production-browser checks remain green.
 
 - [x] Add pure offline Football.TXT fixture structural auditor and synthetic CI regression detecting the observed 2023/24 duplicate/missing directed pairing, with no data import or rights approval.
 
-- [ ] Verify the Edge Chromium headless blank-DOM retry on post-merge exact-main diagnostics; preserve strict dashboard/admin DOM and mobile screenshot checks.
+- [x] Stabilize Edge Chromium blank-DOM retry (PR #42) and verify post-merge exact-main browser diagnostics.
+
+## Remaining external M0 acceptance (no M1 transition)
+
+- [ ] #2: authenticated, licensed current RPL feed and defensible historical provenance; 2023/24 OpenFootball source remains quarantined, and all historical seasons remain unapproved for ingestion.
+- [ ] #5: live public-key PostgREST negative probe, offsite encrypted Free backup and isolated actual restore.
+- [ ] #6: two independent Russian residential/mobile provider network checks without VPN, including total site-load failures.
+- [ ] #8: supported patched dependency or documented accepted remediation for the unresolved dev-only `braces` advisory; enforced production audit stays active.
+
+Green CI and Vercel deployment are **necessary but not sufficient** for M0 sign-off. No model training, data import, subscription or M1 work is authorized.
