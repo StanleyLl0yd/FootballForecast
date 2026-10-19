@@ -382,6 +382,52 @@
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
       "active": false
+    },
+    {
+      "id": "understat-public-mirror",
+      "title": "Public GitHub mirror of historical Understat Russian league player aggregates",
+      "url": "https://github.com/vibedatascience/understat_players_aggregated",
+      "kind": "research-no-verified-license",
+      "roles": [
+        "player-statistics",
+        "historical-xg-candidate",
+        "cross-check"
+      ],
+      "priority": 4,
+      "zeroCost": "public-reference",
+      "access": "restricted-reference",
+      "rights": "repository-has-no-license-upstream-understat-rights-unverified",
+      "qualityEvidence": "README-catalog-lists-RFPL-2014-2025-but-no-independent-sample-or-rights",
+      "limitations": "Public CSV/Parquet do not grant redistribution or ML training. Player-season xG aggregates are NOT match-level as-of snapshots; repo lacks a license and source originates from Understat.",
+      "empiricalResultErrorRate": null,
+      "verifiedCurrentRPLCoverage": false,
+      "verifiedPrematchSnapshots": false,
+      "authorizedAutomatedTraining": false,
+      "authorizedRawRepublication": false,
+      "active": false
+    },
+    {
+      "id": "open-matchday-rpl",
+      "title": "Open Matchday public 2026-27 RPL football results directory",
+      "url": "https://github.com/oladeeayo/open-matchday",
+      "kind": "research-upstream-restricted",
+      "roles": [
+        "live-fixtures",
+        "final-results",
+        "cross-check"
+      ],
+      "priority": 4,
+      "zeroCost": "public-reference",
+      "access": "restricted-reference",
+      "rights": "author-noncommercial-only-upstream-soccerway-rights-unverified",
+      "qualityEvidence": "RPL-listed-as-soccerway-schedule-only-with-unverified-freshness-and-accuracy",
+      "limitations": "RPL index indicates Soccerway schedule-page upstream (not a full independent feed); project disclaimer says informational/noncommercial and upstream publisher terms govern. No automated Soccerway scraping or unapproved data import.",
+      "empiricalResultErrorRate": null,
+      "verifiedCurrentRPLCoverage": false,
+      "verifiedPrematchSnapshots": false,
+      "authorizedAutomatedTraining": false,
+      "authorizedRawRepublication": false,
+      "active": false
     }
   ]
 }
