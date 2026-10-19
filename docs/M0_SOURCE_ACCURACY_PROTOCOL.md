@@ -1,6 +1,6 @@
 # M0: empirical free-source accuracy protocol (offline, no ingestion)
 
-This document implements the owner's **strict $0 and multi-source quality policy** from [DATA_SOURCES.md](DATA_SOURCES.md) and the [16-source registry](M0_FREE_SOURCE_REGISTRY.json). All M0 providers are inactive and remain unapproved for live data ingestion, training, redistribution and production use.
+This document implements the owner's **strict $0 and multi-source quality policy** from [DATA_SOURCES.md](DATA_SOURCES.md) and the [18-source registry](M0_FREE_SOURCE_REGISTRY.json). All M0 providers are inactive and remain unapproved for live data ingestion, training, redistribution and production use.
 
 ## What is measured
 
