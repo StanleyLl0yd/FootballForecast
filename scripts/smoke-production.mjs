@@ -64,4 +64,13 @@ if(archivePage.includes('История публикаций')) {
 }
 const data=await get('/data');
 assert.equal(data.status,200,'data center must remain public');
-console.log('PASS: live production HTTP health, public Supabase reads, protected admin, archive/data');
+
+const connectivity=await get('/connectivity');
+assert.equal(connectivity.status,200,'browser connectivity self-check must remain public');
+const connectivityHtml=await connectivity.text();
+assert.match(connectivityHtml,/Проверка соединения/,
+  'browser connectivity page must server-render the diagnostic heading');
+assert.match(connectivityHtml,/Проверить соединение/,
+  'browser connectivity page must offer its user-initiated probe action');
+
+console.log('PASS: live production HTTP health, public Supabase reads, protected admin, archive/data/connectivity');
