@@ -63,8 +63,8 @@ jobs:
         run: npm run test:public-data
       - name: Validate public forecast archive schema and read-only REST
         run: npm run test:archive
-      - name: Validate historical fixture structural audit without provider data
-        run: node --test tests/m0-fixture-structure.test.mjs
+      - name: Validate historical fixture and score-annotation diagnostics without provider data
+        run: node --test tests/m0-fixture-structure.test.mjs tests/m0-source-quality.test.mjs
       - run: npm run lint && npm run typecheck && npm run build
       - name: Fail-closed production server and Chrome browser smoke
         env:
