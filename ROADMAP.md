@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 2026-10-19. Milestone acceptance requires verification, not code presence.
+Updated 2026-10-20. Milestone acceptance requires verification, not code presence.
 
 ## M0 - Architecture & Web Foundation (OPEN)
 - [x] Research preliminary RPL data source coverage and terms; candidates NOT approved.
@@ -70,7 +70,7 @@ Generic adapters and independently evaluated league-specific workflows.
 
 ## Remaining external M0 acceptance (no M1 transition)
 
-- [ ] #2: **$0-only** legitimately reusable current RPL data and defensible historical provenance, triangulated through all available lawful free sources using the ranked registry (docs/M0_FREE_SOURCE_REGISTRY.json); 2023/24 OpenFootball source remains quarantined and no seasons are approved for ingestion. No purchased feeds, subscriptions, paid upgrades or fallbacks.
+- [ ] #2: **$0-only** legitimately reusable current RPL data and defensible historical provenance, triangulated with lawful independent evidence using the ranked registry (`docs/M0_FREE_SOURCE_REGISTRY.json`). **Owner-approved reduction 2026-10-20:** research the pilot minimum **2024/25 training, 2025/26 untouched evaluation, current 2026/27 fixtures** (`docs/M0_MINIMUM_RPL_SCOPE.json`); do not require 2015/16–2023/24 historical completeness. This is a scope reduction, **not** rights, accuracy or strict as-of approval. No seasons approved for ingestion; OpenFootball 2023/24 remains quarantined; no paid feeds or fallbacks.
 - [ ] #5: live public-key PostgREST negative probe, offsite encrypted Free backup and isolated actual restore.
 - [ ] #6: two independent Russian residential/mobile provider network checks without VPN, including total site-load failures.
 - [ ] #8: supported patched dependency or documented accepted remediation for the unresolved dev-only `braces` advisory; enforced production audit stays active.
