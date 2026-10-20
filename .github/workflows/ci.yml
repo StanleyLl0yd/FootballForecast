@@ -16,6 +16,8 @@ jobs:
         image: postgres:17
         env:
           POSTGRES_PASSWORD: ci-only-postgres-password
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 10s
@@ -38,6 +40,11 @@ jobs:
       - name: Backup and restore into distinct disposable PostgreSQL 17 server
         shell: bash
         run: bash scripts/m0-isolated-restore-ci.sh "${{ job.services.postgres.id }}"
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned
+        with: {node-version: '22'}
+      - name: Test anonymous HTTP against disposable real PostgREST v14
+        shell: bash
+        run: bash -n scripts/m0-disposable-postgrest-ci.sh && bash scripts/m0-disposable-postgrest-ci.sh "${{ job.services.postgres.id }}"
 
   web:
     runs-on: ubuntu-latest
@@ -77,6 +84,8 @@ jobs:
         run: node --test tests/m0-footbolno-pinned-evidence.test.mjs
       - name: Verify non-mutating PostgREST HTTP refusal contract (synthetic mocks only)
         run: node --test tests/m0-rest-denials.test.mjs
+      - name: Verify localhost real-PostgREST operation sequence and deny-contract mocks
+        run: node --check scripts/m0-disposable-postgrest.mjs && node --test tests/m0-disposable-postgrest.test.mjs
       - run: npm run lint && npm run typecheck && npm run build
       - name: Fail-closed production server and Chrome browser smoke
         env:
