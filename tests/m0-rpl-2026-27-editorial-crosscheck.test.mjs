@@ -50,6 +50,6 @@ test('aggregate coincidence cannot be converted into official accuracy, as-of or
   assert.equal(r.independentUnderlyingDataProviderVerified,false);
   for(const key of ['matchRows','fixtures','teamGoalTable','rawScores'])
     assert.ok(!(key in aggregate),'do not store source data: '+key);
-  assert.match(aggregate.limitations,/same upstream feed/);
+  assert.match(aggregate.limitations,/share an upstream feed/);
   assert.match(aggregate.limitations,/awarded/);
 });
