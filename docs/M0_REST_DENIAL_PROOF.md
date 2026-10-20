@@ -2,6 +2,8 @@
 
 Status: **prepared, not executed against production**. Issue [#5](https://github.com/StanleyLl0yd/FootballForecast/issues/5) remains open until the live proof succeeds and an independently restorable offsite backup is verified.
 
+The additional read-only catalog attestation `database/tests/0007_live_public_surface.sql` verifies that schema `public` contains **exactly the nine reviewed M0 application relations** (all ordinary tables) and **exactly the four expected trigger-returning functions**, with no unexpected view, foreign table, sequence, materialized view or newly callable RPC function. The live catalog was verified on Frankfurt PostgreSQL 17 without touching application rows. Disposable PostgreSQL CI additionally creates unreviewed objects inside aborted transactions and requires this guard to reject each type. This guards against future **unexpected schema exposure** but is not an HTTP test, cannot prove PostgREST's configuration independently, and does not authorize a new public table or M1 migration. Any intentional schema expansion must undergo explicit review and update this exact allowlist alongside RLS/grant tests.
+
 ## No-terminal execution
 
 1. In the GitHub repository's **Settings → Secrets and variables → Actions**, create repository secret `FF_SUPABASE_PUBLISHABLE_KEY` using only the **enabled modern publishable** key for the existing Frankfurt project, obtained directly in the [Supabase project API Keys page](https://supabase.com/dashboard/project/upulkesaiwnwfagjgteh/settings/api-keys). The value is a public-facing *publishable* key, not a service-role, secret or database password. Never put the key in a GitHub issue, pull request, code commit, screenshot or chat message.
