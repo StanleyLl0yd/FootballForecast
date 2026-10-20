@@ -47,6 +47,8 @@ async function inspectManifest(fetchImpl,timeoutMs){
     }
   }catch{return {status:'TRANSFER_FAILED',httpStatus:response.status}};
   if(size===0)return {status:'EMPTY_BODY',httpStatus:response.status};
+  if(claimedBytes!==null&&claimedBytes!==size)
+    return {status:'CONTENT_LENGTH_MISMATCH',httpStatus:response.status,bytes:size};
   const bytes=Buffer.concat(parts,size);
   let json;
   try{
