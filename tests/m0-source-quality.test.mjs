@@ -29,6 +29,40 @@ test('awarded score is counted separately from played goals, not discarded',()=>
   assert.equal(result.ordinaryScoreRows,239);
   assert.equal(result.awarded[0].score,'1-0');
 });
+test('played and administrative awarded goals are never silently pooled',()=>{
+  let src=valid();
+  const replacements=[
+    [teams[0],teams[1],'0-3'],
+    [teams[2],teams[3],'3-0'],
+    [teams[4],teams[5],'0-3']
+  ];
+  for(const [home,away,score] of replacements){
+    src=src.replace(fixture(home,away),fixture(home,away).replace('1-0 (0-0)',score+'    [awarded]'));
+  }
+  const result=auditFootballTxtQuality(src);
+  assert.equal(result.mechanicalChecksPassed,true);
+  assert.equal(result.totalsAreMechanicallyValid,true);
+  assert.equal(result.playedScoreTotals.matches,237);
+  assert.equal(result.awardedScoreTotals.matches,3);
+  assert.deepEqual(result.awardedScoreTotals,{
+    matches:3,homeWins:1,draws:0,awayWins:2,homeGoals:3,awayGoals:6
+  });
+  assert.equal(result.playedScoreTotals.homeGoals,237);
+  assert.equal(result.playedScoreTotals.awayGoals,0);
+  assert.equal(result.playedScoreTotals.homeWins,237);
+  assert.equal(result.playedScoreTotals.matches+result.awardedScoreTotals.matches,240);
+  assert.equal(result.awardedScoreTotals.homeGoals+result.awardedScoreTotals.awayGoals,9);
+});
+
+test('untrusted unknown annotations are not counted as played or awarded',()=>{
+  const src=valid().replace(fixture(teams[0],teams[1]),
+    fixture(teams[0],teams[1]).replace(' (0-0)',' [unknown]'));
+  const result=auditFootballTxtQuality(src);
+  assert.equal(result.mechanicalChecksPassed,false);
+  assert.equal(result.totalsAreMechanicallyValid,false);
+  assert.equal(result.playedScoreTotals.matches,239);
+  assert.equal(result.awardedScoreTotals.matches,0);
+});
 test('unrecognized annotations and contradictory halves fail closed',()=>{
   const source=valid();
   const badTag=source.replace(fixture(teams[0],teams[1]),fixture(teams[0],teams[1],' [forfeit?]'));
