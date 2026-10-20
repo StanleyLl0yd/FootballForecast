@@ -84,7 +84,7 @@ The publisher advertises the **entire** RPL results CSV at a free, directly docu
 - If `2026/2027` exists, its counts can assess **publisher-declared season coverage**, *not* completeness against independent RPL official fixture counts. Status `finished` is not proof of a genuinely played match: **technical awards cannot be distinguished from on-field goals unless the provider supplies verified administrative result type**. The reported goal sums must **never** feed offensive-strength/Poisson training on their own.
 - License from original upstream parties (publisher mentions ESPN/Wikipedia), ability to persist/train/redistribute, historical prematch publication snapshots and per-match official truth **remain unapproved**. Even a complete 240-record season proves only a shaped publisher CSV, not legal use or measured accuracy.
 
-The live research outcome, if any, is retained only as a sanitized GitHub Actions summary with the source-byte fingerprint and provenance warnings. A failed/blocked request will be recorded as **inconclusive**, not treated as proof that the publisher dataset does not exist. **All production source integrations remain off.**
+The live research outcome, if any, is retained only as a sanitized GitHub Actions summary with the source-byte fingerprint and provenance warnings. A failed/blocked request makes the diagnostic job FAIL without publishing third-party records and must be interpreted as **inconclusive**, not as proof that the dataset does not exist. **All production source integrations remain off.**
 
 ## Additional direct source-structure verification: OpenFootball (2026-10-20)
 
