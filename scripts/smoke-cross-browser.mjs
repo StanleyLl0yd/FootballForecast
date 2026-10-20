@@ -89,12 +89,12 @@ async function firefox() {
     ['--host','127.0.0.1','--port',String(port),'--log','error'],
     {stdio:'ignore',detached:process.platform!=='win32'});
   let id;
-  async function request(path,body,method) {
+  async function request(path,body,method,{timeoutMs=35000}={}) {
     const result=await fetch(host+path,{
       method:method??(body===undefined?'GET':'POST'),
       headers:{'content-type':'application/json'},
       body:body===undefined?undefined:JSON.stringify(body),
-      signal:AbortSignal.timeout(35000)
+      signal:AbortSignal.timeout(timeoutMs)
     });
     const response=await result.json();
     if(!result.ok || response.value?.error)
@@ -105,6 +105,9 @@ async function firefox() {
     // A POST /session may succeed even if the response is lost. Retrying it
     // creates a second session request and triggers "Session is already started".
     // Poll only the idempotent GET /status, then create exactly one session.
+    // Hosted Ubuntu runners sometimes need >35s to cold-start Firefox itself.
+    // Allow a bounded 90s ONLY for the single non-idempotent session creation;
+    // never retry POST /session or suppress a slow/failed startup.
     let ready=false;
     for(let i=0;i<50;i++){
       if(driver.exitCode!==null)throw new Error('geckodriver exited before startup');
@@ -118,7 +121,7 @@ async function firefox() {
     const session=await request('/session',{
       capabilities:{alwaysMatch:{browserName:'firefox',
         'moz:firefoxOptions':{args:['-headless']}}}
-    });
+    },undefined,{timeoutMs:90000});
     assert.ok(session?.sessionId,'WebDriver session required');
     id=session.sessionId;
     await request(`/session/${id}/window/rect`,{width:390,height:844},'POST');
