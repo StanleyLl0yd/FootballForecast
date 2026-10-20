@@ -54,3 +54,25 @@ test('historical source panel reads only pinned aggregates and labels awards cor
   assert.ok(report.seasons.every(x=>x.playedMatches+x.awardedMatches===x.parsedMatches));
   assert.doesNotMatch(page,/fetch\(|use client|createClient\(/);
 });
+
+test('real publisher archive panel shows only pinned aggregate statuses and no approvals',()=>{
+  const footbolno=JSON.parse(readFileSync(
+    new URL('../../../docs/M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json',import.meta.url),'utf8'));
+  const aggregate=JSON.parse(readFileSync(
+    new URL('../../../docs/M0_RPL_2026_27_EDITORIAL_AGGREGATE_CROSSCHECK.json',import.meta.url),'utf8'));
+  assert.match(page,/import footbolnoEvidence from ['"]\.\.\/\.\.\/\.\.\/\.\.\/\.\.\/docs\/M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE\.json['"]/);
+  assert.match(page,/import currentRplCrosscheck from ['"]\.\.\/\.\.\/\.\.\/\.\.\/\.\.\/docs\/M0_RPL_2026_27_EDITORIAL_AGGREGATE_CROSSCHECK\.json['"]/);
+  assert.match(page,/footbolnoEvidence\.seasons\.map/);
+  assert.match(page,/season\.structuralResearchClassification==='QUARANTINE_ANOMALOUS_SEASON'/);
+  assert.match(page,/season\.duplicateDirectedPairs>0/);
+  assert.match(page,/currentRplCrosscheck\.reference\.leagueGoalsFor/);
+  assert.match(page,/обучение и импорт данных запрещены на M0/);
+  assert.equal(footbolno.seasons.length,11);
+  assert.equal(footbolno.seasons.filter(s=>s.structuralResearchClassification==='QUARANTINE_ANOMALOUS_SEASON').length,5);
+  assert.equal(footbolno.authorizedForAutomatedTraining,false);
+  assert.equal(footbolno.providerRightsApproved,false);
+  assert.equal(aggregate.inferences.officialMatchByMatchTruthVerified,undefined);
+  assert.equal(aggregate.inferences.independentMatchLevelScoreAccuracyVerified,false);
+  assert.equal(aggregate.inferences.trainingRightsApproved,false);
+  assert.doesNotMatch(page,/fetch\(|createClient\(|localStorage|use client/);
+});
