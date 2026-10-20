@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "researchReviewedOn": "2026-10-20",
+  "purpose": "M0 research-only, no raw records or legal/match-accuracy approval",
+  "provider": {
+    "id": "open-matchday-rpl",
+    "repository": "https://github.com/oladeeayo/open-matchday",
+    "commitSHA": "0e39da91fb053a2ed355d9b69cef5aec6d7ae3f1",
+    "generatedUTCFromPublisher": "2026-10-20T03:10:46Z",
+    "season": "2026/2027",
+    "folder": "data/RUS_1_premier-liga",
+    "sourceUpstreamForResults": "soccerway",
+    "results": {
+      "path": "data/RUS_1_premier-liga/results_2627.csv",
+      "gitBlobSHA1": "9160ca990058807c1a63c7fc49c03e8b20461911",
+      "sourceBytes": 6574,
+      "headerColumns": 25,
+      "rows": 87,
+      "sourceReportedGoalsTotal": 242
+    },
+    "fixtures": {
+      "path": "data/RUS_1_premier-liga/fixtures_2627.csv",
+      "gitBlobSHA1": "7bfb0497b740e8edec10361d833ceeb32e26d592",
+      "sourceBytes": 4566,
+      "headerColumns": 5,
+      "rows": 109
+    },
+    "buildSummaryBlobSHA1": "03d1f407edcc2f471ae76f591a617cbada27e2b2",
+    "disclaimerBlobSHA1": "30264a8bb16aa8467a8716c7210f43046ddbd90e",
+    "disclaimer": "informational noncommercial only; upstream rights govern; publisher forbids sale/sublicense/paid use"
+  },
+  "comparativeSnapshot": {
+    "otherSourceId": "footbolno",
+    "otherSHA256": "dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1191d19513c214",
+    "footbolnoSourceFinished": 88,
+    "footbolnoSourceScheduled": 152,
+    "footbolnoSourceResultGoalsTotal": 246,
+    "matchResultShortfall": 1,
+    "upcomingFixturesShortfall": 43,
+    "combinedRecordShortfallVsExpectedRpl240": 44,
+    "goalAggregateShortfall": 4
+  },
+  "approvals": {
+    "sourceActive": false,
+    "rightsForCommercialUseVerified": false,
+    "automatedUseApproved": false,
+    "mlTrainingAuthorized": false,
+    "redistributionAuthorized": false,
+    "matchLevelAccuracyMeasured": false,
+    "independentUpstreamProvenanceVerified": false,
+    "historicalPrematchAsOfVerified": false
+  },
+  "limitations": "A single provider-generated snapshot showing 87 matches/242 goals and 109 future fixtures is not a complete current-RPL feed. Upstream Soccerway source and publisher's informational non-commercial terms prohibit inferring permission to ingest for commercial, ML or redistribution purposes. Missing aggregate four goals does not identify the missing match. This is structure and publisher-reported result counting, not independently verified official match-level truth."
+}
