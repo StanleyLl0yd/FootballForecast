@@ -35,3 +35,22 @@ test('external provider links are safe and a full-site no-account catalog remain
   assert.match(page,/Ни один источник пока не одобрен/);
   assert.doesNotMatch(page,/API_KEY|secret|service_role|NEXT_PUBLIC_SUPABASE/);
 });
+
+test('historical source panel reads only pinned aggregates and labels awards correctly',()=>{
+  const report=JSON.parse(readFileSync(
+    new URL('../../../docs/M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json',import.meta.url),'utf8'));
+  assert.match(page,/import historicalEvidence from ['"]\.\.\/\.\.\/\.\.\/\.\.\/\.\.\/docs\/M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE\.json['"]/);
+  assert.match(page,/historicalEvidence\.seasons\.map/);
+  assert.match(page,/season\.awardedMatches/);
+  assert.match(page,/season\.sourceReportedPlayedGoals/);
+  assert.match(page,/season\.sourceReportedAdministrativeGoals/);
+  assert.match(page,/season\.missingPairs>0/);
+  assert.match(page,/У этих данных пока нет разрешения на автоматический импорт/);
+  assert.equal(report.sourceApproved,false);
+  assert.equal(report.modelTrainingAllowed,false);
+  assert.equal(report.empiricalMatchAccuracyMeasured,false);
+  assert.equal(report.seasons.length,5);
+  assert.equal(report.seasons.reduce((n,x)=>n+x.awardedMatches,0),6);
+  assert.ok(report.seasons.every(x=>x.playedMatches+x.awardedMatches===x.parsedMatches));
+  assert.doesNotMatch(page,/fetch\(|use client|createClient\(/);
+});
