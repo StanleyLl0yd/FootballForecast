@@ -1,6 +1,7 @@
 import {PageHeading} from '@/components/empty-state';
 import {SourceEvidenceLab} from '@/components/source-evidence-lab';
 import sourceRegistry from '../../../../../docs/M0_FREE_SOURCE_REGISTRY.json';
+import historicalEvidence from '../../../../../docs/M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json';
 
 const categories=[
   {priority:1,title:'Официальные первоисточники',
@@ -42,6 +43,40 @@ export default function DataCenter(){
       <p>Ни один источник пока не одобрен для автоматического импорта или обучения. Все функции сайта остаются бесплатными; платные источники исключены. Публичность сайта с результатами не означает разрешение на скачивание его базы.</p>
       <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M0_SOURCE_ACCURACY_PROTOCOL.md"
         target="_blank" rel="noopener noreferrer">Методика проверки точности <span aria-hidden="true">↗</span></a>
+    </section>
+    <section className="panel historical-source-evidence">
+      <h2>OpenFootball: проверка структуры пяти сезонов РПЛ</h2>
+      <p>Это проверка файлов бесплатного исторического архива, а не сверка всех матчей с официальными протоколами. В таблице технические результаты отделены от сыгранных встреч и физических голов.</p>
+      <div className="source-lab-table-wrapper">
+        <table className="source-lab-table">
+          <thead><tr>
+            <th scope="col">Сезон</th><th scope="col">Всего записей</th>
+            <th scope="col">Уникальных пар</th><th scope="col">Сыграно</th>
+            <th scope="col">Присуждено</th><th scope="col">Голы в сыгранных</th>
+            <th scope="col">Технические голы</th>
+          </tr></thead>
+          <tbody>{historicalEvidence.seasons.map(season=><tr key={season.season}>
+            <th scope="row">
+              <a href={`https://github.com/openfootball/europe/blob/${historicalEvidence.sourceCommit}/${season.path}`}
+                target="_blank" rel="noopener noreferrer">{season.season} ↗</a>
+            </th>
+            <td>{season.parsedMatches}/{season.claimedMatches}</td>
+            <td>{season.directedFixturePairs}/240
+              {season.missingPairs>0?<small>Ошибка ориентации поля</small>:null}</td>
+            <td>{season.playedMatches}</td>
+            <td>{season.awardedMatches}</td>
+            <td>{season.sourceReportedPlayedGoals.home} + {season.sourceReportedPlayedGoals.away}</td>
+            <td>{season.sourceReportedAdministrativeGoals.home} + {season.sourceReportedAdministrativeGoals.away}</td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+      <p className="source-lab-warning">
+        В 2019/20 и 2020/21 суммарно шесть административных результатов [awarded].
+        В 2023/24 присутствует известная ошибка места проведения матча «Сочи» - «Спартак».
+        У этих данных пока нет разрешения на автоматический импорт и обучение модели.
+      </p>
+      <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json"
+        target="_blank" rel="noopener noreferrer">Доказательства, версии исходных файлов и ограничения ↗</a>
     </section>
     <SourceEvidenceLab/>
     <div className="source-groups">
