@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "kind": "M0_MANUAL_AGGREGATE_RESEARCH_NOT_FIXTURE_LEVEL",
+  "competition": "Russian Premier League",
+  "season": "2026/2027",
+  "roundsCompleted": 11,
+  "reference": {
+    "publisher": "Sports.ru",
+    "url": "https://www.sports.ru/football/tournament/rfpl/table/",
+    "type": "public-editorial-season-standings-manually-reviewed",
+    "listedClubCount": 16,
+    "listedTeamMatches": 11,
+    "totalTeamMatchAppearances": 176,
+    "derivedUniqueMatches": 88,
+    "leagueGoalsFor": 246,
+    "leagueGoalsAgainst": 246,
+    "teamWins": 58,
+    "teamDraws": 60,
+    "teamLosses": 58,
+    "fromDatedOfficialProtocols": false,
+    "independentUnderlyingDataProviderVerified": false
+  },
+  "candidate": {
+    "id": "footbolno",
+    "observedRun": "https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39391254693",
+    "sourceSHA256": "dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1191d19513c214",
+    "declaredMatches": 240,
+    "markedFinished": 88,
+    "markedScheduled": 152,
+    "sourceReportedHomeResultGoals": 127,
+    "sourceReportedAwayResultGoals": 119,
+    "officialMatchAccuracyMeasured": false,
+    "sourceRightsVerified": false,
+    "preMatchPublicationTimestampsVerified": false
+  },
+  "inferences": {
+    "samePlayedMatchCount": true,
+    "sameAllTeamGoalTotal": true,
+    "independentMatchLevelScoreAccuracyVerified": false,
+    "homeAwayScoreSplitCorroboratedByStandings": false,
+    "upstreamDataIndependenceVerified": false,
+    "publicationAsOfVerified": false,
+    "trainingRightsApproved": false,
+    "sourceApproved": false,
+    "canBeUsedForPredictionFeatures": false
+  },
+  "limitations": "Manual aggregate comparison only. Editorial standings and a publisher CSV can share an upstream feed. Season goal totals do not establish each score, correct venue or game status; awarded results may be counted differently. No match rows, team-level statistics or publisher text retained. Do not infer legal access, historical as-of availability or ML/training approval.",
+  "reviewedOn": "2026-10-20"
+}

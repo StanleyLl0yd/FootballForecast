@@ -82,6 +82,8 @@ jobs:
         run: node --test tests/m0-fixture-structure.test.mjs tests/m0-source-quality.test.mjs tests/m0-fixture-reconcile.test.mjs tests/m0-openfootball-evidence.test.mjs
       - name: Validate pinned research-only Footbolno coverage quarantine matrix
         run: node --test tests/m0-footbolno-pinned-evidence.test.mjs
+      - name: Verify current RPL 11-round editorial totals without inferring source rights
+        run: node --test tests/m0-rpl-2026-27-editorial-crosscheck.test.mjs
       - name: Verify non-mutating PostgREST HTTP refusal contract (synthetic mocks only)
         run: node --test tests/m0-rest-denials.test.mjs
       - name: Verify localhost real-PostgREST operation sequence and deny-contract mocks
