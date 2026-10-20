@@ -87,6 +87,35 @@ test('inconsistent Content-Length cannot be reported as a valid manifest digest'
   assert.equal(report.manifest.bytes,2);
   assert.ok(!('sha256' in report.manifest));
 });
+test('compressed HTTP wire length differs from transparently decoded JSON: safe and expected',async()=>{
+  const body=JSON.stringify({datasets:[{id:235}],license:'publisher-claim-unverified'});
+  for(const coding of ['gzip','br','deflate','gzip, br']){
+    const report=await probeSourceMetadata({fetchImpl:async url=>
+      url===manifestUrl?
+        // Node fetch presents decompressed JSON while retaining compressed
+        // HTTP headers. Simulate decoded body + short on-wire Content-Length.
+        new Response(body,{status:200,headers:{
+          'content-encoding':coding,'content-length':'11','content-type':'application/json'
+        }}):
+        new Response(null,{status:200,headers:{'content-type':'text/csv'}})
+    });
+    assert.equal(report.manifest.status,'PARSED_METADATA_ONLY');
+    assert.equal(report.manifest.transferEncodingClass,'COMPRESSED_HTTP');
+    assert.equal(report.manifest.advertisedWireBytes,11);
+    assert.equal(report.manifest.bytes,Buffer.byteLength(body));
+    assert.equal(report.manifest.sha256,createHash('sha256').update(body).digest('hex'));
+    assert.equal(report.modelTrainingAuthorized,false);
+    assert.equal(report.matchesCsvHead.contentLengthBytes,null);
+  }
+});
+test('unknown content encoding still fails closed without a manifest success claim',async()=>{
+  const report=await probeSourceMetadata({fetchImpl:async url=>
+    url===manifestUrl?
+      new Response('{}',{status:200,headers:{'content-encoding':'evil'}}):
+      new Response(null,{status:405})});
+  assert.equal(report.manifest.status,'UNSUPPORTED_CONTENT_ENCODING');
+  assert.ok(!('sha256' in report.manifest));
+});
 test('server refusing metadata or HEAD yields explicit HTTP evidence, no raw values',async()=>{
   const rep=await probeSourceMetadata({fetchImpl:async url=>
     url===manifestUrl?
