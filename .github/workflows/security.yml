@@ -30,6 +30,7 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - name: Production dependency audit (enforced)
         run: npm audit --omit=dev --audit-level=high
-      - name: Full audit including developer tools (upstream advisory tracked)
-        continue-on-error: true
-        run: npm audit --audit-level=high
+      - name: Test exact advisory exception, dev-only reachability and fail-closed audit semantics
+        run: node --check scripts/m0-audit-dev-exception.mjs && node --test tests/m0-audit-dev-exception.test.mjs
+      - name: Enforce full audit with only known unpatched dev-only braces advisory
+        run: node scripts/m0-audit-dev-exception.mjs
