@@ -18,7 +18,7 @@ for ddl in \
  "CREATE FUNCTION public.m0_unreviewed_rpc() RETURNS integer LANGUAGE sql AS 'SELECT 1';"
 do
   if output="$(
-    { printf 'BEGIN;\\n%s\\n' "$ddl"; cat "$source_sql"; } |
+    { printf 'BEGIN;\n%s\n' "$ddl"; cat "$source_sql"; } |
       docker exec -i "$container" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres 2>&1
   )"; then
     echo 'ERROR: public surface drift was accepted' >&2
