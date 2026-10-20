@@ -27,6 +27,13 @@ async function inspectManifest(fetchImpl,timeoutMs){
   // Not even a single >64 KiB response is allowed to be retained or hashed.
   const advertised=response.headers.get('content-length');
   const claimedBytes=advertised!==null&&/^\d+$/.test(advertised)?Number(advertised):null;
+  // Node's fetch transparently decompresses Content-Encoding but preserves
+  // Content-Length from the *wire* response (compressed bytes). Comparing
+  // that header to the decoded JSON buffer is invalid for gzip/br/deflate.
+  const encoding=(response.headers.get('content-encoding')??'').trim().toLowerCase();
+  const compressed=/^(?:gzip|br|deflate)(?:,\\s*(?:gzip|br|deflate))*$/.test(encoding);
+  if(encoding!==''&&encoding!=='identity'&&!compressed)
+    return {status:'UNSUPPORTED_CONTENT_ENCODING',httpStatus:response.status};
   if(claimedBytes!==null&&(!Number.isSafeInteger(claimedBytes)||claimedBytes>maxManifestBytes))
     return {status:'OVER_LIMIT',httpStatus:response.status};
   if(!response.body)
@@ -47,7 +54,8 @@ async function inspectManifest(fetchImpl,timeoutMs){
     }
   }catch{return {status:'TRANSFER_FAILED',httpStatus:response.status}};
   if(size===0)return {status:'EMPTY_BODY',httpStatus:response.status};
-  if(claimedBytes!==null&&claimedBytes!==size)
+  // Only uncompressed identity transfers have comparable byte lengths.
+  if(!compressed&&claimedBytes!==null&&claimedBytes!==size)
     return {status:'CONTENT_LENGTH_MISMATCH',httpStatus:response.status,bytes:size};
   const bytes=Buffer.concat(parts,size);
   let json;
@@ -60,7 +68,9 @@ async function inspectManifest(fetchImpl,timeoutMs){
   const value={
     status:'PARSED_METADATA_ONLY',httpStatus:response.status,bytes:size,
     sha256:hash(bytes),rootType:Array.isArray(json)?'array':'object',
-    topLevelEntries:Array.isArray(json)?json.length:Object.keys(json).length
+    topLevelEntries:Array.isArray(json)?json.length:Object.keys(json).length,
+    transferEncodingClass:compressed?'COMPRESSED_HTTP':'IDENTITY_OR_UNDECLARED',
+    advertisedWireBytes:claimedBytes
   };
   // These values are strictly observations of publisher metadata, NEVER
   // proof of rows, license chain, historical timestamp, or RPL completeness.
