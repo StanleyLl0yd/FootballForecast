@@ -30,6 +30,8 @@ server_version="$(psql -X -A -t -w -v ON_ERROR_STOP=1 -c 'SHOW server_version_nu
 install -d -m 0700 -- "$FF_BACKUP_OUTPUT_DIR"
 [[ -d "$FF_BACKUP_OUTPUT_DIR" ]] || fail 'backup output must be a directory'
 output_dir="$(cd -- "$FF_BACKUP_OUTPUT_DIR" && pwd -P)"
+repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+[[ "$output_dir" != "$repository_root" && "$output_dir" != "$repository_root/"* ]] || fail 'backup output must be outside the repository checkout'
 working_dir="$(mktemp -d "$output_dir/.ff-export.XXXXXXXX")"
 cleanup() { rm -rf -- "$working_dir"; }
 trap cleanup EXIT
