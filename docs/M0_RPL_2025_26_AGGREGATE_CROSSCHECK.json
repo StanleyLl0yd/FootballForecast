@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "kind": "M0_MANUAL_EDITORIAL_AGGREGATE_CROSSCHECK_NOT_MATCH_LEVEL",
+  "season": "2025/2026",
+  "checkedOn": "2026-10-20",
+  "candidates": [
+    {
+      "sourceId": "footbolno",
+      "evidenceFile": "M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json",
+      "sourceSHA256": "dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1191d19513c214",
+      "sourceReportedMatches": 240,
+      "sourceReportedGoalsHome": 348,
+      "sourceReportedGoalsAway": 261,
+      "sourceReportedGoalsTotal": 609
+    }
+  ],
+  "references": [
+    {
+      "name": "RSSSF Russia 2025/26",
+      "url": "https://www.rsssf.org/tablesr/rus2026.html",
+      "reportedMatches": 240,
+      "reportedGoals": 609,
+      "originIndependenceVerified": false
+    },
+    {
+      "name": "Championat RPL 2025/26",
+      "url": "https://www.championat.ru/football/_russiapl/tournament/6594/",
+      "reportedMatches": 240,
+      "reportedGoals": 609,
+      "reportedGoalsHome": 348,
+      "reportedGoalsAway": 261,
+      "originIndependenceVerified": false
+    },
+    {
+      "name": "Rusfootball RPL 2025/26",
+      "url": "https://www.rusfootball.info/matchcenter/tournaments/rpl/season_2025_2026/",
+      "reportedMatches": 240,
+      "reportedGoals": 610,
+      "originIndependenceVerified": false
+    }
+  ],
+  "analysis": {
+    "agreedSourcesOn609": [
+      "footbolno",
+      "RSSSF",
+      "Championat"
+    ],
+    "nonmatchingSource": "Rusfootball",
+    "nonmatchingGoalDelta": 1,
+    "isMatchLevelReconciliation": false,
+    "isProofOfSourceIndependence": false,
+    "isProofOfUnderlyingThirdPartyDataRights": false,
+    "isProofOfHistoricalPrematchAsOf": false,
+    "isOfficialResultCertification": false,
+    "sourceTrainingApproved": false,
+    "providerIntegrationEnabled": false,
+    "seasonCertifiedForModeling": false
+  },
+  "limitations": "Observed public season aggregate metadata, without copying score rows. Agreement 609 versus 610 does not identify which fixture, season-correction policy or source is wrong. Shared upstream feeds and retroactive corrections are unresolved. Original match-level references and licensed rights remain mandatory; do not resolve conflict by majority vote. No data import, training or predictions."
+}
