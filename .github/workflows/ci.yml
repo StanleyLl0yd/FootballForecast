@@ -64,6 +64,8 @@ jobs:
         run: node --check scripts/smoke-cross-browser.mjs && node --test tests/m0-webdriver-session.test.mjs
       - name: Verify browser connectivity probes are read-only and privacy-preserving
         run: node --experimental-strip-types --test apps/web/tests/connectivity.test.mjs apps/web/tests/offline-carrier-check.test.mjs
+      - name: Test manual encrypted export fail-closed contract with synthetic mocks
+        run: bash -n scripts/m0-manual-encrypted-export.sh && node --test tests/m0-manual-encrypted-export.test.mjs
       - name: Validate anonymous Supabase REST integration without credentials
         run: npm run test:public-data
       - name: Validate public forecast archive schema and read-only REST
