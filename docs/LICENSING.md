@@ -4,6 +4,8 @@ FootballForecast is a public-source repository, but no software license has been
 
 **Owner's binding zero-cost rule (2026-10-19): no paid sources, subscriptions, premium upgrades, trial-to-paid conversion, billing or purchases.** Restrict possible integration to genuinely free and permitted data access within provider quotas. No source may automatically upgrade or trigger paid usage. If free data is insufficient, return a missing-data state rather than suggesting a purchase. The structured [free-source priority/permissions register](M0_FREE_SOURCE_REGISTRY.json) is CI-validated; no providers are activated in M0.
 
+The [minimum pilot scope](M0_MINIMUM_RPL_SCOPE.json) requires lawfully reusable results for 2024/25 and 2025/26 plus live 2026/27 fixtures; seasons before 2024/25 are not mandatory for M0. This changes **coverage only**: provider and upstream permissions for acquisition, private storage, model training and public derived forecasts still must be confirmed.
+
 The authoritative provider-by-provider permission and coverage register is [DATA_SOURCES.md](DATA_SOURCES.md). **All vendors are unapproved at M0.** A web page being public, a CSV described as free, or an API plan advertising coverage does not by itself settle extraction, retention, machine-learning training, generated-model distribution or third-party competition rights.
 
 - The [Open Matchday repository's disclaimer](https://github.com/oladeeayo/open-matchday/blob/master/DISCLAIMER.md) specifies informational **noncommercial** rights only and explicitly defers to Soccerway and other upstream publishers. It is a restricted, incomplete 2026/27 RPL research reference, **not** an eligible automatically ingested training dataset. No commercial reuse or source row mirroring.

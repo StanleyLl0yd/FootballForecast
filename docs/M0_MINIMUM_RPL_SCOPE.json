@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "decidedAt": "2026-10-20",
+  "milestone": "M0",
+  "status": "RESEARCH_SCOPE_ONLY_NOT_APPROVED",
+  "purpose": "Narrowest RPL pilot able to fit a fixed, simple Poisson baseline, evaluate on an untouched completed season, and display current fixtures without assuming future data.",
+  "policy": {
+    "maxCostUSD": 0,
+    "providerIntegrationEnabled": false,
+    "ingestionApproved": false,
+    "trainingApproved": false,
+    "publishingApproved": false,
+    "strictHistoricalAsOfVerified": false,
+    "rightsVerified": false,
+    "recordLevelAccuracyVerified": false
+  },
+  "minimumScope": [
+    {
+      "season": "2024/2025",
+      "role": "train_baseline",
+      "requiredStatus": "completed",
+      "expectedFixtures": 240,
+      "expectedFinished": 240,
+      "sourceEvidence": "footbolno"
+    },
+    {
+      "season": "2025/2026",
+      "role": "sealed_holdout",
+      "requiredStatus": "completed",
+      "expectedFixtures": 240,
+      "expectedFinished": 240,
+      "sourceEvidence": "footbolno"
+    },
+    {
+      "season": "2026/2027",
+      "role": "current_live",
+      "requiredStatus": "current",
+      "expectedFixtures": 240,
+      "expectedFinishedAtSnapshot": 88,
+      "expectedScheduledAtSnapshot": 152,
+      "sourceEvidence": "footbolno"
+    }
+  ],
+  "evidenceFile": "M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json",
+  "evidenceFileScope": "2026-10-20 pinned aggregated publisher counts; not independent match correctness or licensing proof",
+  "noTrainingIfFewerThanTwoCompletedSeasons": true,
+  "oneCompletedSeasonMode": "catalog_only_not_scored_or_calibrated",
+  "rules": [
+    "Every included season requires explicit lawful acquisition, retention, backups, ML training and derived forecast display rights, including upstream data provenance; a publisher CC BY/CC0 label alone does not attest its upstream rights.",
+    "Verify full 240 unique directed fixtures and corrected official home/away and result/status using independently lawful primary records; quarantine contradictions and awarded games.",
+    "Current-season fixtures must be authorized, refreshed at no cost, and checked for cancellations, corrections and actual kickoff timezones; a static snapshot never proves current freshness.",
+    "For the minimal completed-season evaluation, fit a pre-registered simple baseline on 2024/25 and score 2025/26 without using its outcomes for hyperparameters, calibration or feature selection.",
+    "Retrospective reconstructed predictions must be labeled non-strict unless pre-match published-and-observed source snapshots are authenticated; current records downloaded later are not historical as-of evidence.",
+    "After one sealed evaluation, live use may refit on both completed seasons and strictly pre-cutoff current results, with an immutable forecast ledger; retroactive backtest improvement or full calibration is not established.",
+    "No separate independent validation/calibration cohort exists at this minimum. M3 reliability/calibration claims require more authorized historical data or pre-registered prospective observations; do not tune on the holdout.",
+    "Do not import, train, activate providers, publish real forecasts or claim M1 approved on this policy change alone."
+  ]
+}

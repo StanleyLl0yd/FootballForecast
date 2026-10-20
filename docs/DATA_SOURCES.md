@@ -34,6 +34,16 @@ A numeric accuracy leaderboard is **not yet justified**. For each eligible sourc
 
 **Practical priority:** inspect and rights-review Footbolno and OpenFootball as historical candidates, pursue both legitimate $0 current-fixture APIs for complementary observations, and retain the official/manual references for independent checking. All are useful within their legal scope; "all available" does **not** authorize prohibited crawling, bot evasion, premium upgrades or rights assumptions.
 
+## Minimum viable RPL season scope (owner decision, 2026-10-20)
+
+**Replace the old mandatory full historical horizon** with the machine-checked [three-season pilot](M0_MINIMUM_RPL_SCOPE.json): 2024/25 for a fixed/simple baseline, 2025/26 as one untouched retrospective evaluation season, and 2026/27 as the current live fixture season. The frozen 2026-10-20 Footbolno coverage snapshot reports respectively 240 completed, 240 completed and 88 completed + 152 scheduled. These are **not** independent accuracy, legal ownership, current freshness or as-of facts. The original 2015/16–2023/24 horizon is **optional future enrichment**, never an M0 licensing/coverage prerequisite.
+
+**The source ranking and approval conditions do not relax.** Eligible providers can differ by season or field only with legally justified provenance, match-ID reconciliation and independent official cross-checks. A single Footbolno CSV claiming CC BY 4.0 while sourcing ESPN/Wikipedia does not automatically resolve sublicensing of the upstream feed. OpenFootball's CC0 license does not make its dated results strictly pre-match or error-free. All 18 candidates remain listed; no automatic scraping, paid source, new account or production ingestion follows this decision.
+
+For the minimum M0 source gate, first obtain evidence of legal rights to acquire, privately retain/back up, train on, and display **derived** predictions for the three-season scope. Then check all 240 unique home/away fixtures per completed season (played versus awarded, dates, goals, corrections) and current-season fixture freshness and kickoff timezones, referencing independent authorized original records. If required source rights or exact results fail, keep the season quarantined. Do not silently replace missing fixtures, copy restricted rows into Git/Supabase, or call a structurally complete CSV verified truth.
+
+This limited pilot allows *at most* a fixed independent Poisson benchmark with small-sample uncertainty: **2024/25 train, 2025/26 sealed test**. There is **no third completed calibration/validation cohort**. The previous full 2015/16–2026/27 backtest plan is superseded; separate validated calibration and advanced models need later independently cleared history or pre-registered prospective data. Historical strict as-of still requires contemporaneously observed records; recent downloads of old scores do not qualify. See [Backtesting](BACKTESTING.md).
+
 ## Candidate decision table
 
 | Provider | Public coverage evidence | Permissions established from published terms | Current decision |
@@ -259,7 +269,7 @@ Reference records must provide the *full* season's unique directed fixtures, one
 
 A provider may enter `approved` in `ff_sources` **only** after documenting all of:
 
-- Allowed authenticated automated collection, API plan/cost/quota, RPL seasons (2015/16 through current), fixture identities, required fields and accurate source IDs.
+- Allowed authenticated automated collection, API plan/cost/quota, minimum pilot RPL seasons (2024/25, 2025/26, current 2026/27), fixture identities, required fields and accurate source IDs.
 - Allowed private retention, backups, model training, derived forecast displays, and future public/commercial distribution if intended; clarify competition/club/image rights separately.
 - Actual samples collected through an authorized API, reconciled with independently verified fixtures, checked for duplicates, invalid postponed/awarded cases and historic corrections.
 - **Provenance**: event time, provider-published time (if genuinely available), ingestion time and revision hashes. No backdated access inferred merely because data were downloaded later.
