@@ -31,7 +31,7 @@ async function inspectManifest(fetchImpl,timeoutMs){
   // Content-Length from the *wire* response (compressed bytes). Comparing
   // that header to the decoded JSON buffer is invalid for gzip/br/deflate.
   const encoding=(response.headers.get('content-encoding')??'').trim().toLowerCase();
-  const compressed=/^(?:gzip|br|deflate)(?:,\\s*(?:gzip|br|deflate))*$/.test(encoding);
+  const compressed=/^(?:gzip|br|deflate)(?:,\s*(?:gzip|br|deflate))*$/.test(encoding);
   if(encoding!==''&&encoding!=='identity'&&!compressed)
     return {status:'UNSUPPORTED_CONTENT_ENCODING',httpStatus:response.status};
   if(claimedBytes!==null&&(!Number.isSafeInteger(claimedBytes)||claimedBytes>maxManifestBytes))
