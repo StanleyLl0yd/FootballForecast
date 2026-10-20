@@ -8,7 +8,7 @@ FootballForecast currently provides **public, anonymous, read-only** non-commerc
 - Postgres live forecast and outcome records are append-only, with publication-time and fixture integrity guards. Untrusted browser clients are never provisioned as database writers.
 - Administrative `/admin` is denied unless an explicitly configured, verified owner-only GitHub OAuth identity is present. Owner login is optional and is **not yet enabled**; public pages do not require login.
 - No service-role key, privileged user token, third-party football provider credential or editable job API is present in the browser code. Next.js sets framing/sniffing restrictions and a minimal CSP.
-- Protected `main` requires PRs and six exact-head CI/security checks; actions are pinned. `npm ci`, Gitleaks, CodeQL and production dependency audit are enforced, with the dev-only `braces` advisory tracked separately.
+- Protected `main` requires PRs and six exact-head CI/security checks; actions are pinned. `npm ci`, Gitleaks, CodeQL and production dependency audit are enforced. The **full development audit is fail-closed** for any new HIGH/CRITICAL finding: an explicit machine-checked exception permits only unpatched `braces@3.0.3` / `GHSA-vfj7-8cjw-p6xm` propagated along a verified, exclusively dev-only ESLint dependency chain. This is not a vulnerability fix or a permanent general waiver. Issue #8 remains OPEN until an actual upstream patch or safe supported replacement is proven.
 - External HTTP canary verifies public health/pages, anonymous Supabase availability through the rendered dashboard, and unauthenticated admin redirects. Do not confuse a passing canary with a complete security penetration test.
 
 ## Open risks
