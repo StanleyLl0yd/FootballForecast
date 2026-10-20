@@ -65,6 +65,8 @@ jobs:
         run: node --test tests/m0-free-source-policy.test.mjs
       - name: Verify no-cost publisher metadata probe cannot download match CSV rows
         run: node --check scripts/m0-footbolno-metadata.mjs && node --test tests/m0-footbolno-metadata.test.mjs
+      - name: Validate ephemeral hash-pinned RPL season coverage inspector without provider rows
+        run: node --check scripts/m0-footbolno-csv-aggregate.mjs && node --test tests/m0-footbolno-csv-aggregate.test.mjs
       - name: Verify registry-driven public source catalog without activated providers
         run: node --test apps/web/tests/data-catalog.test.mjs
       - name: Test offline cross-provider score, status, venue and temporal accuracy logic

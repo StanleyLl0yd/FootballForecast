@@ -1,0 +1,57 @@
+name: M0 Free RPL CSV Ephemeral Coverage Research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/m0-footbolno-csv-aggregate.mjs'
+      - '.github/workflows/m0-footbolno-csv-research.yml'
+permissions: {contents: read}
+concurrency:
+  group: m0-footbolno-csv-research
+  cancel-in-progress: false
+jobs:
+  private-aggregate-only:
+    # Exactly one research request after installation/updates, or on manual request.
+    # User has approved only zero-cost PUBLIC publisher endpoints, never source
+    # retention, scraping restricted sites, model training or redistribution.
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned
+        with: {node-version: '22'}
+      - name: Enforce bounded aggregate-only CSV parser
+        run: node --check scripts/m0-footbolno-csv-aggregate.mjs && node --test tests/m0-footbolno-csv-aggregate.test.mjs
+      - name: Download ONE publicly advertised RPL CSV to disposable private runner memory
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          url='https://footbolno.ru/data/league/235-matches.csv'
+          curl --fail --silent --show-error \
+            --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 45 --max-filesize 2097152 \
+            --output "$work/rpl.csv" "$url"
+          test -s "$work/rpl.csv"
+          test "$(wc -c < "$work/rpl.csv")" -le 2097152
+          hash="$(sha256sum "$work/rpl.csv" | cut -d' ' -f1)"
+          {
+            echo '## M0 research-only free RPL source coverage observation'
+            echo
+            echo "Retrieved UTC: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo
+            echo 'Publisher explicitly advertises $0 CSV. Rights from ESPN/Wikipedia upstream are NOT independently cleared.'
+            echo
+            echo 'Raw provider match rows are never logged, uploaded, committed, stored as artifacts, or imported to Supabase.'
+            echo
+            echo 'All match results, observed goals and timestamps remain UNVERIFIED against independent official records.'
+            echo
+            echo '~~~json'
+          } >> "$GITHUB_STEP_SUMMARY"
+          node scripts/m0-footbolno-csv-aggregate.mjs "$work/rpl.csv" "$hash" |
+            tee -a "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
