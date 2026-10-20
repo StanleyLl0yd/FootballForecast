@@ -13,6 +13,18 @@ export function auditFootballTxtQuality(source,{expectedTeams=16,expectedMatches
   const fixturesPerRound=expectedTeams/2;
   const rounds=[];
   const awarded=[],unknownAnnotations=[],halfTimeContradictions=[],unassignedFixtures=[];
+  // Source-reported scores for administrative awards affect competition tables,
+  // but MUST NOT enter observed on-field scoring-strength estimates.
+  const emptyTotals=()=>({matches:0,homeWins:0,draws:0,awayWins:0,homeGoals:0,awayGoals:0});
+  const playedScoreTotals=emptyTotals(),awardedScoreTotals=emptyTotals();
+  const record=(target,homeGoals,awayGoals)=>{
+    target.matches++;
+    target.homeGoals+=homeGoals;
+    target.awayGoals+=awayGoals;
+    if(homeGoals>awayGoals)target.homeWins++;
+    else if(homeGoals===awayGoals)target.draws++;
+    else target.awayWins++;
+  };
   let currentRound=null;
   source.split(/\r?\n/).forEach((line,index)=>{
     const lineNumber=index+1;
@@ -37,8 +49,11 @@ export function auditFootballTxtQuality(source,{expectedTeams=16,expectedMatches
     }
     if(tail==='[awarded]'){
       awarded.push({line:lineNumber,home:homeRaw.trim(),away:awayRaw.trim(),score:`${homeGoalsRaw}-${awayGoalsRaw}`});
+      record(awardedScoreTotals,Number(homeGoalsRaw),Number(awayGoalsRaw));
     } else if(tail){
       unknownAnnotations.push({line:lineNumber,annotation:tail});
+    } else {
+      record(playedScoreTotals,Number(homeGoalsRaw),Number(awayGoalsRaw));
     }
   });
   const roundViolations=[];
@@ -69,6 +84,10 @@ export function auditFootballTxtQuality(source,{expectedTeams=16,expectedMatches
     diagnosticViolations,
     // These rows are administrative outcomes, not observed goal-scoring events.
     ordinaryScoreRows:structure.parsedRows-awarded.length,
+    // These are only SOURCE-REPORTED retrospective totals, never independently
+    // authenticated goals or evidence of the licensing/quality of that season.
+    totalsAreMechanicallyValid:structure.ok&&diagnosticViolations.length===0,
+    playedScoreTotals,awardedScoreTotals,
   };
 }
 

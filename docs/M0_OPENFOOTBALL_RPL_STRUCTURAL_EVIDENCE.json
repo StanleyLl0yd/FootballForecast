@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "asReviewedAt": "2026-10-20",
+  "source": "https://github.com/openfootball/europe",
+  "sourceCommit": "63df627f3c87ce71708f016522ea236cf74332c3",
+  "sourcePublisherLicenseClaim": "CC0-1.0; upstream origin rights unverified",
+  "scope": "M0 static source-structure research only; no provider records copied, no ingestion, no training",
+  "sourceApproved": false,
+  "empiricalMatchAccuracyMeasured": false,
+  "independentOfficialFixtureVerification": false,
+  "archivalPrematchSnapshotsVerified": false,
+  "modelTrainingAllowed": false,
+  "technicalAwardRule": "Awarded match scores contribute to source competition tally but NOT to played/on-field goals, xG, form or Poisson calibration.",
+  "seasons": [
+    {
+      "season": "2018/19",
+      "path": "russia/2018-19_ru1.txt",
+      "gitBlobSHA1": "e5efe22ce8ac11b76d0b8aa31527533a44d5a325",
+      "claimedTeams": 16,
+      "claimedMatches": 240,
+      "parsedMatches": 240,
+      "directedFixturePairs": 240,
+      "duplicatePairs": 0,
+      "missingPairs": 0,
+      "playedMatches": 240,
+      "awardedMatches": 0,
+      "sourceReportedPlayedGoals": {
+        "home": 314,
+        "away": 228
+      },
+      "sourceReportedAdministrativeGoals": {
+        "home": 0,
+        "away": 0
+      },
+      "sourceReportedAllResultWins": {
+        "home": 103,
+        "draw": 70,
+        "away": 67
+      },
+      "knownPrimarySourceDiscrepancy": null
+    },
+    {
+      "season": "2019/20",
+      "path": "russia/2019-20_ru1.txt",
+      "gitBlobSHA1": "233597390aeb5b4cf4cd2a0a3279ae4fc6e02c68",
+      "claimedTeams": 16,
+      "claimedMatches": 240,
+      "parsedMatches": 240,
+      "directedFixturePairs": 240,
+      "duplicatePairs": 0,
+      "missingPairs": 0,
+      "playedMatches": 236,
+      "awardedMatches": 4,
+      "sourceReportedPlayedGoals": {
+        "home": 302,
+        "away": 269
+      },
+      "sourceReportedAdministrativeGoals": {
+        "home": 6,
+        "away": 6
+      },
+      "sourceReportedAllResultWins": {
+        "home": 87,
+        "draw": 65,
+        "away": 88
+      },
+      "knownPrimarySourceDiscrepancy": null
+    },
+    {
+      "season": "2020/21",
+      "path": "russia/2020-21_ru1.txt",
+      "gitBlobSHA1": "272185a808d69ce90574e9eff40ff6d53bf7f322",
+      "claimedTeams": 16,
+      "claimedMatches": 240,
+      "parsedMatches": 240,
+      "directedFixturePairs": 240,
+      "duplicatePairs": 0,
+      "missingPairs": 0,
+      "playedMatches": 238,
+      "awardedMatches": 2,
+      "sourceReportedPlayedGoals": {
+        "home": 371,
+        "away": 260
+      },
+      "sourceReportedAdministrativeGoals": {
+        "home": 3,
+        "away": 3
+      },
+      "sourceReportedAllResultWins": {
+        "home": 116,
+        "draw": 50,
+        "away": 74
+      },
+      "knownPrimarySourceDiscrepancy": null
+    },
+    {
+      "season": "2023/24",
+      "path": "russia/2023-24_ru1.txt",
+      "gitBlobSHA1": "3ea6829a971d1cbdf56552be0519cc125707bd99",
+      "claimedTeams": 16,
+      "claimedMatches": 240,
+      "parsedMatches": 240,
+      "directedFixturePairs": 239,
+      "duplicatePairs": 1,
+      "missingPairs": 1,
+      "playedMatches": 240,
+      "awardedMatches": 0,
+      "sourceReportedPlayedGoals": {
+        "home": 358,
+        "away": 279
+      },
+      "sourceReportedAdministrativeGoals": {
+        "home": 0,
+        "away": 0
+      },
+      "sourceReportedAllResultWins": {
+        "home": 112,
+        "draw": 66,
+        "away": 62
+      },
+      "knownPrimarySourceDiscrepancy": "Sochi–Spartak 2023-09-16 reversed orientation; consult dated RFU/club primary records"
+    },
+    {
+      "season": "2024/25",
+      "path": "russia/2024-25_ru1.txt",
+      "gitBlobSHA1": "6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc",
+      "claimedTeams": 16,
+      "claimedMatches": 240,
+      "parsedMatches": 240,
+      "directedFixturePairs": 240,
+      "duplicatePairs": 0,
+      "missingPairs": 0,
+      "playedMatches": 240,
+      "awardedMatches": 0,
+      "sourceReportedPlayedGoals": {
+        "home": 364,
+        "away": 284
+      },
+      "sourceReportedAdministrativeGoals": {
+        "home": 0,
+        "away": 0
+      },
+      "sourceReportedAllResultWins": {
+        "home": 103,
+        "draw": 65,
+        "away": 72
+      },
+      "knownPrimarySourceDiscrepancy": null
+    }
+  ]
+}
