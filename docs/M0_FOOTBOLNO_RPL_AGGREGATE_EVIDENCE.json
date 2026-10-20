@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "reviewedAtUTC": "2026-10-20T08:08:30Z",
+  "source": "https://footbolno.ru/data/league/235-matches.csv",
+  "sourceSHA256": "dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1191d19513c214",
+  "sourceBytes": 542363,
+  "sourceRowCount": 2571,
+  "sourceColumnCount": 22,
+  "sourceId": 235,
+  "origin": "one-time free publicly documented publisher CSV, ephemeral GitHub runner research job 39391254693",
+  "observedRun": "https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39391254693",
+  "hasRecognizedPerRecordPublishedAtColumn": false,
+  "hasRecognizedPerRecordUpdatedAtColumn": false,
+  "providerRightsApproved": false,
+  "upstreamRightsVerified": false,
+  "officialMatchByMatchTruthVerified": false,
+  "historicalPrematchAsOfVerified": false,
+  "independentSourceAgreementVerified": false,
+  "authorizedForAutomatedTraining": false,
+  "authorizedForRedistribution": false,
+  "activeInProduction": false,
+  "rowLevelRecordsPersisted": false,
+  "source2026CurrentCoverageInterpretation": "Publisher CSV displays 240 records, 88 finished and 152 scheduled on this exact historical snapshot; no official truth, future completeness, freshness SLA or rights verified.",
+  "administrativeAwardCaveat": "CSV status finished cannot by itself rule out awarded, forfeited or administratively corrected scores; aggregated results MUST NOT be treated as independently verified on-field events.",
+  "seasons": [
+    {
+      "season": "2016/2017",
+      "sourceRows": 163,
+      "statuses": {
+        "finished": 163,
+        "scheduled": 0,
+        "live": 0,
+        "cancelled": 0
+      },
+      "distinctClubCount": 18,
+      "distinctDirectedPairs": 163,
+      "duplicateDirectedPairs": 0,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 210,
+        "away": 151
+      },
+      "structuralResearchClassification": "QUARANTINE_ANOMALOUS_SEASON"
+    },
+    {
+      "season": "2017/2018",
+      "sourceRows": 244,
+      "statuses": {
+        "finished": 244,
+        "scheduled": 0,
+        "live": 0,
+        "cancelled": 0
+      },
+      "distinctClubCount": 18,
+      "distinctDirectedPairs": 244,
+      "duplicateDirectedPairs": 0,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 314,
+        "away": 240
+      },
+      "structuralResearchClassification": "QUARANTINE_ANOMALOUS_SEASON"
+    },
+    {
+      "season": "2018/2019",
+      "sourceRows": 244,
+      "statuses": {
+        "finished": 244,
+        "scheduled": 0,
+        "live": 0,
+        "cancelled": 0
+      },
+      "distinctClubCount": 18,
+      "distinctDirectedPairs": 244,
+      "duplicateDirectedPairs": 0,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 318,
+        "away": 232
+      },
+      "structuralResearchClassification": "QUARANTINE_ANOMALOUS_SEASON"
+    },
+    {
+      "season": "2019/2020",
+      "sourceRows": 193,
+      "statuses": {
+        "finished": 192,
+        "scheduled": 0,
+        "live": 0,
+        "cancelled": 1
+      },
+      "distinctClubCount": 16,
+      "distinctDirectedPairs": 193,
+      "duplicateDirectedPairs": 0,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 253,
+        "away": 216
+      },
+      "structuralResearchClassification": "QUARANTINE_ANOMALOUS_SEASON"
+    },
+    {
+      "season": "2020/2021",
+      "sourceRows": 287,
+      "statuses": {
+        "finished": 284,
+        "scheduled": 0,
+        "live": 0,
+        "cancelled": 3
+      },
+      "distinctClubCount": 18,
+      "distinctDirectedPairs": 251,
+      "duplicateDirectedPairs": 36,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 423,
+        "away": 316
+      },
+      "structuralResearchClassification": "QUARANTINE_ANOMALOUS_SEASON"
+    },
+    {
+      "season": "2021/2022",
+      "sourceRows": 240,
+      "statuses": {
+        "finished": 240,
+        "scheduled": 0,
+        "live": 0,
+        "cancelled": 0
+      },
+      "distinctClubCount": 16,
+      "distinctDirectedPairs": 240,
+      "duplicateDirectedPairs": 0,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 359,
+        "away": 280
+      },
+      "structuralResearchClassification": "STRUCTURE_ONLY_CANDIDATE"
+    },
+    {
+      "season": "2022/2023",
+      "sourceRows": 240,
+      "statuses": {
+        "finished": 240,
+        "scheduled": 0,
+        "live": 0,
+        "cancelled": 0
+      },
+      "distinctClubCount": 16,
+      "distinctDirectedPairs": 240,
+      "duplicateDirectedPairs": 0,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 411,
+        "away": 319
+      },
+      "structuralResearchClassification": "STRUCTURE_ONLY_CANDIDATE"
+    },
+    {
+      "season": "2023/2024",
+      "sourceRows": 240,
+      "statuses": {
+        "finished": 240,
+        "scheduled": 0,
+        "live": 0,
+        "cancelled": 0
+      },
+      "distinctClubCount": 16,
+      "distinctDirectedPairs": 240,
+      "duplicateDirectedPairs": 0,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 359,
+        "away": 278
+      },
+      "structuralResearchClassification": "STRUCTURE_ONLY_CANDIDATE"
+    },
+    {
+      "season": "2024/2025",
+      "sourceRows": 240,
+      "statuses": {
+        "finished": 240,
+        "scheduled": 0,
+        "live": 0,
+        "cancelled": 0
+      },
+      "distinctClubCount": 16,
+      "distinctDirectedPairs": 240,
+      "duplicateDirectedPairs": 0,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 364,
+        "away": 284
+      },
+      "structuralResearchClassification": "STRUCTURE_ONLY_CANDIDATE"
+    },
+    {
+      "season": "2025/2026",
+      "sourceRows": 240,
+      "statuses": {
+        "finished": 240,
+        "scheduled": 0,
+        "live": 0,
+        "cancelled": 0
+      },
+      "distinctClubCount": 16,
+      "distinctDirectedPairs": 240,
+      "duplicateDirectedPairs": 0,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 348,
+        "away": 261
+      },
+      "structuralResearchClassification": "STRUCTURE_ONLY_CANDIDATE"
+    },
+    {
+      "season": "2026/2027",
+      "sourceRows": 240,
+      "statuses": {
+        "finished": 88,
+        "scheduled": 152,
+        "live": 0,
+        "cancelled": 0
+      },
+      "distinctClubCount": 16,
+      "distinctDirectedPairs": 240,
+      "duplicateDirectedPairs": 0,
+      "duplicateMatchIds": 0,
+      "missingClubIds": 0,
+      "invalidFinishedScores": 0,
+      "sourceReportedScoresNotAuthenticatedOnField": {
+        "home": 127,
+        "away": 119
+      },
+      "structuralResearchClassification": "STRUCTURE_ONLY_CANDIDATE"
+    }
+  ]
+}

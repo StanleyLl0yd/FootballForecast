@@ -86,6 +86,24 @@ The publisher advertises the **entire** RPL results CSV at a free, directly docu
 
 The live research outcome, if any, is retained only as a sanitized GitHub Actions summary with the source-byte fingerprint and provenance warnings. A failed/blocked request makes the diagnostic job FAIL without publishing third-party records and must be interpreted as **inconclusive**, not as proof that the dataset does not exist. **All production source integrations remain off.**
 
+## Footbolno: observed structural RPL coverage and mandatory quarantine (2026-10-20)
+
+The first [one-time, ephemeral GitHub Actions CSV research run](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39391254693) successfully downloaded the publisher-advertised free RPL id-235 CSV **in a disposable runner only**, never persisted the raw third-party match rows and emitted just statistics. The exact decoded file contains **542,363 bytes, 2,571 rows and 22 columns**, SHA-256 `dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1191d19513c214`. The source snapshot was read at **2026-10-20 08:08 UTC**. For all 2,571 parsed rows, the documented league, season and result-status fields matched the parser's accepted formats. [Immutable aggregate-only observation](M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json) is checked by CI, without copying any source rows.
+
+| Season | Source rows | Club IDs | Distinct ordered fixtures | Structural decision |
+| --- | ---: | ---: | ---: | --- |
+| 2016/17 | 163 | 18 | 163 | **Quarantine:** incomplete/extra clubs |
+| 2017/18 | 244 | 18 | 244 | **Quarantine:** more than 240 rows/16 clubs |
+| 2018/19 | 244 | 18 | 244 | **Quarantine:** more than 240 rows/16 clubs |
+| 2019/20 | 193 (192 finished, 1 cancelled) | 16 | 193 | **Quarantine:** incomplete |
+| 2020/21 | 287 (284 finished, 3 cancelled) | 18 | 251 | **Quarantine:** **36 duplicate ordered pairs** |
+| 2021/22 through 2025/26 | 240 per season | 16 | 240 per season | Source **structure-only candidates**, not verified scores |
+| **2026/27** | **240 (88 finished, 152 scheduled)** | **16** | **240** | Current source grid **structurally complete only** |
+
+One concrete, useful source comparison (not a true match-level accuracy study): for 2024/25 Footbolno reports **364 home + 284 away** source result goals, exactly matching the version-pinned OpenFootball aggregate; for 2023/24 Footbolno reports **359 + 278**, while the uncorrected OpenFootball file shows **358 + 279** and FootClubSim has documented the Sochi–Spartak reversed venue against official references. For 2018/19 Footbolno's historical source scores are **318 + 232** versus OpenFootball **314 + 228**, consistently with Footbolno's four extra fixture rows. Matching season totals do **not** establish independent underlying providers, official truth for every match or permission to use either source for model training.
+
+**Critical temporal and semantic blocker:** no recognized `published_at` or `updated_at` field appears in the observed match-row CSV schema, and a generated manifest timestamp only proves file refresh, not old pre-kickoff availability. `finished` is not proof that an administrative 3:0 award was played on the pitch. The observed current-season grid can support **future research planning only** until rights, official match-level accuracy, status/award semantics, individual timestamp history and source independence are established. The immutable record is for public aggregated research, **not a stored/approved prediction dataset**.
+
 ## Additional direct source-structure verification: OpenFootball (2026-10-20)
 
 I inspected the **public publisher's source files** in [`openfootball/europe` at immutable commit `63df627f`](https://github.com/openfootball/europe/tree/63df627f3c87ce71708f016522ea236cf74332c3/russia), rather than treating a mirrored table or a GitHub folder listing as proof of coverage. [Machine-readable version-pinned evidence](M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json) records the exact five original Git blob SHA-1 IDs, derived totals and research-only qualification; it **does not redistribute fixture rows**.
