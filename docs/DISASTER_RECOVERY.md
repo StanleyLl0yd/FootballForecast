@@ -45,3 +45,22 @@ Before loading valuable real data or moving to M1:
 **Acceptance evidence:** successful production export time, offsite object identity/hash, location, encrypted retention, isolated restore log with sensitive data redacted, verified recovery time and the owner's accepted recovery policy. Until that exists, issue #5 and M0 stay **OPEN** regardless of CI fixture-restore results.
 
 The public source repository and GitHub CI cannot by themselves guarantee recovery of the real Supabase Free database.
+
+
+## Owner-operated, local encrypted export tool (prepared, NOT production-tested)
+
+The manual-only \`scripts/m0-manual-encrypted-export.sh\` streams \`pg_dump -Fc\` directly into \`age v1.3.2\`; no plaintext dump is saved locally. It refuses CI, malformed/incomplete connection configuration, anything weaker than \`PGSSLMODE=verify-full\`, non-5432 transaction-pooling connections, non-PostgreSQL 17 client/server versions and failed dump/encryption pipelines. Its local output is one private directory containing \`database.pg17.dump.age\` and \`manifest.txt\` with ciphertext SHA-256, byte count and UTC timestamp. Nothing uploads automatically; the manifest SHA-256 is **not** an authenticated remote tamper-evidence signature.
+
+An authorized owner must install and independently verify the official \`age v1.3.2\` executable and PostgreSQL 17 command-line clients on a trusted Linux machine; generate/store the decryption identity **offline**, separate from the future storage account, and supply its **public** \`age1...\` recipient. Use a private \`PGPASSFILE\` outside Git (preferred; mode 0600), or a process-environment password without putting it in shell history or arguments. In the Supabase **Connect** panel choose the **direct IPv6, port 5432** connection for a machine with IPv6, or the **session pooler, port 5432** on IPv4-only networks (not the transaction pooler on 6543). Set \`PGHOST\`, \`PGUSER\`, \`PGDATABASE\`, \`PGPORT=5432\`, \`PGSSLMODE=verify-full\` and the correct trusted server CA configuration. Use only a credential approved for read/export, never the public publishable API key.
+
+Manual command after securely configuring the above environment (illustrative, no credentials):
+
+\`\`\`sh
+export FF_AGE_RECIPIENT='age1...public-recipient-from-offline-key'
+export FF_BACKUP_OUTPUT_DIR='/private/offline-backups'
+bash scripts/m0-manual-encrypted-export.sh
+\`\`\`
+
+**Important limits:** only schema/data in \`public\`, \`ff_private\` and \`auth\` are exported; this is **not** a full Supabase instance archive. Cluster roles, Supabase-managed settings/extensions, external credentials and actual Storage object bytes are excluded; an isolated restore needs documented role/extension prerequisites and separate permitted objects. The operator must check \`pg_dump\` output/coverage, storage quota, source rights and actual archive restorability. Move the encrypted archive and manifest to an approved independent $0 destination, record the expected checksum **outside that destination**, verify a complete remote download/hash, and restore into a separately isolated PostgreSQL 17 environment with owner-held recovery key. Do not upload plaintext, a decryption identity or passwords. Do not run an initial real export before choosing the authorized scope, credential and recovery location.
+
+This script and its synthetic mocks alone satisfy **none** of the remaining production offsite/restore acceptance evidence. Issue #5 and M0 stay open until the first real independent restore and documented RPO/RTO.
