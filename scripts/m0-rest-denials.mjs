@@ -5,7 +5,7 @@ import {pathToFileURL} from 'node:url';
 
 export const projectOrigin='https://upulkesaiwnwfagjgteh.supabase.co';
 const noMatch='00000000-0000-0000-0000-000000000000';
-const operations=Object.freeze([
+export const operations=Object.freeze([
   {label:'Public matches SELECT',method:'GET',path:'/rest/v1/ff_matches?select=id&limit=1',allow:true},
   {label:'Private source metadata SELECT',method:'GET',path:'/rest/v1/ff_sources?select=id&limit=1'},
   {label:'Private source records SELECT',method:'GET',path:'/rest/v1/ff_source_records?select=id&limit=1'},
