@@ -2,6 +2,8 @@ import {PageHeading} from '@/components/empty-state';
 import {SourceEvidenceLab} from '@/components/source-evidence-lab';
 import sourceRegistry from '../../../../../docs/M0_FREE_SOURCE_REGISTRY.json';
 import historicalEvidence from '../../../../../docs/M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json';
+import footbolnoEvidence from '../../../../../docs/M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json';
+import currentRplCrosscheck from '../../../../../docs/M0_RPL_2026_27_EDITORIAL_AGGREGATE_CROSSCHECK.json';
 
 const categories=[
   {priority:1,title:'Официальные первоисточники',
@@ -43,6 +45,50 @@ export default function DataCenter(){
       <p>Ни один источник пока не одобрен для автоматического импорта или обучения. Все функции сайта остаются бесплатными; платные источники исключены. Публичность сайта с результатами не означает разрешение на скачивание его базы.</p>
       <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M0_SOURCE_ACCURACY_PROTOCOL.md"
         target="_blank" rel="noopener noreferrer">Методика проверки точности <span aria-hidden="true">↗</span></a>
+    </section>
+    <section className="panel historical-source-evidence">
+      <h2>Footbolno: 11 сезонов РПЛ по зафиксированному CSV</h2>
+      <p>Одноразовое исследование {footbolnoEvidence.reviewedAtUTC.slice(0,10)}:
+        {footbolnoEvidence.sourceRowCount.toLocaleString('ru-RU')} записей,
+        {footbolnoEvidence.seasons.length} сезонов.
+        Это структура опубликованного источника, не разрешение скачивать его данные,
+        не проверка официальных протоколов и не история изменений до матчей.</p>
+      <div className="source-lab-table-wrapper">
+        <table className="source-lab-table">
+          <thead><tr>
+            <th scope="col">Сезон</th><th scope="col">Записей</th>
+            <th scope="col">Завершено по источнику</th>
+            <th scope="col">Запланировано</th><th scope="col">Клубов</th>
+            <th scope="col">Различных пар</th><th scope="col">Структурная оценка</th>
+          </tr></thead>
+          <tbody>{footbolnoEvidence.seasons.map(season=><tr key={season.season}>
+            <th scope="row">{season.season}</th>
+            <td>{season.sourceRows}</td>
+            <td>{season.statuses.finished}</td>
+            <td>{season.statuses.scheduled}</td>
+            <td>{season.distinctClubCount}</td>
+            <td>{season.distinctDirectedPairs}
+              {season.duplicateDirectedPairs>0?
+                <small>{season.duplicateDirectedPairs} повторных пар</small>:null}
+            </td>
+            <td>{season.structuralResearchClassification==='QUARANTINE_ANOMALOUS_SEASON'?
+              'Карантин: аномалии':'Только структура, не одобрено'}</td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+      <p className="source-lab-warning">
+        Сезоны 2016/17–2020/21: карантин из-за пропусков, лишних команд или повторных игр.
+        В 2026/27 CSV отмечает 88 завершённых и 152 запланированные игры.
+        Суммарные 246 голов совпадают с вручную проверенной редакционной таблицей после 11 туров,
+        но это не доказывает правильность каждого счёта либо независимость первоисточников.
+      </p>
+      <p className="source-lab-note">
+        Зафиксированное сравнение: {currentRplCrosscheck.reference.derivedUniqueMatches} игр,
+        {currentRplCrosscheck.reference.leagueGoalsFor} голов по редакционной таблице;
+        обучение и импорт данных запрещены на M0.
+      </p>
+      <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json"
+        target="_blank" rel="noopener noreferrer">Детали исследования, хэш и ограничения ↗</a>
     </section>
     <section className="panel historical-source-evidence">
       <h2>OpenFootball: проверка структуры пяти сезонов РПЛ</h2>
