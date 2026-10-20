@@ -1,6 +1,5 @@
 {
   "schemaVersion": 1,
-  "recordedAtUTC": "2026-10-20T09:00:00Z",
   "kind": "M0_MANUAL_AGGREGATE_RESEARCH_NOT_FIXTURE_LEVEL",
   "competition": "Russian Premier League",
   "season": "2026/2027",
@@ -45,5 +44,6 @@
     "sourceApproved": false,
     "canBeUsedForPredictionFeatures": false
   },
-  "limitations": "Manual aggregate comparison only. Editorial standings and a publisher CSV can share an upstream feed. Season goal totals do not establish each score, correct venue or game status; awarded results may be counted differently. No match rows, team-level statistics or publisher text retained. Do not infer legal access, historical as-of availability or ML/training approval."
+  "limitations": "Manual aggregate comparison only. Editorial standings and a publisher CSV can share an upstream feed. Season goal totals do not establish each score, correct venue or game status; awarded results may be counted differently. No match rows, team-level statistics or publisher text retained. Do not infer legal access, historical as-of availability or ML/training approval.",
+  "reviewedOn": "2026-10-20"
 }
