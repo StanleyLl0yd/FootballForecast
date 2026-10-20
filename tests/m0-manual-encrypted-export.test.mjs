@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
@@ -47,8 +47,10 @@ test('exports only encrypted archive and manifest with expected hash and strict 
   assert.equal(result.status, 0, result.stderr);
   const [dir] = readdirSync(output);
   assert.match(dir, /^ff-pg17-/);
+  assert.equal(statSync(path.join(output, dir)).mode & 0o777, 0o700);
   const files = readdirSync(path.join(output, dir)).sort();
   assert.deepEqual(files, ['database.pg17.dump.age', 'manifest.txt']);
+  assert.equal(statSync(path.join(output, dir, files[0])).mode & 0o777, 0o600);
   const archive = readFileSync(path.join(output, dir, files[0]));
   assert.equal(archive.toString(), 'mock-ciphertext-only');
   const hash = execFileSync('sha256sum', [path.join(output, dir, files[0])], { encoding: 'utf8' }).split(' ')[0];
@@ -79,4 +81,10 @@ test('rejects encryption failure and discards partial output', () => {
   const { output, result } = run('age-fail', { FF_MOCK_AGE_FAIL: '1' });
   assert.notEqual(result.status, 0);
   assert.deepEqual(readdirSync(output), []);
+});
+
+test('refuses output directories inside the Git checkout', () => {
+  const { result } = run('inside-repo-denied', { FF_BACKUP_OUTPUT_DIR: path.dirname(script) });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /outside the repository checkout/);
 });
