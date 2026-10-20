@@ -8,7 +8,8 @@ const required = [
   'rfs-official','rpl-official','club-official','openfootball-europe','footbolno',
   'sportscore','api-football-free','rsssf','championat','sportbox',
   'wikidata','wikipedia','rusfootball','football-data-uk',
-  'thesportsdb-free','footystats-website','understat-public-mirror','open-matchday-rpl'
+  'thesportsdb-free','footystats-website','understat-public-mirror','open-matchday-rpl',
+  'sstats-football-api'
 ];
 const freeModes = new Set([
   'public-reference','public-open-data','documented-free-tier',
@@ -28,7 +29,7 @@ test('the owner rule is strictly zero-cost, without provider billing or fallback
   assert.equal(registry.policy.activeProviderIntegrations,0);
 });
 
-test('all 18 known source classes are retained with stable unique IDs and evidence',()=>{
+test('all 19 known source classes are retained with stable unique IDs and evidence',()=>{
   assert.ok(Array.isArray(registry.sources));
   const ids=registry.sources.map(source=>source.id);
   assert.equal(new Set(ids).size,ids.length);
@@ -78,6 +79,11 @@ test('restricted or development-only sources cannot be treated as production fee
   assert.equal(byId['open-matchday-rpl'].access,'restricted-reference');
   assert.equal(byId['football-data-uk'].access,'restricted-reference');
   assert.equal(byId['thesportsdb-free'].access,'restricted-reference');
+  assert.equal(byId['sstats-football-api'].access,'restricted-reference');
+  assert.equal(byId['sstats-football-api'].priority,4);
+  assert.equal(byId['sstats-football-api'].zeroCost,'documented-free-tier');
+  assert.match(byId['sstats-football-api'].limitations,/Flashscore/);
+  assert.equal(byId['sstats-football-api'].authorizedAutomatedTraining,false);
   assert.match(byId.sportscore.limitations,/link/);
   assert.match(byId.footbolno.limitations,/upstream license/);
 });
@@ -109,4 +115,22 @@ test('official RPL protocols are manual-only because publisher bans automated ex
         folder+'/'+filename+' must not automate the RPL official domain');
     }
   }
+});
+
+test('Footbolno rights clarification is only a draft: no private response or ingestion approval',()=>{
+  const doc=readFileSync(new URL('../docs/M0_FOOTBOLNO_RIGHTS_INQUIRY.md',import.meta.url),'utf8');
+  const data=readFileSync(new URL('../docs/DATA_SOURCES.md',import.meta.url),'utf8');
+  assert.match(doc,/info@footbolno\.ru/);
+  assert.match(doc,/НЕ ОТПРАВЛЕН/);
+  assert.match(doc,/2024\/25/);
+  assert.match(doc,/2025\/26/);
+  assert.match(doc,/2026\/27/);
+  assert.match(doc,/машинное обучение/i);
+  assert.match(doc,/сторонних провайдеров/);
+  assert.match(doc,/история правок/);
+  assert.match(doc,/UPSTREAM_RIGHTS_UNVERIFIED/);
+  assert.match(doc,/NON_STRICT_RETROSPECTIVE/);
+  assert.match(data,/M0_FOOTBOLNO_RIGHTS_INQUIRY\.md/);
+  assert.equal(registry.policy.activeProviderIntegrations,0);
+  assert.equal(registry.sources.find(s=>s.id==='footbolno').authorizedAutomatedTraining,false);
 });
