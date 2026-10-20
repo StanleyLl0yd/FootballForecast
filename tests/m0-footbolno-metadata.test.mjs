@@ -78,6 +78,15 @@ test('oversized Content-Length and streamed bytes fail before reporting a digest
   assert.equal(two.manifest.status,'OVER_LIMIT');
   assert.ok(!('sha256' in two.manifest));
 });
+test('inconsistent Content-Length cannot be reported as a valid manifest digest',async()=>{
+  const report=await probeSourceMetadata({fetchImpl:async url=>
+    url===manifestUrl?
+      new Response('{}',{status:200,headers:{'content-length':'12'}}):
+      new Response(null,{status:204})});
+  assert.equal(report.manifest.status,'CONTENT_LENGTH_MISMATCH');
+  assert.equal(report.manifest.bytes,2);
+  assert.ok(!('sha256' in report.manifest));
+});
 test('server refusing metadata or HEAD yields explicit HTTP evidence, no raw values',async()=>{
   const rep=await probeSourceMetadata({fetchImpl:async url=>
     url===manifestUrl?
