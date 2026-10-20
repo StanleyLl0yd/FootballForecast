@@ -76,7 +76,7 @@ test('reject incorrect hash, malformed CSV and oversized cells without raw conte
   const bytes=Buffer.from(fixture());
   assert.throws(()=>inspectFreeRplCsv(bytes,'0'.repeat(64)),/hash pin mismatch/);
   for(const raw of [
-    head+'\n'+row('001','2026/2027','finished','h01','a01','1'),
+    head+'\n'+row('001','2026/2027','finished','h01','a01','1').slice(0,-1),
     head+'\n'+row('001','2026/2027','finished','h01','a01','1','0')+',EXTRA',
     head+'\n'+row('001','2026/2027','finished','h01','a01','1','0')+'\n'+row('002','2026/2027','finished','h01','a01','1','0')+'\n"notclosed',
     head+'\n'+row('001','2026/2027','finished','h01','a01','1','0')+'\n'+row('002','2026/2027','finished','h01','a01','1','0')+'\n'+row('003','2026/2027','finished','h01','a01','1','0')+'\n'+'X'.repeat(5000)
