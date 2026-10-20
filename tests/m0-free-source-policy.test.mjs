@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync} from 'node:fs';
+import {join} from 'node:path';
 import test from 'node:test';
 
 const registry = JSON.parse(readFileSync(new URL('../docs/M0_FREE_SOURCE_REGISTRY.json', import.meta.url),'utf8'));
@@ -79,4 +80,33 @@ test('restricted or development-only sources cannot be treated as production fee
   assert.equal(byId['thesportsdb-free'].access,'restricted-reference');
   assert.match(byId.sportscore.limitations,/link/);
   assert.match(byId.footbolno.limitations,/upstream license/);
+});
+
+test('official RPL protocols are manual-only because publisher bans automated extraction',()=>{
+  const byId=Object.fromEntries(registry.sources.map(item=>[item.id,item]));
+  const rpl=byId['rpl-official'];
+  assert.equal(rpl.access,'manual-reference');
+  assert.equal(rpl.zeroCost,'public-reference');
+  assert.equal(rpl.active,false);
+  assert.equal(rpl.automatedExtraction,'prohibited-without-official-permission');
+  assert.match(rpl.limitations,/expressly prohibits automated extraction/);
+  assert.match(rpl.limitations,/official permission/);
+  assert.equal(rpl.authorizedAutomatedTraining,false);
+  assert.equal(rpl.authorizedRawRepublication,false);
+  const license=readFileSync(new URL('../docs/LICENSING.md',import.meta.url),'utf8');
+  const docs=readFileSync(new URL('../docs/DATA_SOURCES.md',import.meta.url),'utf8');
+  assert.match(license,/official RPL website/);
+  assert.match(license,/automated extraction/);
+  assert.match(docs,/RPL official-domain extraction restriction/);
+  // This repository has no legal permission to issue automated requests to
+  // RPL's official domain. Do not ship extraction through scripts or workflows.
+  for(const folder of ['scripts','.github/workflows']){
+    const root=new URL('../'+folder+'/',import.meta.url);
+    for(const filename of readdirSync(root)){
+      if(!/\.(?:mjs|js|ts|sh|yml|yaml)$/.test(filename))continue;
+      const content=readFileSync(new URL(filename,root),'utf8');
+      assert.doesNotMatch(content,/(?:https?:\/\/)?(?:www\.)?premierliga\.ru/i,
+        folder+'/'+filename+' must not automate the RPL official domain');
+    }
+  }
 });
