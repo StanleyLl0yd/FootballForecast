@@ -20,3 +20,12 @@ test('Firefox session teardown and Edge protection remain enforced',()=>{
   assert.match(script,/PASS Mozilla Firefox headless/);
   assert.match(script,/expectPage\(stdout,path\)/);
 });
+
+test('Firefox cold-start has one bounded longer session timeout without weakening other requests',()=>{
+  assert.match(script,/async function request\(path,body,method,\{timeoutMs=35000\}=\{\}\)/);
+  assert.match(script,/signal:AbortSignal\.timeout\(timeoutMs\)/);
+  assert.match(script,/\},undefined,\{timeoutMs:90000\}\);/);
+  assert.equal(script.split("request('/session',{").length-1,1,
+    'POST /session remains exactly once and is never retried');
+  assert.doesNotMatch(script,/for\s*\([^)]*\)\s*\{[^{}]*request\('\/session'/);
+});
