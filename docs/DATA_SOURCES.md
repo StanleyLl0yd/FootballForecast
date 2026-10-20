@@ -44,6 +44,12 @@ For the minimum M0 source gate, first obtain evidence of legal rights to acquire
 
 This limited pilot allows *at most* a fixed independent Poisson benchmark with small-sample uncertainty: **2024/25 train, 2025/26 sealed test**. There is **no third completed calibration/validation cohort**. The previous full 2015/16–2026/27 backtest plan is superseded; separate validated calibration and advanced models need later independently cleared history or pre-registered prospective data. Historical strict as-of still requires contemporaneously observed records; recent downloads of old scores do not qualify. See [Backtesting](BACKTESTING.md).
 
+### Targeted 2025/26 retrospective aggregate disagreement (2026-10-20)
+
+The minimal pilot's 2025/26 season is structurally represented in Footbolno's hash-pinned CSV evidence as **240 finished matches, 348 home goals + 261 away goals = 609**. Independently published **[RSSSF](https://www.rsssf.org/tablesr/rus2026.html)** and **[Championat](https://www.championat.ru/football/_russiapl/tournament/6594/)** summaries also show **240 matches / 609 goals**; Championat separately lists the same 348/261 home-away split. In contrast, **[Rusfootball](https://www.rusfootball.info/matchcenter/tournaments/rpl/season_2025_2026/)** lists **240 matches / 610 goals**. The unresolved difference is **one goal**, not proof that any particular match or source is correct or incorrect. The raw goal records are not stored. See the [machine-checked aggregate-only comparison](M0_RPL_2025_26_AGGREGATE_CROSSCHECK.json).
+
+This is a *documented discrepancy requiring source-by-source resolution*, not three independently proven votes. Publisher upstreams may overlap and original season corrections differ. Use legitimate manual primary protocols and dated revision evidence for any specific match, never scrape the official RPL website, never silently change training labels, and never infer machine-learning or public republication rights from matching totals. Footbolno/other sources remain **unapproved**; M0 #2 remains open.
+
 ## Candidate decision table
 
 | Provider | Public coverage evidence | Permissions established from published terms | Current decision |

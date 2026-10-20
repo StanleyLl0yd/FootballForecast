@@ -91,6 +91,8 @@ jobs:
         run: node --test tests/m0-minimal-rpl-scope.test.mjs
       - name: Validate pinned research-only Footbolno coverage quarantine matrix
         run: node --test tests/m0-footbolno-pinned-evidence.test.mjs
+      - name: Detect 2025/26 RPL publisher-aggregate disagreement without source promotion
+        run: node --test tests/m0-rpl-2025-26-aggregate-crosscheck.test.mjs
       - name: Verify current RPL 11-round editorial totals without inferring source rights
         run: node --test tests/m0-rpl-2026-27-editorial-crosscheck.test.mjs
       - name: Verify restricted Open Matchday 2026 RPL coverage is not promoted as independent data
