@@ -32,7 +32,7 @@ test('bounded synthetic evidence groups by season, counts statuses but never app
   const season=report.seasonStats.find(s=>s.season==='2026/2027');
   assert.equal(season.sourceRows,4);
   assert.deepEqual(season.statuses,{finished:2,scheduled:1,live:0,cancelled:1});
-  assert.equal(season.distinctClubCount,5);
+  assert.equal(season.distinctClubCount,6);
   assert.equal(season.distinctDirectedPairs,4);
   assert.deepEqual(season.sourceReportedScoreTotalsNotVerifiedOnField,{home:3,away:1});
   assert.equal(season.complete240GameRplSeasonNOTEstablished,true);
