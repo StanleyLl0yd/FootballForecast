@@ -1,6 +1,6 @@
 # RPL data-source decision register (M0)
 
-Updated 2026-10-19. This is a **public documentation and terms review**, not a provider contract or an authenticated API coverage test. Every source stays **UNAPPROVED**; automatic ingestion/training remains disabled. Provider terms can change.
+Updated 2026-10-20. This is a **public documentation and terms review**, not a provider contract or an authenticated API coverage test. Every source stays **UNAPPROVED**; automatic ingestion/training remains disabled. Provider terms can change.
 
 The strictly local, fail-closed [multi-source empirical accuracy protocol](M0_SOURCE_ACCURACY_PROTOCOL.md) implements field-specific matched official-reference comparisons, Wilson uncertainty and independent-upstream warnings. It does **not** yet contain empirical RPL source observations or activate an ingestion pipeline.
 
@@ -61,6 +61,25 @@ The [Footbolno open-data page](https://footbolno.ru/otkrytye-dannye) explicitly 
 The website's advertised direct `/data/index.json` and `/data/league/235-matches.csv` were not retrievable through the available research HTTP environment on 2026-10-19; this is **not proof of a provider outage, CSV absence or RPL season coverage**. No raw bytes, actual CSV SHA-256 or real provider match-error counts have been obtained in FootballForecast. Keep source coverage/accuracy `UNKNOWN` rather than inferring it from the landing-page catalog.
 
 The [RSSSF current European domestic results index](https://rsssf.org/results-eur.html) also lists Russia 2026/27. It is a free-to-read historical/editorial source for manual cross-checks, **not** a licensed bulk or independent primary match feed. Similarly, [football-data.org free plan](https://www.football-data.org/coverage) does **not** list RFPL among its 12 no-cost competitions, so it is not a permitted RPL integration under the owner's strictly $0 policy.
+
+## Additional direct source-structure verification: OpenFootball (2026-10-20)
+
+I inspected the **public publisher's source files** in [`openfootball/europe` at immutable commit `63df627f`](https://github.com/openfootball/europe/tree/63df627f3c87ce71708f016522ea236cf74332c3/russia), rather than treating a mirrored table or a GitHub folder listing as proof of coverage. [Machine-readable version-pinned evidence](M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json) records the exact five original Git blob SHA-1 IDs, derived totals and research-only qualification; it **does not redistribute fixture rows**.
+
+| Free source season | Declared / parsed | Unique directed home-away pairs | Played results | Administrative `[awarded]` results | Goals on played scorelines H+A | Administrative goal tallies H+A |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2018/19 | 240 / 240 | 240 | 240 | 0 | 314+228 | 0+0 |
+| 2019/20 | 240 / 240 | 240 | **236** | **4** | 302+269 | **6+6** |
+| 2020/21 | 240 / 240 | 240 | **238** | **2** | 371+260 | **3+3** |
+| 2023/24 | 240 / 240 | **239** | 240 | 0 | 358+279 | 0+0 |
+| 2024/25 | 240 / 240 | 240 | 240 | 0 | 364+284 | 0+0 |
+
+**Interpretation:**
+
+- **2019/20:** four `[awarded]` fixtures carry source-reported 3:0 / 0:3 administrative decisions; **2020/21:** two additional awarded results. These rows are real *source file entries*, not six missing games or evidence that 18 goals happened on the field. Table/record scores and observed on-field goals **must not share an estimator**. The M0 offline [source-quality auditor](../scripts/m0-source-quality.mjs) now returns `playedScoreTotals`, `awardedScoreTotals` and `totalsAreMechanicallyValid` separately; negative/synthetic regression tests guard this behavior.
+- **2023/24:** one duplicated ordered home-away pairing and one missing inverse, due to the known **Sochi–Spartak** venue reversal documented by FootClubSim against dated [RFU official calendar](https://www.rfs.ru/tournament/1434/calendar?round_id=18568) and [PFC Sochi statement](https://pfcsochi.ru/news/2023-2024/rfs-i-rpl-soglasovali-perenos-matchey-mezhdu-sochi-i-spartakom/). A 240-row count is **not** sufficient proof of correct identities. The source version stays quarantined rather than silently repaired.
+- Other files pass these narrow source-level tests (240 rows/16 distinct clubs/240 unique ordered pairs), **not** match-by-match independent official reference testing. 2018/19, 2019/20, 2020/21 and 2024/25 are not therefore approved to train models.
+- The repository publishes an apparent **CC0 declaration**, but ultimate upstream reuse rights, RPL accuracy, lineup/xG completeness, published-at snapshots and future feed availability remain separate, unverified questions. No source file was committed into FootballForecast, no Vercel/Supabase ingestion or paid request occurred.
 
 ## Reused source investigations from FootClubSim (2026-10-19)
 
