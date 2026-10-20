@@ -1,0 +1,42 @@
+name: M0 Free RPL Publisher Metadata Probe
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/m0-footbolno-metadata.mjs'
+      - '.github/workflows/m0-footbolno-metadata.yml'
+permissions: {contents: read}
+concurrency:
+  group: m0-footbolno-metadata-observation
+  cancel-in-progress: false
+jobs:
+  observe-public-metadata:
+    # One-time upon installing/changing this tool on main, thereafter manual.
+    # Does NOT imply permission to ingest or train on the provider's data.
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned
+        with: {node-version: '22'}
+      - name: Check metadata-probe safety invariants without network
+        run: node --check scripts/m0-footbolno-metadata.mjs && node --test tests/m0-footbolno-metadata.test.mjs
+      - name: Observe public manifest and CSV HTTP HEAD from GitHub runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '## FootballForecast M0 - publisher endpoint observation (not approval)'
+            echo
+            echo "UTC retrieval: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo
+            echo 'No paid API, no credentials, no CSV GET, no match-row retention, no artifacts or production writes.'
+            echo
+            echo 'Source CC BY declaration, full RPL coverage, upstream license chain and historical as-of remain unverified.'
+            echo
+            echo '~~~json'
+          } >> "$GITHUB_STEP_SUMMARY"
+          node scripts/m0-footbolno-metadata.mjs | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"

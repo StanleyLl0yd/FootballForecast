@@ -62,6 +62,19 @@ The website's advertised direct `/data/index.json` and `/data/league/235-matches
 
 The [RSSSF current European domestic results index](https://rsssf.org/results-eur.html) also lists Russia 2026/27. It is a free-to-read historical/editorial source for manual cross-checks, **not** a licensed bulk or independent primary match feed. Similarly, [football-data.org free plan](https://www.football-data.org/coverage) does **not** list RFPL among its 12 no-cost competitions, so it is not a permitted RPL integration under the owner's strictly $0 policy.
 
+## Footbolno public endpoint diagnostic: no ingestion (2026-10-20)
+
+The publisher [offers a no-cost metadata index](https://footbolno.ru/data/index.json) and [RPL match CSV](https://footbolno.ru/data/league/235-matches.csv). The research web environment could not retrieve the manifest or source CSV, so **neither current 2026/27 row coverage nor the actual file schema has been verified**. Inability to retrieve those links from one network is **not** proof of publisher downtime or nationwide inaccessibility.
+
+A bounded [GitHub Actions publisher metadata probe](../.github/workflows/m0-footbolno-metadata.yml) is now available for a one-time post-merge observation and manual rechecks. It is deliberately less invasive than FootClubSim's manual CSV research flow:
+
+- Exactly one **GET** to the documented `data/index.json` manifest, maximum **64 KiB** of locally buffered bytes, strict valid UTF-8/JSON, exact SHA-256 computed solely in runner memory and only metadata counts/hash exposed.
+- Exactly one **HEAD** to the published `235-matches.csv`, reporting HTTP status, declared media type and declared content length when available. It **never downloads CSV match records**, does not follow redirects, does not allow caller-controlled URLs, retries, provider credentials or billed API calls.
+- A status of `HEAD_NOT_SUPPORTED`, `HEAD_UNREACHABLE_FROM_RUNNER`, `HTTP_NON_SUCCESS` or `UNREACHABLE_FROM_RUNNER` means only that this particular probe could not establish the endpoint from its network; **do not infer lack of RPL coverage**. A healthy manifest hash or CSV HEAD response is **not** proof of actual CSV rows, match accuracy, a historical published-at timeline or upstream rights.
+- The GitHub job runs only when the tool/workflow first enters `main`, when its probe implementation changes, or after an explicit manual workflow dispatch. It does not persist third-party content or silently schedule continual downloads. All local unit tests run on every PR.
+
+**Decision unchanged:** Footbolno stays `active=false`, `authorizedAutomatedTraining=false`, `verifiedCurrentRPLCoverage=false`. Publisher-side CC BY declarations are not independently sufficient to clear its ESPN/Wikipedia-derived upstream rights. Live fixture ingestion, ML training, retaining raw matches and public republication remain prohibited in M0 until individually authorized.
+
 ## Additional direct source-structure verification: OpenFootball (2026-10-20)
 
 I inspected the **public publisher's source files** in [`openfootball/europe` at immutable commit `63df627f`](https://github.com/openfootball/europe/tree/63df627f3c87ce71708f016522ea236cf74332c3/russia), rather than treating a mirrored table or a GitHub folder listing as proof of coverage. [Machine-readable version-pinned evidence](M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json) records the exact five original Git blob SHA-1 IDs, derived totals and research-only qualification; it **does not redistribute fixture rows**.
