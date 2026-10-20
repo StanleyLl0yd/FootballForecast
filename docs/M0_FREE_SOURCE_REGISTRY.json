@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "asOf": "2026-10-19",
+  "asOf": "2026-10-20",
   "project": "FootballForecast",
   "policy": {
     "maxMonthlySpendUSD": 0,
@@ -423,6 +423,29 @@
       "rights": "author-noncommercial-only-upstream-soccerway-rights-unverified",
       "qualityEvidence": "Pinned 2026-10-20 open-matchday master 0e39da91... RPL CSV source reports 87 finished games and 242 goals; 109 scheduled: 44 fewer combined match/fixture rows than Footbolno's 240; source label soccerway only. No empirical match-level precision.",
       "limitations": "Repository disclaimer restricts data to informational noncommercial use and leaves Soccerway upstream rights with publisher. RPL results 87/242 goals vs Footbolno 88/246 and 109 fixtures vs 152. Derived from same type of upstream editorial feed, not independently authenticated. No automated Soccerway scraping, provider importing, commercial reuse, ML training or source redistribution approved.",
+      "empiricalResultErrorRate": null,
+      "verifiedCurrentRPLCoverage": false,
+      "verifiedPrematchSnapshots": false,
+      "authorizedAutomatedTraining": false,
+      "authorizedRawRepublication": false,
+      "active": false
+    },
+    {
+      "id": "sstats-football-api",
+      "title": "SStats.net documented free football API",
+      "url": "https://sstats.net/api",
+      "kind": "free-api-upstream-rights-unverified",
+      "roles": [
+        "live-fixtures",
+        "historical-results",
+        "cross-check"
+      ],
+      "priority": 4,
+      "zeroCost": "documented-free-tier",
+      "access": "restricted-reference",
+      "rights": "api-free-access-but-flashscore-and-third-party-training-display-rights-unverified",
+      "qualityEvidence": "2026-10-20 manual terms/docs review only: public API docs state no-key requests capped at 30/min per IP and 300/min globally; some endpoints integrate Flashscore; no RPL fixture-accuracy or free historical entitlement check.",
+      "limitations": "Free HTTP access is not a license for storing, copying or training on upstream Flashscore/other provider data. Producer explicitly describes Flashscore integration and offers /Ls/* endpoints; identity of upstream rights holders, exact Russian Premier League 2024/25-2026/27 coverage, as-of publication times, ML and derivative public output permissions all unverified. No endpoint calls, stored rows, registration or adapter allowed in M0.",
       "empiricalResultErrorRate": null,
       "verifiedCurrentRPLCoverage": false,
       "verifiedPrematchSnapshots": false,
