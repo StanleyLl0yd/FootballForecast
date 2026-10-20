@@ -60,14 +60,15 @@
       "zeroCost": "public-reference",
       "access": "manual-reference",
       "rights": "research-reference-only",
-      "qualityEvidence": "primary-authority-not-a-license",
-      "limitations": "Verify each dated protocol and revisions; bulk use remains unauthorized.",
+      "qualityEvidence": "Primary-source formal match decisions; site footer reviewed 2026-10-20 (explicit ban on automated extraction). No licensed API, no empirically measured result error rate.",
+      "limitations": "The RPL official website expressly prohibits automated extraction of site information by any services without RPL's official permission; manual citation/checking of dated official results only. This primary-source authority is NOT an ingestion or ML license; no automatic browsing, scraping or headless browser harvesting.",
       "empiricalResultErrorRate": null,
       "verifiedCurrentRPLCoverage": false,
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "automatedExtraction": "prohibited-without-official-permission"
     },
     {
       "id": "club-official",
