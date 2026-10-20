@@ -84,6 +84,8 @@ jobs:
         run: node --test tests/m0-footbolno-pinned-evidence.test.mjs
       - name: Verify current RPL 11-round editorial totals without inferring source rights
         run: node --test tests/m0-rpl-2026-27-editorial-crosscheck.test.mjs
+      - name: Verify restricted Open Matchday 2026 RPL coverage is not promoted as independent data
+        run: node --test tests/m0-open-matchday-source-coverage.test.mjs
       - name: Verify non-mutating PostgREST HTTP refusal contract (synthetic mocks only)
         run: node --test tests/m0-rest-denials.test.mjs
       - name: Verify localhost real-PostgREST operation sequence and deny-contract mocks
