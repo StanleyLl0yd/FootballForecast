@@ -1,6 +1,6 @@
 # RPL data-source decision register (M0)
 
-Updated 2026-10-20. This is a **public documentation and terms review**, not a provider contract or an authenticated API coverage test. Every source stays **UNAPPROVED**; automatic ingestion/training remains disabled. Provider terms can change.
+Updated 2026-10-21. This is a **public documentation and terms review**, not a provider contract or an authenticated API coverage test. Every source stays **UNAPPROVED**; automatic ingestion/training remains disabled. Provider terms can change.
 
 The strictly local, fail-closed [multi-source empirical accuracy protocol](M0_SOURCE_ACCURACY_PROTOCOL.md) implements field-specific matched official-reference comparisons, Wilson uncertainty and independent-upstream warnings. It does **not** yet contain empirical RPL source observations or activate an ingestion pipeline.
 
