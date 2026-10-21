@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "kind": "M0_MINIMUM_RPL_AGGREGATE_CORROBORATION_ONLY",
+  "checkedOn": "2026-10-21",
+  "season": "2024/2025",
+  "roles": [
+    "train_baseline"
+  ],
+  "evidenceScope": "PUBLISHER_CLAIMED_SEASON_AGGREGATES_NOT_MATCH_LEVEL_ACCURACY_OR_INDEPENDENCE",
+  "sources": [
+    {
+      "id": "openfootball-europe",
+      "source": "https://github.com/openfootball/europe",
+      "file": "russia/2024-25_ru1.txt",
+      "upstreamCommit": "63df627f3c87ce71708f016522ea236cf74332c3",
+      "gitBlobSHA1": "6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc",
+      "publisherLicenseClaim": "CC0-1.0; upstream rights unverified",
+      "matches": 240,
+      "finished": 240,
+      "homeGoals": 364,
+      "awayGoals": 284,
+      "homeWins": 103,
+      "draws": 65,
+      "awayWins": 72,
+      "draw00": 20,
+      "attribution": "Original human-maintained Football.TXT file: no verified pre-match history."
+    },
+    {
+      "id": "footbolno",
+      "source": "https://footbolno.ru/otkrytye-dannye",
+      "researchEvidenceFile": "M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json",
+      "pinnedCsvSHA256": "dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1191d19513c214",
+      "publisherLicenseClaim": "CC BY 4.0; upstream ESPN/Wikipedia/other permissions unknown",
+      "matches": 240,
+      "finished": 240,
+      "homeGoals": 364,
+      "awayGoals": 284
+    }
+  ],
+  "editorialSummaries": [
+    {
+      "id": "championat",
+      "url": "https://www.championat.ru/football/_russiapl/tournament/5980/",
+      "matches": 240,
+      "finished": 240,
+      "totalGoals": 648,
+      "homeGoals": 364,
+      "awayGoals": 284,
+      "homeWins": 103,
+      "draws": 65,
+      "awayWins": 72,
+      "draw00": 20,
+      "independentUpstreamVerified": false
+    },
+    {
+      "id": "sportbox",
+      "url": "https://static.sportbox.ru/Vidy_sporta/Futbol/Russia/premier_league/stats/turnir_22151",
+      "matches": 240,
+      "totalGoals": 648,
+      "homeGoals": 364,
+      "awayGoals": 284,
+      "homeWins": 103,
+      "draws": 65,
+      "awayWins": 72,
+      "draw00": 20,
+      "independentUpstreamVerified": false
+    },
+    {
+      "id": "rsssf",
+      "url": "https://www.rsssf.org/tablesr/rus2025.html",
+      "matches": 240,
+      "totalGoals": 648,
+      "independentUpstreamVerified": false
+    }
+  ],
+  "coverageGap": {
+    "source": "openfootball",
+    "commitText": "63df627f3c87ce71708f016522ea236cf74332c3",
+    "commitJson": "e6744429ee395bc86f247348c6184bb08d4eb361",
+    "directoryChecked": "russia",
+    "comparatorRepoText": "https://github.com/openfootball/europe/tree/master/russia",
+    "comparatorRepoJson": "https://github.com/openfootball/football.json/tree/master/2025-26",
+    "absentRplSeasonsAtPinnedCommit": [
+      "2025/2026",
+      "2026/2027"
+    ],
+    "meaning": "OpenFootball cannot provide the mandated 2025/26 sealed holdout or 2026/27 live fixtures at the checked commits. Other license-verified original sources still required. Absence is a point-in-time inventory result, not a permanent nonexistence claim."
+  },
+  "researchGates": {
+    "sourceIndependenceProven": false,
+    "individualMatchScoresIndependentlyChecked": false,
+    "originalLicensesForAllUpstreamProven": false,
+    "authorizedAutomatedTraining": false,
+    "authorizedProductionIngestion": false,
+    "originalPrematchPublicationSnapshotsVerified": false,
+    "futureCurrentRplFixturesAvailableViaOpenfootball": false,
+    "productionModelApproved": false,
+    "dataTransferredIntoSupabase": false,
+    "evaluationOrCalibrationRun": false
+  },
+  "limitations": "Aggregate agreement of 240 fixtures / 648 goals / 364+284 goals / 103-65-72 results is a structural cross-check only and cannot exclude offsetting match-level errors, reversed venues, later corrections or shared upstream origins. CC0 on a repo does not automatically certify every upstream contributor's original rights; public editorial totals do not authorize scraping/training. None of the cited records or raw fixture rows are copied into this evidence. Source registrations remain inactive; no trained forecasts."
+}
