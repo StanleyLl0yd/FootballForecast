@@ -80,6 +80,6 @@ test('recovery is offline-only and fails closed on actual SQL restoration',()=>{
   for(const pattern of [/--pull never/,/--network none/,/POSTGRES_HOST_AUTH_METHOD=trust/,
     /\/dev\/shm/,/docker rm -f/,/--single-transaction/,/--exit-on-error/,
     /0005_live_anon_posture\.sql/,/0006_live_immutable_ledger\.sql/,
-    /0007_live_public_surface\.sql/])assert.match(source,pattern);
+    /0007_live_public_surface\.sql/,/CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions/])assert.match(source,pattern);
   assert.doesNotMatch(source,/pg_dump|curl|wget|supabase\.co|:5432\/postgres/);
 });
