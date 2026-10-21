@@ -62,7 +62,7 @@ container="ff-m0-restore-${temp##*.}"
 started=0
 cleanup() {
   if [[ "$started" == 1 ]]; then
-    docker rm -f "$container" >/dev/null 2>&1 || true
+    docker rm -fv "$container" >/dev/null 2>&1 || true
   fi
   rm -rf -- "$temp"
 }
@@ -74,7 +74,7 @@ age --decrypt --identity "$FF_AGE_IDENTITY_FILE" \
   --output "$temp/restore.dump" "$archive" ||
   fail 'archive decryption or integrity verification failed'
 [[ -s "$temp/restore.dump" ]] || fail 'decrypted archive is empty'
-docker run --pull never -d --name "$container" --network none \
+docker run --rm --pull never -d --name "$container" --network none \
   -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17 >/dev/null ||
   fail 'cannot start isolated offline PostgreSQL 17 container'
 started=1
