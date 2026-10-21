@@ -64,3 +64,29 @@ bash scripts/m0-manual-encrypted-export.sh
 **Important limits:** only schema/data in `public`, `ff_private` and `auth` are exported; this is **not** a full Supabase instance archive. Cluster roles, Supabase-managed settings/extensions, external credentials and actual Storage object bytes are excluded; an isolated restore needs documented role/extension prerequisites and separate permitted objects. The operator must check `pg_dump` output/coverage, storage quota, source rights and actual archive restorability. Move the encrypted archive and manifest to an approved independent $0 destination, record the expected checksum **outside that destination**, verify a complete remote download/hash, and restore into a separately isolated PostgreSQL 17 environment with owner-held recovery key. Do not upload plaintext, a decryption identity or passwords. Do not run an initial real export before choosing the authorized scope, credential and recovery location.
 
 This script and its synthetic mocks alone satisfy **none** of the remaining production offsite/restore acceptance evidence. Issue #5 and M0 stay open until the first real independent restore and documented RPO/RTO.
+
+
+## Owner-operated offline independent restore rehearsal (prepared; NOT production-tested)
+
+The new companion [`scripts/m0-manual-isolated-restore.sh`](../scripts/m0-manual-isolated-restore.sh) validates a **previously exported** encrypted bundle, restores it into a **disconnected, temporary local PostgreSQL 17 Docker container**, then runs three read-only live-schema/RLS/immutable-ledger attestations (`0005`, `0006`, `0007`). This is not a full Supabase service clone or an alternative to a real offsite backup.
+
+### Security and prerequisites
+
+- Run only on a **trusted, independently operated Linux recovery host**, with Docker, verified age v1.3.2, `sha256sum`, `findmnt`, and sufficiently large RAM-backed `/dev/shm`. The trusted official `postgres:17` Docker image must **already be cached locally**. The script uses `--pull never --network none` with **no published ports**. It never downloads an image or connects to production. The container's trust-only authentication is acceptable **only inside this disconnected, ephemeral instance**; never use this authentication mode on a networked PostgreSQL server.
+- Retrieve `database.pg17.dump.age` and `manifest.txt` from the user-approved offsite destination via an independently authorized account. The source PostgreSQL password is not needed on this machine.
+- Provide a **trusted, independently recorded SHA-256** from outside the archive's storage account. The on-bucket manifest is not signed. The script requires `FF_EXPECTED_CIPHERTEXT_SHA256` to match BOTH the manifest and encrypted file, validates exact format/scope and checks the recovery private-key file permissions. An age ciphertext proves decryption integrity, **not sender identity**: an attacker could encrypt a forged dump to the public recipient, so the separately trusted hash matters.
+- Supply the owner-held age identity on the recovery host only. Never share it with the storage account, GitHub, CI, Supabase, Vercel or ChatGPT.
+- Decrypt completely to owner-private `/dev/shm` **before** executing archive SQL. The temporary plaintext custom dump then briefly enters the **offline Docker container**, whose writable layer may use host disk. Use a trusted encrypted recovery host. Cleanup removes RAM plaintext, the Docker container **and its anonymous PostgreSQL data volumes** (`docker run --rm` plus `docker rm -fv` on exit), **not provable secure erase**.
+- Supabase Auth may require roles/extensions not included in a schema-scoped dump. The helper provisions common NOLOGIN roles and `extensions.pgcrypto` / `extensions."uuid-ossp"` (both observed on live Frankfurt PG17 on 2026-10-21), but it must **fail** instead of skipping ACLs, force-restoring partial data, disabling RLS, or silently ignoring missing dependencies. Correct any additional prerequisite in a separate reviewed recovery plan.
+- The three read-only M0 catalog/ledger checks are not data-row accuracy checks or a complete Supabase recovery. Additional private row counts, Storage objects if enabled, application read behaviour and operator-approved RPO/RTO are independently required. A local restore without actual offsite retrieval does **not** close #5.
+
+### Manual command on the independent recovery host
+
+```sh
+export FF_RESTORE_BUNDLE_DIR='/private/recovered-offsite/ff-pg17-...'
+export FF_AGE_IDENTITY_FILE='/private/offline-owner-age-identity'
+export FF_EXPECTED_CIPHERTEXT_SHA256='64-lowercase-hex-digits-from-separate-trusted-record'
+bash scripts/m0-manual-isolated-restore.sh
+```
+
+On success record **only redacted evidence** privately: authorized independent storage object ID and checked hash, retrieval/restore timestamps, PostgreSQL version, results of all three SQL attestations, recovered-data private checks and measured recovery time. Do not publish archive bytes, personal data or recovery keys. **No real database archive has yet been tested** with this script; synthetic fail-closed mocks do not satisfy #5.
