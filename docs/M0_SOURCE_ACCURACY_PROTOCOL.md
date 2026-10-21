@@ -1,6 +1,6 @@
 # M0: empirical free-source accuracy protocol (offline, no ingestion)
 
-This document implements the owner's **strict $0 and multi-source quality policy** from [DATA_SOURCES.md](DATA_SOURCES.md) and the [19-source registry](M0_FREE_SOURCE_REGISTRY.json). All M0 providers are inactive and remain unapproved for live data ingestion, training, redistribution and production use.
+This document implements the owner's **strict $0 and multi-source quality policy** from [DATA_SOURCES.md](DATA_SOURCES.md) and the [20-source registry](M0_FREE_SOURCE_REGISTRY.json). All M0 providers are inactive and remain unapproved for live data ingestion, training, redistribution and production use.
 
 ## What is measured
 
@@ -75,7 +75,7 @@ The public [Data Center](https://footballforecast.vercel.app/data) includes a lo
 2. The browser uses the **same pure deterministic code** as the Node CLI; tests require exact matching result metrics and reject unknown provider IDs, impossible time sequences, invalid scores and forbidden paid-source entries. The browser computes and displays **SHA-256 of the original selected file bytes** through local Web Crypto. The CLI continues to report `inputDigestSHA256` of canonical `JSON.stringify` content, which can differ from a byte-level hash when whitespace/order differs.
 3. The browser displays descriptive comparison counts, missing fixtures, full-match integrity errors and matched-score errors, plus *preliminary* rankings **only after at least 30 finished reference fixtures**. Different sample composition, overlapping confidence intervals, upstream dependencies and source-use permissions still invalidate any sweeping claim about a provider being objectively superior.
 4. The private file is **not stored or uploaded**, but its derived summary remains visible in that browser tab until a new file is chosen or the page is closed. The site itself requires an initial internet connection, and browser extensions/OS components are outside this application's privacy boundary.
-5. Error reports contain no raw team names or provider match rows: only source names from the public 19-entry research catalog, source-level error counts and the file digest. The same path remains executable with the CLI for reproducible research or closed-browser environments.
+5. Error reports contain no raw team names or provider match rows: only source names from the public 20-entry research catalog, source-level error counts and the file digest. The same path remains executable with the CLI for reproducible research or closed-browser environments.
 
 The interface also offers **two local-only downloads**: a single **obviously fictional** JSON example to edit as a starting format and an anonymized summary JSON of the current calculations, including original file-byte SHA-256. The downloaded report deliberately contains no imported raw rows, club names from the evidence file, user-entered publisher-group text or provider responses; it replaces such publisher-group labels with an aggregate count. all source IDs resolve only against the public registry. Generated synthetic examples are **not** counted as real comparison evidence or used to certify sources.
 
