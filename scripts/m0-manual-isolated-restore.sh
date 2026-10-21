@@ -106,6 +106,7 @@ docker exec -i "$container" psql -X -v ON_ERROR_STOP=1 -U postgres -d ff_m0_rest
 DROP SCHEMA public;
 CREATE SCHEMA IF NOT EXISTS extensions;
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions;
 SQL
 docker cp "$temp/restore.dump" "$container:/tmp/ff_m0_restore.dump"
 rm -f -- "$temp/restore.dump"
