@@ -59,6 +59,14 @@ test('rejects tampered size before decrypt or database container creation',()=>{
   assert.match(f.run().stderr,/size mismatch/);
   assert.equal(existsSync(f.calls),false,'docker must not be touched');
 });
+test('rejects same-length altered ciphertext even when manifest length still agrees',()=>{
+  const f=fixture('hash-tamper');
+  const archivePath=path.join(f.bundle,'database.pg17.dump.age');
+  const original=readFileSync(archivePath,'utf8');
+  writeFileSync(archivePath,'X'+original.slice(1));
+  assert.match(f.run().stderr,/ciphertext hash mismatch/);
+  assert.equal(existsSync(f.calls),false,'no Docker commands after a hash mismatch');
+});
 test('rejects archive symlinks, weak identity permissions and unexpected backup scopes',()=>{
   assert.match(fixture('symlink',{symlinkArchive:true}).run().stderr,/symlinked encrypted archive/);
   const f=fixture('scope',{mutateManifest:x=>x.map(s=>s.startsWith('scope=')?'scope=public':s)});
