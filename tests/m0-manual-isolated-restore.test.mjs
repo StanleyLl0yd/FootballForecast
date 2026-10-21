@@ -37,7 +37,7 @@ function fixture(name,{mutateManifest,symlinkArchive=false}={}){
     FF_RESTORE_BUNDLE_DIR:bundle,FF_AGE_IDENTITY_FILE:identity,
     FF_EXPECTED_CIPHERTEXT_SHA256:sha(archive),FF_MOCK_DOCKER_LOG:calls};
   const run=(override={})=>spawnSync('bash',[script],{env:{...env,...override},encoding:'utf8'});
-  return {root,bundle,identity,calls,run};
+  return {root,bin,bundle,identity,calls,run};
 }
 test('synthetic recovery refuses GitHub CI before touching archive',()=>{
   const f=fixture('ci'),r=f.run({GITHUB_ACTIONS:'true'});
@@ -95,4 +95,33 @@ test('recovery is offline-only and fails closed on actual SQL restoration',()=>{
   assert.match(source,/cleanup of recovered PostgreSQL container\/volumes failed/);
   assert.match(source,/trap - EXIT/);
   assert.doesNotMatch(source,/pg_dump|curl|wget|supabase\.co|:5432\/postgres/);
+});
+
+
+test('synthetic success must prove Docker volume removal before printing PASS',()=>{
+  const f=fixture('mock-full-rehearsal');
+  writeFileSync(path.join(f.bin,'age'),
+    '#!/bin/sh\nif [ "$1" = "--version" ]; then echo "age v1.3.2"; exit 0; fi\nwhile [ "$#" -gt 0 ]; do\nif [ "$1" = "--output" ]; then shift; printf "synthetic-decrypted-test-dump" > "$1"; exit 0; fi\nshift\ndone\nexit 22\n',{mode:0o700});
+  writeFileSync(path.join(f.bin,'docker'),
+    '#!/bin/sh\nprintf "%s\\n" "$*" >> "$FF_MOCK_DOCKER_LOG"\ncase "$*" in *"SHOW server_version_num"*) echo 170011;; esac\nexit 0\n',{mode:0o700});
+  const r=f.run();
+  assert.equal(r.status,0,r.stderr);
+  assert.match(r.stdout,/PASS: owner-held age archive authenticated/);
+  const log=readFileSync(f.calls,'utf8');
+  assert.match(log,/run --rm --pull never -d --name ff-m0-restore-/);
+  assert.match(log,/--network none/);
+  assert.match(log,/pg_restore/);
+  assert.match(log,/rm -fv ff-m0-restore-/);
+});
+test('synthetic Docker cleanup failure must not print PASS',()=>{
+  const f=fixture('mock-cleanup-fail');
+  writeFileSync(path.join(f.bin,'age'),
+    '#!/bin/sh\nif [ "$1" = "--version" ]; then echo "age v1.3.2"; exit 0; fi\nwhile [ "$#" -gt 0 ]; do\nif [ "$1" = "--output" ]; then shift; printf "synthetic-decrypted-test-dump" > "$1"; exit 0; fi\nshift\ndone\nexit 22\n',{mode:0o700});
+  writeFileSync(path.join(f.bin,'docker'),
+    '#!/bin/sh\nprintf "%s\\n" "$*" >> "$FF_MOCK_DOCKER_LOG"\ncase "$*" in *"SHOW server_version_num"*) echo 170011;; esac\nif [ "$1" = "rm" ]; then exit 29; fi\nexit 0\n',{mode:0o700});
+  const r=f.run();
+  assert.notEqual(r.status,0);
+  assert.match(r.stderr,/cleanup of recovered PostgreSQL container\/volumes failed/);
+  assert.match(r.stderr,/CRITICAL: verify manual removal/);
+  assert.doesNotMatch(r.stdout,/PASS: owner-held age/);
 });
