@@ -30,7 +30,7 @@ manifest="$bundle/manifest.txt"
   fail 'missing or symlinked encrypted archive/manifest'
 declare -A fields=()
 while IFS='=' read -r key value || [[ -n "$key" ]]; do
-  [[ "$key" =~ ^[a-z_]+$ && -n "$value" && -z "${fields[$key]+x}" ]] ||
+  [[ "$key" =~ ^[a-z0-9_]+$ && -n "$value" && -z "${fields[$key]+x}" ]] ||
     fail 'malformed/duplicate manifest field'
   case "$key" in
     format|created_utc|scope|archive|ciphertext_sha256|ciphertext_bytes|excluded) ;;
