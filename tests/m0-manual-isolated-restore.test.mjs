@@ -32,7 +32,7 @@ function fixture(name,{mutateManifest,symlinkArchive=false}={}){
   const calls=path.join(root,'docker.log');
   function mock(name,body){writeFileSync(path.join(bin,name),'#!/bin/sh\n'+body+'\n',{mode:0o700})}
   mock('age',"if [ \"$1\" = '--version' ]; then echo 'age v1.3.2'; exit 0; fi\nexit 23");
-  mock('docker',"printf '%s\\n' \"$*\" >> \"$FF_MOCK_DOCKER_LOG\"\nif [ \"$1\" = image ]; then exit 0; fi\nexit 27");
+  mock('docker',"printf '%s\\n' \"$*\" >> \"$FF_MOCK_DOCKER_LOG\"\nif [ \"$1\" = context ] && [ \"$2\" = show ]; then echo \"${FF_MOCK_DOCKER_CONTEXT_NAME:-default}\"; exit 0; fi\nif [ \"$1\" = context ] && [ \"$2\" = inspect ]; then if [ \"${FF_MOCK_DOCKER_REMOTE:-}\" = 1 ]; then echo ssh://remote.example; else echo unix:///var/run/docker.sock; fi; exit 0; fi\nif [ \"$1\" = image ]; then exit 0; fi\nexit 27");
   const env={...process.env,PATH:bin+':'+process.env.PATH,CI:'',GITHUB_ACTIONS:'',
     FF_RESTORE_BUNDLE_DIR:bundle,FF_AGE_IDENTITY_FILE:identity,
     FF_EXPECTED_CIPHERTEXT_SHA256:sha(archive),FF_MOCK_DOCKER_LOG:calls};
@@ -74,6 +74,28 @@ test('rejects archive symlinks, weak identity permissions and unexpected backup 
   const weak=fixture('perm');chmodSync(weak.identity,0o644);
   assert.match(weak.run().stderr,/accessible to group\/others/);
 });
+test('remote Docker via DOCKER_HOST or DOCKER_CONTEXT is rejected before contacting Docker',()=>{
+  for(const override of [{DOCKER_HOST:'ssh://remote.example'},{DOCKER_CONTEXT:'remote'},
+    {DOCKER_TLS_VERIFY:'1'},{DOCKER_CERT_PATH:'/tmp/remote-docker-cert'}]){
+    const f=fixture('docker-override');
+    const r=f.run(override);
+    assert.notEqual(r.status,0);
+    assert.match(r.stderr,/Docker connection override/);
+    assert.equal(existsSync(f.calls),false,'Docker must not run if any remote override exists');
+  }
+});
+test('remote or nondefault Docker context fails before image inspection or decryption',()=>{
+  for(const override of [{FF_MOCK_DOCKER_REMOTE:'1'},
+    {FF_MOCK_DOCKER_CONTEXT_NAME:'remote-production'}]){
+    const f=fixture('remote-daemon');
+    const r=f.run(override);
+    assert.notEqual(r.status,0);
+    assert.match(r.stderr,/Docker (?:daemon endpoint|context)/);
+    const calls=readFileSync(f.calls,'utf8');
+    assert.match(calls,/context show/);
+    assert.doesNotMatch(calls,/image inspect|run --rm|cp /);
+  }
+});
 test('decryption failure never starts offline database container',()=>{
   const f=fixture('age-failure');
   const r=f.run();
@@ -89,6 +111,10 @@ test('recovery is offline-only and fails closed on actual SQL restoration',()=>{
     /\/dev\/shm/,/docker rm -fv/,/docker run --rm --pull never/,/--single-transaction/,/--exit-on-error/,
     /0005_live_anon_posture\.sql/,/0006_live_immutable_ledger\.sql/,
     /0007_live_public_surface\.sql/,/CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions/])assert.match(source,pattern);
+  assert.match(source,/docker context inspect default --format/);
+  assert.match(source,/docker_context.*default/);
+  assert.match(source,/unix:\/\/\/var\/run\/docker\.sock/);
+  assert.match(source,/local Docker daemon socket is absent/);
   assert.match(source,/private identity must remain outside Git checkout/);
   assert.match(source,/repo_root=.*BASH_SOURCE/);
   assert.match(source,/docker rm -fv/);
@@ -103,7 +129,7 @@ test('synthetic success must prove Docker volume removal before printing PASS',(
   writeFileSync(path.join(f.bin,'age'),
     '#!/bin/sh\nif [ "$1" = "--version" ]; then echo "age v1.3.2"; exit 0; fi\nwhile [ "$#" -gt 0 ]; do\nif [ "$1" = "--output" ]; then shift; printf "synthetic-decrypted-test-dump" > "$1"; exit 0; fi\nshift\ndone\nexit 22\n',{mode:0o700});
   writeFileSync(path.join(f.bin,'docker'),
-    '#!/bin/sh\nprintf "%s\\n" "$*" >> "$FF_MOCK_DOCKER_LOG"\ncase "$*" in *"SHOW server_version_num"*) echo 170011;; esac\nexit 0\n',{mode:0o700});
+    '#!/bin/sh\nprintf "%s\\n" "$*" >> "$FF_MOCK_DOCKER_LOG"\nif [ "$1" = context ] && [ "$2" = show ]; then echo default; exit 0; fi\nif [ "$1" = context ] && [ "$2" = inspect ]; then echo unix:///var/run/docker.sock; exit 0; fi\ncase "$*" in *"SHOW server_version_num"*) echo 170011;; esac\nexit 0\n',{mode:0o700});
   const r=f.run();
   assert.equal(r.status,0,r.stderr);
   assert.match(r.stdout,/PASS: owner-held age archive authenticated/);
@@ -118,7 +144,7 @@ test('synthetic Docker cleanup failure must not print PASS',()=>{
   writeFileSync(path.join(f.bin,'age'),
     '#!/bin/sh\nif [ "$1" = "--version" ]; then echo "age v1.3.2"; exit 0; fi\nwhile [ "$#" -gt 0 ]; do\nif [ "$1" = "--output" ]; then shift; printf "synthetic-decrypted-test-dump" > "$1"; exit 0; fi\nshift\ndone\nexit 22\n',{mode:0o700});
   writeFileSync(path.join(f.bin,'docker'),
-    '#!/bin/sh\nprintf "%s\\n" "$*" >> "$FF_MOCK_DOCKER_LOG"\ncase "$*" in *"SHOW server_version_num"*) echo 170011;; esac\nif [ "$1" = "rm" ]; then exit 29; fi\nexit 0\n',{mode:0o700});
+    '#!/bin/sh\nprintf "%s\\n" "$*" >> "$FF_MOCK_DOCKER_LOG"\nif [ "$1" = context ] && [ "$2" = show ]; then echo default; exit 0; fi\nif [ "$1" = context ] && [ "$2" = inspect ]; then echo unix:///var/run/docker.sock; exit 0; fi\ncase "$*" in *"SHOW server_version_num"*) echo 170011;; esac\nif [ "$1" = "rm" ]; then exit 29; fi\nexit 0\n',{mode:0o700});
   const r=f.run();
   assert.notEqual(r.status,0);
   assert.match(r.stderr,/cleanup of recovered PostgreSQL container\/volumes failed/);
