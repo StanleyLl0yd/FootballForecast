@@ -61,6 +61,24 @@ done < "$manifest"
 actual_hash="$(sha256sum "$archive" | cut -d ' ' -f1)"
 [[ "$actual_hash" == "$FF_EXPECTED_CIPHERTEXT_SHA256" ]] ||
   fail 'ciphertext hash mismatch; refuse decryption'
+# A Docker CLI can silently target a remote host via environment overrides
+# or a selected SSH/TCP context. A container with --network none on THAT
+# remote engine would still receive decrypted production rows via docker cp.
+# Reject this before decrypting or creating any archive plaintext.
+for override in DOCKER_HOST DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH; do
+  [[ -z "${!override:-}" ]] ||
+    fail "Docker connection override $override is set; use the trusted local default Unix engine"
+done
+docker_context="$(docker context show)" ||
+  fail 'cannot determine Docker context; no archive decryption allowed'
+[[ "$docker_context" == 'default' ]] ||
+  fail 'Docker context is not local default; remote/alternate engines prohibited'
+docker_endpoint="$(docker context inspect default --format '{{ (index .Endpoints "docker").Host }}')" ||
+  fail 'cannot verify default Docker daemon endpoint'
+[[ "$docker_endpoint" == 'unix:///var/run/docker.sock' ]] ||
+  fail 'Docker daemon endpoint is not the trusted local Unix socket'
+[[ -S /var/run/docker.sock ]] ||
+  fail 'local Docker daemon socket is absent; refuse remote or proxied Docker'
 # The image MUST already be present; do not fetch or pull anything.
 docker image inspect postgres:17 >/dev/null ||
   fail 'locally cached postgres:17 image required; no automatic download'
