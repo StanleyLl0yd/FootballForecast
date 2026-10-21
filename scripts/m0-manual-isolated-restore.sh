@@ -24,6 +24,13 @@ identity_mode="$(stat -c %a "$FF_AGE_IDENTITY_FILE")"
   fail '/dev/shm must be tmpfs; recovery plaintext must not be placed on local disk'
 
 bundle="$(cd -- "$FF_RESTORE_BUNDLE_DIR" && pwd -P)"
+identity_path="$(cd -- "$(dirname -- "$FF_AGE_IDENTITY_FILE")" && pwd -P)/$(basename -- "$FF_AGE_IDENTITY_FILE")"
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+[[ "$bundle" != "$repo_root" && "$bundle" != "$repo_root/"* &&
+   "$identity_path" != "$repo_root" && "$identity_path" != "$repo_root/"* ]] ||
+  fail 'encrypted recovery bundle and private identity must remain outside Git checkout'
+# Execute all checked-in SQL assertions from their canonical repository root.
+cd -- "$repo_root"
 archive="$bundle/database.pg17.dump.age"
 manifest="$bundle/manifest.txt"
 [[ -f "$archive" && ! -L "$archive" && -f "$manifest" && ! -L "$manifest" ]] ||
@@ -62,7 +69,8 @@ container="ff-m0-restore-${temp##*.}"
 started=0
 cleanup() {
   if [[ "$started" == 1 ]]; then
-    docker rm -fv "$container" >/dev/null 2>&1 || true
+    docker rm -fv "$container" >/dev/null 2>&1 ||
+      printf 'CRITICAL: verify manual removal of recovery container and volumes: %s\n' "$container" >&2
   fi
   rm -rf -- "$temp"
 }
@@ -70,7 +78,7 @@ trap cleanup EXIT
 # Fully authenticate encrypted archive before any SQL can be executed.
 # Only private tmpfs holds a transient local plaintext copy. Docker will get
 # its own short-lived copy (removed with the disconnected container).
-age --decrypt --identity "$FF_AGE_IDENTITY_FILE" \
+age --decrypt --identity "$identity_path" \
   --output "$temp/restore.dump" "$archive" ||
   fail 'archive decryption or integrity verification failed'
 [[ -s "$temp/restore.dump" ]] || fail 'decrypted archive is empty'
@@ -125,6 +133,13 @@ for sql in \
     -d ff_m0_restore < "$sql" >/dev/null ||
     fail "restored security/schema attestation failed: $sql"
 done
+# A successful recovery cannot be reported until Docker has confirmed that
+# the container AND anonymous data volumes have been removed.
+docker rm -fv "$container" >/dev/null ||
+  fail 'cleanup of recovered PostgreSQL container/volumes failed; investigate manually'
+started=0
+rm -rf -- "$temp" || fail 'recovery tmpfs cleanup failed'
+trap - EXIT
 printf 'PASS: owner-held age archive authenticated, local disconnected PostgreSQL 17 restored, 3 SQL posture checks passed.\n'
 printf 'LIMIT: offsite retrieval, full Supabase services, independently stored hash and RPO/RTO require separate operator evidence.\n'
 printf 'SECURITY: no ports published; container destroyed and plaintext copies cleaned at exit.\n'
