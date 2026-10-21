@@ -9,7 +9,7 @@ const required = [
   'sportscore','api-football-free','rsssf','championat','sportbox',
   'wikidata','wikipedia','rusfootball','football-data-uk',
   'thesportsdb-free','footystats-website','understat-public-mirror','open-matchday-rpl',
-  'sstats-football-api'
+  'sstats-football-api','uefa-rpl-domestic'
 ];
 const freeModes = new Set([
   'public-reference','public-open-data','documented-free-tier',
@@ -29,7 +29,7 @@ test('the owner rule is strictly zero-cost, without provider billing or fallback
   assert.equal(registry.policy.activeProviderIntegrations,0);
 });
 
-test('all 19 known source classes are retained with stable unique IDs and evidence',()=>{
+test('all 20 known source classes are retained with stable unique IDs and evidence',()=>{
   assert.ok(Array.isArray(registry.sources));
   const ids=registry.sources.map(source=>source.id);
   assert.equal(new Set(ids).size,ids.length);
@@ -84,6 +84,12 @@ test('restricted or development-only sources cannot be treated as production fee
   assert.equal(byId['sstats-football-api'].zeroCost,'documented-free-tier');
   assert.match(byId['sstats-football-api'].limitations,/Flashscore/);
   assert.equal(byId['sstats-football-api'].authorizedAutomatedTraining,false);
+  assert.equal(byId['uefa-rpl-domestic'].access,'manual-reference');
+  assert.equal(byId['uefa-rpl-domestic'].priority,3);
+  assert.equal(byId['uefa-rpl-domestic'].authorizedAutomatedTraining,false);
+  assert.equal(byId['uefa-rpl-domestic'].automatedExtraction,
+    'prohibited-for-database-compilation-by-site-terms');
+  assert.match(byId.sportscore.rights,/conflict/);
   assert.match(byId.sportscore.limitations,/link/);
   assert.match(byId.footbolno.limitations,/upstream license/);
 });

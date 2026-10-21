@@ -152,9 +152,9 @@
       "priority": 3,
       "zeroCost": "documented-free-tier",
       "access": "free-api-candidate",
-      "rights": "attribution-and-bulk-restrictions",
-      "qualityEvidence": "actual-rpl-coverage-not-measured",
-      "limitations": "Visible crawlable dofollow link on each data page; public endpoints may not cover full RPL history; quota and caching apply.",
+      "rights": "api-attributed-derived-use-claimed-but-general-site-commercial-and-database-terms-conflict-upstream-permission-unverified",
+      "qualityEvidence": "API-specific terms 2026-04-23 §§1–5 permit free attributed early commercial dashboards, caching and derived analytics (~10000/day/IP); general website terms 2026-04-12 §§2.2,2.8–2.10 restrict commercial site use, significant data extraction and automated access. Exact precedence, 2024/25–2026/27 RPL coverage and upstream/ML permissions unverified. See M0_CURRENT_RPL_TERMS_REVIEW.json.",
+      "limitations": "Do not infer API-specific license overrides general site TOS without written clarification. Paid tier prohibited; visible Powered by SportScore dofollow link required for any future authorized app surface. No confirmed rights for RPL underlying source rows, independent backups, training probabilistic models, derivative public forecasts or full 2024/25–2026/27 free coverage; no provider access made in M0. Draft inquiry: M0_SPORTSCORE_RIGHTS_INQUIRY.md.",
       "empiricalResultErrorRate": null,
       "verifiedCurrentRPLCoverage": false,
       "verifiedPrematchSnapshots": false,
@@ -453,6 +453,30 @@
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
       "active": false
+    },
+    {
+      "id": "uefa-rpl-domestic",
+      "title": "UEFA published national Russian Premier League match calendar",
+      "url": "https://www.uefa.com/nationalassociations/rus/domestic/league/1050/matches/",
+      "kind": "official-third-party-domestic-republication",
+      "roles": [
+        "official-verification",
+        "fixtures",
+        "cross-check"
+      ],
+      "priority": 3,
+      "zeroCost": "public-reference",
+      "access": "manual-reference",
+      "rights": "uefa-general-terms-personal-view-only-no-systematic-collection",
+      "qualityEvidence": "2026-10-21 UEFA.com National Associations Russia domestic 2026/27 lists dated league matchdays; this is a republished schedule, not original signed RPL/RFU protocols, no measured error rate, verified match statuses, independent source chain or historical publication snapshots.",
+      "limitations": "UEFA General Terms §6.2 limit website Content to private noncommercial viewing and explicitly prohibit systematic gathering/compilation into a database. Manually inspect and cite limited official context only; NO automated polling, bulk extraction, live source, proprietary data reuse or training. Do not count UEFA republishing a Russian domestic source as an independent original match protocol.",
+      "empiricalResultErrorRate": null,
+      "verifiedCurrentRPLCoverage": false,
+      "verifiedPrematchSnapshots": false,
+      "authorizedAutomatedTraining": false,
+      "authorizedRawRepublication": false,
+      "active": false,
+      "automatedExtraction": "prohibited-for-database-compilation-by-site-terms"
     }
   ]
 }
