@@ -89,5 +89,10 @@ test('recovery is offline-only and fails closed on actual SQL restoration',()=>{
     /\/dev\/shm/,/docker rm -fv/,/docker run --rm --pull never/,/--single-transaction/,/--exit-on-error/,
     /0005_live_anon_posture\.sql/,/0006_live_immutable_ledger\.sql/,
     /0007_live_public_surface\.sql/,/CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions/])assert.match(source,pattern);
+  assert.match(source,/private identity must remain outside Git checkout/);
+  assert.match(source,/repo_root=.*BASH_SOURCE/);
+  assert.match(source,/docker rm -fv/);
+  assert.match(source,/cleanup of recovered PostgreSQL container\/volumes failed/);
+  assert.match(source,/trap - EXIT/);
   assert.doesNotMatch(source,/pg_dump|curl|wget|supabase\.co|:5432\/postgres/);
 });
