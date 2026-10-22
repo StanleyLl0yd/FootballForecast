@@ -20,6 +20,8 @@ I am developing FootballForecast (https://github.com/StanleyLl0yd/FootballForeca
 
 I have reviewed your API Terms of Use (updated April 23, 2026) and general Site Terms of Use (updated April 12, 2026). The API-specific terms expressly allow caching, derived dashboards/analytics, and monetized applications with attribution, but general Site Terms sections 2.2 and 2.8–2.10 prohibit commercial use, database extraction and certain automated access.
 
+I also checked your published eight widget endpoints: `/matches/` returns at most 50 live/recent results, `/team/` at most 30 recent/upcoming fixtures, and I cannot find a `season` filter or historical pagination. Section 4 of your API terms says historical access beyond the public API is normally paid. We cannot use paid data. Could you confirm whether any *documented, permanent, free* season-scoped route provides all 240 results in each of 2024/25 and 2025/26? If not, we will only consider your free API for a separately cleared live-fixture subset, never our historical training/test cohorts.
+
 Could you please clarify the following for the **public `/api/widget/` JSON endpoints**?
 
 1. Do the **April 23 API terms govern these API requests and permitted derivative uses**, even where the general Site Terms appear stricter? Is an attributed publicly accessible analytics website, potentially supported by modest advertising in future, eligible for the genuinely free tier?
