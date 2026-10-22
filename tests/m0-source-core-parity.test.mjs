@@ -51,6 +51,32 @@ test('browser core rejects paid registry mutations and malformed evidence identi
   }
 });
 
+test('scheduled match temporal evidence is identical in GUI core and offline reviewer',()=>{
+  const input=sample(1),c=input.cases[0];
+  c.official.status='scheduled';
+  c.official.kickoffAt='2026-10-25T15:00:00Z';
+  c.official.homeGoals=null;c.official.awayGoals=null;
+  for(const o of c.observations){
+    o.homeId=c.official.homeId;o.awayId=c.official.awayId;
+    o.status='scheduled';o.kickoffAt=c.official.kickoffAt;
+    o.homeGoals=null;o.awayGoals=null;
+    o.publishedAt='2026-10-22T11:00:00Z';
+    o.observedAt='2026-10-22T12:00:00Z';
+  }
+  const a=evaluateSourceEvidenceCore(input,registry,{minimumScoredMatches:1});
+  const {inputDigestSHA256,...b}=evaluateSourceEvidence(input,{minimumScoredMatches:1});
+  assert.match(inputDigestSHA256,/^[0-9a-f]{64}$/);
+  assert.deepEqual(a,b);
+  const f=a.sources.find(x=>x.sourceId==='footbolno');
+  assert.equal(f.fixtureIntegrity.compared,0);
+  assert.equal(f.finalScore.compared,0);
+  assert.equal(f.scheduledFixtureIntegrity.compared,1);
+  assert.equal(f.scheduledFixtureIntegrity.errors,0);
+  assert.equal(f.prematchScheduleEvidence.documentedBySuppliedTimestamps,1);
+  assert.equal(f.prematchScheduleEvidence.historicalProvenanceAuthenticated,false);
+  assert.equal(a.eligibleForProduction,false);
+});
+
 test('browser UI only reads a local file and never posts private observations to servers',()=>{
   const path=new URL('../apps/web/components/source-evidence-lab.tsx',import.meta.url);
   const code=readFileSync(path,'utf8');
