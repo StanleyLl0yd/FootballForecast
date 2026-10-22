@@ -15,7 +15,9 @@ const createRows=(season,{finished=240,score=[2,1]}={})=>{
   for(let i=0;i<16;i++)for(let j=0;j<16;j++){
     if(i===j)continue;
     const n=out.length,complete=n<finished;
-    out.push([season+'-'+i+'-'+j,235,season,'2026-10-01T13:00:00Z',
+    const date=season==='2024/2025'?'2025-03-01T13:00:00Z':
+      season==='2025/2026'?'2026-03-01T13:00:00Z':'2026-10-01T13:00:00Z';
+    out.push([season+'-'+i+'-'+j,235,season,date,
       complete?'finished':'scheduled',i+1,j+1,
       complete?score[0]:'',complete?score[1]:'',
       'Club "A", test', 'Club B',1]);
@@ -32,7 +34,7 @@ test('Footbolno RPL scope: 240 directed pairs, 3 seasons, temporary counts only'
   const parsed=parseBoundedCsv(csv);
   assert.equal(parsed.rows.length,720);
   assert.equal(parsed.rows[0][9],'Club "A", test');
-  const a=summarizeFootbolnoRplCsv(csv);
+  const a=summarizeFootbolnoRplCsv(csv,'2026-09-01T00:00:00Z');
   assert.equal(a.publisherRows,720);
   assert.deepEqual(a.seasonSummaries.map(s=>[
     s.season,s.matches,s.finished,s.scheduled,s.homeGoals+s.awayGoals,s.structuralCandidate
@@ -68,6 +70,26 @@ test('upcoming 2026/27 fixtures are opt-in, capped, sorted, and never invent con
   assert.ok(!missing.upcomingFixtures.some(f=>f.kickoffUtc.includes('nonsense')));
 });
 
+test('reject incorrect calendar dates, off-season fixtures, incomplete UTC time and stale scheduled matches',()=>{
+  const rows=createRows('2026/2027',{finished:0});
+  rows[0][3]='2026-02-30T12:00:00Z'; // JS Date.parse can roll over bad days
+  rows[1][3]='2027-09-01T10:00:00Z'; // Different season
+  rows[2][11]='unknown'; // Time confirmed flag is strictly 0 or 1
+  rows[3][3]='2026-10-01'; // Only a calendar day, cannot be confirmed exact kickoff
+  const report=summarizeFootbolnoRplCsv(toCsv(rows),'2026-09-01T00:00:00Z');
+  const cur=report.seasonSummaries[2];
+  assert.equal(cur.invalidDates,2);
+  assert.equal(cur.invalidTimeFlags,2);
+  assert.equal(cur.pastScheduled,0);
+  assert.equal(cur.structuralCandidate,false);
+  assert.equal(report.upcomingFixtures.length,8);
+  assert.ok(report.upcomingFixtures.every(f=>
+    f.kickoffUtc<'2027-07-01T00:00:00Z'));
+  const stale=summarizeFootbolnoRplCsv(toCsv(rows),'2026-11-01T00:00:00Z');
+  assert.equal(stale.seasonSummaries[2].pastScheduled,238);
+  assert.equal(stale.upcomingFixtures.length,0);
+  assert.equal(stale.seasonSummaries[2].structuralCandidate,false);
+});
 test('CSV strict syntax: quoted commas and newline are allowed, duplicate headers and broken quoting fail',()=>{
   const rows=createRows('2024/2025').slice(0,1);
   rows[0][9]='a,"b"\r\nc';
