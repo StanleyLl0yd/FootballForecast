@@ -80,7 +80,7 @@ test('duplicates, unknown sources, time travel and impossible score/status fail 
   assert.throws(()=>evaluateSourceEvidence(v),/invalid kickoff/);
   v=sample();v.cases[0].observations[0].sourceId='unknown-paid-api';
   assert.throws(()=>evaluateSourceEvidence(v),/zero-cost source registry/);
-  v=sample();v.cases[0].observations[0].status='scheduled';
+  v=sample();v.cases[0].observations[0].status='live';
   assert.throws(()=>evaluateSourceEvidence(v),/invalid status/);
   v=sample();v.cases[0].observations[0].homeGoals=100;
   assert.throws(()=>evaluateSourceEvidence(v),/scores/);
@@ -117,4 +117,78 @@ test('seeded 20-match perturbations preserve accounting and field error boundari
     assert.ok(s.finalScore.errors<=s.finalScore.compared);
     assert.ok(s.finalScore.errorRate===null||(s.finalScore.errorRate>=0&&s.finalScore.errorRate<=1));
   }
+});
+
+
+test('future scheduled fixtures use a separate denominator and never become finished-score samples',()=>{
+  const v=sample(4);
+  for(const c of v.cases){
+    c.official.status='scheduled';
+    c.official.kickoffAt='2026-10-25T16:00:00Z';
+    c.official.homeGoals=null;c.official.awayGoals=null;
+    for(const row of c.observations){
+      row.status='scheduled';row.kickoffAt=c.official.kickoffAt;
+      row.homeGoals=null;row.awayGoals=null;
+      row.observedAt='2026-10-22T12:00:00Z';
+      row.publishedAt='2026-10-22T11:00:00Z';
+    }
+  }
+  v.cases[1].observations[0].publishedAt=null;
+  v.cases[2].observations[0].observedAt='2026-10-25T16:00:00Z';
+  v.cases[3].observations[0].homeId='Unmatched-Home';
+  const report=evaluateSourceEvidence(v,{minimumScoredMatches:3});
+  const row=report.sources.find(x=>x.sourceId==='footbolno');
+  assert.equal(row.fixtureIntegrity.compared,0);
+  assert.equal(row.finalScore.compared,0);
+  assert.equal(row.finalScore.interval95,null);
+  assert.equal(row.scheduledFixtureIntegrity.compared,4);
+  assert.equal(row.scheduledFixtureIntegrity.errors,1);
+  assert.equal(row.prematchScheduleEvidence.scheduledReferenceCases,4);
+  assert.equal(row.prematchScheduleEvidence.documentedBySuppliedTimestamps,1);
+  assert.equal(row.prematchScheduleEvidence.notDemonstrated,3);
+  assert.equal(row.prematchScheduleEvidence.historicalProvenanceAuthenticated,false);
+  assert.equal(row.provisionalScoreRankEligible,false);
+  assert.equal(report.fieldRankings.fixtureIntegrity.length,0);
+  assert.equal(report.fieldRankings.finalScore.length,0);
+  assert.equal(report.fieldRankings.scheduledFixtureIntegrity[0].sourceId,'openfootball-europe');
+  assert.equal(report.enabledForTraining,false);
+  assert.equal(report.sourceRightsApproved,false);
+});
+
+test('missing scheduled fixtures, wrong status, kickoff drift and time equality never prove prematch availability',()=>{
+  const v=sample(2);
+  for(const c of v.cases){
+    c.official.status='scheduled';
+    c.official.kickoffAt='2026-10-26T17:00:00Z';
+    c.official.homeGoals=null;c.official.awayGoals=null;
+    for(const o of c.observations){
+      o.status='scheduled';o.homeGoals=null;o.awayGoals=null;
+      o.kickoffAt=c.official.kickoffAt;
+      o.publishedAt='2026-10-26T16:00:00Z';
+      o.observedAt='2026-10-26T17:00:00Z';
+    }
+  }
+  v.cases[0].observations[0].kickoffAt='2026-10-26T18:00:00Z';
+  v.cases[1].observations=v.cases[1].observations.filter(o=>o.sourceId!=='footbolno');
+  const report=evaluateSourceEvidence(v,{minimumScoredMatches:1});
+  const f=report.sources.find(x=>x.sourceId==='footbolno');
+  assert.equal(f.scheduledFixtureIntegrity.compared,2);
+  assert.equal(f.scheduledFixtureIntegrity.errors,2);
+  assert.equal(f.prematchScheduleEvidence.documentedBySuppliedTimestamps,0);
+  assert.equal(f.prematchScheduleEvidence.notDemonstrated,2);
+  assert.equal(f.missing,1);
+  assert.equal(f.temporalAvailability.demonstratedBySuppliedTimestamps,0);
+  assert.equal(f.scheduledFixtureIntegrity.interval95!==null,true);
+
+  const invalid=sample(1);
+  invalid.cases[0].official.status='scheduled';
+  invalid.cases[0].official.homeGoals=1;
+  invalid.cases[0].official.awayGoals=0;
+  assert.throws(()=>evaluateSourceEvidence(invalid),/null scores/);
+  invalid.cases[0].official.homeGoals=null;
+  invalid.cases[0].official.awayGoals=null;
+  invalid.cases[0].observations[0].status='scheduled';
+  invalid.cases[0].observations[0].homeGoals=0;
+  invalid.cases[0].observations[0].awayGoals=null;
+  assert.throws(()=>evaluateSourceEvidence(invalid),/null scores/);
 });
