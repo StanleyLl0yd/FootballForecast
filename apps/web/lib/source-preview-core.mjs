@@ -133,6 +133,7 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
   const summaries=SEASONS.map(season=>({
     season,matches:0,finished:0,scheduled:0,live:0,cancelled:0,
     homeGoals:0,awayGoals:0,duplicates:0,duplicateMatchIds:0,
+    distinctClubCount:0,distinctDirectedPairs:0,
     missingTeams:0,invalidScores:0,
     invalidDates:0,invalidTimeFlags:0,pastScheduled:0,
     structuralCandidate:false,historicalAggregateDrift:null
@@ -140,6 +141,7 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
   const found=new Map(summaries.map(s=>[s.season,s]));
   const pairs=new Map(SEASONS.map(s=>[s,new Set()]));
   const ids=new Map(SEASONS.map(s=>[s,new Set()]));
+  const clubs=new Map(SEASONS.map(s=>[s,new Set()]));
   for(const values of rows){
     const col=name=>values[keys[name]].trim();
     if(col('league_id')!=='235')continue;
@@ -151,6 +153,8 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     data[status]++;
     const home=col('home_id'),away=col('away_id'),id=col('match_id');
     if(!home||!away||home===away)data.missingTeams++;
+    if(home)clubs.get(season).add(home);
+    if(away)clubs.get(season).add(away);
     if(!id)data.duplicateMatchIds++;
     else if(ids.get(season).has(id))data.duplicateMatchIds++;
     else ids.get(season).add(id);
@@ -202,6 +206,12 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
   upcoming.sort((a,b)=>a.kickoffUtc.localeCompare(b.kickoffUtc)||
     a.home.localeCompare(b.home));
   for(const s of summaries){
+    s.distinctClubCount=clubs.get(s.season).size;
+    s.distinctDirectedPairs=pairs.get(s.season).size;
+    // A 16-club double round robin has EXACTLY 16 * 15 = 240 directed
+    // fixtures. A source can report 240 unique fixtures using 17 clubs,
+    // while silently missing the true set of home/away pairings.
+    // We do not infer or display an official club roster from source IDs.
     const baseline=HISTORICAL_PUBLISHER_ANCHORS[s.season];
     if(baseline){
       const homeDelta=s.homeGoals-baseline.homeGoals;
@@ -216,7 +226,8 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     }
     // A structural candidate does NOT imply official accuracy, permissions or
     // authenticated timestamped revision history for a model.
-    s.structuralCandidate=s.matches===240&&s.duplicates===0&&
+    s.structuralCandidate=s.matches===240&&s.distinctClubCount===16&&
+      s.distinctDirectedPairs===240&&s.duplicates===0&&
       s.duplicateMatchIds===0&&s.missingTeams===0&&s.invalidScores===0&&
       s.invalidDates===0&&s.invalidTimeFlags===0&&s.pastScheduled===0&&
       s.matches===s.finished+s.scheduled+s.live+s.cancelled&&
