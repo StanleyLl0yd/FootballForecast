@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/m0-footbolno-csv-aggregate.mjs'
+      - 'scripts/m0-scoreline-histogram-crosscheck.mjs'
+      - 'scripts/m0-fixture-structure.mjs'
       - '.github/workflows/m0-footbolno-csv-research.yml'
 permissions: {contents: read}
 concurrency:
@@ -23,7 +25,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned
         with: {node-version: '22'}
       - name: Enforce bounded aggregate-only CSV parser
-        run: node --check scripts/m0-footbolno-csv-aggregate.mjs && node --test tests/m0-footbolno-csv-aggregate.test.mjs
+        run: node --check scripts/m0-footbolno-csv-aggregate.mjs && node --check scripts/m0-scoreline-histogram-crosscheck.mjs && node --test tests/m0-footbolno-csv-aggregate.test.mjs tests/m0-scoreline-histogram-crosscheck.test.mjs
       - name: Download ONE publicly advertised RPL CSV to disposable private runner memory
         shell: bash
         run: |
@@ -38,6 +40,15 @@ jobs:
             --output "$work/rpl.csv" "$url"
           test -s "$work/rpl.csv"
           test "$(wc -c < "$work/rpl.csv")" -le 2097152
+          # Immutable CC0 competition text for aggregate-only corroboration.
+          # The cross-check verifies the content against a pinned Git blob hash.
+          reference_url='https://raw.githubusercontent.com/openfootball/europe/63df627f3c87ce71708f016522ea236cf74332c3/russia/2024-25_ru1.txt'
+          curl --fail --silent --show-error \
+            --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 45 --max-filesize 200000 \
+            --output "$work/openfootball.txt" "$reference_url"
+          test -s "$work/openfootball.txt"
+          test "$(wc -c < "$work/openfootball.txt")" -le 200000
           hash="$(sha256sum "$work/rpl.csv" | cut -d' ' -f1)"
           {
             echo '## M0 research-only free RPL source coverage observation'
@@ -50,8 +61,23 @@ jobs:
             echo
             echo 'All match results, observed goals and timestamps remain UNVERIFIED against independent official records.'
             echo
+            echo 'Footbolno declares CC BY 4.0: https://footbolno.ru/otkrytye-dannye'
+            echo 'OpenFootball declares CC0: https://github.com/openfootball/europe'
+            echo 'Aggregate scoreline-histogram agreement is NOT fixture-by-fixture truth or licensed ML training.'
+            echo
             echo '~~~json'
           } >> "$GITHUB_STEP_SUMMARY"
           node scripts/m0-footbolno-csv-aggregate.mjs "$work/rpl.csv" "$hash" |
             tee -a "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo
+            echo '### CC BY / CC0 RPL 2024/25 scoreline distribution cross-check'
+            echo
+            echo 'This is an aggregate-only, no-import/no-training source consistency experiment.'
+            echo
+            echo '~~~json'
+          } >> "$GITHUB_STEP_SUMMARY"
+          node scripts/m0-scoreline-histogram-crosscheck.mjs \
+            "$work/rpl.csv" "$work/openfootball.txt" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '~~~' >> "$GITHUB_STEP_SUMMARY"
