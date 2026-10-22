@@ -140,3 +140,34 @@ test('Footbolno rights clarification is only a draft: no private response or ing
   assert.equal(registry.policy.activeProviderIntegrations,0);
   assert.equal(registry.sources.find(s=>s.id==='footbolno').authorizedAutomatedTraining,false);
 });
+
+
+test('public source catalog reflects measured historical and current match samples without activating providers',()=>{
+  const byId=Object.fromEntries(registry.sources.map(source=>[source.id,source]));
+  const reported=JSON.parse(readFileSync(
+    new URL('../docs/M0_SPORTSCORE_FILTERED_RPL_EVIDENCE.json',import.meta.url),'utf8'));
+  assert.equal(reported.aggregates.matchedDirectedFixtures,16);
+  assert.equal(reported.aggregates.finishedFixturesPriorToObservation,8);
+  assert.equal(reported.aggregates.scheduledFixturesAtObservation,8);
+  assert.equal(reported.aggregates.queryHttp200,6);
+  assert.equal(reported.inferences.rightsForModelTrainingVerified,false);
+  assert.match(byId['openfootball-europe'].qualityEvidence,/240\/240 directed fixtures/);
+  assert.match(byId.footbolno.qualityEvidence,/2024\/25 240\/240/);
+  assert.match(byId.footbolno.qualityEvidence,/2025\/26 240\/240/);
+  assert.match(byId.footbolno.qualityEvidence,/2026\/27 16\/16/);
+  assert.match(byId.wikipedia.qualityEvidence,/1359156694/);
+  assert.match(byId.wikipedia.limitations,/lacks kickoff times/);
+  assert.match(byId.sportscore.qualityEvidence,/16\/16 directed pair matches/);
+  assert.match(byId.sportscore.qualityEvidence,/M0_SPORTSCORE_FILTERED_RPL_EVIDENCE\.json/);
+  assert.match(byId.sportscore.limitations,/No verified 2024\/25 training or 2025\/26 complete historical/);
+  assert.match(byId.sportscore.qualityEvidence,/unresolved precedence/);
+  for(const source of Object.values(byId)){
+    assert.equal(source.active,false);
+    assert.equal(source.authorizedAutomatedTraining,false);
+    assert.equal(source.authorizedRawRepublication,false);
+    assert.equal(source.empiricalResultErrorRate,null);
+    assert.equal(source.verifiedCurrentRPLCoverage,false);
+    assert.equal(source.verifiedPrematchSnapshots,false);
+  }
+  assert.equal(registry.policy.activeProviderIntegrations,0);
+});
