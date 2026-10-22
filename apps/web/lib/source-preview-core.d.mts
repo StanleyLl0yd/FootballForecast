@@ -16,7 +16,8 @@ export type RplSeasonSummary={
  season:string;matches:number;finished:number;scheduled:number;live:number;cancelled:number;
  homeGoals:number;awayGoals:number;duplicates:number;duplicateMatchIds:number;
  missingTeams:number;invalidScores:number;invalidDates:number;invalidTimeFlags:number;
- pastScheduled:number;structuralCandidate:boolean;
+ pastScheduled:number;distinctClubCount:number;completeDirectedFixtureGrid:boolean;
+ structuralCandidate:boolean;
  historicalAggregateDrift:HistoricalAggregateDrift|null;
 };
 export type UpcomingRplFixture={
