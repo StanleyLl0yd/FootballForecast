@@ -120,5 +120,7 @@ test('standalone workflow uses only six fixed no-key GETs and no stored raw data
   assert.match(flow,/m0-sportscore-day-research\.mjs/);
   assert.match(flow,/Powered by SportScore/);
   assert.match(flow,/rm -rf "\$work"/);
+  assert.match(flow,/m0-sportscore-day-research\.mjs[\s\S]*?tee -a "\$GITHUB_STEP_SUMMARY"/,
+    'Only redacted aggregate JSON must reach the visible workflow log');
   assert.doesNotMatch(flow,/upload-artifact|schedule:|git push|api.?key|token:|supabase|npm install/i);
 });
