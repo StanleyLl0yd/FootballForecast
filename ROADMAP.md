@@ -32,10 +32,10 @@ Updated 2026-10-22. Milestone acceptance requires verification, not code presenc
 - [x] Add synthetic PostgreSQL 17 pg_dump/pg_restore round-trip proof in CI, including RLS, data and immutable-archive triggers.
 - [x] Apply and verify all three FK indexes; performance advisor no longer reports unindexed FKs.
 - [x] Deploy public Vercel Hobby to Frankfurt from protected GitHub main and verify anonymous pages/admin redirect from GitHub Actions.
-- [ ] Verify reachability from Russian networks without VPN and Safari/Firefox/Edge browser behavior.
+- [x] **2026-10-22 owner-approved M0 scope:** actual Russian home/wired Internet **without VPN** confirmed the live public health, dashboard and archive **3/3 HTTP 200 PASS**; hosted Safari/Firefox/Edge/Chrome compatibility PASS. Two failed St Petersburg mobile operators are explicitly documented but **non-gating** for M0 (#6 follow-up).
 - [x] Connect public read-only dashboard/matches to Supabase REST via publishable key with unconfigured/error/empty states and mocked REST contract tests.
 - [x] Verify live anonymous Supabase REST via production dashboard and external GitHub Actions HTTP canary.
-- [ ] Verify Russian operator network reachability separately.
+- [x] Verify **one real Russian home/wired network** separately from GitHub runners: owner browser report 2026-10-22 11:33:03 UTC; API 130 ms, dashboard 368 ms, archive 333 ms, all HTTP 200. This checks only the observed network, not universal access or Russian mobile service.
 - [ ] Confirm data acquisition and storage/distribution permissions in writing where necessary.
 - [x] Create M0 GitHub issues and activate main ruleset #25266406 (six required checks, no mandatory reviewers).
 - [x] Verify protected PR merges #15 and #16 and exact-head/post-merge CI/Security/CodeQL.
@@ -76,7 +76,7 @@ The reduced M0 recovery gate is **application migration re-creation**, **documen
 
 - [ ] #2: **$0-only** legitimately reusable current RPL data and defensible historical provenance, triangulated with lawful independent evidence using the ranked registry (`docs/M0_FREE_SOURCE_REGISTRY.json`). **Owner-approved reduction 2026-10-20:** research the pilot minimum **2024/25 training, 2025/26 untouched evaluation, current 2026/27 fixtures** (`docs/M0_MINIMUM_RPL_SCOPE.json`); do not require 2015/16–2023/24 historical completeness. This is a scope reduction, **not** rights, accuracy or strict as-of approval. No seasons approved for ingestion; OpenFootball 2023/24 remains quarantined; no paid feeds or fallbacks.
 - [x] #5: application schema replay + isolated **synthetic** PG17 restore PASS on [CI #39764646186](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39764646186), real publishable-key REST [PASS](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39763464499/job/119773072854). Owner accepts lack of production-data recovery for this prototype and defers optional backup decision to #96 **once fully functional**.
-- [ ] #6: two independent Russian residential/mobile provider network checks without VPN, including total site-load failures.
+- [x] #6 M0 **reduced acceptance (owner 2026-10-22): wired/home no-VPN PASS 3/3 is sufficient for current prototype**; historical two-independent-carrier requirement superseded. Mobile failures (T-Mobile on mostly T2 in St Petersburg, and MegaFon) remain real, known, **non-gating** limitations. Track deferred mobile network diagnostics under #6 without paid hosting, claiming resolution or delaying M0.
 - [ ] #8: supported patched dependency or documented accepted remediation for the unresolved dev-only `braces` advisory; enforced production audit stays active.
 
-Green CI and Vercel deployment are **necessary but not sufficient** for M0 sign-off. No model training, data import, subscription or M1 work is authorized.
+Green CI and Vercel deployment are **necessary but not sufficient** for M0 sign-off. Verified wired reachability is one observed success only; the mobile failure cannot be labeled PASS. M0 still needs #2 data rights/accuracy and #8 security acceptance. No model training, data import, subscription or M1 work is authorized.
