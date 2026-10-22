@@ -49,6 +49,27 @@ test('Footbolno RPL scope: 240 directed pairs, 3 seasons, temporary counts only'
   assert.ok(a.upcomingFixtures.length<=8);
   assert.doesNotMatch(JSON.stringify(a),/match_id|home_id|away_id/);
 });
+test('16-club directed round robin is required beyond a mere total of 240 unique matches',()=>{
+  const initial=createRows('2024/2025');
+  const complete=summarizeFootbolnoRplCsv(toCsv(initial),'2026-10-22T00:00:00Z').seasonSummaries[0];
+  assert.equal(complete.matches,240);
+  assert.equal(complete.distinctClubCount,16);
+  assert.equal(complete.completeDirectedFixtureGrid,true);
+  assert.equal(complete.structuralCandidate,true);
+  const altered=createRows('2024/2025');
+  // Replacing the home side of one game preserves 240 fixture identities,
+  // directed-pair uniqueness and goal aggregates, but introduces a 17th club.
+  altered[0][5]='999';
+  const invalid=summarizeFootbolnoRplCsv(toCsv(altered),'2026-10-22T00:00:00Z').seasonSummaries[0];
+  assert.equal(invalid.matches,240);
+  assert.equal(invalid.distinctClubCount,17);
+  assert.equal(invalid.duplicates,0);
+  assert.equal(invalid.completeDirectedFixtureGrid,false);
+  assert.equal(invalid.structuralCandidate,false);
+  assert.equal(invalid.historicalAggregateDrift?.changed,true === false);
+  // Publisher goal totals stayed unchanged; club-grid integrity caught this.
+});
+
 test('upcoming 2026/27 fixtures are opt-in, capped, sorted, and never invent confirmed times',()=>{
   const rows=createRows('2026/2027',{finished:0});
   rows[1][11]='0'; // A date without a confirmed kickoff time
