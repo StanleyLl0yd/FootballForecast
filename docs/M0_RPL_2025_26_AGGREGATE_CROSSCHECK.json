@@ -56,5 +56,48 @@
     "providerIntegrationEnabled": false,
     "seasonCertifiedForModeling": false
   },
-  "limitations": "Observed public season aggregate metadata, without copying score rows. Agreement 609 versus 610 does not identify which fixture, season-correction policy or source is wrong. Shared upstream feeds and retroactive corrections are unresolved. Original match-level references and licensed rights remain mandatory; do not resolve conflict by majority vote. No data import, training or predictions."
+  "limitations": "Season aggregate 609 vs Rusfootball 610 has a specific **publisher-score error lead**: Rusfootball lists 2026-04-26 Zenit 3:0 Akhmat, while official Akhmat match report and RPL next-round bulletin page 3 confirm 2:0 (Sobolev 8, Luis Enrique 11). That one goal explains the numerical discrepancy but is not a full 240-match reconciliation; shared upstream feeds, other offsetting errors and post-publication corrections remain unverified. RPL and official club pages are manual factual corroboration only, not extraction/ML licenses. No data import, raw match-row republication, model training or forecasts.",
+  "lastSourceReconciliationReview": "2026-10-22",
+  "matchSpecificDiscrepancy": {
+    "status": "LOCALIZED_TO_ONE_PUBLISHER_SCORE_WITH_PRIMARY_CORROBORATION_NOT_FULL_SEASON_CERTIFICATION",
+    "match": "Zenit Saint Petersburg vs Akhmat Grozny",
+    "date": "2026-04-26",
+    "rplRound": 27,
+    "home": "Zenit",
+    "away": "Akhmat",
+    "rusfootballPublishedScore": {
+      "home": 3,
+      "away": 0
+    },
+    "primaryCorroboratedScore": {
+      "home": 2,
+      "away": 0
+    },
+    "rusfootballFixtureReference": "https://www.rusfootball.info/matchcenter/tournaments/rpl/season_2025_2026/matches/118922",
+    "clubOfficialFixtureReference": "https://fc-akhmat.ru/matches/main-team/256337/",
+    "originalRplBulletinPdf": "https://cdn.premierliga.ru/resources/sb_pdf/preview/RPL_2025-2026_MD28_AKH-PNN_PREVIEW.pdf",
+    "bulletinPageOneBased": 3,
+    "goalMinuteDetails": {
+      "zenit": [
+        8,
+        11
+      ],
+      "akhmat": []
+    },
+    "independentConfirmationSources": [
+      "Akhmat official match record",
+      "RPL-hosted next-round match bulletin"
+    ],
+    "sourceProviderErrorSuspected": "Rusfootball extra one home goal (3:0 rather than 2:0)",
+    "goalDifferenceExplained": 1,
+    "seasonTotalsRusfootball": 610,
+    "seasonTotalsOfficialCorroboratedEditorial": 609,
+    "publisherTableIndependentSeasonMatchReconciliationCompleted": false,
+    "completeSeasonOfficialProtocolValidationCompleted": false,
+    "originalPublisherReuseRightsVerified": false,
+    "rawFixtureRowsImported": false,
+    "modelTrainingAllowed": false,
+    "chronologyStrictAsOfEstablished": false,
+    "formalDiscrepancyResolution": "Exact observed publisher error with two primary corroborations; does not imply every other row matches or third-party training/republication rights."
+  }
 }

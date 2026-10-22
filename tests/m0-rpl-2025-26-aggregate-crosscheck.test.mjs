@@ -7,7 +7,7 @@ const x=read('M0_RPL_2025_26_AGGREGATE_CROSSCHECK.json');
 const evidence=read('M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json');
 const scope=read('M0_MINIMUM_RPL_SCOPE.json');
 
-test('2025/26 free-source aggregate documents one unresolved discrepancy',()=>{
+test('2025/26 free-source aggregate documents one source-reconciled aggregate discrepancy',()=>{
   assert.equal(x.schemaVersion,1);
   assert.equal(x.season,'2025/2026');
   assert.ok(scope.minimumScope.some(s=>s.season===x.season&&s.role==='sealed_holdout'));
@@ -32,6 +32,33 @@ test('2025/26 free-source aggregate documents one unresolved discrepancy',()=>{
   assert.equal(byName['Rusfootball RPL 2025/26'].reportedGoals,610);
   assert.equal(x.analysis.nonmatchingGoalDelta,1);
   assert.equal(x.analysis.nonmatchingSource,'Rusfootball');
+});
+
+test('isolated primary-source Zenit 2:0 Akhmat match explains Rusfootball extra goal, not season approval',()=>{
+  const m=x.matchSpecificDiscrepancy;
+  assert.equal(m.status,
+    'LOCALIZED_TO_ONE_PUBLISHER_SCORE_WITH_PRIMARY_CORROBORATION_NOT_FULL_SEASON_CERTIFICATION');
+  assert.deepEqual([m.date,m.rplRound],['2026-04-26',27]);
+  assert.equal(m.home,'Zenit');
+  assert.equal(m.away,'Akhmat');
+  assert.deepEqual(m.rusfootballPublishedScore,{home:3,away:0});
+  assert.deepEqual(m.primaryCorroboratedScore,{home:2,away:0});
+  assert.equal(m.rusfootballPublishedScore.home-m.primaryCorroboratedScore.home,1);
+  assert.equal(m.goalDifferenceExplained,x.analysis.nonmatchingGoalDelta);
+  assert.equal(m.seasonTotalsRusfootball-m.seasonTotalsOfficialCorroboratedEditorial,1);
+  assert.deepEqual(m.goalMinuteDetails,{zenit:[8,11],akhmat:[]});
+  assert.match(m.clubOfficialFixtureReference,/^https:\/\/fc-akhmat\.ru\/matches\/main-team\//);
+  assert.match(m.originalRplBulletinPdf,/^https:\/\/cdn\.premierliga\.ru\/.+\.pdf$/);
+  assert.equal(m.bulletinPageOneBased,3);
+  assert.equal(m.independentConfirmationSources.length,2);
+  assert.match(m.rusfootballFixtureReference,/rusfootball\.info/);
+  for(const key of ['publisherTableIndependentSeasonMatchReconciliationCompleted',
+    'completeSeasonOfficialProtocolValidationCompleted',
+    'originalPublisherReuseRightsVerified','rawFixtureRowsImported',
+    'modelTrainingAllowed','chronologyStrictAsOfEstablished']){
+    assert.equal(m[key],false,key);
+  }
+  assert.match(m.formalDiscrepancyResolution,/does not imply every other row matches/);
 });
 
 test('no source is certified as independent, error-free, licensed or safe to train',()=>{
