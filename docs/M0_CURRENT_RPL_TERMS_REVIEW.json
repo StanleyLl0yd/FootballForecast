@@ -73,9 +73,24 @@
       "free2024_25CompleteSeasonRetrievalDocumented": false,
       "free2025_26CompleteSeasonRetrievalDocumented": false,
       "current2026_27LeagueFixturesCompleteAndFreshValidated": false,
-      "analysis": "Free interface documents live/recent matches and bounded team recent/upcoming data; no published season selector nor multi-season pagination. Vendor terms list historical access beyond public API among paid-tier uses. Do not assume free extraction of both completed 240-match seasons even if vendor permits attributed applications. Free limited recent results may still suit prospective fixtures after rights, coverage and freshness are checked.",
+      "analysis": "Free interface documents live/recent matches and bounded team recent/upcoming data; no published season selector nor multi-season pagination. Vendor terms list historical access beyond public API among paid-tier uses. Do not assume free extraction of both completed 240-match seasons even if vendor permits attributed applications. Free limited recent results may still suit prospective fixtures after rights, coverage and freshness are checked. A separate, newly confirmed public REST v1 reference documents day-scoped fixtures/search endpoints; the earlier eight-endpoint count refers to WIDGET endpoints only and must not be read as a complete API inventory. Original match rights and season-wide bulk reuse remain unresolved.",
       "apiInvokedToCheckSeasonCompleteness": false,
       "conclusion": "DOES_NOT_DEMONSTRATE_ZERO_COST_HISTORICAL_TRAIN_AND_HOLDOUT_COVERAGE"
+    },
+    "publicV1Discovery": {
+      "reference": "https://sportscore.com/developers/api/",
+      "fixturesEndpoint": "https://sportscore.com/api/v1/fixtures/",
+      "supportedDayScope": "one UTC YYYY-MM-DD calendar day with optional competition/team/status",
+      "documentedDailyPageLimit": 200,
+      "anonymousAccessDocumented": true,
+      "searchEndpoint": "https://sportscore.com/api/v1/search/",
+      "searchSupportsQuery": true,
+      "exactRplCompetitionSlugVerified": false,
+      "actualRplCoverageVerified": false,
+      "freeFullTwoSeasonCollectionAuthorized": false,
+      "historicalOriginalRightsVerified": false,
+      "noAutomatedBulkCollectionPerformed": true,
+      "conclusion": "The previously counted eight widget endpoints are NOT the complete documented API. Separate anonymous REST v1 fixtures/search paths exist, and could help bounded current-season discovery if coverage and provider rights are verified. A day-scoped fixture lookup is not an approved complete historic-season bulk extraction plan."
     }
   },
   "uefa": {
