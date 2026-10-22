@@ -56,7 +56,7 @@
     "providerIntegrationEnabled": false,
     "seasonCertifiedForModeling": false
   },
-  "limitations": "Season aggregate 609 vs Rusfootball 610 has a specific **publisher-score error lead**: Rusfootball lists 2026-04-26 Zenit 3:0 Akhmat, while official Akhmat match report and RPL next-round bulletin page 3 confirm 2:0 (Sobolev 8, Luis Enrique 11). That one goal explains the numerical discrepancy but is not a full 240-match reconciliation; shared upstream feeds, other offsetting errors and post-publication corrections remain unverified. RPL and official club pages are manual factual corroboration only, not extraction/ML licenses. No raw match rows, training, imports or forecasts.",
+  "limitations": "Season aggregate 609 vs Rusfootball 610 has a specific **publisher-score error lead**: Rusfootball lists 2026-04-26 Zenit 3:0 Akhmat, while official Akhmat match report and RPL next-round bulletin page 3 confirm 2:0 (Sobolev 8, Luis Enrique 11). That one goal explains the numerical discrepancy but is not a full 240-match reconciliation; shared upstream feeds, other offsetting errors and post-publication corrections remain unverified. RPL and official club pages are manual factual corroboration only, not extraction/ML licenses. No data import, raw match-row republication, model training or forecasts.",
   "lastSourceReconciliationReview": "2026-10-22",
   "matchSpecificDiscrepancy": {
     "status": "LOCALIZED_TO_ONE_PUBLISHER_SCORE_WITH_PRIMARY_CORROBORATION_NOT_FULL_SEASON_CERTIFICATION",
