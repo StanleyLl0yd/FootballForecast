@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "kind": "M0_BOUNDED_TWO_PUBLISHER_CURRENT_FIXTURE_AGREEMENT_NOT_APPROVAL",
+  "competition": "Russian Premier League",
+  "season": "2026/2027",
+  "observedUtc": "2026-10-22T16:44:59Z",
+  "research": {
+    "runUrl": "https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39816513768",
+    "jobId": 119956332536,
+    "mainCommit": "fd1741326348a1c99434172a3b8324340cb3c14e",
+    "pipelineKind": "one-shot ephemeral six-day public REST v1 GET study",
+    "noScheduledPolling": true,
+    "searchCandidates": 1,
+    "validatedRplCompetitionCount": 1,
+    "searchSlugPersisted": false,
+    "authenticatedRequests": false,
+    "paidUsage": false
+  },
+  "sources": [
+    {
+      "name": "Footbolno",
+      "publishedTerms": "https://footbolno.ru/otkrytye-dannye",
+      "declaredLicense": "CC BY 4.0",
+      "sourceRole": "candidate_public_match_csv"
+    },
+    {
+      "name": "SportScore",
+      "publishedTerms": "https://sportscore.com/developers/terms/",
+      "generalTerms": "https://sportscore.com/terms/",
+      "apiDocumentation": "https://sportscore.com/developers/api/",
+      "declaredAccess": "anonymous attribution tier",
+      "sourceRole": "bounded_competition_filtered_corroboration"
+    }
+  ],
+  "dayRecords": [
+    {
+      "utcDate": "2026-10-17",
+      "publisherFixtures": 3,
+      "sportscoreFixtures": 3,
+      "directedPairMatches": 3,
+      "httpStatus": 200,
+      "capped": false,
+      "unknownSchema": false,
+      "unresolved": 0,
+      "completedScoreDisagreements": 0
+    },
+    {
+      "utcDate": "2026-10-18",
+      "publisherFixtures": 4,
+      "sportscoreFixtures": 4,
+      "directedPairMatches": 4,
+      "httpStatus": 200,
+      "capped": false,
+      "unknownSchema": false,
+      "unresolved": 0,
+      "completedScoreDisagreements": 0
+    },
+    {
+      "utcDate": "2026-10-19",
+      "publisherFixtures": 1,
+      "sportscoreFixtures": 1,
+      "directedPairMatches": 1,
+      "httpStatus": 200,
+      "capped": false,
+      "unknownSchema": false,
+      "unresolved": 0,
+      "completedScoreDisagreements": 0
+    },
+    {
+      "utcDate": "2026-10-23",
+      "publisherFixtures": 1,
+      "sportscoreFixtures": 1,
+      "directedPairMatches": 1,
+      "httpStatus": 200,
+      "capped": false,
+      "unknownSchema": false,
+      "unresolved": 0,
+      "completedScoreDisagreements": 0
+    },
+    {
+      "utcDate": "2026-10-24",
+      "publisherFixtures": 4,
+      "sportscoreFixtures": 4,
+      "directedPairMatches": 4,
+      "httpStatus": 200,
+      "capped": false,
+      "unknownSchema": false,
+      "unresolved": 0,
+      "completedScoreDisagreements": 0
+    },
+    {
+      "utcDate": "2026-10-25",
+      "publisherFixtures": 3,
+      "sportscoreFixtures": 3,
+      "directedPairMatches": 3,
+      "httpStatus": 200,
+      "capped": false,
+      "unknownSchema": false,
+      "unresolved": 0,
+      "completedScoreDisagreements": 0
+    }
+  ],
+  "aggregates": {
+    "finishedFixturesPriorToObservation": 8,
+    "scheduledFixturesAtObservation": 8,
+    "matchedDirectedFixtures": 16,
+    "reportedScoreDisagreementsForCompletedMatches": 0,
+    "queryHttp200": 6,
+    "atPageCap": 0,
+    "seasonTotalFixturesFromCandidate": 240
+  },
+  "inferences": {
+    "selectedSixDaysHaveFullCrossPublisherMatchAgreement": true,
+    "completeSeasonIndependentCoverageVerified": false,
+    "kickoffTimezoneVerified": false,
+    "officialProtocolTruthVerified": false,
+    "upstreamProviderIndependenceVerified": false,
+    "historicalPrematchPublicationVerified": false,
+    "rightsForRecurringAutomatedCollectionVerified": false,
+    "rightsForModelTrainingVerified": false,
+    "providerApprovedForProduction": false,
+    "realModelTrained": false,
+    "rawSourceRowsStored": false
+  },
+  "limitations": "A 16-fixture agreement for six specific dates is not 240-game current-season freshness, licensed ETL, verified original match ownership, independent official protocol proof, timezone normalization, pre-kickoff observations or permission to train predictive models. No personal data or raw fixture rows were committed. SportScore's published REST/widget vs general-site terms priority remains unresolved. No M0/M1 transition."
+}

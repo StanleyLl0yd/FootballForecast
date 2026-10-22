@@ -87,6 +87,8 @@ jobs:
         run: node --test apps/web/tests/data-catalog.test.mjs
       - name: Test offline cross-provider score, status, venue and temporal accuracy logic
         run: node --check scripts/m0-multi-source-quality.mjs && node --check scripts/m0-multi-source-core.mjs && node --test tests/m0-multi-source-quality.test.mjs tests/m0-source-core-parity.test.mjs
+      - name: Verify pinned 2026 RPL 16-fixture external evidence and non-approval bounds
+        run: node --test tests/m0-sportscore-filtered-evidence.test.mjs
       - name: Validate source-verified SportScore RPL competition slug and filtered research
         run: node --check scripts/m0-sportscore-filtered-rpl-research.mjs && node --test tests/m0-sportscore-filtered-rpl-research.test.mjs
       - name: Validate bounded SportScore free day probe and reject unverified coverage
