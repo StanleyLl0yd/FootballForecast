@@ -212,7 +212,7 @@ def compare(csv_text, wiki_html):
              "attribution": "https://en.wikipedia.org/wiki/2025%E2%80%9326_Russian_Premier_League"}
         ],
         "publisherFixtures": len(pub), "wikipediaFixtures": len(ref),
-        "matchedDirectedFixtures": 240-len(missing_pub)-len(missing_wiki),
+        "matchedDirectedFixtures": len(set(pub) & set(ref)),
         "missingFromPublisher": len(missing_pub), "missingFromWikipedia": len(missing_wiki),
         "differentScoreFixtures": len(mismatched),
         "homeScoreMismatches": home_differ, "awayScoreMismatches": away_differ,
