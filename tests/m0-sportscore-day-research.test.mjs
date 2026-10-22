@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {readFileSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {execFileSync} from 'node:child_process';
 import {compareSportScoreDay,runDayProbe} from '../scripts/m0-sportscore-day-research.mjs';
 
 const clubs=[
@@ -123,4 +127,29 @@ test('standalone workflow uses only six fixed no-key GETs and no stored raw data
   assert.match(flow,/m0-sportscore-day-research\.mjs[\s\S]*?tee -a "\$GITHUB_STEP_SUMMARY"/,
     'Only redacted aggregate JSON must reach the visible workflow log');
   assert.doesNotMatch(flow,/upload-artifact|schedule:|git push|api.?key|token:|supabase|npm install/i);
+});
+
+test('actual CLI stdout exposes redacted numeric fields but never synthetic provider rows',()=>{
+  const work=mkdtempSync(join(tmpdir(),'ff-m0-sportscore-'));
+  try{
+    const sourceFile=join(work,'source.csv');
+    const dayFile=join(work,'day.json');
+    const manifestFile=join(work,'manifest.json');
+    writeFileSync(sourceFile,csv,'utf8');
+    writeFileSync(dayFile,JSON.stringify({fixtures:[match]}),'utf8');
+    const manifest=days.map(date=>({
+      date,status:date==='2026-10-18'?200:503,file:dayFile
+    }));
+    writeFileSync(manifestFile,JSON.stringify(manifest),'utf8');
+    const output=execFileSync(process.execPath,[
+      fileURLToPath(new URL('../scripts/m0-sportscore-day-research.mjs',import.meta.url)),
+      sourceFile,manifestFile
+    ],{encoding:'utf8'});
+    const result=JSON.parse(output);
+    assert.equal(result.anyExplicitRplMatchesObserved,true);
+    assert.equal(result.days[1].pairsMatchingSource,1);
+    assert.equal(result.days[1].differentFinishedScores,0);
+    assert.equal(result.rawProviderDataStored,false);
+    assert.doesNotMatch(output,/Akhmat Grozny|Akron Tolyatti|match_id|home_score|source.csv|day.json/);
+  }finally{rmSync(work,{recursive:true,force:true})}
 });
