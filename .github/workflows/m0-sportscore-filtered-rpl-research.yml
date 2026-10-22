@@ -34,7 +34,7 @@ jobs:
           {
             echo '## One-shot SportScore league-filtered 2026/27 RPL research'
             echo
-            echo 'No authentication, fees, provider row publication, scheduled polling, or Supabase writes.'
+            echo 'No authentication, fees, provider row publication, scheduled polling, or database writes.'
             echo 'No provider slug guessed or trusted without a unique name/country match.'
             echo 'Source licensing: public SportScore attribution tier (site/general terms precedence still unresolved).'
             echo
