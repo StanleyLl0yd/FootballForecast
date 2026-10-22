@@ -1,14 +1,23 @@
 # Real anonymous REST authorization proof (M0)
 
-Status: **prepared, not executed against production**. Issue [#5](https://github.com/StanleyLl0yd/FootballForecast/issues/5) remains open until the live proof succeeds and an independently restorable offsite backup is verified.
+Status: **LIVE production REST proof PASS on 2026-10-22**; separate real backup/restore criterion still OPEN in issue [#5](https://github.com/StanleyLl0yd/FootballForecast/issues/5).
+
+## Verified production execution
+
+- GitHub Actions: [run #39763464499, job #119773072854](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39763464499/job/119773072854), manual `workflow_dispatch`, first attempt `completed/success`, 2026-10-22 10:29 UTC.
+- Exact protected `main` commit: `2d307fbf9159d063b3ee914c8cb65c64ec4a14a0`. GitHub exact-main checks 10/10 PASS, production Vercel READY on matching SHA at the time of review.
+- Against **real HTTPS Supabase PostgREST**, using an existing modern `FF_SUPABASE_PUBLISHABLE_KEY` Actions secret: public `ff_matches` GET **HTTP 200**, all three restricted GETs **HTTP 401**, all four deliberately non-mutating POST/PATCH/DELETE probes **HTTP 401**.
+- The committed harness requires **SQLSTATE `42501` inside each of the seven refusal JSON bodies**. A bare HTTP denial, missing/invalid REST object, or an error with different SQLSTATE would have failed. The log reports `publicRead=PASS` and `denied=7`. Value of the publishable key is neither logged nor copied here.
+- Scope is this one real anonymous publishable-key boundary on this date, **not proof of all possible routes, logged-in OAuth roles, independent backup recovery, source rights or any M1 authorization**. The real production data was not modified by this test.
+
 
 The additional read-only catalog attestation `database/tests/0007_live_public_surface.sql` verifies that schema `public` contains **exactly the nine reviewed M0 application relations** (all ordinary tables) and **exactly the four expected trigger-returning functions**, with no unexpected view, foreign table, sequence, materialized view or newly callable RPC function. The live catalog was verified on Frankfurt PostgreSQL 17 without touching application rows. Disposable PostgreSQL CI additionally creates unreviewed objects inside aborted transactions and requires this guard to reject each type. This guards against future **unexpected schema exposure** but is not an HTTP test, cannot prove PostgREST's configuration independently, and does not authorize a new public table or M1 migration. Any intentional schema expansion must undergo explicit review and update this exact allowlist alongside RLS/grant tests.
 
-## No-terminal execution
+## Re-run instructions (only if access rules change or re-attestation is needed)
 
 1. In the GitHub repository's **Settings → Secrets and variables → Actions**, create repository secret `FF_SUPABASE_PUBLISHABLE_KEY` using only the **enabled modern publishable** key for the existing Frankfurt project, obtained directly in the [Supabase project API Keys page](https://supabase.com/dashboard/project/upulkesaiwnwfagjgteh/settings/api-keys). The value is a public-facing *publishable* key, not a service-role, secret or database password. Never put the key in a GitHub issue, pull request, code commit, screenshot or chat message.
 2. After the reviewed PR is merged into `main`, open **GitHub → Actions → M0 Live REST Denial Proof → Run workflow**, select `main`. Nothing runs automatically or on a pull request.
-3. Confirm the workflow reports 1 real anonymous `GET` returning HTTP 200 and seven **real REST denials** with PostgreSQL SQLSTATE `42501`, typically HTTP 401/403. Record the workflow run URL and exact `main` commit in issue #5.
+3. Confirm a new workflow reports 1 real anonymous `GET` returning HTTP 200 and seven **real REST denials** with PostgreSQL SQLSTATE `42501`, typically HTTP 401/403. Record the workflow run URL and exact `main` commit in issue #5.
 4. A failure is actionable: investigate exact response classifications without changing RLS, widening grants, installing a service-role key or disabling the expected-denial assertions. Repeat only after reviewing the cause.
 
 The request origin is pinned in code to `https://upulkesaiwnwfagjgteh.supabase.co`. No public user login is required, and the script never reads or logs the key. All requests have a 10-second timeout and refuse redirects.

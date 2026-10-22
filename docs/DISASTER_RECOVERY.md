@@ -10,7 +10,7 @@ This proves a **cryptographically verified encrypted archive roundtrip and clean
 
 ## Real REST role-refusal proof
 
-The independent, **manually dispatched** public-key REST test is specified in [M0 REST Denial Proof](M0_REST_DENIAL_PROOF.md). It uses one allowed read and seven safe denied probes without inserting production data. Passing disposable PostgreSQL RLS tests is insufficient for the HTTP acceptance gate. This test is independent of the backup/restore gate below; neither proves the other.
+The independent, **manually dispatched** public-key REST test was actually **executed on 2026-10-22 and PASSED** on exact production `2d307fbf9159d063b3ee914c8cb65c64ec4a14a0`: [GitHub Actions run #39763464499/job #119773072854](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39763464499/job/119773072854). One real anonymous read returned HTTP 200, and all seven unauthorized requests returned HTTP 401 with tested PostgreSQL SQLSTATE `42501`; no live data modification. See [M0 REST Denial Proof](M0_REST_DENIAL_PROOF.md). **This is not a database backup or restore**: the independent offsite encrypted real-data recovery gate below is still entirely unproven.
 
 ## Production backup acceptance still required
 
