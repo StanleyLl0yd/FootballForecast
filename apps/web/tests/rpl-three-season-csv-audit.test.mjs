@@ -4,7 +4,7 @@ import {parseBoundedCsv,summarizeFootbolnoRplCsv} from '../lib/source-preview-co
 import {readResponseTextBounded} from '../lib/limited-response.mjs';
 
 const HEADER=['match_id','league_id','season','date_utc','status',
-  'home_id','away_id','home_goals','away_goals','home','away'];
+  'home_id','away_id','home_goals','away_goals','home','away','time_confirmed'];
 const toCsv=rows=>[HEADER,...rows].map(r=>r.map(x=>{
   const s=String(x);
   return /[",\r\n]/.test(s)?'"'+s.replaceAll('"','""')+'"':s;
@@ -18,7 +18,7 @@ const createRows=(season,{finished=240,score=[2,1]}={})=>{
     out.push([season+'-'+i+'-'+j,235,season,'2026-10-01T13:00:00Z',
       complete?'finished':'scheduled',i+1,j+1,
       complete?score[0]:'',complete?score[1]:'',
-      'Club "A", test', 'Club B']);
+      'Club "A", test', 'Club B',1]);
   }
   return out;
 };
@@ -43,8 +43,31 @@ test('Footbolno RPL scope: 240 directed pairs, 3 seasons, temporary counts only'
   ]);
   for(const key of ['recordRevisionTimestampsAvailable','originalMatchRightsVerified',
     'sourceMatchAccuracyVerified','modelTrainingApproved'])assert.equal(a[key],false);
-  assert.doesNotMatch(JSON.stringify(a),/Club "A"|Club B|match_id/);
+  assert.ok(a.upcomingFixtures.length<=8);
+  assert.doesNotMatch(JSON.stringify(a),/match_id|home_id|away_id/);
 });
+test('upcoming 2026/27 fixtures are opt-in, capped, sorted, and never invent confirmed times',()=>{
+  const rows=createRows('2026/2027',{finished:0});
+  rows[1][11]='0'; // A date without a confirmed kickoff time
+  rows[2][3]='2026-09-01T08:00:00Z'; // Past completed? still labeled scheduled: do not display
+  const summary=summarizeFootbolnoRplCsv(toCsv(rows),'2026-10-01T10:00:00Z');
+  assert.equal(summary.upcomingFixtures.length,8);
+  assert.ok(summary.upcomingFixtures.every(f=>
+    f.kickoffUtc>='2026-10-01T00:00:00Z'));
+  assert.ok(summary.upcomingFixtures.some(f=>!f.timeConfirmed));
+  for(const f of summary.upcomingFixtures){
+    assert.ok(f.home.length<=80&&f.away.length<=80);
+    assert.ok(!Object.hasOwn(f,'match_id'));
+    assert.deepEqual(Object.keys(f).sort(),
+      ['away','home','kickoffUtc','timeConfirmed']);
+  }
+  const after=summarizeFootbolnoRplCsv(toCsv(rows),'2026-10-02T00:00:00Z');
+  assert.equal(after.upcomingFixtures.length,0);
+  rows[0][3]='nonsense';
+  const missing=summarizeFootbolnoRplCsv(toCsv(rows),'2026-09-30T00:00:00Z');
+  assert.ok(!missing.upcomingFixtures.some(f=>f.kickoffUtc.includes('nonsense')));
+});
+
 test('CSV strict syntax: quoted commas and newline are allowed, duplicate headers and broken quoting fail',()=>{
   const rows=createRows('2024/2025').slice(0,1);
   rows[0][9]='a,"b"\r\nc';
