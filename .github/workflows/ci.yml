@@ -88,7 +88,7 @@ jobs:
       - name: Test offline cross-provider score, status, venue and temporal accuracy logic
         run: node --check scripts/m0-multi-source-quality.mjs && node --check scripts/m0-multi-source-core.mjs && node --test tests/m0-multi-source-quality.test.mjs tests/m0-source-core-parity.test.mjs
       - name: Validate historical fixture and score-annotation diagnostics without provider data
-        run: node --check scripts/m0-scoreline-histogram-crosscheck.mjs && node --test tests/m0-fixture-structure.test.mjs tests/m0-source-quality.test.mjs tests/m0-fixture-reconcile.test.mjs tests/m0-openfootball-evidence.test.mjs tests/m0-scoreline-histogram-crosscheck.test.mjs
+        run: node --check scripts/m0-scoreline-histogram-crosscheck.mjs && node --test tests/m0-fixture-structure.test.mjs tests/m0-source-quality.test.mjs tests/m0-fixture-reconcile.test.mjs tests/m0-openfootball-evidence.test.mjs tests/m0-scoreline-histogram-crosscheck.test.mjs tests/m0-cross-source-fixture-reconcile.test.mjs
       - name: Validate minimum RPL scope against pinned evidence
         run: node --test tests/m0-minimal-rpl-scope.test.mjs
       - name: Validate pinned research-only Footbolno coverage quarantine matrix
