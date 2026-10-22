@@ -7,7 +7,9 @@ on:
       - 'scripts/m0-footbolno-csv-aggregate.mjs'
       - 'scripts/m0-scoreline-histogram-crosscheck.mjs'
       - 'scripts/m0-cross-source-fixture-reconcile.mjs'
+      - 'scripts/m0_wikipedia_rpl_holdout_matrix.py'
       - 'scripts/m0-fixture-reconcile.mjs'
+      - 'tests/test_m0_wikipedia_rpl_holdout_matrix.py'
       - 'scripts/m0-fixture-structure.mjs'
       - '.github/workflows/m0-footbolno-csv-research.yml'
 permissions: {contents: read}
@@ -27,7 +29,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned
         with: {node-version: '22'}
       - name: Enforce bounded aggregate-only CSV parser
-        run: node --check scripts/m0-footbolno-csv-aggregate.mjs && node --check scripts/m0-scoreline-histogram-crosscheck.mjs && node --check scripts/m0-cross-source-fixture-reconcile.mjs && node --test tests/m0-footbolno-csv-aggregate.test.mjs tests/m0-scoreline-histogram-crosscheck.test.mjs tests/m0-cross-source-fixture-reconcile.test.mjs
+        run: node --check scripts/m0-footbolno-csv-aggregate.mjs && node --check scripts/m0-scoreline-histogram-crosscheck.mjs && node --check scripts/m0-cross-source-fixture-reconcile.mjs && node --test tests/m0-footbolno-csv-aggregate.test.mjs tests/m0-scoreline-histogram-crosscheck.test.mjs tests/m0-cross-source-fixture-reconcile.test.mjs && python3 -m unittest discover -s tests -p test_m0_wikipedia_rpl_holdout_matrix.py
       - name: Download ONE publicly advertised RPL CSV to disposable private runner memory
         shell: bash
         run: |
@@ -51,6 +53,15 @@ jobs:
             --output "$work/openfootball.txt" "$reference_url"
           test -s "$work/openfootball.txt"
           test "$(wc -c < "$work/openfootball.txt")" -le 200000
+          # One immutable Wikimedia MediaWiki REST revision, publicly licensed CC BY-SA.
+          wiki_url='https://en.wikipedia.org/w/rest.php/v1/revision/1359156694/html'
+          curl --fail --silent --show-error \
+            --proto '=https' --max-redirs 0 \
+            --header 'User-Agent: FootballForecastM0Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+            --connect-timeout 10 --max-time 45 --max-filesize 2000000 \
+            --output "$work/wikipedia-2025.html" "$wiki_url"
+          test -s "$work/wikipedia-2025.html"
+          test "$(wc -c < "$work/wikipedia-2025.html")" -le 2000000
           hash="$(sha256sum "$work/rpl.csv" | cut -d' ' -f1)"
           {
             echo '## M0 research-only free RPL source coverage observation'
@@ -95,4 +106,18 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           node scripts/m0-cross-source-fixture-reconcile.mjs \
             "$work/rpl.csv" "$work/openfootball.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo
+            echo '### Wikimedia CC BY-SA 2025/26 sealed-holdout score-matrix check'
+            echo
+            echo 'Published Wikimedia revision 1359156694: https://en.wikipedia.org/w/index.php?oldid=1359156694'
+            echo 'Licensing: CC BY-SA 4.0; published Footbolno CC BY 4.0 with publisher link above.'
+            echo 'Matrix cells and source records stay disposable; no full article/row export or trained model.'
+            echo 'The 2025/26 test labels remain sealed, even if the source score matrices agree.'
+            echo
+            echo '~~~json'
+          } >> "$GITHUB_STEP_SUMMARY"
+          python3 scripts/m0_wikipedia_rpl_holdout_matrix.py \
+            "$work/rpl.csv" "$work/wikipedia-2025.html" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '~~~' >> "$GITHUB_STEP_SUMMARY"
