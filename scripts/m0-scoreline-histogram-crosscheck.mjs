@@ -89,7 +89,7 @@ function main(){
     new URL('../docs/M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json',import.meta.url)));
   const pinned=evidence.seasons.find(s=>s.season==='2024/25');
   const actualBlob=createHash('sha1')
-    .update('blob '+refRaw.length+'\\0').update(refRaw).digest('hex');
+    .update('blob '+refRaw.length+'\0').update(refRaw).digest('hex');
   if(!pinned||evidence.sourceCommit!=='63df627f3c87ce71708f016522ea236cf74332c3'||
     pinned.gitBlobSHA1!==actualBlob)
     throw new Error('OpenFootball published reference SHA/commit mismatch');
