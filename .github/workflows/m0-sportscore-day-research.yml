@@ -1,0 +1,84 @@
+name: M0 SportScore Six-Day Anonymous Coverage Research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/m0-sportscore-day-research.mjs'
+      - 'tests/m0-sportscore-day-research.test.mjs'
+      - '.github/workflows/m0-sportscore-day-research.yml'
+permissions: {contents: read}
+concurrency:
+  group: m0-sportscore-anonymous-six-day-study
+  cancel-in-progress: false
+jobs:
+  ephemeral-discovery:
+    # One deliberately bounded coverage research, never a season crawler.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned
+        with: {node-version: '22'}
+      - name: Run safety and schema regression
+        run: node --check scripts/m0-sportscore-day-research.mjs && node --test tests/m0-sportscore-day-research.test.mjs
+      - name: Probe exactly six UTC dates with one anonymous public GET per day
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          # Footbolno is a published $0 CSV; only transient local comparison.
+          curl --fail --silent --show-error \
+            --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 35 --max-filesize 2097152 \
+            --output "$work/footbolno.csv" \
+            'https://footbolno.ru/data/league/235-matches.csv'
+          test -s "$work/footbolno.csv"
+          for day in 2026-10-17 2026-10-18 2026-10-19 2026-10-23 2026-10-24 2026-10-25; do
+            # SportScore public REST v1: documented anonymous, day-scoped endpoint.
+            # No league slug assumption; unclassified rows stay inconclusive.
+            status="$(curl --silent --show-error --fail \
+              --proto '=https' --max-redirs 0 \
+              --connect-timeout 10 --max-time 18 --max-filesize 1000000 \
+              --header 'Accept: application/json' \
+              --header 'User-Agent: FootballForecastM0Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+              --output "$work/$day.json" \
+              --write-out '%{http_code}' \
+              "https://sportscore.com/api/v1/fixtures/?sport=football&date=$day&limit=200" \
+              2>/dev/null || true)"
+            if [[ ! "$status" =~ ^[0-9]{3}$ ]]; then status=0; fi
+            printf '%s %s\n' "$day" "$status" >> "$work/statuses"
+            sleep 1
+          done
+          python3 - "$work" <<'PY'
+          import json,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          rows=[]
+          for line in (root/'statuses').read_text().splitlines():
+              date, status=line.split()
+              rows.append({'date':date,'status':int(status),
+                           'file':str(root/(date+'.json'))})
+          (root/'manifest.json').write_text(json.dumps(rows))
+          PY
+          {
+            echo '## M0 SportScore six-day source discovery'
+            echo
+            echo 'This is one anonymous, non-bulk experiment, not a production integration.'
+            echo 'SportScore REST v1 is documented as anonymous and date-scoped;'
+            echo 'API-specific terms and general-site restrictions are not proven to override one another.'
+            echo 'Unrecognized response shape and absent results mean INCONCLUSIVE, not zero RPL matches.'
+            echo 'Data is never copied to the repository or published as provider match rows.'
+            echo 'Original provider files are wiped on exit; no scheduled polling or model training.'
+            echo
+            echo '<a href="https://sportscore.com/" rel="dofollow" title="Sports data by SportScore">Powered by SportScore</a>'
+            echo 'Footbolno source attribution: https://footbolno.ru/otkrytye-dannye'
+            echo
+            echo '~~~json'
+          } >> "$GITHUB_STEP_SUMMARY"
+          node scripts/m0-sportscore-day-research.mjs \
+            "$work/footbolno.csv" "$work/manifest.json" >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
