@@ -131,6 +131,42 @@ async function firefox() {
       assert.equal(typeof source,'string');
       expectPage(source,path);
     }
+    // Exercise the actual React submit/hydration path, not just static SSR.
+    // A broken/inaccessible JS bundle leaves the native GET form available,
+    // but it must NOT silently pass the interactive 3-probe browser test.
+    await request(`/session/${id}/url`,{url:origin+'/connectivity'},'POST');
+    const initialConnectivity=await request(`/session/${id}/source`);
+    if(initialConnectivity.includes('data-connectivity-ready=')){
+      let hydrated=false;
+      for(let attempt=0;attempt<40;attempt++){
+        const html=await request(`/session/${id}/source`);
+        if(html.includes('data-connectivity-ready="true"')){hydrated=true;break}
+        await delay(250);
+      }
+      assert.ok(hydrated,'Firefox connectivity client never hydrated; submit would fall back to static HTML');
+      const found=await request(`/session/${id}/element`,{
+        using:'css selector',
+        value:'form[action="/m0-carrier-check.html"] button[type="submit"]'
+      },'POST');
+      const button=found?.['element-6066-11e4-a52e-4f735466cecf'];
+      assert.ok(button,'Firefox connectivity submit button must exist');
+      await request(`/session/${id}/element/${button}/click`,{},'POST');
+      let rendered=false;
+      for(let attempt=0;attempt<75;attempt++){
+        const html=await request(`/session/${id}/source`);
+        if(html.includes('>Результаты</h2>')&&
+          html.includes('Публичный API сайта')&&
+          html.includes('Страница аналитики')&&
+          html.includes('Архив прогнозов')){
+          rendered=true;break;
+        }
+        await delay(300);
+      }
+      assert.ok(rendered,'Firefox connectivity click must render all 3 pass/fail probes even during network failures');
+      console.log('PASS Firefox connectivity button hydrated, clicked, produced all 3 probe results');
+    }else{
+      console.log('SKIP Firefox connectivity button: deployed production predates progressive-fallback implementation');
+    }
     await request(`/session/${id}/url`,{url:origin+'/dashboard'},'POST');
     const encoded=await request(`/session/${id}/screenshot`);
     const png=Buffer.from(encoded,'base64');
