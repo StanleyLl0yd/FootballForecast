@@ -46,6 +46,10 @@ test('only manual direct CORS requests to bounded official published API URLs; n
  assert.match(s,/const inspectCsv=async\(\)=>/);
  assert.match(s,/onClick=\{inspectCsv\}/);
  assert.match(s,/235-matches\.csv/);
+ assert.match(s,/csvAudit\.upcomingFixtures\.map/);
+ assert.match(s,/timeZone:'Europe\/Moscow'/);
+ assert.match(s,/время не подтверждено/);
+ assert.match(s,/Источник данных/);
  assert.match(s,/title="Sports data by SportScore">Powered by SportScore/);
  assert.match(s,/footbolno\.ru\/otkrytye-dannye/);
  assert.doesNotMatch(s,/useEffect\(|setInterval\(|localStorage|sessionStorage|createClient\(|supabase|POST|PUT|DELETE|Authorization|apiKey|service_role/);
