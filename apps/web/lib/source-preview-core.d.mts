@@ -8,11 +8,16 @@ export type ProviderPreview={
 export declare function summarizeFootbolno(payload:unknown):ProviderPreview;
 export declare function summarizeSportScore(payload:unknown):ProviderPreview;
 
+export type HistoricalAggregateDrift={
+ baselineSHA256:string;referenceDate:string;
+ homeDelta:number;awayDelta:number;finishedDelta:number;changed:boolean;
+};
 export type RplSeasonSummary={
  season:string;matches:number;finished:number;scheduled:number;live:number;cancelled:number;
  homeGoals:number;awayGoals:number;duplicates:number;duplicateMatchIds:number;
  missingTeams:number;invalidScores:number;invalidDates:number;invalidTimeFlags:number;
  pastScheduled:number;structuralCandidate:boolean;
+ historicalAggregateDrift:HistoricalAggregateDrift|null;
 };
 export type UpcomingRplFixture={
  home:string;away:string;kickoffUtc:string;timeConfirmed:boolean;
