@@ -114,11 +114,12 @@ export function OpenProviderPreview(){
             <caption>Структурная проверка результатов Footbolno, не официальная приёмка</caption>
             <thead><tr><th scope="col">Сезон</th><th scope="col">Всего</th>
               <th scope="col">Сыграно</th><th scope="col">Ожидают</th>
-              <th scope="col">Голы</th><th scope="col">Структура</th>
+              <th scope="col">Клубы / пары</th><th scope="col">Голы</th><th scope="col">Структура</th>
               <th scope="col">Контрольный снимок</th></tr></thead>
             <tbody>{csvAudit.seasonSummaries.map(s=><tr key={s.season}>
               <th scope="row">{s.season}</th><td>{s.matches}</td>
               <td>{s.finished}</td><td>{s.scheduled}</td>
+              <td>{s.distinctClubCount}/16 · {s.distinctDirectedPairs}/240</td>
               <td>{s.homeGoals+s.awayGoals}</td>
               <td>{s.structuralCandidate?'Без структурных ошибок':'Требует проверки'}</td>
               <td>{s.historicalAggregateDrift
@@ -153,7 +154,8 @@ export function OpenProviderPreview(){
             и переносов. На каждый просмотр используется тот же одиночный CSV-запрос.</p>
           <p>Проблемы структуры, дат и прошлых запланированных матчей: {csvAudit.seasonSummaries.reduce(
             (n,s)=>n+s.duplicates+s.duplicateMatchIds+s.missingTeams+s.invalidScores+
-                  s.invalidDates+s.invalidTimeFlags+s.pastScheduled,0)}.
+                  s.invalidDates+s.invalidTimeFlags+s.pastScheduled+
+                  Math.abs(s.distinctClubCount-16)+(240-s.distinctDirectedPairs),0)}.
             Технические результаты, сторонние исправления и историческая дата публикации
             каждого матча всё ещё требуют отдельной сверки.</p>
         </div>:null}
