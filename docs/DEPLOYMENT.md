@@ -5,7 +5,7 @@
 - Repository: `StanleyLl0yd/FootballForecast`, protected `main`, six required exact-head checks.
 - Supabase: **Free** project `FootballForecast`, Frankfurt `eu-central-1`, PostgreSQL 17. Migration history: `foundation_m0`, `public_read_m0`, `match_fk_indexes_m0`.
 - Vercel: **Hobby** project `footballforecast` connected to GitHub `main`, `apps/web` root, Next.js, npm workspace install `npm ci`, server function region `fra1` (Frankfurt).
-- Production: https://footballforecast.vercel.app. Anonymous viewing enabled; Vercel Authentication disabled for production. A GitHub-hosted HTTP canary has verified health, dashboard, matches, archive, data and admin denial; no claim of Russian network reachability.
+- Production: https://footballforecast.vercel.app. Anonymous viewing enabled; Vercel Authentication disabled for production. A GitHub-hosted HTTP canary verified health, dashboard, matches, archive, data and admin denial; a separate **real Russian wired/home browser no-VPN** report on 2026-10-22 confirmed health/dashboard/archive all HTTP 200. This establishes exactly **one** wired network, not all Russian ISPs or mobile reachability.
 - Deployment env: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` configured on Vercel. These are public/read-only client credentials; never use a service-role key in any browser-facing environment.
 
 ## Reconstructing the M0 application schema and non-secret deployment configuration
@@ -41,7 +41,7 @@ The local `smoke:auth` checks fail-closed optional administrator OAuth and publi
 
 The public `/connectivity` page offers a **user-initiated, no-registration GUI** for three fixed *same-origin GET-only* probes: the Vercel health endpoint, the public dashboard and the forecast archive. The last two routes verify whether the **Next.js server can read the anonymous Supabase API**. The browser sends no API keys and does not make a cross-origin request to Supabase, consistent with the server-rendered application architecture. The client displays response statuses and local elapsed time and can copy a short diagnostic report, but it does not send that report or device identifiers to FootballForecast. Normal infrastructure request logs still apply.
 
-To investigate access from Russia, open the **actual site** in a Russian residential or mobile operator network **without VPN**, run the test and preserve the copied report with the operator/city supplied separately by the tester if they consent. Compare at least two independent carriers. A successful GitHub runner, European browser, datacenter proxy, VPN or even one Russian carrier does **not** satisfy cross-operator availability acceptance. If the website itself cannot load, record that as a failed reachability observation: the self-check cannot bootstrap an inaccessible website.
+**M0 scope updated by owner 2026-10-22:** actual website access and all three `/connectivity` HTTP checks **PASS on one Russian wired/home ISP without VPN** are sufficient for the current read-only prototype. The owner provided a real 3/3 PASS report at `2026-10-22T11:33:03.282Z` (health 130 ms, dashboard 368 ms, archive 333 ms; all HTTP 200). **This is not cross-provider or nationwide availability.** Tests from St Petersburg T-Mobile (primarily on T2) and MegaFon mobile without VPN did not load the site; they are recorded as **FAIL**, accepted as a known **non-gating** M0 limitation. The earlier requirement to test and pass on two unrelated operators is superseded for **M0 only**. Do not attribute the mobile failures to white lists, DNS, Vercel blocking or specific network faults without direct evidence. Future mobile/other-carrier coverage may be re-evaluated in issue #6 without forced retesting, paid host changes or blocking M1.
 
 ### Autonomous carrier fallback when the main site cannot load
 
@@ -49,7 +49,7 @@ The public static [`m0-carrier-check.html`](../apps/web/public/m0-carrier-check.
 
 The local tester may optionally enter an operator, city and network type, and attest that VPN/proxy is off. **These are self-reported**, not verified or transmitted; the report is generated and copied locally only. An HTTP 200 with a validated health JSON counts as **health endpoint reachability**, not full HTML rendering, Supabase connectivity or complete no-VPN proof. Network failure and CORS failure may be indistinguishable; raw browser error details, automatic IP/geolocation and tokens are never included.
 
-Capture two independent Russian residential/mobile providers without VPN using both this offline fallback (including FAILs) and, where reachable, full `/connectivity` results and browser screenshots. If the public site cannot load at all, preserve that failure even if an alternate GitHub or VPN connection works. Do not close #6 based solely on offline health PASS, a single provider or CI. No automatic external storage or receipt of reports is implemented.
+For further voluntary network diagnostics, preserve negative observations even if GitHub, VPN or another access network succeeds. **The optional two-carrier investigation is no longer an M0 gate under the owner's 2026-10-22 decision**; #6 may stay OPEN as non-gating mobile follow-up. An offline health PASS alone does not prove HTML/browser reachability; one actual owner browser/wired 3/3 report already supplies the revised M0 evidence. No automatic external storage or receipt of reports is implemented.
 
 ## Runtime configuration and future administration
 
@@ -59,4 +59,4 @@ Vercel Hobby supports personal non-commercial development; commercial operation 
 
 ## Current limitations
 
-The live database is empty (zero imported RPL matches and forecasts); no calibrated model or legal source feed is connected. GitHub Actions browser diagnostics have run Chrome, Firefox, Edge and Safari successfully, but they do not prove end-user connectivity from Russian residential/mobile networks or all client browser combinations. See `ROADMAP.md`, `docs/KNOWN_LIMITATIONS.md` and tracked GitHub issues for unfinished acceptance criteria.
+The live database is empty (zero imported RPL matches and forecasts); no calibrated model or legal source feed is connected. GitHub Actions browser diagnostics have run Chrome, Firefox, Edge and Safari successfully; the **separate actual wired/home Russian no-VPN 3/3 observation PASS** does not generalize to other residential/mobile networks, and T-Mobile/MegaFon mobile failure remains documented. See `ROADMAP.md`, `docs/KNOWN_LIMITATIONS.md` and tracked GitHub issues for unfinished acceptance criteria.
