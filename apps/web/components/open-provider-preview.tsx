@@ -114,12 +114,14 @@ export function OpenProviderPreview(){
             <caption>Структурная проверка результатов Footbolno, не официальная приёмка</caption>
             <thead><tr><th scope="col">Сезон</th><th scope="col">Всего</th>
               <th scope="col">Сыграно</th><th scope="col">Ожидают</th>
-              <th scope="col">Голы</th><th scope="col">Структура</th>
+              <th scope="col">Голы</th><th scope="col">Клубов</th>
+              <th scope="col">Сетка</th><th scope="col">Структура</th>
               <th scope="col">Контрольный снимок</th></tr></thead>
             <tbody>{csvAudit.seasonSummaries.map(s=><tr key={s.season}>
               <th scope="row">{s.season}</th><td>{s.matches}</td>
               <td>{s.finished}</td><td>{s.scheduled}</td>
-              <td>{s.homeGoals+s.awayGoals}</td>
+              <td>{s.homeGoals+s.awayGoals}</td><td>{s.distinctClubCount}</td>
+              <td>{s.completeDirectedFixtureGrid?'16 × 15':'Неполная / неверная'}</td>
               <td>{s.structuralCandidate?'Без структурных ошибок':'Требует проверки'}</td>
               <td>{s.historicalAggregateDrift
                 ?s.historicalAggregateDrift.changed
