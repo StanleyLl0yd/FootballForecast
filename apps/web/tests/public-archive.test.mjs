@@ -61,6 +61,39 @@ test('invalid, late or out-of-range published probabilities fail closed',async()
     assert.deepEqual(result.forecasts,[]);
   }
 });
+test('archive rejects timezone-free, ambiguous and impossible calendar timestamps',async()=>{
+  const malformed=[
+    '2026-10-17', '2026-10-17T12:00:00',
+    'Sat, 17 Oct 2026 12:00:00 GMT',
+    '2026-02-30T12:00:00Z',
+    '2026-13-17T12:00:00Z',
+    '2026-10-17T25:00:00Z',
+    '2026-10-17T12:00:00+14:30',
+    '2026-10-17T12:00:00.1234567Z'
+  ];
+  for(const when of malformed){
+    for(const patch of [
+      {predicted_at:when}, {as_of_at:when},
+      {match:{...sample.match,kickoff_at:when}}
+    ]){
+      const result=await readPublicArchive(api({rows:[{...sample,...patch}]}).fetchImpl,env);
+      assert.equal(result.state,'unavailable','accepted invalid timestamp '+when);
+      assert.deepEqual(result.forecasts,[]);
+    }
+  }
+});
+test('unambiguous UTC offsets and PostgreSQL microseconds preserve chronological verification',async()=>{
+  const row={...sample,
+    as_of_at:'2026-10-17T14:50:00+03:00',
+    predicted_at:'2026-10-17T15:00:00.000000+03:00',
+    match:{...sample.match,kickoff_at:'2026-10-18T15:00:00+03:00'}};
+  const allowed=await readPublicArchive(api({rows:[row]}).fetchImpl,env);
+  assert.equal(allowed.state,'ready');
+  assert.equal(allowed.forecasts[0].asOfAt,row.as_of_at);
+  assert.equal(allowed.forecasts[0].kickoffAt,row.match.kickoff_at);
+  const late={...row,as_of_at:'2026-10-18T16:00:00+03:00'};
+  assert.equal((await readPublicArchive(api({rows:[late]}).fetchImpl,env)).state,'unavailable');
+});
 test('vendor failure and malformed settings must not look like an empty archive',async()=>{
   assert.equal((await readPublicArchive(api({fail:true}).fetchImpl,env)).state,'unavailable');
   assert.equal((await readPublicArchive(()=>{throw Error('must not fetch');},
