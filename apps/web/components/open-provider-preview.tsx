@@ -1,50 +1,58 @@
 'use client';
 
 import {useRef,useState} from 'react';
-import {summarizeFootbolno,summarizeSportScore,type ProviderPreview} from '@/lib/source-preview-core.mjs';
+import {
+  summarizeFootbolno,summarizeSportScore,summarizeFootbolnoRplCsv,
+  type ProviderPreview,type RplCsvAudit
+} from '@/lib/source-preview-core.mjs';
+import {readResponseTextBounded} from '@/lib/limited-response.mjs';
 
-// Only publisher-documented public GET endpoints. No proxy, key or database.
+// Publisher-documented public endpoints. No proxy, keys or server storage.
 const endpoints={
   footbolno:'https://footbolno.ru/data/league/235.json',
-  sportscore:'https://sportscore.com/api/widget/matches/?sport=football&limit=10'
+  sportscore:'https://sportscore.com/api/widget/matches/?sport=football&limit=10',
+  footbolnoCsv:'https://footbolno.ru/data/league/235-matches.csv'
 } as const;
 type Provider=keyof typeof endpoints;
-const maxResponseCharacters=512*1024;
+const maxJsonBytes=512*1024;
+const maxCsvBytes=2_000_000;
 const cooldownMs=60000;
+const requestOptions=(accept:string)=>({
+  method:'GET',credentials:'omit' as const,cache:'no-store' as const,
+  referrerPolicy:'no-referrer' as const,redirect:'error' as const,
+  headers:{Accept:accept},
+  signal:AbortSignal.timeout(10000)
+});
 
 export function OpenProviderPreview(){
-  const [reports,setReports]=useState<Partial<Record<Provider,ProviderPreview>>>({});
+  const [reports,setReports]=useState<Partial<Record<'footbolno'|'sportscore',ProviderPreview>>>({});
+  const [csvAudit,setCsvAudit]=useState<RplCsvAudit|null>(null);
   const [errors,setErrors]=useState<Partial<Record<Provider,string>>>({});
   const [loading,setLoading]=useState<Provider|null>(null);
   const lastRequests=useRef<Partial<Record<Provider,number>>>({});
 
-  const inspect=async(provider:Provider)=>{
-    if(loading)return;
+  const canRequest=(provider:Provider)=>{
+    if(loading)return false;
     const now=Date.now();
     if(now-(lastRequests.current[provider]??0)<cooldownMs){
       setErrors(old=>({...old,[provider]:'Повторная проверка доступна через минуту.'}));
-      return;
+      return false;
     }
     lastRequests.current[provider]=now;
     setLoading(provider);
     setErrors(old=>({...old,[provider]:''}));
+    return true;
+  };
+
+  const inspect=async(provider:'footbolno'|'sportscore')=>{
+    if(!canRequest(provider))return;
     setReports(old=>({...old,[provider]:undefined}));
     try{
-      const response=await fetch(endpoints[provider],{
-        method:'GET',credentials:'omit',cache:'no-store',
-        referrerPolicy:'no-referrer',redirect:'error',
-        headers:{Accept:'application/json'},
-        signal:AbortSignal.timeout(10000)
-      });
-      if(!response.ok||response.status!==200)throw new Error('Provider unavailable');
+      const response=await fetch(endpoints[provider],requestOptions('application/json'));
       const type=response.headers.get('content-type')??'';
-      if(!/application\/json|\+json/i.test(type))throw new Error('Unexpected content type');
-      const declaredLength=Number(response.headers.get('content-length'));
-      if(declaredLength>maxResponseCharacters)throw new Error('Payload too large');
-      const text=await response.text();
-      if(text.length===0||text.length>maxResponseCharacters)
-        throw new Error('Payload size invalid');
-      const decoded:unknown=JSON.parse(text);
+      if(!/application\/json|\+json/i.test(type))throw new Error('Unexpected JSON content type');
+      const payload=await readResponseTextBounded(response,maxJsonBytes);
+      const decoded:unknown=JSON.parse(payload);
       const report=provider==='footbolno'
         ?summarizeFootbolno(decoded)
         :summarizeSportScore(decoded);
@@ -52,38 +60,85 @@ export function OpenProviderPreview(){
     }catch{
       setErrors(old=>({...old,[provider]:
         'Источник недоступен или ответ не соответствует опубликованному формату. Импорт не выполнялся.'}));
-    }finally{
-      setLoading(null);
-    }
+    }finally{setLoading(null)}
+  };
+
+  const inspectCsv=async()=>{
+    if(!canRequest('footbolnoCsv'))return;
+    setCsvAudit(null);
+    try{
+      const response=await fetch(endpoints.footbolnoCsv,
+        requestOptions('text/csv,text/plain;q=0.9'));
+      const type=response.headers.get('content-type')??'';
+      if(!/text\/csv|text\/plain|application\/octet-stream/i.test(type))
+        throw new Error('Unexpected CSV content type');
+      const text=await readResponseTextBounded(response,maxCsvBytes);
+      setCsvAudit(summarizeFootbolnoRplCsv(text));
+    }catch{
+      setErrors(old=>({...old,footbolnoCsv:
+        'CSV недоступен или структура изменилась. Результаты не импортированы.'}));
+    }finally{setLoading(null)}
   };
 
   return <section className="panel historical-source-evidence">
     <h2>Проверка бесплатных источников по запросу</h2>
-    <p>Получение только после нажатия кнопки: запрос идёт непосредственно из браузера к открытым API,
-      без серверного посредника, ключей, аккаунта или записи в Supabase.
-      Ответ используется только для краткого просмотра и не сохраняется.</p>
+    <p>Запросы только после нажатия. Браузер обращается к опубликованным API напрямую,
+      без сервера-посредника, ключей и записи исходных данных в Supabase.
+      Результаты вычисляются в памяти этой вкладки, без постоянного хранения.</p>
     <div className="source-preview-grid">
       <div className="source-preview-item">
-        <h3>Footbolno: сводка РПЛ</h3>
-        <p>Открытая JSON-сводка турнира 235. Статистика опубликована поставщиком,
-          но проверка каждого матча, версий и первоисточников не завершена.</p>
-        <button type="button" className="source-lab-download" onClick={()=>inspect('footbolno')}
-          disabled={loading!==null}>Проверить сводку РПЛ</button>
-        {loading==='footbolno'?<p role="status">Загрузка открытой сводки…</p>:null}
+        <h3>Footbolno: РПЛ и три сезона</h3>
+        <p>Лицензия CC BY 4.0. Одна JSON-сводка либо один CSV турнира 235.
+          CSV анализируется локально: 2024/25, 2025/26 и 2026/27,
+          без сохранения отдельных матчей.</p>
+        <button type="button" className="source-lab-download"
+          onClick={()=>inspect('footbolno')} disabled={loading!==null}>
+          Проверить таблицу РПЛ
+        </button>
+        <button type="button" className="source-lab-download"
+          onClick={inspectCsv} disabled={loading!==null}>
+          Проверить три сезона по CSV
+        </button>
+        {loading==='footbolno'||loading==='footbolnoCsv'
+          ?<p role="status">Проверка опубликованных данных…</p>:null}
         {errors.footbolno?<p role="alert" className="source-lab-error">{errors.footbolno}</p>:null}
-        {reports.footbolno?<p role="status">Строк таблицы: {reports.footbolno.count}.
+        {errors.footbolnoCsv?<p role="alert" className="source-lab-error">{errors.footbolnoCsv}</p>:null}
+        {reports.footbolno?<p role="status">
+          Строк таблицы: {reports.footbolno.count}.
           Обновление по данным поставщика: {reports.footbolno.updated??'не указано'}.
-          Дата проверки в браузере не заменяет дату обновления источника.</p>:null}
+        </p>:null}
+        {csvAudit?<div role="status">
+          <p>Всего строк CSV в памяти: {csvAudit.publisherRows}.
+            Это свежая проверка браузера, а не достоверная дата обновления каждой записи.</p>
+          <table className="rpl-source-csv-table">
+            <caption>Структурная проверка результатов Footbolno, не официальная приёмка</caption>
+            <thead><tr><th scope="col">Сезон</th><th scope="col">Всего</th>
+              <th scope="col">Сыграно</th><th scope="col">Ожидают</th>
+              <th scope="col">Голы</th><th scope="col">Структура</th></tr></thead>
+            <tbody>{csvAudit.seasonSummaries.map(s=><tr key={s.season}>
+              <th scope="row">{s.season}</th><td>{s.matches}</td>
+              <td>{s.finished}</td><td>{s.scheduled}</td>
+              <td>{s.homeGoals+s.awayGoals}</td>
+              <td>{s.structuralCandidate?'Без структурных ошибок':'Требует проверки'}</td>
+            </tr>)}</tbody>
+          </table>
+          <p>Подозрительные повторы и ошибки: {csvAudit.seasonSummaries.reduce(
+            (n,s)=>n+s.duplicates+s.duplicateMatchIds+s.missingTeams+s.invalidScores,0)}.
+            Технические результаты, сторонние исправления и историческая дата публикации
+            каждого матча всё ещё требуют отдельной сверки.</p>
+        </div>:null}
         <p className="source-lab-note">Источник данных:
           {' '}<a href="https://footbolno.ru/otkrytye-dannye">Footbolno.ru (CC BY 4.0)</a>
         </p>
       </div>
       <div className="source-preview-item">
         <h3>SportScore: последние футбольные матчи</h3>
-        <p>Только 10 последних матчей из общей мировой футбольной ленты.
-          Отсутствие РПЛ в таком ответе не означает отсутствия РПЛ у провайдера.</p>
-        <button type="button" className="source-lab-download" onClick={()=>inspect('sportscore')}
-          disabled={loading!==null}>Проверить открытый API</button>
+        <p>Только 10 матчей из мировой футбольной ленты.
+          Это не полный календарь РПЛ и не база исторических сезонов.</p>
+        <button type="button" className="source-lab-download"
+          onClick={()=>inspect('sportscore')} disabled={loading!==null}>
+          Проверить открытый API
+        </button>
         {loading==='sportscore'?<p role="status">Загрузка публичной ленты…</p>:null}
         {errors.sportscore?<p role="alert" className="source-lab-error">{errors.sportscore}</p>:null}
         {reports.sportscore?<div role="status">
@@ -99,8 +154,9 @@ export function OpenProviderPreview(){
         </p>
       </div>
     </div>
-    <p className="source-lab-warning">Исследовательский просмотр, не прогноз и не производственный импорт.
-      Ни один результат не допускается к обучению без проверки счёта, условий использования
-      и отсутствия информации из будущего. Автообновления и фоновых запросов нет.</p>
+    <p className="source-lab-warning">Это исследовательская проверка опубликованных сведений, не прогноз
+      и не производственный импорт. Совпадение числа матчей и голов не подтверждает
+      права первоисточников, корректность всех результатов или отсутствие утечки будущей
+      информации в модель. Автообновления и фоновых запросов нет.</p>
   </section>;
 }
