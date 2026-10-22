@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import {runConnectivityChecks,formatConnectivityReport} from '../lib/connectivity.ts';
 
@@ -53,4 +54,18 @@ test('false HTTP 200 for an archive login page does not count as accessible',asy
   const fetchMock=async()=>new Response('<html>Login required</html>',{status:200});
   const result=await runConnectivityChecks(fetchMock);
   assert.deepEqual(result.map(x=>x.state),['failed','failed','failed']);
+});
+
+test('connectivity button has native static fallback when hydration/scripts fail',()=>{
+  const page=readFileSync(new URL('../app/(console)/connectivity/page.tsx',import.meta.url),'utf8');
+  assert.match(page,/<form method="get" action="\/m0-carrier-check\.html" onSubmit=\{submit\}>/);
+  assert.match(page,/<button type="submit" className="primary-action"/);
+  assert.match(page,/data-connectivity-ready=\{ready\?'true':'false'\}/);
+  assert.match(page,/event\.preventDefault\(\)/);
+  assert.match(page,/void run\(\)/);
+  assert.match(page,/role="status" aria-live="polite"/);
+  assert.match(page,/catch\{[\s\S]*?setError\(true\)/);
+  assert.match(page,/setBusy\(false\)/);
+  assert.match(page,/автономную проверку по ссылке ниже/);
+  assert.doesNotMatch(page,/type="button" className="primary-action" onClick=\{run\}/);
 });
