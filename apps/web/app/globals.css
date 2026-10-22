@@ -113,3 +113,10 @@
 .source-preview-item .source-lab-download{margin:9px 0}
 .source-preview-item .source-lab-note a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
 .source-preview-item .source-lab-note a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+.rpl-source-csv-table{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}
+.rpl-source-csv-table caption{text-align:left;color:var(--muted);margin-bottom:8px}
+.rpl-source-csv-table th,.rpl-source-csv-table td{border-bottom:1px solid var(--line);padding:8px 5px;text-align:left}
+.rpl-source-csv-table th{font-weight:600}
+.source-preview-item{overflow-wrap:anywhere}
+.source-preview-item .source-lab-download{margin-right:8px}
