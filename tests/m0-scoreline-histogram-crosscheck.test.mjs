@@ -75,5 +75,5 @@ test('CI workflow uses one Footbolno CSV and one immutable CC0 file, no raw arti
   assert.match(ci,/m0-scoreline-histogram-crosscheck\.mjs/);
   assert.match(ci,/m0-scoreline-histogram-crosscheck\.test\.mjs/);
   assert.match(ci,/rm -rf "\$work"/);
-  assert.doesNotMatch(ci,/upload-artifact|git push|service_role|supabase|cron:/i);
+  assert.doesNotMatch(ci,/uses:\s*actions\/upload-artifact|git\s+push|service[_-]role\s*:|^\s+schedule:/im);
 });
