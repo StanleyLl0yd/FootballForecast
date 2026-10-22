@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 2026-10-20. Milestone acceptance requires verification, not code presence.
+Updated 2026-10-22. Milestone acceptance requires verification, not code presence.
 
 ## M0 - Architecture & Web Foundation (OPEN)
 - [x] Research preliminary RPL data source coverage and terms; candidates NOT approved.
@@ -19,7 +19,7 @@ Updated 2026-10-20. Milestone acceptance requires verification, not code presenc
 - [x] Verify Safari native WebDriver on hosted macOS, plus Firefox/Edge and Chrome in automated cross-browser diagnostics.
 - [x] Restore synthetic PostgreSQL 17 schema/data into a **separate** PostgreSQL 17 container on the same CI runner, with SHA-256 agreement and RLS/trigger verification.
 - [ ] Prove actual Free-project encrypted offsite backup and independent recovery; synthetic CI restoration does not count.
-- [ ] Execute the manually dispatched real publishable-key REST refusal proof; local SQL-denial and mock HTTP tests do not count. Optional OAuth E2E remains deferred until enabled.
+- [x] **2026-10-22 LIVE PASS:** manually dispatched [real publishable-key REST refusal proof](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39763464499/job/119773072854) on exact-main `2d307fbf9159d063b3ee914c8cb65c64ec4a14a0`: 1 allowed GET HTTP 200, 7 SQLSTATE 42501-denied HTTP 401 operations. Local mocks alone do not count. Optional OAuth E2E remains deferred until enabled.
 - [x] Confirm Firefox and Edge headless cross-browser diagnostics on Ubuntu 24.04: PASS on public dashboard, denied admin and mobile screenshots (PR #35).
 - [x] Run unconfigured Next.js browser smoke in real headless Chrome on CI.
 - [x] Unit-test stable GitHub identity decisions and negative non-owner/malformed provider cases in CI.
@@ -28,7 +28,7 @@ Updated 2026-10-20. Milestone acceptance requires verification, not code presenc
 - [x] Configure public Supabase read-only environment; ordinary visitors need no registration.
 - [ ] Configure and test optional GitHub owner OAuth only if administrative login is enabled later.
 - [x] Apply foundation/public-read migrations to Free Frankfurt Supabase and verify RLS/security advisors.
-- [ ] Finish issue #5 only with recorded, successful real PostgREST denial evidence and independently restorable offsite Free database backup.
+- [ ] Finish issue #5 with an **actual independently stored encrypted offsite Free database archive, downloaded and restored into isolated PostgreSQL 17 with live data/RLS/ledger validation**. Real PostgREST HTTP refusal evidence is already verified and recorded.
 - [x] Add synthetic PostgreSQL 17 pg_dump/pg_restore round-trip proof in CI, including RLS, data and immutable-archive triggers.
 - [x] Apply and verify all three FK indexes; performance advisor no longer reports unindexed FKs.
 - [x] Deploy public Vercel Hobby to Frankfurt from protected GitHub main and verify anonymous pages/admin redirect from GitHub Actions.
@@ -73,7 +73,7 @@ Generic adapters and independently evaluated league-specific workflows.
 ## Remaining external M0 acceptance (no M1 transition)
 
 - [ ] #2: **$0-only** legitimately reusable current RPL data and defensible historical provenance, triangulated with lawful independent evidence using the ranked registry (`docs/M0_FREE_SOURCE_REGISTRY.json`). **Owner-approved reduction 2026-10-20:** research the pilot minimum **2024/25 training, 2025/26 untouched evaluation, current 2026/27 fixtures** (`docs/M0_MINIMUM_RPL_SCOPE.json`); do not require 2015/16–2023/24 historical completeness. This is a scope reduction, **not** rights, accuracy or strict as-of approval. No seasons approved for ingestion; OpenFootball 2023/24 remains quarantined; no paid feeds or fallbacks.
-- [ ] #5: live public-key PostgREST negative probe, offsite encrypted Free backup and isolated actual restore.
+- [ ] #5: **only real independent encrypted offsite backup and isolated PG17 production restore remain**. The actual publishable-key REST refusal test is [PASS (2026-10-22)](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39763464499/job/119773072854).
 - [ ] #6: two independent Russian residential/mobile provider network checks without VPN, including total site-load failures.
 - [ ] #8: supported patched dependency or documented accepted remediation for the unresolved dev-only `braces` advisory; enforced production audit stays active.
 
