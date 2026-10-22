@@ -54,6 +54,20 @@ test('day result mismatches count but never assert official truth or licensing',
   assert.equal(out.differentFinishedScores,1);
   assert.equal(out.matchTruthVerified,false);
 });
+test('explicit Russian-language league and nested team scores are accepted; wrong date is not',()=>{
+  const russian={competition:'РПЛ',home:{name:'Ахмат Грозный',score:2},
+    away:{name:'Акрон Тольятти',score:1},time:'2026-10-18T14:00:00Z'};
+  const good=compareSportScoreDay(csv,'2026-10-18',{response:[russian]});
+  assert.equal(good.rplExplicitlyLabeled,1);
+  assert.equal(good.pairsMatchingSource,1);
+  assert.equal(good.differentFinishedScores,0);
+  const mismatched=compareSportScoreDay(csv,'2026-10-18',{
+    response:[{...russian,time:'2026-10-19T14:00:00Z'}]
+  });
+  assert.equal(mismatched.kickoffDateDisagreements,1);
+  assert.equal(mismatched.pairsMatchingSource,0);
+  assert.equal(mismatched.matchTruthVerified,false);
+});
 test('anonymous foreign and ambiguous generic league events never become RPL',()=>{
   const out=compareSportScoreDay(csv,'2026-10-18',[
     {competition:'Premier League',home:'Akhmat Grozny',away:'Akron Tolyatti'},
