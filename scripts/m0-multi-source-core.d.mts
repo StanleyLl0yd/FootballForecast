@@ -16,6 +16,13 @@ export interface QualityEntry {
   status:QualityMetric;
   finalScore:QualityMetric;
   fixtureIntegrity:QualityMetric;
+  scheduledFixtureIntegrity:QualityMetric;
+  prematchScheduleEvidence:{
+    scheduledReferenceCases:number;
+    documentedBySuppliedTimestamps:number;
+    notDemonstrated:number;
+    historicalProvenanceAuthenticated:false;
+  };
   unscoredFinals:number;
   temporalAvailability:{
     demonstratedBySuppliedTimestamps:number;

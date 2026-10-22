@@ -30,6 +30,22 @@ const syntheticExample={
       kickoffAt:'2025-01-01T12:00:00Z',
       status:'played',homeGoals:2,awayGoals:1
     }]
+  },{
+    key:'SYNTHETIC-NOT-A-REAL-MATCH-002',
+    officialEvidenceUrl:'https://example.org/fictional/002',
+    official:{
+      homeId:'Fictional-Scheduled-Home',awayId:'Fictional-Scheduled-Away',
+      kickoffAt:'2026-11-03T18:00:00Z',
+      status:'scheduled',homeGoals:null,awayGoals:null
+    },
+    observations:[{
+      sourceId:'footbolno',publisherGroup:null,
+      publishedAt:'2026-10-20T12:00:00Z',
+      observedAt:'2026-10-21T12:00:00Z',
+      homeId:'Fictional-Scheduled-Home',awayId:'Fictional-Scheduled-Away',
+      kickoffAt:'2026-11-03T18:00:00Z',
+      status:'scheduled',homeGoals:null,awayGoals:null
+    }]
   }]
 };
 function anonymizedSummary(report:QualityReport,hash:string|null){
@@ -112,6 +128,7 @@ export function SourceEvidenceLab(){
         Представлено источников: <strong>{result.sources.length}</strong>.
         Расчёт не включает новые сетевые запросы.</p>
       <p className="source-lab-note">SHA-256 загруженного файла: <code>{fileHash}</code></p>
+      <p className="source-lab-note">Для запланированных матчей отдельно учитываются точность календаря и метки публикации/наблюдения строго до начала встречи. Эти метки предоставлены исследователем, а не подтверждены независимым архивом. Будущие матчи не влияют на рейтинг точности конечных счетов.</p>
       <button type="button" className="source-lab-download" onClick={()=>downloadLocalJson(
         'footballforecast-research-report.json',anonymizedSummary(result,fileHash))}>
         Сохранить обезличенный JSON-отчёт
@@ -126,7 +143,9 @@ export function SourceEvidenceLab(){
         <table className="source-lab-table">
           <thead><tr><th scope="col">Источник</th><th scope="col">Матчи</th>
             <th scope="col">Пропуски</th><th scope="col">Ошибки полного матча</th>
-            <th scope="col">Счёт при сопоставлении</th></tr></thead>
+            <th scope="col">Счёт при сопоставлении</th>
+            <th scope="col">Календарь: ошибки</th>
+            <th scope="col">До матча: заявленные метки</th></tr></thead>
           <tbody>{result.sources.map(source=><tr key={source.sourceId}>
             <th scope="row">{names.get(source.sourceId)??source.sourceId}</th>
             <td>{source.observed}/{source.referenceCases}</td>
@@ -136,6 +155,8 @@ export function SourceEvidenceLab(){
                 <small>{percent(source.fixtureIntegrity.errorRate)}</small>:null}
             </td>
             <td>{source.finalScore.errors}/{source.finalScore.compared}</td>
+            <td>{source.scheduledFixtureIntegrity.errors}/{source.scheduledFixtureIntegrity.compared}</td>
+            <td>{source.prematchScheduleEvidence.documentedBySuppliedTimestamps}/{source.prematchScheduleEvidence.scheduledReferenceCases}</td>
           </tr>)}</tbody>
         </table>
       </div>:<p className="source-lab-note">В файле нет наблюдений поставщиков. Рейтинг не сформирован.</p>}

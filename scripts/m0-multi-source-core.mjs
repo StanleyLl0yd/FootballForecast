@@ -5,7 +5,7 @@ const bounded=(x,max=256)=>typeof x==='string'&&x.length>0&&x.length<=max&&x===x
 const utc=x=>typeof x==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(x)&&
   !Number.isNaN(Date.parse(x))&&new Date(x).toISOString().replace('.000Z','Z')===x;
 const goal=n=>Number.isInteger(n)&&n>=0&&n<=99;
-const statuses=new Set(['played','awarded','postponed','cancelled']);
+const statuses=new Set(['scheduled','played','awarded','postponed','cancelled']);
 const fail=message=>{throw new Error('Invalid supplied evidence: '+message)};
 
 function validateMatch(item,context){
@@ -29,6 +29,8 @@ function interval(errors,n){
 const metric=(errors,n)=>({compared:n,errors,errorRate:n?errors/n:null,interval95:interval(errors,n)});
 const counters=()=>({missing:0,reported:0,orientation:0,kickoff:0,status:0,
   eligibleScore:0,scoreDifferences:0,completedReference:0,completeErrors:0,
+  scheduledReference:0,scheduledErrors:0,
+  scheduledPrematchDocumented:0,scheduledPrematchUndemonstrated:0,
   temporalDemonstrated:0,temporalNotDemonstrated:0,
   upstreamGroups:new Set(),unresolvedUpstream:0});
 
@@ -93,6 +95,26 @@ export function evaluateSourceEvidenceCore(input,registry,{minimumScoredMatches=
           row.homeGoals!==official.homeGoals||row.awayGoals!==official.awayGoals)
           t.completeErrors++;
       }
+      // Scheduled fixtures have a separate reference denominator and MUST NOT
+      // inflate finished-match score or fixture-integrity statistics.
+      // A missing source fixture fails structural agreement and cannot acquire
+      // pre-kickoff publication evidence by inference.
+      if(official.status==='scheduled'){
+        t.scheduledReference++;
+        const consistent=Boolean(row)&&row.homeId===official.homeId&&
+          row.awayId===official.awayId&&row.kickoffAt===official.kickoffAt&&
+          row.status==='scheduled'&&row.homeGoals===null&&row.awayGoals===null;
+        if(!consistent)t.scheduledErrors++;
+        // These are only user-supplied timestamps; neither an HTTPS reference
+        // nor a claimed publishedAt authenticates its historical existence.
+        // Both source publication and first observation must be STRICTLY
+        // earlier than kickoff. At kickoff is not "prematch".
+        if(consistent&&row.publishedAt!==null&&
+          Date.parse(row.publishedAt)<Date.parse(official.kickoffAt)&&
+          Date.parse(row.observedAt)<Date.parse(official.kickoffAt))
+          t.scheduledPrematchDocumented++;
+        else t.scheduledPrematchUndemonstrated++;
+      }
       if(!row){t.missing++;continue}
       t.reported++;
       const reversed=row.homeId!==official.homeId||row.awayId!==official.awayId;
@@ -101,8 +123,12 @@ export function evaluateSourceEvidenceCore(input,registry,{minimumScoredMatches=
       if(row.status!==official.status)t.status++;
       if(row.publisherGroup===null)t.unresolvedUpstream++;
       else t.upstreamGroups.add(row.publisherGroup);
-      if(row.publishedAt!==null&&Date.parse(row.publishedAt)<=Date.parse(official.kickoffAt)&&
-        Date.parse(row.observedAt)<=Date.parse(official.kickoffAt))t.temporalDemonstrated++;
+      if(!reversed&&row.kickoffAt===official.kickoffAt&&
+        row.status===official.status&&row.homeGoals===official.homeGoals&&
+        row.awayGoals===official.awayGoals&&row.publishedAt!==null&&
+        Date.parse(row.publishedAt)<Date.parse(official.kickoffAt)&&
+        Date.parse(row.observedAt)<Date.parse(official.kickoffAt))
+        t.temporalDemonstrated++;
       else t.temporalNotDemonstrated++;
       // Compare final scores only with correct home/away orientation and same completed status.
       if(!reversed&&['played','awarded'].includes(official.status)&&row.status===official.status){
@@ -118,6 +144,13 @@ export function evaluateSourceEvidenceCore(input,registry,{minimumScoredMatches=
     matchOrientation:metric(t.orientation,t.reported),kickoff:metric(t.kickoff,t.reported),
     status:metric(t.status,t.reported),finalScore:metric(t.scoreDifferences,t.eligibleScore),
     fixtureIntegrity:metric(t.completeErrors,t.completedReference),
+    scheduledFixtureIntegrity:metric(t.scheduledErrors,t.scheduledReference),
+    prematchScheduleEvidence:{
+      scheduledReferenceCases:t.scheduledReference,
+      documentedBySuppliedTimestamps:t.scheduledPrematchDocumented,
+      notDemonstrated:t.scheduledPrematchUndemonstrated,
+      historicalProvenanceAuthenticated:false
+    },
     unscoredFinals:t.reported-t.eligibleScore,
     temporalAvailability:{demonstratedBySuppliedTimestamps:t.temporalDemonstrated,
       notDemonstrated:t.temporalNotDemonstrated,historicalProvenanceAuthenticated:false},
@@ -126,7 +159,7 @@ export function evaluateSourceEvidenceCore(input,registry,{minimumScoredMatches=
     provisionalScoreRankEligible:t.eligibleScore>=minimumScoredMatches
   })).sort((a,b)=>a.sourceId.localeCompare(b.sourceId));
   // Distinct field-specific provisional rankings with denominators. No synthetic global score.
-  const fieldRankings=Object.fromEntries(['fixtureIntegrity','finalScore','matchOrientation','kickoff','status']
+  const fieldRankings=Object.fromEntries(['fixtureIntegrity','scheduledFixtureIntegrity','finalScore','matchOrientation','kickoff','status']
     .map(field=>[field,sources.filter(s=>s[field].compared>=minimumScoredMatches)
       .sort((a,b)=>a[field].errorRate-b[field].errorRate||
         b[field].compared-a[field].compared||a.sourceId.localeCompare(b.sourceId))
@@ -137,7 +170,7 @@ export function evaluateSourceEvidenceCore(input,registry,{minimumScoredMatches=
     sourceApproval:false,sourceRightsApproved:false,officialReferenceAuthenticityVerified:false,
     upstreamIndependenceVerified:false,enabledForTraining:false,eligibleForProduction:false,
     observationCount:input.cases.length,sources,fieldRankings,
-    rankingBasis:'Fixture integrity uses identical finished reference denominator, counting missing/reversed/wrong-score as errors; per-field conditional rates are separate. All research-only',
+    rankingBasis:'Finished fixture integrity and scheduled fixture integrity use separate common reference denominators. Missing/reversed/wrong-date/status fixtures count as errors; only finished matches enter score comparisons. Claimed pre-kickoff publication timestamps are counted but never authenticated. All research-only',
     minimumScoredMatches
   };
 }
