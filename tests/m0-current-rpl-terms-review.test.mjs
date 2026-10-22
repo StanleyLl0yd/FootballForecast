@@ -65,6 +65,21 @@ test('documented free SportScore endpoints do NOT prove historical 240-match sea
   assert.match(letter,/no.*season.*filter/i);
 });
 
+test('free v1 endpoints exist but do not establish permitted full-season RPL collection',()=>{
+ const a=evidence.sportscore.publicV1Discovery;
+ assert.match(a.reference,/sportscore\.com\/developers\/api/);
+ assert.equal(a.fixturesEndpoint,'https://sportscore.com/api/v1/fixtures/');
+ assert.equal(a.searchEndpoint,'https://sportscore.com/api/v1/search/');
+ assert.equal(a.documentedDailyPageLimit,200);
+ assert.equal(a.anonymousAccessDocumented,true);
+ assert.equal(a.exactRplCompetitionSlugVerified,false);
+ assert.equal(a.actualRplCoverageVerified,false);
+ assert.equal(a.freeFullTwoSeasonCollectionAuthorized,false);
+ assert.equal(a.historicalOriginalRightsVerified,false);
+ assert.equal(a.noAutomatedBulkCollectionPerformed,true);
+ assert.match(a.conclusion,/eight widget endpoints are NOT the complete documented API/);
+});
+
 test('UEFA domestic calendar is manual third-party source, never an automatically ingestible original protocol',()=>{
   const s=byId['uefa-rpl-domestic'];
   assert.ok(s,'20th source must be retained');
