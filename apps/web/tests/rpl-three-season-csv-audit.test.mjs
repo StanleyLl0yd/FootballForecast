@@ -66,8 +66,8 @@ test('16-club directed round robin is required beyond a mere total of 240 unique
   assert.equal(invalid.duplicates,0);
   assert.equal(invalid.completeDirectedFixtureGrid,false);
   assert.equal(invalid.structuralCandidate,false);
-  assert.equal(invalid.historicalAggregateDrift?.changed,true === false);
-  // Publisher goal totals stayed unchanged; club-grid integrity caught this.
+  assert.deepEqual(invalid.historicalAggregateDrift,complete.historicalAggregateDrift);
+  // Goal totals were unchanged; only the club-grid check caught corruption.
 });
 
 test('upcoming 2026/27 fixtures are opt-in, capped, sorted, and never invent confirmed times',()=>{
