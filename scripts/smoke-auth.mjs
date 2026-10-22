@@ -116,7 +116,17 @@ async function testServer(name, overrides) {
     for (const path of ['/dashboard','/matches','/models','/analytics','/data','/archive','/connectivity']) {
       const r = await get(path);
       assert.equal(r.status, 200, `${name}: ${path} must be public`);
+      if(path==='/connectivity'){
+        const html=await r.text();
+        assert.match(html,/<form[^>]*action="\\/m0-carrier-check\\.html"[^>]*>/,
+          'connectivity must SSR a native fallback even before React hydration');
+        assert.match(html,/data-connectivity-ready="false"/,
+          'initial SSR state must not falsely claim client scripts are ready');
+      }
     }
+    const offlineCarrier=await get('/m0-carrier-check.html');
+    assert.equal(offlineCarrier.status,200,`${name}: offline static carrier checker`);
+    assert.match(await offlineCarrier.text(),/id="run" type="button"/);
     const admin = await get('/admin');
     assert.ok([303,307,308].includes(admin.status), `${name}: admin is protected`);
     assert.equal(new URL(admin.headers.get('location'),origin).pathname, '/setup');
