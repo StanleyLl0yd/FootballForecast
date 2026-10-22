@@ -128,6 +128,7 @@ test('future scheduled fixtures use a separate denominator and never become fini
     c.official.homeGoals=null;c.official.awayGoals=null;
     for(const row of c.observations){
       row.status='scheduled';row.kickoffAt=c.official.kickoffAt;
+      row.homeId=c.official.homeId;row.awayId=c.official.awayId;
       row.homeGoals=null;row.awayGoals=null;
       row.observedAt='2026-10-22T12:00:00Z';
       row.publishedAt='2026-10-22T11:00:00Z';
