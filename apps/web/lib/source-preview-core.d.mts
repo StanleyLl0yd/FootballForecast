@@ -13,9 +13,13 @@ export type RplSeasonSummary={
  homeGoals:number;awayGoals:number;duplicates:number;duplicateMatchIds:number;
  missingTeams:number;invalidScores:number;structuralCandidate:boolean;
 };
+export type UpcomingRplFixture={
+ home:string;away:string;kickoffUtc:string;timeConfirmed:boolean;
+};
 export type RplCsvAudit={
  provider:'footbolno';checkedScope:'rpl-three-seasons';publisherRows:number;
  seasonSummaries:RplSeasonSummary[];
+ upcomingFixtures:UpcomingRplFixture[];
  recordRevisionTimestampsAvailable:false;originalMatchRightsVerified:false;
  sourceMatchAccuracyVerified:false;modelTrainingApproved:false;
 };
