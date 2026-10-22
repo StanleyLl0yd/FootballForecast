@@ -96,7 +96,7 @@ test('unknown club identity or unsupported status prevents misleading agreement'
 test('reconciliation never emits source IDs or full fixture rows in failures',()=>{
   const {csv,txt}=makeSamples();
   assert.throws(()=>reconcilePublishedRplFixtures(csv,'invalid source'),/invalid season\/source text/);
-  assert.throws(()=>reconcilePublishedRplFixtures(csv.replace(',2,235,',',1,235,'),txt),
+  assert.throws(()=>reconcilePublishedRplFixtures(csv.replace('\n2,235,','\n1,235,'),txt),
     /mapping or completed/);
 });
 test('one-off CI workflow remains bounded, unattributed raw rows are never uploaded',()=>{
