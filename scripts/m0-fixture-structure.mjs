@@ -52,7 +52,14 @@ export function auditFootballTxt(source,{expectedTeams=16,expectedMatches=240}={
     violations.push('not a complete double round-robin');
   if(duplicatePairs.length)violations.push('duplicate directed fixtures');
   if(missingPairs.length)violations.push('missing directed fixtures');
+  // Aggregate publisher scoreline frequencies only; never surface match-level
+  // rows or infer that an aggregate proves any individual fixture is correct.
+  const scorelineHistogram=Object.fromEntries(
+    [...new Set(parsed.map(x=>x.homeGoals+'-'+x.awayGoals))].sort((a,b)=>a.localeCompare(b))
+      .map(key=>[key,parsed.filter(x=>x.homeGoals+'-'+x.awayGoals===key).length])
+  );
   return {
+    scorelineHistogram,
     structuralOnly:true,ok:violations.length===0,
     declaredTeams,declaredMatches,matchRows:rawRows.length,
     parsedRows:parsed.length,teamCount:clubs.length,directedPairs:pairs.size,
