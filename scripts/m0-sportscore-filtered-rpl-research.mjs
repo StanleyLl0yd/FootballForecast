@@ -110,7 +110,10 @@ function researchCli(csvFile,searchFile,manifestFile){
     if(!x||x.date!==DATES[i]||!Number.isInteger(x.status))
       throw Error('Invalid fixed-day manifest');
     if(x.status!==200)return {date:x.date,status:x.status};
-    return {date:x.date,status:200,payload:parseBounded(x.file,MAX_DAY)};
+    let payload=null;
+    try{payload=parseBounded(x.file,MAX_DAY)}
+    catch{/* invalid/truncated third-party JSON remains inconclusive */}
+    return {date:x.date,status:200,payload};
   });
   const csvBytes=readFileSync(csvFile);
   if(csvBytes.length===0||csvBytes.length>2_000_000)
