@@ -99,3 +99,9 @@ This is a **retrospective source accuracy measurement only**, not an ML backtest
 6. Independent review of any claimed rights to retain records, use ML outputs or publish derivative forecasts.
 
 **Current M0 state:** only synthetic unit cases have been run. No downloaded source was scored with official match-level references; no provider's true measured accuracy, legal approval, ML calibration or predictive performance is claimed. M0 and issue #2 remain OPEN.
+
+## Pilot-season 16-club double-round-robin check (2026-10-22)
+
+The optional, user-triggered Footbolno RPL three-season CSV inspector now requires **exactly 16 distinct non-empty club IDs and 240 unique directed home-away pairings** in each pilot season, in addition to existing 240-row, duplicate, score, status and timestamp checks. This prevents a 240-record dataset with a substituted 17th club from passing structural completeness. A count of 240 records alone does not prove a complete tournament. The browser displays only two aggregate counters, not club IDs, match rows or identifiable provider records.
+
+The 16-club directed graph check is necessary but **not sufficient**: a wrong source identity, fabricated game, incorrect score, moved venue, forfeiture, post-match revision or upstream copyright restriction can still exist even when all 240 pairs appear exactly once. The validation cannot establish that these are the real 16 RPL clubs without separate lawful official match-by-match corroboration, and it does not grant import/training rights or historical pre-match snapshots. Keep all provider approval flags false.
