@@ -35,7 +35,7 @@ test('only manual direct CORS requests to bounded official published API URLs; n
  assert.match(s,/const inspect=async\(provider:'footbolno'\|'sportscore'\)/);
  assert.match(s,/onClick=\{\(\)=>inspect\('footbolno'\)\}/);
  assert.match(s,/onClick=\{\(\)=>inspect\('sportscore'\)\}/);
- assert.match(s,/method:'GET',credentials:'omit',cache:'no-store'/);
+ assert.match(s,/method:'GET',credentials:'omit' as const,cache:'no-store' as const/);
  assert.match(s,/redirect:'error'/);
  assert.match(s,/referrerPolicy:'no-referrer'/);
  assert.match(s,/AbortSignal\.timeout\(10000\)/);
