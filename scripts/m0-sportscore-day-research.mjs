@@ -46,9 +46,12 @@ const text=value=>{
   return '';
 };
 const rplCompetition=item=>{
-  const name=clean(text(item.competition??item.league??item.tournament));
+  const name=clean(text(item.competition??item.league??item.tournament??
+    item.competition_name??item.league_name));
   // Generic "Premier League" is ambiguous and MUST NOT identify the RPL.
-  return /\b(russian premier league|russia premier league|russia premier liga|rpl|российская премьер лига|премьер лига россии|рпл)\b/u.test(name);
+  const english=/\b(russian premier league|russia premier league|premier league russia|russia premier liga|premier liga russia|rpl)\b/u;
+  return english.test(name)||['российская премьер лига','премьер лига россии','рпл'].some(x=>
+    name===x||name.startsWith(x+' '));
 };
 const extract=payload=>{
   if(Array.isArray(payload))return payload;
@@ -104,7 +107,7 @@ export function compareSportScoreDay(csv,date,payload){
     differentFinishedScores:null,unmappedOrAmbiguous:null,
     scheduleCoverageVerified:false,matchTruthVerified:false
   };
-  let explicit=0,mapped=0,pairs=0,differing=0,unknown=0,duplicate=0;
+  let explicit=0,mapped=0,pairs=0,differing=0,unknown=0,duplicate=0,dateDisagreements=0;
   const seen=new Set();
   for(const item of list){
     if(!rplCompetition(item))continue;
@@ -113,6 +116,13 @@ export function compareSportScoreDay(csv,date,payload){
     const away=club(item.away??item.away_team??item.awayTeam);
     if(!home||!away||home===away){unknown++;continue}
     mapped++;
+    const kickoff=item.time??item.kickoff??item.kickoff_utc??item.date;
+    if(typeof kickoff==='string'&&kickoff.trim()){
+      const timestamp=Date.parse(kickoff);
+      if(!Number.isFinite(timestamp)||new Date(timestamp).toISOString().slice(0,10)!==date){
+        dateDisagreements++;continue;
+      }
+    }
     const key=pair(home,away);
     if(seen.has(key)){duplicate++;continue}
     seen.add(key);
@@ -120,8 +130,8 @@ export function compareSportScoreDay(csv,date,payload){
     if(!expected)continue;
     pairs++;
     if(expected.status==='finished'){
-      const gh=score(item.home_score??item.homeScore??item.goals?.home);
-      const ga=score(item.away_score??item.awayScore??item.goals?.away);
+      const gh=score(item.home_score??item.homeScore??item.goals?.home??item.home?.score);
+      const ga=score(item.away_score??item.awayScore??item.goals?.away??item.away?.score);
       if(gh===null||ga===null){unknown++;continue}
       if(gh!==expected.homeGoals||ga!==expected.awayGoals)differing++;
     }
@@ -133,6 +143,7 @@ export function compareSportScoreDay(csv,date,payload){
     rplExplicitlyLabeled:explicit,candidateClubMatches:mapped,
     pairsMatchingSource:pairs,differentFinishedScores:differing,
     unmappedOrAmbiguous:unknown+duplicate,
+    kickoffDateDisagreements:dateDisagreements,
     // A day query may be clipped/unclear; matched rows are observations only.
     scheduleCoverageVerified:false,matchTruthVerified:false
   };
