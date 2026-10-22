@@ -37,6 +37,7 @@ test('Footbolno RPL scope: 240 directed pairs, 3 seasons, temporary counts only'
   assert.equal(parsed.rows[0][9],'Club "A", test');
   const a=summarizeFootbolnoRplCsv(csv,'2026-09-01T00:00:00Z');
   assert.equal(a.publisherRows,720);
+  assert.ok(a.seasonSummaries.every(s=>s.distinctClubCount===16&&s.distinctDirectedPairs===240));
   assert.deepEqual(a.seasonSummaries.map(s=>[
     s.season,s.matches,s.finished,s.scheduled,s.homeGoals+s.awayGoals,s.structuralCandidate
   ]),[
@@ -151,6 +152,34 @@ test('duplicate fixtures and IDs are counted, never accepted as structure-comple
   assert.equal(a.duplicateMatchIds,1);
   assert.equal(a.structuralCandidate,false);
 });
+test('reject 240 distinct fixtures with 17 club IDs and an omitted true home-away pairing',()=>{
+  const rows=createRows('2025/2026');
+  // Count and scores are unchanged; a rogue ID silently creates a 17th
+  // club and removes one of the true 16x15 directed pairings.
+  rows[0][6]='17';
+  const report=summarizeFootbolnoRplCsv(toCsv(rows),'2026-10-22T00:00:00Z');
+  const s=report.seasonSummaries[1];
+  assert.equal(s.matches,240);
+  assert.equal(s.finished,240);
+  assert.equal(s.duplicates,0);
+  assert.equal(s.duplicateMatchIds,0);
+  assert.equal(s.distinctDirectedPairs,240);
+  assert.equal(s.distinctClubCount,17);
+  assert.equal(s.structuralCandidate,false);
+  // Do not emit the source team ID or individual fixture in the report.
+  assert.doesNotMatch(JSON.stringify(report),/"17"|"match_id"|home_id|away_id/);
+});
+
+test('reject absent directed fixture even when exactly 16 clubs remain',()=>{
+  const rows=createRows('2024/2025');
+  rows.pop();
+  const s=summarizeFootbolnoRplCsv(toCsv(rows)).seasonSummaries[0];
+  assert.equal(s.distinctClubCount,16);
+  assert.equal(s.distinctDirectedPairs,239);
+  assert.equal(s.matches,239);
+  assert.equal(s.structuralCandidate,false);
+});
+
 test('invalid scores, missing IDs, incorrect finished count cannot pass structural check',()=>{
   const rows=createRows('2025/2026');
   rows[0][7]='100';rows[1][5]='';rows[2][4]='live';
