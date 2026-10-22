@@ -1,0 +1,109 @@
+name: M0 SportScore RPL Filtered Six-Day Research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/m0-sportscore-filtered-rpl-research.mjs'
+      - 'tests/m0-sportscore-filtered-rpl-research.test.mjs'
+      - '.github/workflows/m0-sportscore-filtered-rpl-research.yml'
+permissions: {contents: read}
+concurrency:
+  group: m0-sportscore-filtered-research
+  cancel-in-progress: false
+jobs:
+  ephemeral-filtered-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned
+        with: {node-version: '22'}
+      - name: Verify search-contract and protected no-raw-rows behavior
+        run: |
+          node --check scripts/m0-sportscore-filtered-rpl-research.mjs
+          node --test tests/m0-sportscore-filtered-rpl-research.test.mjs
+      - name: One search plus at most six authenticated-by-slug anonymous day checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          {
+            echo '## One-shot SportScore league-filtered 2026/27 RPL research'
+            echo
+            echo 'No authentication, fees, provider row publication, scheduled polling, or Supabase writes.'
+            echo 'No provider slug guessed or trusted without a unique name/country match.'
+            echo 'Source licensing: public SportScore attribution tier (site/general terms precedence still unresolved).'
+            echo
+            echo '<a href="https://sportscore.com/" rel="dofollow">Powered by SportScore</a>'
+            echo 'Footbolno: https://footbolno.ru/otkrytye-dannye'
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+          # Search one precise phrase, never crawl a website or replay result pages.
+          search_status="$(curl --silent --show-error --fail \
+            --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 20 --max-filesize 200000 \
+            --header 'Accept: application/json' \
+            --header 'User-Agent: FootballForecastM0Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+            --output "$work/search.json" --write-out '%{http_code}' \
+            'https://sportscore.com/api/v1/search/?q=Russian%20Premier%20League&sport=football&limit=10' \
+            2>/dev/null || true)"
+          if [[ "$search_status" != '200' ]]; then
+            echo 'SportScore competition search returned no usable HTTP 200 result: INCONCLUSIVE' |
+              tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node scripts/m0-sportscore-filtered-rpl-research.mjs \
+            discover "$work/search.json" "$work/slug.txt" |
+            tee -a "$GITHUB_STEP_SUMMARY"
+          if [[ ! -s "$work/slug.txt" ]]; then
+            echo 'No unique, validated RPL competition slug. No filtered fixtures requested.' |
+              tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          slug="$(cat "$work/slug.txt")"
+          # The discovery program checked /^[a-z0-9][a-z0-9-]{2,79}$/.
+          [[ "$slug" =~ ^[a-z0-9][a-z0-9-]{2,79}$ ]]
+          curl --fail --silent --show-error \
+            --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 35 --max-filesize 2000000 \
+            --output "$work/footbolno.csv" \
+            'https://footbolno.ru/data/league/235-matches.csv'
+          test -s "$work/footbolno.csv"
+          for day in 2026-10-17 2026-10-18 2026-10-19 2026-10-23 2026-10-24 2026-10-25; do
+            status="$(curl --silent --show-error --fail \
+              --proto '=https' --max-redirs 0 \
+              --connect-timeout 10 --max-time 18 --max-filesize 1000000 \
+              --header 'Accept: application/json' \
+              --header 'User-Agent: FootballForecastM0Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+              --output "$work/$day.json" --write-out '%{http_code}' \
+              "https://sportscore.com/api/v1/fixtures/?sport=football&date=$day&competition=$slug&limit=200" \
+              2>/dev/null || true)"
+            if [[ ! "$status" =~ ^[0-9]{3}$ ]]; then status=0; fi
+            printf '%s %s\n' "$day" "$status" >> "$work/statuses"
+            sleep 1
+          done
+          python3 - "$work" <<'PY'
+          import json,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          rows=[]
+          for line in (root/'statuses').read_text().splitlines():
+              date,status=line.split()
+              rows.append({'date':date,'status':int(status),'file':str(root/(date+'.json'))})
+          (root/'manifest.json').write_text(json.dumps(rows))
+          PY
+          {
+            echo
+            echo '### RPL-filtered results (numeric aggregates only)'
+            echo
+            echo 'Never infer independent source accuracy/complete calendar or model rights from this study.'
+            echo '~~~json'
+          } >> "$GITHUB_STEP_SUMMARY"
+          node scripts/m0-sportscore-filtered-rpl-research.mjs research \
+            "$work/footbolno.csv" "$work/search.json" "$work/manifest.json" |
+            tee -a "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
