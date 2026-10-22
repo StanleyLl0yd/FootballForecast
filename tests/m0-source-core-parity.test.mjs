@@ -67,7 +67,9 @@ test('scheduled match temporal evidence is identical in GUI core and offline rev
   const {inputDigestSHA256,...b}=evaluateSourceEvidence(input,{minimumScoredMatches:1});
   assert.match(inputDigestSHA256,/^[0-9a-f]{64}$/);
   assert.deepEqual(a,b);
-  const f=a.sources.find(x=>x.sourceId==='footbolno');
+  // sample(1) intentionally omits footbolno on the first fixture.
+  const f=a.sources.find(x=>x.sourceId==='openfootball-europe');
+  assert.ok(f);
   assert.equal(f.fixtureIntegrity.compared,0);
   assert.equal(f.finalScore.compared,0);
   assert.equal(f.scheduledFixtureIntegrity.compared,1);
