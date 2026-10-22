@@ -40,6 +40,31 @@ test('strictly free SportScore API attribution claims cannot bypass general term
   assert.equal(byId.sportscore.authorizedAutomatedTraining,false);
 });
 
+test('documented free SportScore endpoints do NOT prove historical 240-match season access',()=>{
+  const a=evidence.sportscore.freeHistoricalAccessReview;
+  assert.deepEqual(a.publishedApiWidgetEndpoints,
+    ['matches','match','team','standings','topscorers','player','bracket','tracker']);
+  assert.equal(a.numberOfPublishedEndpoints,8);
+  assert.equal(a.recentMatchesEndpointMaximumLimit,50);
+  assert.equal(a.teamRecentAndUpcomingMaximumLimit,30);
+  assert.equal(a.seasonParameterDocumented,false);
+  assert.equal(a.historicalSeasonPaginationDocumented,false);
+  assert.equal(a.deeperHistoricalAccessExplicitlyDescribedAsPaidTierUseCase,true);
+  assert.equal(a.free2024_25CompleteSeasonRetrievalDocumented,false);
+  assert.equal(a.free2025_26CompleteSeasonRetrievalDocumented,false);
+  assert.equal(a.current2026_27LeagueFixturesCompleteAndFreshValidated,false);
+  assert.equal(a.apiInvokedToCheckSeasonCompleteness,false);
+  assert.equal(a.conclusion,
+    'DOES_NOT_DEMONSTRATE_ZERO_COST_HISTORICAL_TRAIN_AND_HOLDOUT_COVERAGE');
+  assert.equal(evidence.sportscore.unresolved.explicitSeasonScopedFreeHistoricalEndpointVerified,false);
+  assert.match(byId.sportscore.limitations,/no season selector/);
+  assert.match(byId.sportscore.limitations,/no paid fallback/);
+  assert.equal(registry.policy.maxMonthlySpendUSD,0);
+  const letter=readFileSync(new URL('../docs/M0_SPORTSCORE_RIGHTS_INQUIRY.md',import.meta.url),'utf8');
+  assert.match(letter,/permanent, free/);
+  assert.match(letter,/no.*season.*filter/i);
+});
+
 test('UEFA domestic calendar is manual third-party source, never an automatically ingestible original protocol',()=>{
   const s=byId['uefa-rpl-domestic'];
   assert.ok(s,'20th source must be retained');

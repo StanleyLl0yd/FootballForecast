@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewedOn": "2026-10-21",
+  "reviewedOn": "2026-10-22",
   "kind": "M0_CURRENT_RPL_SOURCE_TERMS_RECONCILIATION_NOT_APPROVAL",
   "purpose": "Find a strictly $0 lawful and fresh current-season RPL fixture source; identify provider terms whose meaning requires written confirmation.",
   "sportscore": {
@@ -45,11 +45,38 @@
       "derivedForecastProbabilityPublicationApproved": false,
       "sourceRightsForModelTrainingVerified": false,
       "exactCommercialAndAttributionTermsResolved": false,
-      "freeOfChargeWithoutUpgradeVerifiedForRequiredRplHistoricalDepth": false
+      "freeOfChargeWithoutUpgradeVerifiedForRequiredRplHistoricalDepth": false,
+      "explicitSeasonScopedFreeHistoricalEndpointVerified": false
     },
     "endpointAccessInThisStudy": "No authenticated provider integration. The documented public GET URL was not successfully fetched with the available read-only research browser. No assumption of coverage or actual quota consumption.",
     "contact": "api@sportscore.com",
-    "inquiry": "M0_SPORTSCORE_RIGHTS_INQUIRY.md"
+    "inquiry": "M0_SPORTSCORE_RIGHTS_INQUIRY.md",
+    "freeHistoricalAccessReview": {
+      "developerEndpointReference": "https://sportscore.com/developers/",
+      "apiSpecificTermsReference": "https://sportscore.com/developers/terms/",
+      "publishedApiWidgetEndpoints": [
+        "matches",
+        "match",
+        "team",
+        "standings",
+        "topscorers",
+        "player",
+        "bracket",
+        "tracker"
+      ],
+      "numberOfPublishedEndpoints": 8,
+      "seasonParameterDocumented": false,
+      "historicalSeasonPaginationDocumented": false,
+      "recentMatchesEndpointMaximumLimit": 50,
+      "teamRecentAndUpcomingMaximumLimit": 30,
+      "deeperHistoricalAccessExplicitlyDescribedAsPaidTierUseCase": true,
+      "free2024_25CompleteSeasonRetrievalDocumented": false,
+      "free2025_26CompleteSeasonRetrievalDocumented": false,
+      "current2026_27LeagueFixturesCompleteAndFreshValidated": false,
+      "analysis": "Free interface documents live/recent matches and bounded team recent/upcoming data; no published season selector nor multi-season pagination. Vendor terms list historical access beyond public API among paid-tier uses. Do not assume free extraction of both completed 240-match seasons even if vendor permits attributed applications. Free limited recent results may still suit prospective fixtures after rights, coverage and freshness are checked.",
+      "apiInvokedToCheckSeasonCompleteness": false,
+      "conclusion": "DOES_NOT_DEMONSTRATE_ZERO_COST_HISTORICAL_TRAIN_AND_HOLDOUT_COVERAGE"
+    }
   },
   "uefa": {
     "registryId": "uefa-rpl-domestic",
@@ -81,5 +108,5 @@
     "sourceIndependenceVerified": false,
     "writtenVendorPermissionReceived": false
   },
-  "limitations": "A website openly displays a calendar does not mean it is legal to systematically compile it. Different terms for the SportScore /api/widget/ product and general website could have different scope, but FootballForecast has no authoritatively documented precedence. Do not solve the dispute by picking the more favorable paragraph. No real RPL API feed was authenticated in this research, no match rows stored, no ingestion or ML enabled."
+  "limitations": "A website openly displays a calendar does not mean it is legal to systematically compile it. Different terms for the SportScore /api/widget/ product and general website could have different scope, but FootballForecast has no authoritatively documented precedence. Do not solve the dispute by picking the more favorable paragraph. No real RPL API feed was authenticated in this research, no match rows stored, no ingestion or ML enabled. Documented SportScore public GET reference enumerates 8 widget endpoints with no season selector/pagination; terms list historical depth beyond public API as a paid-tier use case, so the minimum two completed seasons are NOT obtainable via any VERIFIED free endpoint. Never pay, upgrade, infer season coverage or synthesize 240 games."
 }
