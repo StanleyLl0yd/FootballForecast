@@ -118,7 +118,7 @@ async function testServer(name, overrides) {
       assert.equal(r.status, 200, `${name}: ${path} must be public`);
       if(path==='/connectivity'){
         const html=await r.text();
-        assert.match(html,/<form[^>]*action="\\/m0-carrier-check\\.html"[^>]*>/,
+        assert.match(html,/<form[^>]*action="\/m0-carrier-check\.html"[^>]*>/,
           'connectivity must SSR a native fallback even before React hydration');
         assert.match(html,/data-connectivity-ready="false"/,
           'initial SSR state must not falsely claim client scripts are ready');
