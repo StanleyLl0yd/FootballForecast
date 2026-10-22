@@ -44,6 +44,9 @@ test('only manual direct CORS requests to bounded official published API URLs; n
  assert.match(s,/title="Sports data by SportScore">Powered by SportScore/);
  assert.match(s,/footbolno\.ru\/otkrytye-dannye/);
  assert.doesNotMatch(s,/useEffect\(|setInterval\(|localStorage|sessionStorage|createClient\(|supabase|POST|PUT|DELETE|Authorization|apiKey|service_role/);
+ const dataPage=readFileSync(new URL('../app/(console)/data/page.tsx',import.meta.url),'utf8');
+ assert.match(dataPage,/import \{OpenProviderPreview\} from '@\/components\/open-provider-preview'/);
+ assert.match(dataPage,/<OpenProviderPreview\/>/);
  const sourceRegistry=JSON.parse(readFileSync(new URL('../../../docs/M0_FREE_SOURCE_REGISTRY.json',import.meta.url),'utf8'));
  for(const id of ['footbolno','sportscore']){
   const v=sourceRegistry.sources.find(x=>x.id===id);
