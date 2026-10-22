@@ -8,7 +8,7 @@ Updated 2026-10-22. Milestone acceptance requires verification, not code presenc
 - [x] Enable bounded, on-demand read-only Footbolno and SportScore browser research previews with immediate attribution; no vendor correspondence needed for the publicly permitted preview tier, no raw DB writes or ML.
 - [x] Local monorepo and Next.js browser-first design with navigation and honest empty states.
 - [x] Initial Python package and deterministic Poisson/scoring math primitives.
-- [x] Initial RLS database schema and append-only prediction tables (applied to Free Supabase Frankfurt, with post-deployment verification pending).
+- [x] Initial RLS database schema and append-only prediction tables applied to Free Supabase Frankfurt, with live catalog and REST refusal verification.
 - [x] Public read-only dashboard and protected administrator-only route; optional owner OAuth not yet integrated.
 - [x] Keep optional OAuth middleware out of public routes and add regression tests for bad visitor cookies.
 - [x] Basic CI, Gitleaks v3, npm audit, Dependabot and CodeQL verified on the initial exact-main commit.
@@ -17,8 +17,8 @@ Updated 2026-10-22. Milestone acceptance requires verification, not code presenc
 - [x] Generate and commit a workspace npm lockfile on a network-enabled GitHub runner; install with `npm ci` in CI/Security.
 - [x] Run remote web lint, TypeScript typecheck and production build.
 - [x] Verify Safari native WebDriver on hosted macOS, plus Firefox/Edge and Chrome in automated cross-browser diagnostics.
-- [x] Restore synthetic PostgreSQL 17 schema/data into a **separate** PostgreSQL 17 container on the same CI runner, with SHA-256 agreement and RLS/trigger verification.
-- [ ] Prove actual Free-project encrypted offsite backup and independent recovery; synthetic CI restoration does not count.
+- [x] On exact-main [CI #39764646186](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39764646186), reapply source-controlled migrations `0001`-`0003` to disposable PostgreSQL 17 and verify RLS, catalog, triggers and indexes; independently restore **synthetic** encrypted schema/data into a second PostgreSQL 17 container on the same runner, with SHA-256 agreement. Supabase-managed services/real production rows are outside this proof.
+- [x] **2026-10-22 owner decision:** accept loss risk for the current near-empty Free prototype, verify source-controlled application schema rebuild and non-secret deployment configuration instead. Actual encrypted offsite backup/recovery is explicitly **deferred until FootballForecast is fully functional**, tracked in #96; it is **not an M0/M1 gate**. Synthetic CI restoration is not production recovery.
 - [x] **2026-10-22 LIVE PASS:** manually dispatched [real publishable-key REST refusal proof](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39763464499/job/119773072854) on exact-main `2d307fbf9159d063b3ee914c8cb65c64ec4a14a0`: 1 allowed GET HTTP 200, 7 SQLSTATE 42501-denied HTTP 401 operations. Local mocks alone do not count. Optional OAuth E2E remains deferred until enabled.
 - [x] Confirm Firefox and Edge headless cross-browser diagnostics on Ubuntu 24.04: PASS on public dashboard, denied admin and mobile screenshots (PR #35).
 - [x] Run unconfigured Next.js browser smoke in real headless Chrome on CI.
@@ -28,7 +28,7 @@ Updated 2026-10-22. Milestone acceptance requires verification, not code presenc
 - [x] Configure public Supabase read-only environment; ordinary visitors need no registration.
 - [ ] Configure and test optional GitHub owner OAuth only if administrative login is enabled later.
 - [x] Apply foundation/public-read migrations to Free Frankfurt Supabase and verify RLS/security advisors.
-- [ ] Finish issue #5 with an **actual independently stored encrypted offsite Free database archive, downloaded and restored into isolated PostgreSQL 17 with live data/RLS/ledger validation**. Real PostgREST HTTP refusal evidence is already verified and recorded.
+- [x] Finish #5's M0 application-schema/reproducible-migrations and real PostgREST authorization acceptance, backed by successful PostgreSQL 17 CI and live REST evidence. Owner deliberately moved **real offsite backup/restore** to non-gating #96, without claiming production data recovery.
 - [x] Add synthetic PostgreSQL 17 pg_dump/pg_restore round-trip proof in CI, including RLS, data and immutable-archive triggers.
 - [x] Apply and verify all three FK indexes; performance advisor no longer reports unindexed FKs.
 - [x] Deploy public Vercel Hobby to Frankfurt from protected GitHub main and verify anonymous pages/admin redirect from GitHub Actions.
@@ -72,8 +72,10 @@ Generic adapters and independently evaluated league-specific workflows.
 
 ## Remaining external M0 acceptance (no M1 transition)
 
+The reduced M0 recovery gate is **application migration re-creation**, **documented non-secret infrastructure configuration**, and **explicit acceptance of database-loss risk**. The live 2026-10-22 read-only check found zero imported matches, forecasts, source records or access grants. This is **not** proof of a complete Supabase platform restore. Backup work is tracked after a fully functional project in #96 and is not an M0/M1 acceptance condition.
+
 - [ ] #2: **$0-only** legitimately reusable current RPL data and defensible historical provenance, triangulated with lawful independent evidence using the ranked registry (`docs/M0_FREE_SOURCE_REGISTRY.json`). **Owner-approved reduction 2026-10-20:** research the pilot minimum **2024/25 training, 2025/26 untouched evaluation, current 2026/27 fixtures** (`docs/M0_MINIMUM_RPL_SCOPE.json`); do not require 2015/16–2023/24 historical completeness. This is a scope reduction, **not** rights, accuracy or strict as-of approval. No seasons approved for ingestion; OpenFootball 2023/24 remains quarantined; no paid feeds or fallbacks.
-- [ ] #5: **only real independent encrypted offsite backup and isolated PG17 production restore remain**. The actual publishable-key REST refusal test is [PASS (2026-10-22)](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39763464499/job/119773072854).
+- [x] #5: application schema replay + isolated **synthetic** PG17 restore PASS on [CI #39764646186](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39764646186), real publishable-key REST [PASS](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39763464499/job/119773072854). Owner accepts lack of production-data recovery for this prototype and defers optional backup decision to #96 **once fully functional**.
 - [ ] #6: two independent Russian residential/mobile provider network checks without VPN, including total site-load failures.
 - [ ] #8: supported patched dependency or documented accepted remediation for the unresolved dev-only `braces` advisory; enforced production audit stays active.
 

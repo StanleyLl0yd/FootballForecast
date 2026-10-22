@@ -8,6 +8,21 @@
 - Production: https://footballforecast.vercel.app. Anonymous viewing enabled; Vercel Authentication disabled for production. A GitHub-hosted HTTP canary has verified health, dashboard, matches, archive, data and admin denial; no claim of Russian network reachability.
 - Deployment env: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` configured on Vercel. These are public/read-only client credentials; never use a service-role key in any browser-facing environment.
 
+## Reconstructing the M0 application schema and non-secret deployment configuration
+
+The current M0 application schema is **source-controlled**, not backed up as production data:
+
+- PostgreSQL 17 SQL migrations in `database/migrations/0001_foundation.sql`, `0002_public_read.sql`, `0003_match_fk_indexes.sql` (apply **in order** on a freshly provisioned, authorized target with Supabase `auth` roles and `auth.uid()` available).
+- Security/ledger assertions in `database/tests/0005_live_anon_posture.sql`, `0006_live_immutable_ledger.sql`, `0007_live_public_surface.sql`. All are read-only; a failed invariant must reject the target.
+- Disposable CI installs Supabase role/function stubs only in its **test container** via `database/tests/0000_ci_supabase_stub.sql`. Never deploy these mock roles/functions to real Supabase.
+- Deployment reference: Vercel Hobby, source root `apps/web`, Next.js framework, Frankfurt function region `fra1`, linked to protected GitHub `main`; Supabase Free project `FootballForecast`, Frankfurt `eu-central-1`, PostgreSQL 17. Configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` from the **new target project** after any disaster, not by reusing stale project URLs.
+- `.env.example` lists the web environment variable **names**. `FF_SUPABASE_PUBLISHABLE_KEY` is needed only for optional owner-dispatched live REST proof; this value and all connection/password/age identities stay in protected secret stores, **never** in Git. Public web access does not require OAuth or a service-role key.
+- Real Supabase-managed `auth` users, custom instance settings, external secrets, real table rows, data-provider payloads and Storage object bytes are **not** reconstructed by these three migrations. Cloud resources, roles and runtime secrets may need authorized manual re-provisioning.
+
+Actual evidence: [exact-main CI run #39764646186](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39764646186) PASSED creating the M0 application schema and testing RLS/triggers on disposable PostgreSQL 17 and separately restoring synthetic schema/data. On 2026-10-22, live Free Supabase contained zero rows in `ff_matches`, `ff_forecasts`, `ff_source_records` and `ff_access_grants` (read-only SQL). These results establish **application-schema reproducibility**, not that a new complete production Supabase tenant could be brought up automatically or that any real data can be restored.
+
+**Owner decision (2026-10-22):** accept the residual risk of total current Free database loss without a production backup. Do not block M0/M1 on real encrypted offsite backup or isolated production restore. Re-evaluate backup needs **after FootballForecast is fully functional** ([issue #96](https://github.com/StanleyLl0yd/FootballForecast/issues/96)); nothing has been backed up in production.
+
 ## Reproducible build and verification
 
 From the repository root:
@@ -40,7 +55,7 @@ Capture two independent Russian residential/mobile providers without VPN using b
 
 The public site does **not** require a GitHub OAuth application, an account or cookies. `/admin` is deny-by-default and does not have enabled write actions. Its optional owner OAuth code requires `APP_OWNER_GITHUB_ID`, a trusted `APP_BASE_URL`, correctly configured Supabase GitHub provider/callback and live negative session tests **before** activation. Registration for regular visitors is intentionally deferred.
 
-Vercel Hobby supports personal non-commercial development; commercial operation requires a separately approved hosting/terms review. On Supabase Free, account for pausing, storage limits and lack of automatic daily backups. Before external/paid usage, verify restore and storage, provider rights and Russian personal-data obligations if user accounts are introduced. Do not enable paid tiers, commercial ingestion or bulk scraping on assumptions.
+Vercel Hobby supports personal non-commercial development; commercial operation requires a separately approved hosting/terms review. On Supabase Free, account for pausing, storage limits and lack of automatic daily backups. Under the owner's current decision, actual backup/restore is deferred until the project is fully functional; acknowledge ongoing risk to all data written before that reassessment. Before external/paid usage, review provider rights, hosting terms and Russian personal-data obligations if user accounts are introduced. Do not enable paid tiers, commercial ingestion or bulk scraping on assumptions.
 
 ## Current limitations
 

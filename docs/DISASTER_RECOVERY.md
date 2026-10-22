@@ -2,6 +2,12 @@
 
 The actual Supabase **Free** database is provisioned in Frankfurt (PostgreSQL 17) but the free plan does **not** include managed daily backups. **No live backup or restore has yet been demonstrated.** Do not treat CI fixtures as recoverable user/forecast data.
 
+## M0 owner risk acceptance (2026-10-22)
+
+The owner explicitly accepts the residual risk of **losing the current Free-project database with no independent production backup**. The full backup/restore decision is **deferred until FootballForecast is fully functional**, tracked in [issue #96](https://github.com/StanleyLl0yd/FootballForecast/issues/96). Real production backup/recovery is **not an M0 or M1 gate**. The risk is not zero; it becomes materially more consequential when valuable provider-approved rows or immutable forecasts are accumulated. Nothing here claims recoverability of Supabase Auth, Storage bytes, service configuration, credentials or actual production rows.
+
+**Accepted replacement checks for M0:** (1) application migrations `0001`-`0003` executed from clean disposable PostgreSQL 17 and validated for RLS, grants, indexes and immutable triggers; (2) non-secret architecture, schema and Vercel/Supabase redeployment configuration recorded in GitHub (see [DEPLOYMENT](DEPLOYMENT.md)); (3) this explicit no-backup residual-risk acceptance. Latest matching [main CI #39764646186](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39764646186) passed application-schema replay and isolated **synthetic** encrypted PostgreSQL 17 restore. Live read-only SQL on 2026-10-22 returned **0** in `public.ff_matches`, `ff_forecasts`, `ff_source_records` and `ff_access_grants`. Only those four table counts were checked; do not infer the whole Supabase instance is empty. This acceptance replaces, rather than proves, real offsite disaster recovery.
+
 ## Reproducible local restore exercise
 
 The `python-core` CI job starts from a disposable PostgreSQL 17 database with synthetic M0 fixtures only. After migrations and RLS/append-only tests, it creates a custom-format `pg_dump -Fc` of `public`, `auth` and `ff_private`. It then encrypts the **synthetic** dump locally with the externally vetted **age v1.3.2 Linux amd64 binary**, downloaded from the official immutable GitHub release and checked against the release asset SHA-256 `cbe24006683f8eb669266162894b9a522a1af52f2665fbc63a4bb032ed26ac10`. A disposable encryption/recovery identity is generated in that CI run, with no key in code/logs/artifacts. It rejects a deliberately corrupted age ciphertext, then copies **only encrypted dump bytes** to a distinct, newly started PostgreSQL 17 container. Only there does it supply the ephemeral CI-only recovery identity, decrypt, verify the original plaintext SHA-256, provision missing CI `anon`/`authenticated` NOLOGIN roles, restore into `ff_restore_ci` and execute `database/tests/0004_restore_validation.sql`. The assertions verify rows, access policies and grants, five integrity triggers, foreign-key indexes and archived forecast immutability.
@@ -10,11 +16,11 @@ This proves a **cryptographically verified encrypted archive roundtrip and clean
 
 ## Real REST role-refusal proof
 
-The independent, **manually dispatched** public-key REST test was actually **executed on 2026-10-22 and PASSED** on exact production `2d307fbf9159d063b3ee914c8cb65c64ec4a14a0`: [GitHub Actions run #39763464499/job #119773072854](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39763464499/job/119773072854). One real anonymous read returned HTTP 200, and all seven unauthorized requests returned HTTP 401 with tested PostgreSQL SQLSTATE `42501`; no live data modification. See [M0 REST Denial Proof](M0_REST_DENIAL_PROOF.md). **This is not a database backup or restore**: the independent offsite encrypted real-data recovery gate below is still entirely unproven.
+The independent, **manually dispatched** public-key REST test was actually **executed on 2026-10-22 and PASSED** on exact production `2d307fbf9159d063b3ee914c8cb65c64ec4a14a0`: [GitHub Actions run #39763464499/job #119773072854](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39763464499/job/119773072854). One real anonymous read returned HTTP 200, and all seven unauthorized requests returned HTTP 401 with tested PostgreSQL SQLSTATE `42501`; no live data modification. See [M0 REST Denial Proof](M0_REST_DENIAL_PROOF.md). **This is not a database backup or restore**: independent encrypted real-data recovery remains unproven and, by owner decision, does not block M0/M1.
 
-## Production backup acceptance still required
+## Deferred production backup/recovery decision (not an M0/M1 gate)
 
-Before loading valuable real data or moving to M1:
+When FootballForecast is fully functional and the owner chooses to revisit backups (#96), consider:
 1. Define owner-approved Free-compatible export cadence, independent encrypted storage, least-privilege export credentials and key rotation. Never put backup passwords, raw football provider records or personal data in GitHub Actions artifacts or this public repository.
 2. Select a secure, user-controlled destination outside the Supabase project; measure quota and retention without enabling paid features.
 3. Make the backup restorable into a **separately isolated** authorized PostgreSQL 17 environment; test actual schema/RLS/trigger state, integrity checksums and row counts without exposing production data.
@@ -24,7 +30,7 @@ Before loading valuable real data or moving to M1:
 
 ## Free offsite storage decision (candidate only, 2026-10-19)
 
-**No provider selected or provisioned; owner approval and a real independent restore are outstanding.** Options were checked against vendor documentation, not an account-specific signup or billing quote.
+**No provider selected or provisioned; backup decision deferred to #96.** The historical candidates below have not been reconfirmed for current pricing or onboarding. Do not register accounts or enable billing for M0/M1.
 
 | Option | Documented free allowance | European location | Constraint |
 | --- | --- | --- | --- |
@@ -42,7 +48,7 @@ Before loading valuable real data or moving to M1:
 5. Restore **a real exported archive** using an independent read-only recovery credential and offline decryption key into a fresh, isolated, authorized PostgreSQL 17 instance; check row counts, table RLS, grants, FK indexes, archive triggers, restore errors and application read behavior. Never point a restore test at live Supabase. Keep raw production data out of CI artifacts and public reports.
 6. Owner must accept actual **RPO**, **RTO**, schedule, retention, alerting and quota before automation. Capacity is the sum of retained encrypted backup generations, not the size of only the newest archive. Verify that recovery access works even if the Supabase project or GitHub repository is unavailable.
 
-**Acceptance evidence:** successful production export time, offsite object identity/hash, location, encrypted retention, isolated restore log with sensitive data redacted, verified recovery time and the owner's accepted recovery policy. Until that exists, issue #5 and M0 stay **OPEN** regardless of CI fixture-restore results.
+**Future production-backup evidence (only if the owner elects to implement it):** successful production export time, offsite object identity/hash, location, encrypted retention, isolated restore log with sensitive data redacted, verified recovery time and an owner-approved recovery policy. These checks are **not** required for M0/M1 under the accepted risk. An absence of backup is a loss-of-data risk, not proof that recovery would work.
 
 The public source repository and GitHub CI cannot by themselves guarantee recovery of the real Supabase Free database.
 
@@ -63,7 +69,7 @@ bash scripts/m0-manual-encrypted-export.sh
 
 **Important limits:** only schema/data in `public`, `ff_private` and `auth` are exported; this is **not** a full Supabase instance archive. Cluster roles, Supabase-managed settings/extensions, external credentials and actual Storage object bytes are excluded; an isolated restore needs documented role/extension prerequisites and separate permitted objects. The operator must check `pg_dump` output/coverage, storage quota, source rights and actual archive restorability. Move the encrypted archive and manifest to an approved independent $0 destination, record the expected checksum **outside that destination**, verify a complete remote download/hash, and restore into a separately isolated PostgreSQL 17 environment with owner-held recovery key. Do not upload plaintext, a decryption identity or passwords. Do not run an initial real export before choosing the authorized scope, credential and recovery location.
 
-This script and its synthetic mocks alone satisfy **none** of the remaining production offsite/restore acceptance evidence. Issue #5 and M0 stay open until the first real independent restore and documented RPO/RTO.
+This script and its synthetic mocks alone do **not** demonstrate production recovery. Under the 2026-10-22 owner decision, production backup/recovery is deferred to #96 and no longer gates issue #5, M0 or M1.
 
 
 ## Owner-operated offline independent restore rehearsal (prepared; NOT production-tested)
