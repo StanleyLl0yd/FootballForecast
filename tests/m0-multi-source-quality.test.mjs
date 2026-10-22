@@ -147,6 +147,7 @@ test('future scheduled fixtures use a separate denominator and never become fini
   assert.equal(row.prematchScheduleEvidence.scheduledReferenceCases,4);
   assert.equal(row.prematchScheduleEvidence.documentedBySuppliedTimestamps,1);
   assert.equal(row.prematchScheduleEvidence.notDemonstrated,3);
+  assert.equal(row.temporalAvailability.demonstratedBySuppliedTimestamps,1);
   assert.equal(row.prematchScheduleEvidence.historicalProvenanceAuthenticated,false);
   assert.equal(row.provisionalScoreRankEligible,false);
   assert.equal(report.fieldRankings.fixtureIntegrity.length,0);
@@ -192,4 +193,30 @@ test('missing scheduled fixtures, wrong status, kickoff drift and time equality 
   invalid.cases[0].observations[0].homeGoals=0;
   invalid.cases[0].observations[0].awayGoals=null;
   assert.throws(()=>evaluateSourceEvidence(invalid),/null scores/);
+});
+
+test('mixed completed and future cases keep fixture and score denominators isolated',()=>{
+  const v=sample(2),upcoming=v.cases[1];
+  upcoming.official.status='scheduled';
+  upcoming.official.kickoffAt='2026-10-25T15:00:00Z';
+  upcoming.official.homeGoals=null;upcoming.official.awayGoals=null;
+  for(const observation of upcoming.observations){
+    observation.status='scheduled';
+    observation.kickoffAt=upcoming.official.kickoffAt;
+    observation.homeGoals=null;observation.awayGoals=null;
+    observation.publishedAt='2026-10-22T11:00:00Z';
+    observation.observedAt='2026-10-22T12:00:00Z';
+  }
+  const report=evaluateSourceEvidence(v,{minimumScoredMatches:1});
+  const f=report.sources.find(x=>x.sourceId==='footbolno');
+  assert.equal(f.referenceCases,2);
+  assert.equal(f.fixtureIntegrity.compared,1);
+  assert.equal(f.scheduledFixtureIntegrity.compared,1);
+  assert.equal(f.finalScore.compared,1);
+  assert.equal(f.prematchScheduleEvidence.documentedBySuppliedTimestamps,1);
+  assert.equal(f.temporalAvailability.demonstratedBySuppliedTimestamps,1);
+  assert.equal(report.fieldRankings.finalScore.length>0,true);
+  assert.equal(report.fieldRankings.scheduledFixtureIntegrity.length>0,true);
+  assert.equal(report.officialReferenceAuthenticityVerified,false);
+  assert.equal(report.sourceRightsApproved,false);
 });
