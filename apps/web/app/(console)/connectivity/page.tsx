@@ -13,7 +13,12 @@ export default function ConnectivityPage(){
   const [copied,setCopied]=useState(false);
   const [ready,setReady]=useState(false);
   const [error,setError]=useState(false);
-  useEffect(()=>setReady(true),[]);
+  // Hydration readiness must be published after a browser paint, rather than
+  // synchronously setting React state inside an effect (React 19 lint rule).
+  useEffect(()=>{
+    const frame=requestAnimationFrame(()=>setReady(true));
+    return ()=>cancelAnimationFrame(frame);
+  },[]);
   async function run(){
     if(busy)return;
     setBusy(true);
