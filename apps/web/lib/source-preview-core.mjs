@@ -135,10 +135,12 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     homeGoals:0,awayGoals:0,duplicates:0,duplicateMatchIds:0,
     missingTeams:0,invalidScores:0,
     invalidDates:0,invalidTimeFlags:0,pastScheduled:0,
+    distinctClubCount:0,completeDirectedFixtureGrid:false,
     structuralCandidate:false,historicalAggregateDrift:null
   }));
   const found=new Map(summaries.map(s=>[s.season,s]));
   const pairs=new Map(SEASONS.map(s=>[s,new Set()]));
+  const clubs=new Map(SEASONS.map(s=>[s,new Set()]));
   const ids=new Map(SEASONS.map(s=>[s,new Set()]));
   for(const values of rows){
     const col=name=>values[keys[name]].trim();
@@ -150,6 +152,8 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     if(!legalStatuses.has(status))throw new Error('Unknown league match status');
     data[status]++;
     const home=col('home_id'),away=col('away_id'),id=col('match_id');
+    if(home)clubs.get(season).add(home);
+    if(away)clubs.get(season).add(away);
     if(!home||!away||home===away)data.missingTeams++;
     if(!id)data.duplicateMatchIds++;
     else if(ids.get(season).has(id))data.duplicateMatchIds++;
@@ -202,6 +206,12 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
   upcoming.sort((a,b)=>a.kickoffUtc.localeCompare(b.kickoffUtc)||
     a.home.localeCompare(b.home));
   for(const s of summaries){
+    s.distinctClubCount=clubs.get(s.season).size;
+    // 16 clubs have exactly 16*15 directed home-away pairings.
+    // Combined with no self-pair / missing ID, 240 unique directed pairs
+    // proves *structural* double round-robin completeness, not game truth.
+    s.completeDirectedFixtureGrid=s.distinctClubCount===16&&
+      pairs.get(s.season).size===240&&s.missingTeams===0;
     const baseline=HISTORICAL_PUBLISHER_ANCHORS[s.season];
     if(baseline){
       const homeDelta=s.homeGoals-baseline.homeGoals;
@@ -216,7 +226,8 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     }
     // A structural candidate does NOT imply official accuracy, permissions or
     // authenticated timestamped revision history for a model.
-    s.structuralCandidate=s.matches===240&&s.duplicates===0&&
+    s.structuralCandidate=s.matches===240&&s.completeDirectedFixtureGrid&&
+      s.duplicates===0&&
       s.duplicateMatchIds===0&&s.missingTeams===0&&s.invalidScores===0&&
       s.invalidDates===0&&s.invalidTimeFlags===0&&s.pastScheduled===0&&
       s.matches===s.finished+s.scheduled+s.live+s.cancelled&&
