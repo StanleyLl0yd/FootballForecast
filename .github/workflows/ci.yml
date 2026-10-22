@@ -87,6 +87,8 @@ jobs:
         run: node --test apps/web/tests/data-catalog.test.mjs
       - name: Test offline cross-provider score, status, venue and temporal accuracy logic
         run: node --check scripts/m0-multi-source-quality.mjs && node --check scripts/m0-multi-source-core.mjs && node --test tests/m0-multi-source-quality.test.mjs tests/m0-source-core-parity.test.mjs
+      - name: Verify 2025/26 Wikipedia matrix parser without holdout data or network
+        run: python3 -m unittest discover -s tests -p test_m0_wikipedia_rpl_holdout_matrix.py
       - name: Validate historical fixture and score-annotation diagnostics without provider data
         run: node --check scripts/m0-scoreline-histogram-crosscheck.mjs && node --test tests/m0-fixture-structure.test.mjs tests/m0-source-quality.test.mjs tests/m0-fixture-reconcile.test.mjs tests/m0-openfootball-evidence.test.mjs tests/m0-scoreline-histogram-crosscheck.test.mjs tests/m0-cross-source-fixture-reconcile.test.mjs
       - name: Validate minimum RPL scope against pinned evidence
