@@ -122,6 +122,23 @@ export function OpenProviderPreview(){
               <td>{s.structuralCandidate?'Без структурных ошибок':'Требует проверки'}</td>
             </tr>)}</tbody>
           </table>
+          <h4>Ближайшие матчи РПЛ 2026/27 из того же CSV</h4>
+          {csvAudit.upcomingFixtures.length
+            ?<ul className="rpl-upcoming-fixtures">
+              {csvAudit.upcomingFixtures.map((f,i)=><li key={i}>
+                <strong>{f.home} - {f.away}</strong>
+                {' · '}{f.timeConfirmed
+                  ?new Intl.DateTimeFormat('ru-RU',{
+                    timeZone:'Europe/Moscow',day:'2-digit',month:'2-digit',
+                    hour:'2-digit',minute:'2-digit'
+                  }).format(new Date(f.kickoffUtc))+' МСК'
+                  :f.kickoffUtc.slice(0,10)+' (время не подтверждено)'}
+              </li>)}
+            </ul>
+            :<p>В опубликованном CSV не найдено предстоящих матчей
+              с пригодной датой. Это не доказательство отсутствия матчей РПЛ.</p>}
+          <p>Список поставщика показан без независимого подтверждения календаря
+            и переносов. На каждый просмотр используется тот же одиночный CSV-запрос.</p>
           <p>Подозрительные повторы и ошибки: {csvAudit.seasonSummaries.reduce(
             (n,s)=>n+s.duplicates+s.duplicateMatchIds+s.missingTeams+s.invalidScores,0)}.
             Технические результаты, сторонние исправления и историческая дата публикации
