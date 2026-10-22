@@ -114,14 +114,26 @@ export function OpenProviderPreview(){
             <caption>Структурная проверка результатов Footbolno, не официальная приёмка</caption>
             <thead><tr><th scope="col">Сезон</th><th scope="col">Всего</th>
               <th scope="col">Сыграно</th><th scope="col">Ожидают</th>
-              <th scope="col">Голы</th><th scope="col">Структура</th></tr></thead>
+              <th scope="col">Голы</th><th scope="col">Структура</th>
+              <th scope="col">Контрольный снимок</th></tr></thead>
             <tbody>{csvAudit.seasonSummaries.map(s=><tr key={s.season}>
               <th scope="row">{s.season}</th><td>{s.matches}</td>
               <td>{s.finished}</td><td>{s.scheduled}</td>
               <td>{s.homeGoals+s.awayGoals}</td>
               <td>{s.structuralCandidate?'Без структурных ошибок':'Требует проверки'}</td>
+              <td>{s.historicalAggregateDrift
+                ?s.historicalAggregateDrift.changed
+                  ?`Изменено: дома ${s.historicalAggregateDrift.homeDelta},
+                    в гостях ${s.historicalAggregateDrift.awayDelta},
+                    матчей ${s.historicalAggregateDrift.finishedDelta}`
+                  :'Совпадает по агрегатам с 20.10.2026'
+                :'Текущий сезон, контрольного итога нет'}</td>
             </tr>)}</tbody>
           </table>
+          <p>Контрольные итоги 2024/25 и 2025/26 взяты из ранее зафиксированного
+            снимка самого Footbolno. Совпадение агрегатов не подтверждает
+            правильность каждого счёта, а изменение не обязательно означает ошибку.
+          </p>
           <h4>Ближайшие матчи РПЛ 2026/27 из того же CSV</h4>
           {csvAudit.upcomingFixtures.length
             ?<ul className="rpl-upcoming-fixtures">

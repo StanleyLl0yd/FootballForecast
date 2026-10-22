@@ -40,6 +40,14 @@ export function summarizeSportScore(payload){
 }
 
 const SEASONS=['2024/2025','2025/2026','2026/2027'];
+// Pinned, publisher-derived 2026-10-20 aggregates, NOT official match truth.
+// Regression test cross-checks these against the hash-pinned M0 evidence file.
+const HISTORICAL_PUBLISHER_ANCHORS={
+  '2024/2025':{finished:240,homeGoals:364,awayGoals:284},
+  '2025/2026':{finished:240,homeGoals:348,awayGoals:261}
+};
+const publisherAnchorSHA256='dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1191d19513c214';
+
 const csvRequired=['match_id','league_id','season','status','home_id','away_id','home_goals','away_goals'];
 const csvMaximumRows=5000;
 const csvMaximumColumns=48;
@@ -127,7 +135,7 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     homeGoals:0,awayGoals:0,duplicates:0,duplicateMatchIds:0,
     missingTeams:0,invalidScores:0,
     invalidDates:0,invalidTimeFlags:0,pastScheduled:0,
-    structuralCandidate:false
+    structuralCandidate:false,historicalAggregateDrift:null
   }));
   const found=new Map(summaries.map(s=>[s.season,s]));
   const pairs=new Map(SEASONS.map(s=>[s,new Set()]));
@@ -194,6 +202,18 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
   upcoming.sort((a,b)=>a.kickoffUtc.localeCompare(b.kickoffUtc)||
     a.home.localeCompare(b.home));
   for(const s of summaries){
+    const baseline=HISTORICAL_PUBLISHER_ANCHORS[s.season];
+    if(baseline){
+      const homeDelta=s.homeGoals-baseline.homeGoals;
+      const awayDelta=s.awayGoals-baseline.awayGoals;
+      const finishedDelta=s.finished-baseline.finished;
+      s.historicalAggregateDrift={
+        baselineSHA256:publisherAnchorSHA256,
+        referenceDate:'2026-10-20',
+        homeDelta,awayDelta,finishedDelta,
+        changed:homeDelta!==0||awayDelta!==0||finishedDelta!==0
+      };
+    }
     // A structural candidate does NOT imply official accuracy, permissions or
     // authenticated timestamped revision history for a model.
     s.structuralCandidate=s.matches===240&&s.duplicates===0&&

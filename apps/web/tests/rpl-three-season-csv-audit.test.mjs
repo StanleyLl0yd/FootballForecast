@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import {readFileSync} from 'node:fs';
 import {parseBoundedCsv,summarizeFootbolnoRplCsv} from '../lib/source-preview-core.mjs';
 import {readResponseTextBounded} from '../lib/limited-response.mjs';
 
@@ -90,6 +91,46 @@ test('reject incorrect calendar dates, off-season fixtures, incomplete UTC time 
   assert.equal(stale.upcomingFixtures.length,0);
   assert.equal(stale.seasonSummaries[2].structuralCandidate,false);
 });
+test('frozen 2024/25 and 2025/26 Footbolno publisher aggregates expose silent score drift',()=>{
+  const pinned=JSON.parse(readFileSync(new URL('../../../docs/M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json',import.meta.url),'utf8'));
+  assert.equal(pinned.sourceSHA256,'dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1191d19513c214');
+  const rows=[];
+  for(const [year,extraHome,extraAway] of [
+    ['2024/2025',124,44],['2025/2026',108,21]
+  ]){
+    const seasonRows=createRows(year,{finished:240,score:[1,1]});
+    for(let i=0;i<seasonRows.length;i++){
+      if(i<extraHome)seasonRows[i][7]='2';
+      if(i<extraAway)seasonRows[i][8]='2';
+    }
+    rows.push(...seasonRows);
+    const ref=pinned.seasons.find(x=>x.season===year);
+    assert.ok(ref);
+    assert.equal(240+extraHome,ref.sourceReportedScoresNotAuthenticatedOnField.home);
+    assert.equal(240+extraAway,ref.sourceReportedScoresNotAuthenticatedOnField.away);
+  }
+  const baseline=summarizeFootbolnoRplCsv(toCsv(rows),'2026-10-22T00:00:00Z');
+  for(const s of baseline.seasonSummaries.slice(0,2)){
+    assert.equal(s.structuralCandidate,true);
+    assert.deepEqual(s.historicalAggregateDrift,{
+      baselineSHA256:pinned.sourceSHA256,referenceDate:'2026-10-20',
+      homeDelta:0,awayDelta:0,finishedDelta:0,changed:false
+    });
+  }
+  assert.equal(baseline.seasonSummaries[2].historicalAggregateDrift,null);
+  // An in-place publisher correction can preserve all 240 fixture identities.
+  // Detect changing score totals without pretending it is definitively wrong.
+  rows[0][7]='3';
+  const later=summarizeFootbolnoRplCsv(toCsv(rows),'2026-10-22T00:00:00Z');
+  assert.equal(later.seasonSummaries[0].matches,240);
+  assert.equal(later.seasonSummaries[0].structuralCandidate,true);
+  assert.equal(later.seasonSummaries[0].historicalAggregateDrift.homeDelta,1);
+  assert.equal(later.seasonSummaries[0].historicalAggregateDrift.awayDelta,0);
+  assert.equal(later.seasonSummaries[0].historicalAggregateDrift.changed,true);
+  assert.equal(later.seasonSummaries[1].historicalAggregateDrift.changed,false);
+  assert.deepEqual(later.upcomingFixtures,[]);
+});
+
 test('CSV strict syntax: quoted commas and newline are allowed, duplicate headers and broken quoting fail',()=>{
   const rows=createRows('2024/2025').slice(0,1);
   rows[0][9]='a,"b"\r\nc';

@@ -49,6 +49,10 @@ test('only manual direct CORS requests to bounded official published API URLs; n
  assert.match(s,/csvAudit\.upcomingFixtures\.map/);
  assert.match(s,/timeZone:'Europe\/Moscow'/);
  assert.match(s,/время не подтверждено/);
+ assert.match(s,/s\.historicalAggregateDrift\.changed/);
+ assert.match(s,/Совпадает по агрегатам с 20\.10\.2026/);
+ assert.match(s,/изменение не обязательно означает ошибку/);
+
  assert.match(s,/Источник данных/);
  assert.match(s,/title="Sports data by SportScore">Powered by SportScore/);
  assert.match(s,/footbolno\.ru\/otkrytye-dannye/);
