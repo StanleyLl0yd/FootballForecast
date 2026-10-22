@@ -60,6 +60,7 @@ export function parseBoundedCsv(csv){
         if(csv[i+1]==='"'){cell+='"';i++}
         else{quoted=false;finishedQuote=true}
       }else cell+=ch;
+      if(cell.length>4096)throw new Error('CSV cell budget exceeded');
     }else if(ch==='"'){
       if(cell!==''||finishedQuote)throw new Error('Invalid CSV quote');
       quoted=true;
@@ -83,7 +84,8 @@ export function parseBoundedCsv(csv){
   if(quoted)throw new Error('Unclosed CSV quoted field');
   row.push(cell);
   if(row.some(v=>v.length>0))rows.push(row);
-  if(rows.length<2||rows.length>csvMaximumRows+1)throw new Error('CSV row budget invalid');
+  if(rows.length>csvMaximumRows+1)throw new Error('CSV row budget exceeded');
+  if(rows.length<2)throw new Error('CSV row budget invalid');
   const header=rows.shift().map((s,i)=>i===0?s.replace(/^\uFEFF/,''):s);
   if(new Set(header).size!==header.length)throw new Error('Duplicate CSV header');
   const keys=Object.fromEntries(header.map((s,i)=>[s,i]));
