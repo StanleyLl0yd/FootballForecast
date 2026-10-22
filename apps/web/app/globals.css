@@ -120,3 +120,6 @@
 .rpl-source-csv-table th{font-weight:600}
 .source-preview-item{overflow-wrap:anywhere}
 .source-preview-item .source-lab-download{margin-right:8px}
+
+.rpl-upcoming-fixtures{display:flex;flex-direction:column;gap:7px;margin:10px 0 14px;padding-left:20px}
+.rpl-upcoming-fixtures li{line-height:1.5;font-size:13px}

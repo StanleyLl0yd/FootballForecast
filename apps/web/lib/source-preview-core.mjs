@@ -96,9 +96,31 @@ export function parseBoundedCsv(csv){
 
 const score=s=>/^\d{1,2}$/.test(s)&&Number(s)<=20?Number(s):null;
 
-export function summarizeFootbolnoRplCsv(csv){
+// Source date_utc is UTC, even when the publisher supplied only a calendar day.
+// Never invent a kickoff time for time_confirmed=0.
+function parsePublisherUtc(raw){
+  const text=raw.trim().replace(' ','T');
+  const dateOnly=/^\d{4}-\d{2}-\d{2}$/.test(text);
+  const withTime=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?Z?$/.test(text);
+  if(!dateOnly&&!withTime)return null;
+  const iso=dateOnly?text+'T00:00:00Z':
+    text.endsWith('Z')?text:text+'Z';
+  const epoch=Date.parse(iso);
+  return Number.isFinite(epoch)?{
+    epoch,dateUtc:new Date(epoch).toISOString(),
+    dateOnly:dateOnly
+  }:null;
+}
+
+export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString()){
   const {rows,keys,header}=parseBoundedCsv(csv);
-  if(!header.includes('date_utc'))throw new Error('Missing kickoff date');
+  if(['date_utc','home','away','time_confirmed'].some(k=>!header.includes(k)))
+    throw new Error('Missing required fixture fields');
+  const now=Date.parse(nowIsoUtc);
+  if(!Number.isFinite(now))throw new Error('Invalid audit timestamp');
+  const todayUtc=new Date(now).toISOString().slice(0,10);
+  const upcoming=[];
+  const upcomingSeen=new Set();
   const summaries=SEASONS.map(season=>({
     season,matches:0,finished:0,scheduled:0,live:0,cancelled:0,
     homeGoals:0,awayGoals:0,duplicates:0,duplicateMatchIds:0,
@@ -133,7 +155,27 @@ export function summarizeFootbolnoRplCsv(csv){
       else{data.homeGoals+=gh;data.awayGoals+=ga}
     }else if(status==='scheduled'&&(gh!==null||ga!==null))
       data.invalidScores++;
+    if(season==='2026/2027'&&status==='scheduled'){
+      const kickoff=parsePublisherUtc(col('date_utc'));
+      const timeConfirmed=col('time_confirmed')==='1';
+      const future=kickoff&&(
+        timeConfirmed&&!kickoff.dateOnly?kickoff.epoch>=now:
+        kickoff.dateUtc.slice(0,10)>=todayUtc
+      );
+      const homeName=col('home').slice(0,80),awayName=col('away').slice(0,80);
+      const pair=home+'|'+away;
+      if(future&&homeName&&awayName&&home&&away&&
+        !upcomingSeen.has(pair)){
+        upcomingSeen.add(pair);
+        upcoming.push({
+          home:homeName,away:awayName,kickoffUtc:kickoff.dateUtc,
+          timeConfirmed:timeConfirmed&&!kickoff.dateOnly
+        });
+      }
+    }
   }
+  upcoming.sort((a,b)=>a.kickoffUtc.localeCompare(b.kickoffUtc)||
+    a.home.localeCompare(b.home));
   for(const s of summaries){
     // A structural candidate does NOT imply official accuracy, permissions or
     // authenticated timestamped revision history for a model.
@@ -145,6 +187,9 @@ export function summarizeFootbolnoRplCsv(csv){
   return {
     provider:'footbolno',checkedScope:'rpl-three-seasons',
     publisherRows:rows.length,seasonSummaries:summaries,
+    // At most eight scheduled RPL 2026/27 items shown from the same CSV GET.
+    // Not a verified official kickoff / current provider SLA.
+    upcomingFixtures:upcoming.slice(0,8),
     recordRevisionTimestampsAvailable:false,
     originalMatchRightsVerified:false,
     sourceMatchAccuracyVerified:false,
