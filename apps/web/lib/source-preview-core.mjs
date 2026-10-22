@@ -101,15 +101,16 @@ const score=s=>/^\d{1,2}$/.test(s)&&Number(s)<=20?Number(s):null;
 function parsePublisherUtc(raw){
   const text=raw.trim().replace(' ','T');
   const dateOnly=/^\d{4}-\d{2}-\d{2}$/.test(text);
-  const withTime=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?Z?$/.test(text);
+  const withTime=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:\.\d{1,3})?(?:Z|\+00:00|\+0000)?$/.test(text);
   if(!dateOnly&&!withTime)return null;
+  const zoneSupplied=/(?:Z|\+00:00|\+0000)$/.test(text);
   const iso=dateOnly?text+'T00:00:00Z':
-    text.endsWith('Z')?text:text+'Z';
+    zoneSupplied?text:text+'Z';
   const epoch=Date.parse(iso);
-  return Number.isFinite(epoch)?{
-    epoch,dateUtc:new Date(epoch).toISOString(),
-    dateOnly:dateOnly
-  }:null;
+  if(!Number.isFinite(epoch))return null;
+  const dateUtc=new Date(epoch).toISOString();
+  if(dateUtc.slice(0,10)!==text.slice(0,10))return null;
+  return {epoch,dateUtc,dateOnly};
 }
 
 export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString()){
@@ -125,6 +126,7 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     season,matches:0,finished:0,scheduled:0,live:0,cancelled:0,
     homeGoals:0,awayGoals:0,duplicates:0,duplicateMatchIds:0,
     missingTeams:0,invalidScores:0,
+    invalidDates:0,invalidTimeFlags:0,pastScheduled:0,
     structuralCandidate:false
   }));
   const found=new Map(summaries.map(s=>[s.season,s]));
@@ -149,6 +151,21 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
       if(pairs.get(season).has(pair))data.duplicates++;
       else pairs.get(season).add(pair);
     }
+    const date=parsePublisherUtc(col('date_utc'));
+    // RPL pilot seasons are July-to-June. A valid ISO date outside its
+    // recorded season is a hard chronology inconsistency.
+    const lower=season.slice(0,4)+'-07-01';
+    const upper=season.slice(5)+'-07-01';
+    const inside=date&&date.dateUtc.slice(0,10)>=lower&&
+      date.dateUtc.slice(0,10)<upper;
+    if(!inside)data.invalidDates++;
+    const flag=col('time_confirmed');
+    if(!['0','1'].includes(flag)||(flag==='1'&&date?.dateOnly))
+      data.invalidTimeFlags++;
+    if(season==='2026/2027'&&status==='scheduled'&&inside&&
+      (flag==='1'&&!date.dateOnly?date.epoch<now:
+        date.dateUtc.slice(0,10)<todayUtc))
+      data.pastScheduled++;
     const gh=score(col('home_goals')),ga=score(col('away_goals'));
     if(status==='finished'){
       if(gh===null||ga===null)data.invalidScores++;
@@ -156,8 +173,8 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     }else if(status==='scheduled'&&(gh!==null||ga!==null))
       data.invalidScores++;
     if(season==='2026/2027'&&status==='scheduled'){
-      const kickoff=parsePublisherUtc(col('date_utc'));
-      const timeConfirmed=col('time_confirmed')==='1';
+      const kickoff=inside?date:null;
+      const timeConfirmed=flag==='1';
       const future=kickoff&&(
         timeConfirmed&&!kickoff.dateOnly?kickoff.epoch>=now:
         kickoff.dateUtc.slice(0,10)>=todayUtc
@@ -181,6 +198,7 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     // authenticated timestamped revision history for a model.
     s.structuralCandidate=s.matches===240&&s.duplicates===0&&
       s.duplicateMatchIds===0&&s.missingTeams===0&&s.invalidScores===0&&
+      s.invalidDates===0&&s.invalidTimeFlags===0&&s.pastScheduled===0&&
       s.matches===s.finished+s.scheduled+s.live+s.cancelled&&
       (s.season==='2026/2027'||s.finished===240);
   }
