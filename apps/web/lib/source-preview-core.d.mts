@@ -11,7 +11,8 @@ export declare function summarizeSportScore(payload:unknown):ProviderPreview;
 export type RplSeasonSummary={
  season:string;matches:number;finished:number;scheduled:number;live:number;cancelled:number;
  homeGoals:number;awayGoals:number;duplicates:number;duplicateMatchIds:number;
- missingTeams:number;invalidScores:number;structuralCandidate:boolean;
+ missingTeams:number;invalidScores:number;invalidDates:number;invalidTimeFlags:number;
+ pastScheduled:number;structuralCandidate:boolean;
 };
 export type UpcomingRplFixture={
  home:string;away:string;kickoffUtc:string;timeConfirmed:boolean;

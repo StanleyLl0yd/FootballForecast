@@ -139,8 +139,9 @@ export function OpenProviderPreview(){
               с пригодной датой. Это не доказательство отсутствия матчей РПЛ.</p>}
           <p>Список поставщика показан без независимого подтверждения календаря
             и переносов. На каждый просмотр используется тот же одиночный CSV-запрос.</p>
-          <p>Подозрительные повторы и ошибки: {csvAudit.seasonSummaries.reduce(
-            (n,s)=>n+s.duplicates+s.duplicateMatchIds+s.missingTeams+s.invalidScores,0)}.
+          <p>Проблемы структуры, дат и прошлых запланированных матчей: {csvAudit.seasonSummaries.reduce(
+            (n,s)=>n+s.duplicates+s.duplicateMatchIds+s.missingTeams+s.invalidScores+
+                  s.invalidDates+s.invalidTimeFlags+s.pastScheduled,0)}.
             Технические результаты, сторонние исправления и историческая дата публикации
             каждого матча всё ещё требуют отдельной сверки.</p>
         </div>:null}
