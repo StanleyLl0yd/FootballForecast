@@ -57,7 +57,7 @@ A minimal **entirely synthetic**, *not real RPL* JSON example:
 }
 ```
 
-Set unverified publisher identity and publication timestamp to JSON `null`; do not infer them. Kickoff is exact UTC with seconds. Postponed and cancelled games must have both goals `null`. Awarded results are a **different** status from played and must be separated in comparisons. The input must fit 4 MiB, at most 20,000 primary observations with 64 provider observations per match.
+Set unverified publisher identity and publication timestamp to JSON `null`; do not infer them. Kickoff is exact UTC with seconds. Scheduled, postponed and cancelled games must have both goals `null`. Awarded results are a **different** status from played and must be separated in comparisons. The input must fit 4 MiB, at most 20,000 primary observations with 64 provider observations per match.
 
 Run only on a **separately curated private file**, after independently checking its acquisition permissions:
 
@@ -66,6 +66,17 @@ node scripts/m0-multi-source-quality.mjs /absolute/path/to/private-evidence.json
 ```
 
 The output contains source IDs, counts, field-specific error rates, 95% Wilson intervals, a digest of supplied JSON and **explicit false flags** for authenticity, rights, independence and training. It does not include team IDs, source match rows or private paths. Do not commit the evidence file, vendor data, tokens or unapproved third-party datasets; use a private local working directory.
+
+## Future fixtures and pre-kickoff evidence (M0, research only)
+
+The evaluator now accepts a separate **`scheduled`** status for future matches, as well as `played`, `awarded`, `postponed` and `cancelled`. The `official` and any candidate observations for a scheduled match **must have `homeGoals:null` and `awayGoals:null`**; placeholder zero scores, "live" partial scores and invented results are rejected. This permits checking a fixed 2026/27 prospective-fixture shortlist without mixing future events with the 2024/25 training or 2025/26 sealed test cohorts.
+
+Two independent *research* numbers are produced **per source** for reference `scheduled` cases:
+
+1. `scheduledFixtureIntegrity` measures whether all source records agree with the supplied reference on the directed home/away pair, exact kickoff UTC timestamp, scheduled status and null scores. The denominator includes **every** scheduled reference fixture, including missing source rows. It is not merged into the finished-only `fixtureIntegrity` or `finalScore` metrics. Results with enough examples may be ranked separately in `fieldRankings.scheduledFixtureIntegrity`.
+2. `prematchScheduleEvidence` counts a case as `documentedBySuppliedTimestamps` **only** when its entire scheduled fixture is structurally identical **and** both its claimed `publishedAt` and its actual-supplied `observedAt` are strictly **earlier** than reference kickoff. A null `publishedAt`, a different team/date, missing source row, or timestamp equal to/after kickoff remains `notDemonstrated`. Both counters have the same full scheduled reference denominator. The existing cross-status `temporalAvailability` counts strictly earlier timestamps as well.
+
+**Crucial limitation:** the local file is supplied by the investigator. The evaluator **cannot authenticate** a claimed publication date, HTTP response history, original timestamp timezone, immutable archive, source independence, upstream rights or actual correctness of a referenced "official" match. `historicalProvenanceAuthenticated:false`, `sourceRightsApproved:false`, `sourceApproval:false` and `enabledForTraining:false` remain fixed. A purported timestamp is not proof that data was available for historical forecasting; future fixture agreement is not evidence of prediction skill. The Data Center renders and exports aggregate counts only, without uploading private observations, retaining raw rows or activating a provider.
 
 ## Browser-only investigation interface (M0)
 
