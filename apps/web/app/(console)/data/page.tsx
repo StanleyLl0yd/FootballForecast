@@ -1,5 +1,6 @@
 import {PageHeading} from '@/components/empty-state';
 import {SourceEvidenceLab} from '@/components/source-evidence-lab';
+import {OpenProviderPreview} from '@/components/open-provider-preview';
 import sourceRegistry from '../../../../../docs/M0_FREE_SOURCE_REGISTRY.json';
 import historicalEvidence from '../../../../../docs/M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json';
 import footbolnoEvidence from '../../../../../docs/M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json';
@@ -32,7 +33,7 @@ export default function DataCenter(){
     <div className="stat-grid">
       <div className="stat"><span>Источников в реестре</span><strong>{sources.length}</strong>
         <small>Бесплатные и общедоступные справочные</small></div>
-      <div className="stat"><span>Активных подключений</span><strong>{active}</strong>
+      <div className="stat"><span>Активных импортов</span><strong>{active}</strong>
         <small>Импорт данных не разрешён на M0</small></div>
       <div className="stat"><span>Измеренная точность</span><strong>{measured}</strong>
         <small>Нужна независимая сверка матчей</small></div>
@@ -124,6 +125,7 @@ export default function DataCenter(){
       <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json"
         target="_blank" rel="noopener noreferrer">Доказательства, версии исходных файлов и ограничения ↗</a>
     </section>
+    <OpenProviderPreview/>
     <SourceEvidenceLab/>
     <div className="source-groups">
       {categories.map(category=>{

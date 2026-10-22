@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "asOf": "2026-10-21",
+  "asOf": "2026-10-22",
   "project": "FootballForecast",
   "policy": {
     "maxMonthlySpendUSD": 0,
@@ -131,7 +131,7 @@
       "access": "offline-candidate",
       "rights": "publisher-cc-by-4-upstream-unverified",
       "qualityEvidence": "One-time 2026-10-20 publisher CSV SHA-256 dab9b30d... 2571 source rows/11 seasons: 2026/27 240 unique directed fixtures, 88 finished, 152 scheduled; 5 earlier seasons structurally anomalous. No official per-match accuracy measured.",
-      "limitations": "2016/17-2020/21 source snapshots quarantined: incomplete, extra clubs, or duplicated fixtures (2020/21: 36 duplicate directed pairs). 2026/27 structurally complete at observed date ONLY; no recognized per-match published-at fields. The upstream license chain from ESPN/Wikipedia, awards, true score correctness and historical as-of remain unverified. No model training.",
+      "limitations": "2016/17-2020/21 source snapshots quarantined: incomplete, extra clubs, or duplicated fixtures (2020/21: 36 duplicate directed pairs). 2026/27 structurally complete at observed date ONLY; no recognized per-match published-at fields. The upstream license chain from ESPN/Wikipedia, awards, true score correctness and historical as-of remain unverified. No model training. Owner-approved research-only use: publisher claims CC BY 4.0 with attribution. User-triggered, browser-only JSON league/235 summary (no raw row retention or model training) is allowed in M0, with visible credit. Does not establish original ESPN/other match-chain rights or individual score accuracy.",
       "empiricalResultErrorRate": null,
       "verifiedCurrentRPLCoverage": false,
       "verifiedPrematchSnapshots": false,
@@ -154,7 +154,7 @@
       "access": "free-api-candidate",
       "rights": "api-attributed-derived-use-claimed-but-general-site-commercial-and-database-terms-conflict-upstream-permission-unverified",
       "qualityEvidence": "API-specific terms 2026-04-23 §§1–5 permit free attributed early commercial dashboards, caching and derived analytics (~10000/day/IP); general website terms 2026-04-12 §§2.2,2.8–2.10 restrict commercial site use, significant data extraction and automated access. Exact precedence, 2024/25–2026/27 RPL coverage and upstream/ML permissions unverified. See M0_CURRENT_RPL_TERMS_REVIEW.json. 2026-10-22 cross-check of developer endpoint reference: `/matches/` limit <=50 recent; `/team/` limit <=30 recent/upcoming; no documented season filter; paid-tier examples include historical depth beyond public API.",
-      "limitations": "Do not infer API-specific license overrides general site TOS without written clarification. Paid tier prohibited; visible Powered by SportScore dofollow link required for any future authorized app surface. No confirmed rights for RPL underlying source rows, independent backups, training probabilistic models, derivative public forecasts or full 2024/25–2026/27 free coverage; no provider access made in M0. Draft inquiry: M0_SPORTSCORE_RIGHTS_INQUIRY.md. Public widget docs list eight GET endpoints only, with no season selector or full-history pagination; terms explicitly place historical-data access beyond public API among paid-tier use cases. Consequently free 2024/25 training and 2025/26 holdout coverage remains UNVERIFIED; no paid fallback. See docs/M0_CURRENT_RPL_TERMS_REVIEW.json.",
+      "limitations": "Do not infer API-specific license overrides general site TOS without written clarification. Paid tier prohibited; visible Powered by SportScore dofollow link required for any future authorized app surface. No confirmed rights for RPL underlying source rows, independent backups, training probabilistic models, derivative public forecasts or full 2024/25–2026/27 free coverage; no production provider adapter or bulk integration enabled at M0. Draft inquiry: M0_SPORTSCORE_RIGHTS_INQUIRY.md. Public widget docs list eight GET endpoints only, with no season selector or full-history pagination; terms explicitly place historical-data access beyond public API among paid-tier use cases. Consequently free 2024/25 training and 2025/26 holdout coverage remains UNVERIFIED; no paid fallback. See docs/M0_CURRENT_RPL_TERMS_REVIEW.json. Research-only manual preview uses documented keyless 10-world-match GET with visible, crawlable Powered by SportScore link, 60s local cooldown, no API credentials or storage. Separate REST v1 day-scoped fixtures/search endpoints are documented but no RPL slug or authorized history reconstruction is demonstrated.",
       "empiricalResultErrorRate": null,
       "verifiedCurrentRPLCoverage": false,
       "verifiedPrematchSnapshots": false,

@@ -4,6 +4,7 @@ Updated 2026-10-20. Milestone acceptance requires verification, not code presenc
 
 ## M0 - Architecture & Web Foundation (OPEN)
 - [x] Research preliminary RPL data source coverage and terms; candidates NOT approved.
+- [x] Enable bounded, on-demand read-only Footbolno and SportScore browser research previews with immediate attribution; no vendor correspondence needed for the publicly permitted preview tier, no raw DB writes or ML.
 - [x] Local monorepo and Next.js browser-first design with navigation and honest empty states.
 - [x] Initial Python package and deterministic Poisson/scoring math primitives.
 - [x] Initial RLS database schema and append-only prediction tables (applied to Free Supabase Frankfurt, with post-deployment verification pending).
