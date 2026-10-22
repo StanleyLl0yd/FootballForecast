@@ -123,8 +123,12 @@ export function evaluateSourceEvidenceCore(input,registry,{minimumScoredMatches=
       if(row.status!==official.status)t.status++;
       if(row.publisherGroup===null)t.unresolvedUpstream++;
       else t.upstreamGroups.add(row.publisherGroup);
-      if(row.publishedAt!==null&&Date.parse(row.publishedAt)<Date.parse(official.kickoffAt)&&
-        Date.parse(row.observedAt)<Date.parse(official.kickoffAt))t.temporalDemonstrated++;
+      if(!reversed&&row.kickoffAt===official.kickoffAt&&
+        row.status===official.status&&row.homeGoals===official.homeGoals&&
+        row.awayGoals===official.awayGoals&&row.publishedAt!==null&&
+        Date.parse(row.publishedAt)<Date.parse(official.kickoffAt)&&
+        Date.parse(row.observedAt)<Date.parse(official.kickoffAt))
+        t.temporalDemonstrated++;
       else t.temporalNotDemonstrated++;
       // Compare final scores only with correct home/away orientation and same completed status.
       if(!reversed&&['played','awarded'].includes(official.status)&&row.status===official.status){
