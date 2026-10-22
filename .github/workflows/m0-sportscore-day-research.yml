@@ -80,5 +80,5 @@ jobs:
             echo '~~~json'
           } >> "$GITHUB_STEP_SUMMARY"
           node scripts/m0-sportscore-day-research.mjs \
-            "$work/footbolno.csv" "$work/manifest.json" >> "$GITHUB_STEP_SUMMARY"
+            "$work/footbolno.csv" "$work/manifest.json" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '~~~' >> "$GITHUB_STEP_SUMMARY"
