@@ -6,6 +6,8 @@ on:
     paths:
       - 'scripts/m0-footbolno-csv-aggregate.mjs'
       - 'scripts/m0-scoreline-histogram-crosscheck.mjs'
+      - 'scripts/m0-cross-source-fixture-reconcile.mjs'
+      - 'scripts/m0-fixture-reconcile.mjs'
       - 'scripts/m0-fixture-structure.mjs'
       - '.github/workflows/m0-footbolno-csv-research.yml'
 permissions: {contents: read}
@@ -25,7 +27,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned
         with: {node-version: '22'}
       - name: Enforce bounded aggregate-only CSV parser
-        run: node --check scripts/m0-footbolno-csv-aggregate.mjs && node --check scripts/m0-scoreline-histogram-crosscheck.mjs && node --test tests/m0-footbolno-csv-aggregate.test.mjs tests/m0-scoreline-histogram-crosscheck.test.mjs
+        run: node --check scripts/m0-footbolno-csv-aggregate.mjs && node --check scripts/m0-scoreline-histogram-crosscheck.mjs && node --check scripts/m0-cross-source-fixture-reconcile.mjs && node --test tests/m0-footbolno-csv-aggregate.test.mjs tests/m0-scoreline-histogram-crosscheck.test.mjs tests/m0-cross-source-fixture-reconcile.test.mjs
       - name: Download ONE publicly advertised RPL CSV to disposable private runner memory
         shell: bash
         run: |
@@ -79,5 +81,18 @@ jobs:
             echo '~~~json'
           } >> "$GITHUB_STEP_SUMMARY"
           node scripts/m0-scoreline-histogram-crosscheck.mjs \
+            "$work/rpl.csv" "$work/openfootball.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo
+            echo '### Cross-provider, per-directed-fixture 2024/25 score/date evidence'
+            echo
+            echo 'Club identities explicitly mapped from public football names (no score-derived mapping).'
+            echo 'Only counts and disagreement field types; no match rows, teams or provider IDs are logged.'
+            echo 'This is NOT official match validation, proof of upstream legal title, or permission to fit ML.'
+            echo
+            echo '~~~json'
+          } >> "$GITHUB_STEP_SUMMARY"
+          node scripts/m0-cross-source-fixture-reconcile.mjs \
             "$work/rpl.csv" "$work/openfootball.txt" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '~~~' >> "$GITHUB_STEP_SUMMARY"
