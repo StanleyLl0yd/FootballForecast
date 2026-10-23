@@ -71,7 +71,7 @@ where c.conrelid='public.ff_matches'::regclass
   and c.conname='ff_matches_status_scores_consistent'
   and c.contype='c' and c.convalidated;
 
-do $
+do $$
 begin
   begin
     insert into public.ff_matches
@@ -87,6 +87,6 @@ begin
     end if;
   end;
 end;
-$;
+$$;
 
 \echo 'PASS: backup round trip preserves fixture data, RLS, privileges, triggers, indexes'
