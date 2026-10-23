@@ -63,4 +63,30 @@ select 1 / case when
   where id='14000000-0000-0000-0000-000000000002')='historical-test-only'
 then 1 else 0 end as restored_history_unchanged;
 
+-- The new M0 status/score contract must survive encrypted dump/restore.
+select 1 / case when count(*)=1 then 1 else 0 end
+  as status_score_constraint_survived_restore
+from pg_constraint c
+where c.conrelid='public.ff_matches'::regclass
+  and c.conname='ff_matches_status_scores_consistent'
+  and c.contype='c' and c.convalidated;
+
+do $$
+begin
+  begin
+    insert into public.ff_matches
+      (season_id,home_id,away_id,kickoff_at,status,home_goals,away_goals)
+    values ('11000000-0000-0000-0000-000000000001',
+      '12000000-0000-0000-0000-000000000001',
+      '12000000-0000-0000-0000-000000000002',
+      clock_timestamp()+interval '1 day','scheduled',0,0);
+    raise exception 'Restore incorrectly accepted future match with completed score';
+  exception when check_violation then
+    if position('ff_matches_status_scores_consistent' in sqlerrm)=0 then
+      raise exception 'Unexpected restore status/score guard: %',sqlerrm;
+    end if;
+  end;
+end;
+$$;
+
 \echo 'PASS: backup round trip preserves fixture data, RLS, privileges, triggers, indexes'
