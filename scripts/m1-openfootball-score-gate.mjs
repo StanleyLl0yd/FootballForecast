@@ -11,7 +11,9 @@ export function verifyHistoricalPublisherScoreConsistency(report){
     report.matchedDirectedFixtures!==240||
     report.missingFromPublisher!==0||report.missingFromOpenFootball!==0||
     report.dateSourceErrors!==0||report.structuralSourceErrors!==0||
-    report.referenceAwardedGames!==0)
+    report.referenceAwardedGames!==0||
+    !/^[a-f0-9]{64}$/.test(report.footbolnoCsvSHA256??'')||
+    !/^[a-f0-9]{40}$/.test(report.openFootballGitBlob??''))
     refuse('incomplete or structurally invalid 2024/25 comparator');
   const differences=report.differingFields;
   if(!differences||!Number.isInteger(differences.homeGoals)||
@@ -20,6 +22,8 @@ export function verifyHistoricalPublisherScoreConsistency(report){
     !Number.isInteger(differences.date)||
     Object.values(differences).some(x=>x<0||x>240))
     refuse('missing or malformed match-level field counts');
+  if(!Number.isInteger(report.mismatchedFixtures)||report.mismatchedFixtures!==differences.date)
+    refuse('inconsistent per-field mismatch totals');
   if(differences.homeGoals>0||differences.awayGoals>0||differences.resultType>0)
     refuse('unresolved completed-score or match-type conflict');
   return {
