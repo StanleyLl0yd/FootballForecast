@@ -67,3 +67,49 @@ summary is 2 modified, 718 unchanged, 1 score change, 1 new confirmed time,
 
 Free-only requirement, attribution and existing owner-accepted #6/#8/#96 risks
 remain unchanged. M1 is OPEN; M2 has not been authorized.
+
+## Explicit guarded current-season refresh (migration 0009)
+
+After a **new and different** publisher snapshot has passed the existing
+manual protected ingestion and aggregate revision review, a privileged
+operator may invoke
+`select ff_private.ff_apply_safe_current_refresh('<candidate-uuid>'::uuid);`.
+This is **not** called automatically by GitHub Actions or a web route.
+
+The operation takes the same serialized PostgreSQL advisory lock as canonical
+promotion and executes as **SECURITY INVOKER**. `anon` and `authenticated`
+have no EXECUTE privilege. It permits only:
+
+- A previously date-only *scheduled* 2026/27 fixture gaining an exact,
+  confirmed kickoff time; this creates its missing canonical public match
+  without fabricating a midnight kickoff.
+- An already published *scheduled* 2026/27 fixture becoming *finished*
+  with validated final goals, the **same confirmed kickoff and identity**,
+  and a source retrieval timestamp no earlier than the kickoff. It records
+  old/new score and source IDs in an RLS-protected, append-only private audit
+  table `ff_current_refresh_events` before updating the canonical match.
+
+All changes must be explainable by exactly these two transition counts. The
+transaction refuses any changed historical training/holdout record, added or
+removed fixture identity, changed club/source names, a changed confirmed
+kickoff, calendar move, finished-score correction, or status regression.
+The existing immutable forecast/outcome triggers retain authority.
+Any failure aborts the **whole** transaction: no partial scoreboard update,
+no partially inserted snapshot links or audit event. Once published, retrying
+the exact snapshot is an idempotent no-op.
+
+The existing `ff_promote_footbolno_snapshot` routine is reused **after**
+validated current-result transitions, so it continues enforcing its all-season
+identity, status, kickoff and score comparisons, plus source attribution.
+New source snapshots and prior event history are never overwritten.
+
+A synthetic PostgreSQL 17 integration test creates successive snapshots for
+one newly confirmed current kickoff, then that match's finished result, then
+one forbidden sealed-holdout correction. It verifies exact public counts,
+one append-only event, safe replay, rejected correction and a full ROLLBACK.
+
+**Production limitation:** until another real, changed Footbolno snapshot
+has been safely imported, the current live counts remain 720 protected rows
+and 616 publicly promoted matches. Deployment of this routine is not proof
+that any new real result has been refreshed. No M2 models or backtests
+are enabled by this feature.
