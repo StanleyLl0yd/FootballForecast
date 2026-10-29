@@ -245,11 +245,11 @@ begin
   insert into public.ff_source_records
     (source_id,provider_id,source_version,event_at,published_at,content_hash)
   select v_source,r.source_match_id,v_hash,r.kickoff_at,null,
-    pg_catalog.encode(public.digest(
+    pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(
       concat_ws('|',r.season,r.source_match_id,r.home_source_id,
         r.away_source_id,extract(epoch from r.kickoff_at)::text,
         r.status,coalesce(r.home_goals::text,''),
-        coalesce(r.away_goals::text,''),v_hash),'sha256'),'hex')
+        coalesce(r.away_goals::text,''),v_hash),'UTF8')),'hex')
   from ff_private.ff_ingest_matches r
   where r.snapshot_id=p_snapshot and r.kickoff_time_confirmed
   on conflict(source_id,provider_id,content_hash) do nothing;
