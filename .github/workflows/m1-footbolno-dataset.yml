@@ -1,0 +1,84 @@
+name: M1 Footbolno private three-season dataset
+on:
+  pull_request:
+    paths:
+      - 'scripts/m1-footbolno-normalize.mjs'
+      - 'tests/m1-footbolno-normalize.test.mjs'
+      - '.github/workflows/m1-footbolno-dataset.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  normalize-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Check M1 three-season normalization and temporal quarantine
+        run: |
+          node --check scripts/m1-footbolno-normalize.mjs
+          node --test tests/m1-footbolno-normalize.test.mjs
+  private-source-snapshot:
+    if: github.event_name == 'workflow_dispatch'
+    needs: [normalize-unit]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Retrieve bounded licensed CSV and validate private dataset
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          mkdir -m 0700 "$work/private"
+          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 45 --max-filesize 2000000 \
+            --output "$work/footbolno.csv" \
+            'https://footbolno.ru/data/league/235-matches.csv'
+          test -s "$work/footbolno.csv"
+          test "$(wc -c < "$work/footbolno.csv")" -le 2000000
+          retrieved="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          set +e
+          node scripts/m1-footbolno-normalize.mjs \
+            "$work/footbolno.csv" "$retrieved" "$work/private" > "$work/qc.json"
+          result=$?
+          set -e
+          {
+            echo '## M1 real-source three-season private normalization'
+            echo
+            echo 'Source: Footbolno, CC BY 4.0 - https://footbolno.ru/otkrytye-dannye'
+            echo 'All data remains in a private temporary runner directory and is deleted.'
+            echo 'No model trained; no Supabase writes; no historical pre-kickoff publication proof.'
+            echo
+            echo '~~~json'
+            if test -s "$work/qc.json"; then cat "$work/qc.json"; else echo '{"normalization":"FAIL_CLOSED"}'; fi
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if test "$result" -ne 0; then exit "$result"; fi
+          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 45 --max-filesize 200000 \
+            --output "$work/openfootball.txt" \
+            'https://raw.githubusercontent.com/openfootball/europe/63df627f3c87ce71708f016522ea236cf74332c3/russia/2024-25_ru1.txt'
+          test -s "$work/openfootball.txt"
+          {
+            echo
+            echo '### 2024/25 independent published-source consistency check'
+            echo 'OpenFootball CC0 - https://github.com/openfootball/europe'
+            echo
+            echo '~~~json'
+          } >> "$GITHUB_STEP_SUMMARY"
+          node scripts/m0-cross-source-fixture-reconcile.mjs \
+            "$work/footbolno.csv" "$work/openfootball.txt" >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
