@@ -18,6 +18,13 @@ def test_uniform_forecast() -> None:
     assert ranked_probability_score(probs, 1) == pytest.approx(2 / 9)
 
 
+@pytest.mark.parametrize('scorer', [log_loss, brier_score, ranked_probability_score])
+@pytest.mark.parametrize('outcome', [0.0, 1.0, 2.0, True, -1, 3])
+def test_invalid_outcome_classes_rejected(scorer, outcome) -> None:
+    with pytest.raises(ValueError):
+        scorer((0.2, 0.6, 0.2), outcome)
+
+
 def test_bad_probabilities() -> None:
     with pytest.raises(ValueError):
         brier_score((.5, .5, .5), 0)
