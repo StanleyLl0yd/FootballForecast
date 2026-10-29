@@ -13,11 +13,10 @@ select 1 / case when
   and not has_function_privilege('authenticated','ff_private.ff_promote_footbolno_snapshot(uuid)','EXECUTE')
 then 1 else 0 end as private_promotion_unavailable_from_api;
 select 1 / case when exists(
-  select 1 from pg_indexes
-  where schemaname='public' and tablename='ff_matches'
-    and indexname='ff_matches_unique_directed_fixture'
-    and indexdef like 'CREATE UNIQUE INDEX%'
-) then 1 else 0 end as fixture_identity_is_unique;
+  select 1 from pg_constraint
+  where conrelid='ff_private.ff_published_fixture_links'::regclass
+    and contype='p'
+) then 1 else 0 end as provider_fixture_link_has_stable_identity;
 select 1 / case when (select count(*) from ff_private.ff_published_fixture_links)=0
     and (select count(*) from ff_private.ff_provider_team_links)=0
 then 1 else 0 end as no_automatic_promotion;
