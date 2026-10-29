@@ -10,7 +10,7 @@ const sha=s=>createHash('sha256').update(s).digest('hex');
 const hash64=s=>typeof s==='string'&&/^[a-f0-9]{64}$/.test(s);
 const refuse=s=>{throw Error('Private stage refused: '+s);};
 const utc=s=>typeof s==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/.test(s)&&
-  Number.isFinite(Date.parse(s))&&new Date(Date.parse(s)).toISOString()===new Date(s).toISOString();
+  Number.isFinite(Date.parse(s))&&new Date(Date.parse(s)).toISOString().slice(0,19)===s.slice(0,19);
 const day=s=>typeof s==='string'&&/^\d{4}-\d\d-\d\d$/.test(s)&&
   Number.isFinite(Date.parse(s+'T00:00:00Z'))&&new Date(s+'T00:00:00Z').toISOString().slice(0,10)===s;
 const id=s=>typeof s==='string'&&/^[\p{L}\p{N}._:-]{1,100}$/u.test(s);
