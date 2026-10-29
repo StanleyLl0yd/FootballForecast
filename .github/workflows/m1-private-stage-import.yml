@@ -105,4 +105,8 @@ jobs:
             echo '~~~json'
             cat "$work/quality.json"
             echo '~~~'
+            echo '### Pinned OpenFootball 2024/25 match-level score gate'
+            echo '~~~json'
+            cat "$work/score-gate.json"
+            echo '~~~'
           } >> "$GITHUB_STEP_SUMMARY"
