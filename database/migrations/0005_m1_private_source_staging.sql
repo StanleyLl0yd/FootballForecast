@@ -8,7 +8,7 @@ create table if not exists ff_private.ff_ingest_snapshots (
   license_url text not null,
   source_sha256 text not null check (source_sha256 ~ '^[a-f0-9]{64}
   created_at timestamptz not null default now(),
-  unique (source_id, source_sha256, retrieved_at),
+  unique (source_id, source_sha256),
   check (length(source_url) between 12 and 512),
   check (length(license_url) between 12 and 512)
 );
@@ -77,7 +77,7 @@ revoke all on schema ff_private from anon;
 -- security-definer authorization helper, not access to these private tables.
 ),
   normalized_sha256 jsonb not null check (jsonb_typeof(normalized_sha256) = 'object'),
-  retrieved_at timestamptz not null,
+  retrieved_at timestamptz not null, -- first observed acquisition of this exact content
   created_at timestamptz not null default now(),
   unique (source_id, source_sha256),
   check (length(source_url) between 12 and 512),
