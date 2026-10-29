@@ -112,6 +112,19 @@ jobs:
             "$work/private/rpl-2024-2025.jsonl" \
             "$work/private/rpl-2025-2026.jsonl" \
             "$work/private/rpl-2026-2027.jsonl" --commit
+          hash="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(!/^[a-f0-9]{64}$/.test(m.sourceFileSha256))process.exit(2);process.stdout.write(m.sourceFileSha256)" "$work/private/manifest.json")"
+          if ! psql -X -qAt -v ON_ERROR_STOP=1 -v VERBOSITY=terse \
+            -c "select ff_private.ff_preview_footbolno_revision(s.id) from ff_private.ff_ingest_snapshots s join public.ff_sources src on src.id=s.source_id where src.name='Footbolno' and s.source_sha256='$hash'" \
+            > "$work/private/revision.json" 2>/dev/null; then
+            echo 'FAIL: private source committed, but revision review unavailable'
+            exit 2
+          fi
+          node scripts/m1-revision-report.mjs "$work/private/revision.json" \
+            > "$work/revision-summary.json" || {
+              echo 'FAIL: private source committed, but revision report invalid'
+              exit 2
+            }
+          cat "$work/revision-summary.json"
           {
             echo '## M1 private Footbolno ingestion'
             echo 'Source: Footbolno, CC BY 4.0 - https://footbolno.ru/otkrytye-dannye'
@@ -121,6 +134,10 @@ jobs:
             echo
             echo '~~~json'
             cat "$work/quality.json"
+            echo '~~~'
+            echo '### M1 private revision review (aggregate only; never auto-published)'
+            echo '~~~json'
+            cat "$work/revision-summary.json"
             echo '~~~'
             echo '### Pinned OpenFootball 2024/25 match-level score gate'
             echo '~~~json'
