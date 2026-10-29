@@ -22,7 +22,7 @@ function Invoke-GitHubApi {
     if ($LASTEXITCODE -ne 0) {
         throw "GitHub API request failed: $Method $Endpoint"
     }
-    return ($result | ConvertFrom-Json)
+    return (ConvertFrom-Json -InputObject ($result -join "`n"))
 }
 
 function Set-EnvironmentSecret {
@@ -137,6 +137,16 @@ if ($password.Length -eq 0) {
     throw 'Empty password refused.'
 }
 $certificatePath = (Read-Host 'Optional path to Supabase database root CA PEM (Enter = system trust)').Trim()
+$certSecret = $null
+if ($certificatePath.Length -gt 0) {
+    $cert = (Resolve-Path -LiteralPath $certificatePath -ErrorAction Stop).Path
+    $certBytes = [System.IO.File]::ReadAllBytes($cert)
+    if ($certBytes.Length -lt 100 -or $certBytes.Length -gt 12000 -or
+        -not [System.Text.Encoding]::ASCII.GetString($certBytes).Contains('BEGIN CERTIFICATE')) {
+        throw 'Invalid root CA PEM file.'
+    }
+    $certSecret = [Convert]::ToBase64String($certBytes)
+}
 
 Set-EnvironmentSecret -Name 'M1_PGHOST' -Value $hostName
 Set-EnvironmentSecret -Name 'M1_PGUSER' -Value $userName
@@ -149,14 +159,9 @@ finally {
     $clearPassword = $null
     $password.Dispose()
 }
-if ($certificatePath.Length -gt 0) {
-    $cert = (Resolve-Path -LiteralPath $certificatePath -ErrorAction Stop).Path
-    $certBytes = [System.IO.File]::ReadAllBytes($cert)
-    if ($certBytes.Length -lt 100 -or $certBytes.Length -gt 12000 -or
-        -not [System.Text.Encoding]::ASCII.GetString($certBytes).Contains('BEGIN CERTIFICATE')) {
-        throw 'Invalid root CA PEM file.'
-    }
-    Set-EnvironmentSecret -Name 'M1_PGROOTCERT_B64' -Value ([Convert]::ToBase64String($certBytes))
+if ($null -ne $certSecret) {
+    Set-EnvironmentSecret -Name 'M1_PGROOTCERT_B64' -Value $certSecret
+    $certSecret = $null
 }
 
 $secretListJson = & gh secret list --repo $Repository --env $EnvironmentName --json name
