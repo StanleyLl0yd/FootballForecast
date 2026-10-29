@@ -83,6 +83,8 @@ jobs:
         run: node --check scripts/m0-footbolno-metadata.mjs && node --test tests/m0-footbolno-metadata.test.mjs
       - name: Validate ephemeral hash-pinned RPL season coverage inspector without provider rows
         run: node --check scripts/m0-footbolno-csv-aggregate.mjs && node --test tests/m0-footbolno-csv-aggregate.test.mjs
+      - name: Validate private M1 PostgreSQL stage importer without real records
+        run: node --check scripts/m1-stage-import.mjs && node --test tests/m1-stage-import.test.mjs
       - name: Verify registry-driven public source catalog without activated providers
         run: node --test apps/web/tests/data-catalog.test.mjs
       - name: Test offline cross-provider score, status, venue and temporal accuracy logic
