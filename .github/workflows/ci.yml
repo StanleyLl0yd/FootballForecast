@@ -98,6 +98,16 @@ jobs:
         run: node --check scripts/m1-stage-import.mjs && node --test tests/m1-stage-import.test.mjs
       - name: Verify manual-only M1 source import workflow access and secret boundaries
         run: node --test tests/m1-private-stage-workflow.test.mjs
+      - name: Verify safe M1 protected GitHub Environment setup
+        run: |
+          node --test tests/m1-secret-setup-script.test.mjs
+          if command -v pwsh >/dev/null 2>&1; then
+            pwsh -NoProfile -Command '
+              $errors = $null
+              $null = [System.Management.Automation.Language.Parser]::ParseFile("scripts/Set-M1PrivateImportSecrets.ps1", [ref]$null, [ref]$errors)
+              if ($errors.Count -gt 0) { exit 1 }
+            '
+          fi
       - name: Verify registry-driven public source catalog without activated providers
         run: node --test apps/web/tests/data-catalog.test.mjs
       - name: Test offline cross-provider score, status, venue and temporal accuracy logic
