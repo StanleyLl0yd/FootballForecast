@@ -20,11 +20,13 @@ values ('31000000-0000-0000-0000-000000000001','m1-synthetic',
   'approved','https://example.invalid/cc-by-4',now());
 
 insert into ff_private.ff_ingest_snapshots(id,source_id,source_url,
-  license_url,source_sha256,retrieved_at)
+  license_url,source_sha256,normalized_sha256,retrieved_at)
 values ('32000000-0000-0000-0000-000000000001',
   '31000000-0000-0000-0000-000000000001',
   'https://example.invalid/fixtures.csv','https://example.invalid/license',
-  repeat('a',64),'2026-10-29T16:00:00Z');
+  repeat('a',64),jsonb_build_object('2024/2025',repeat('b',64),
+    '2025/2026',repeat('c',64),'2026/2027',repeat('d',64)),
+  '2026-10-29T16:00:00Z');
 
 insert into ff_private.ff_ingest_matches(snapshot_id,source_match_id,season,
   dataset_role,home_source_id,away_source_id,home_name,away_name,
