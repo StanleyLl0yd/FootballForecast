@@ -51,3 +51,40 @@ On exact-main `336497252c03c89f19144ab2d3a1249a2fa85140` the required web job fa
 ### Microsoft Edge blank-DOM diagnostic retry (2026-10-19)
 
 The non-gating Edge/Firefox production browser job returned an empty `microsoft-edge --dump-dom` stdout twice (including exact-main CI 39221222354), though rerunning once succeeded and all required web/SQL/security checks passed. Chromium's hosted headless launches are now isolated by user-data directory; only a genuinely blank DOM or launch timeout may retry up to three times. Nonempty incorrect HTML fails immediately. The Edge mobile PNG and Firefox native WebDriver checks remain enforced within the diagnostic job; do not treat the diagnostic as passing unless job logs confirm success.
+
+
+## M1 private PostgreSQL source staging (migration 0005)
+
+After explicit migration review and production application, the server-only worker
+`scripts/m1-stage-import.mjs` accepts the three 0600 private JSONL files and
+`manifest.json` produced by the existing M1 normalizer. It checks exact source
+SHA-256, all per-season SHA-256 values, 240 unique directed fixtures per season,
+16 clubs, quarantines, score and temporal contracts. Its default invocation
+**does not write**:
+
+```bash
+node scripts/m1-stage-import.mjs /private/manifest.json \
+  /private/rpl-2024-2025.jsonl /private/rpl-2025-2026.jsonl \
+  /private/rpl-2026-2027.jsonl
+```
+
+A genuinely privileged **server-only** PostgreSQL session can add `--commit`
+after setting `FF_M1_DB_WRITE_ENABLED=1` and private standard PostgreSQL
+connection environment variables `PGHOST`, `PGUSER`, `PGDATABASE`,
+`PGPASSWORD`, `PGSSLMODE=verify-full`. Do not put any password, connection
+URL or service-role secret in CLI arguments, source control, Next.js, browser
+environment or public GitHub Actions. `PGSSLMODE=disable` is supported only
+for localhost disposable tests. The worker uses a single bounded transaction,
+checks source licensing metadata and reuses identical source-content hashes,
+so repeated observations do not duplicate all 720 records and exceed Free
+storage limits.
+
+Only the private, RLS-enabled `ff_private.ff_ingest_snapshots` and
+`ff_private.ff_ingest_matches` are written. Source observations are
+append-only; unknown kickoff times remain NULL and historical
+`published_at` remains NULL. There is no public match promotion, live model
+fit or change to anonymous read permissions. A failed import must be
+investigated and retried without bypassing hashes, quality checks or RLS.
+Post-apply verification: inspect Supabase Security/Performance Advisors,
+table grants, RLS, private record count, and the unchanged empty public
+`ff_matches` table.
