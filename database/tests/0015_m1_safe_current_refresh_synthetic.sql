@@ -53,7 +53,9 @@ declare
   current_status text;
   actual_home integer;
   actual_away integer;
+  pre_forecasts integer;
 begin
+  select count(*) into pre_forecasts from public.ff_forecasts;
   select id into strict base from ff_private.ff_ingest_snapshots
   where exists(select 1 from ff_private.ff_published_fixture_links l
     where l.snapshot_id=ff_ingest_snapshots.id);
@@ -126,7 +128,7 @@ begin
   end;
   if (select count(*) from ff_private.ff_current_refresh_events)<>1
     or (select count(*) from public.ff_matches)<>483
-    or (select count(*) from public.ff_forecasts)<>1
+    or (select count(*) from public.ff_forecasts)<>pre_forecasts
   then
     raise exception 'M1 safe refresh holdout refusal had side effects';
   end if;
