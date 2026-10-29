@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {X509Certificate} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
 
@@ -63,6 +64,10 @@ test('Supabase pooler TLS uses pinned CA, validated before secrets and again bef
   const live=workflow.indexOf('Validate live source then stage into protected PostgreSQL');
   assert.ok(pre>0&&live>pre);
   const fingerprint='807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa';
+  const parsed=new X509Certificate(ca);
+  assert.equal(parsed.fingerprint256.replaceAll(':','').toLowerCase(),fingerprint);
+  assert.equal(parsed.ca,true);
+  assert.ok(Date.parse(parsed.validTo)>Date.now()+86400000);
   assert.equal(workflow.split(fingerprint).length-1,2);
   for(const required of [
     'openssl x509 -in "$ca" -outform DER | sha256sum',
