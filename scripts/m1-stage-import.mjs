@@ -30,8 +30,13 @@ const refuse=s=>{throw Error('Private stage refused: '+s);};
 // Never print libpq/SQL stderr: it may contain query text or provider records.
 // Return an allowlisted diagnostic code only, never an excerpt of stderr.
 export function classifyPsqlFailure(result){
-  if(result?.error?.code==='ETIMEDOUT')return 'DB_CLIENT_TIMEOUT';
-  if(result?.error)return 'DB_CLIENT_START';
+  const processErrors={
+    ETIMEDOUT:'DB_CLIENT_TIMEOUT',ENOBUFS:'DB_OUTPUT_LIMIT',
+    ENOENT:'DB_CLIENT_MISSING',EACCES:'DB_CLIENT_DENIED',
+    EAGAIN:'DB_CLIENT_RESOURCE',ENOMEM:'DB_CLIENT_RESOURCE',
+    E2BIG:'DB_CLIENT_SIZE',EINVAL:'DB_CLIENT_INVALID'
+  };
+  if(result?.error)return processErrors[result.error.code]??'DB_CLIENT_START';
   const stderr=typeof result?.stderr==='string'?result.stderr:'';
   if(/password authentication failed|SASL authentication failed|invalid password/i.test(stderr))
     return 'DB_AUTH';
@@ -201,10 +206,18 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
       if(env.FF_M1_DB_WRITE_ENABLED!=='1'||!env.PGPASSWORD)
         refuse('privileged database prerequisites absent');
       validateStageTarget(env);
-      const result=spawnSync('psql',['-X','-q','-v','ON_ERROR_STOP=1'],
-        {input:buildStageSql(dataset),encoding:'utf8',timeout:55000,
-          maxBuffer:131072,stdio:['pipe','pipe','pipe']});
-      // Raw PostgreSQL errors might include query text. Never log them.
+      // Separate a connection failure from errors in the large atomic batch.
+      const flags=['-X','-q','-v','ON_ERROR_STOP=1',
+        '-v','VERBOSITY=terse','-v','SHOW_CONTEXT=never'];
+      const probe=spawnSync('psql',[...flags,'-c','select 1'],{
+        encoding:'utf8',timeout:15000,maxBuffer:32768,
+        stdio:['ignore','pipe','pipe']});
+      // Never log stdout/stderr: SQL diagnostics may echo source rows.
+      if(probe.error||probe.status!==0)
+        refuse('atomic transaction failed '+classifyPsqlFailure(probe));
+      const result=spawnSync('psql',flags,{
+        input:buildStageSql(dataset),encoding:'utf8',timeout:55000,
+        maxBuffer:8*1024*1024,stdio:['pipe','pipe','pipe']});
       if(result.error||result.status!==0)
         refuse('atomic transaction failed '+classifyPsqlFailure(result));
     }

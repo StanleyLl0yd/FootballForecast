@@ -115,7 +115,12 @@ test('PostgreSQL failure messages are classified without returning SQL, provider
   const sql='insert into ff_private.ff_ingest_matches values (\'private-raw-record\')';
   const cases=[
     [{error:{code:'ETIMEDOUT'}},'DB_CLIENT_TIMEOUT'],
-    [{error:{code:'ENOENT'}},'DB_CLIENT_START'],
+    [{error:{code:'ENOENT'}},'DB_CLIENT_MISSING'],
+    [{error:{code:'ENOBUFS'},stderr:'private-raw-record'},'DB_OUTPUT_LIMIT'],
+    [{error:{code:'EACCES'}},'DB_CLIENT_DENIED'],
+    [{error:{code:'ENOMEM'}},'DB_CLIENT_RESOURCE'],
+    [{error:{code:'E2BIG'}},'DB_CLIENT_SIZE'],
+    [{error:{code:'EOTHER'},stderr:secret},'DB_CLIENT_START'],
     [{status:2,stderr:'FATAL: password authentication failed '+secret},'DB_AUTH'],
     [{status:2,stderr:'root certificate was not verified '+secret},'DB_TLS'],
     [{status:2,stderr:'could not translate host name '+secret},'DB_DNS'],
@@ -132,4 +137,18 @@ test('PostgreSQL failure messages are classified without returning SQL, provider
     assert.match(actual,/^DB_[A-Z_]+$/);
     assert.ok(!actual.includes(secret)&&!actual.includes(sql));
   }
+});
+
+test('protected importer preflights connection and bounds PostgreSQL diagnostic output',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const source=readFileSync(new URL('../scripts/m1-stage-import.mjs',import.meta.url),'utf8');
+  const probe=source.indexOf("const probe=spawnSync('psql'");
+  const write=source.indexOf("const result=spawnSync('psql'");
+  assert.ok(probe>0&&write>probe);
+  assert.match(source,/maxBuffer:32768/);
+  assert.match(source,/maxBuffer:8\*1024\*1024/);
+  assert.match(source,/VERBOSITY=terse/);
+  assert.match(source,/SHOW_CONTEXT=never/);
+  assert.match(source,/if\(probe.error\|\|probe.status!==0\)/);
+  assert.ok(!source.includes('console.error(result.stderr)'));
 });
