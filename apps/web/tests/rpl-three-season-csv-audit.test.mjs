@@ -191,6 +191,29 @@ test('invalid scores, missing IDs, incorrect finished count cannot pass structur
   rows[3][4]='mystery';
   assert.throws(()=>summarizeFootbolnoRplCsv(toCsv(rows)),/Unknown league match status/);
 });
+test('scheduled, cancelled and live score values obey the M0 match-status contract',()=>{
+  const cases=[
+    {status:'scheduled',home:'invalid',away:'',invalid:1},
+    {status:'scheduled',home:'0',away:'0',invalid:1},
+    {status:'cancelled',home:'2',away:'1',invalid:1},
+    {status:'cancelled',home:'invalid',away:'',invalid:1},
+    {status:'live',home:'1',away:'',invalid:1},
+    {status:'live',home:'1',away:'invalid',invalid:1},
+    {status:'live',home:'',away:'',invalid:0},
+    {status:'live',home:'1',away:'0',invalid:0},
+    {status:'cancelled',home:'',away:'',invalid:0}
+  ];
+  for(const c of cases){
+    const rows=createRows('2026/2027',{finished:239});
+    rows[239][4]=c.status;
+    rows[239][7]=c.home;
+    rows[239][8]=c.away;
+    const s=summarizeFootbolnoRplCsv(toCsv(rows),'2026-09-01T00:00:00Z').seasonSummaries[2];
+    assert.equal(s.invalidScores,c.invalid,JSON.stringify(c));
+    assert.equal(s.structuralCandidate,c.invalid===0,JSON.stringify(c));
+  }
+});
+
 test('wrong tournament IDs and irrelevant years are never counted as RPL pilot seasons',()=>{
  const rows=createRows('2024/2025').slice(0,4);
  rows[0][1]='444';rows[1][2]='2022/2023';

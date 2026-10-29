@@ -178,12 +178,15 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
       (flag==='1'&&!date.dateOnly?date.epoch<now:
         date.dateUtc.slice(0,10)<todayUtc))
       data.pastScheduled++;
-    const gh=score(col('home_goals')),ga=score(col('away_goals'));
+    const rawHome=col('home_goals'),rawAway=col('away_goals');
+    const gh=score(rawHome),ga=score(rawAway);
     if(status==='finished'){
       if(gh===null||ga===null)data.invalidScores++;
       else{data.homeGoals+=gh;data.awayGoals+=ga}
-    }else if(status==='scheduled'&&(gh!==null||ga!==null))
-      data.invalidScores++;
+    }else if(status==='scheduled'||status==='cancelled'){
+      if(rawHome!==''||rawAway!=='')data.invalidScores++;
+    }else if(status==='live'&&(rawHome!==''||rawAway!=='')&&
+      (gh===null||ga===null))data.invalidScores++;
     if(season==='2026/2027'&&status==='scheduled'){
       const kickoff=inside?date:null;
       const timeConfirmed=flag==='1';
