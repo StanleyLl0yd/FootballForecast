@@ -1,6 +1,23 @@
 # Operations
 
-Daily sync, Friday forecast, Tuesday review, model training, staging/production jobs and callbacks are **disabled** at M0.
+Daily sync, Friday forecast, Tuesday review, model training, staging/production callbacks and privileged database writes remain **disabled** during M1 data-foundation work.
+
+## M1 three-season source normalization (private and opt-in)
+
+The [M1 Footbolno workflow](../.github/workflows/m1-footbolno-dataset.yml) tests offline parsing on PRs and, on an explicit manual \`workflow_dispatch\`, downloads the publisher's fixed free RPL CSV URL (max 2 MB), records UTC retrieval time and SHA-256, validates 2024/25, 2025/26 and 2026/27, and compares 2024/25 against the pinned OpenFootball CC0 source. The private normalized JSONL files are created with \`0600\` permissions inside an ephemeral \`0700\` runner directory, never uploaded, logged, committed, or imported into Supabase. Only aggregate QC, hashes and attribution appear in the job summary.
+
+The current data contract keeps 2024/25 as \`train_baseline\`, 2025/26 as \`sealed_holdout\`, and 2026/27 as \`current\`. Each season requires 16 teams, 240 unique directed fixtures and valid IDs. Finished games require legal integer scores; cancelled, postponed, awarded, live, invalid or stale fixtures are quarantined. Unconfirmed kickoff times remain null, not fabricated midnight. Historical records have \`publishedAtUtc: null\`; downloading them today does not establish historical pre-match availability. Any QC failure fails the manual run and blocks data promotion. Neither an ML model nor public forecasts are produced by this workflow.
+
+Local private input, with the working directory outside the repository:
+
+\`\`\`bash
+umask 077
+mkdir -m 700 /tmp/ff-rpl-private
+node scripts/m1-footbolno-normalize.mjs /tmp/footbolno.csv 2026-10-29T15:00:00Z /tmp/ff-rpl-private
+\`\`\`
+
+The third argument must be the actual retrieval UTC time, not a constructed historical publication date. Never commit the generated private files. Before persistent database ingestion, implement and review a non-browser authenticated write worker with a restricted role, transactionality, idempotence and source-provenance mapping; existing public RLS must remain unchanged. Source credit: [Footbolno CC BY 4.0](https://footbolno.ru/otkrytye-dannye) and [OpenFootball CC0](https://github.com/openfootball/europe). SportScore current-event corroboration still requires its documented bounded request path and visible dofollow \`Powered by SportScore\` credit wherever the sourced data is displayed.
+
 
 ## Intended future cadence
 
