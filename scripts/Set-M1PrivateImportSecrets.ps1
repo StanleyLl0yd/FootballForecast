@@ -117,19 +117,19 @@ if ($existingPolicies.Count -ne 1 -or
 Write-Host '[VERIFIED] Environment deploy restriction: main only'
 
 $hostName = (Read-Host 'Supabase Session pooler hostname (no protocol or port)').Trim()
-if ($hostName.Length -gt 253 -or $hostName -notmatch '^[A-Za-z0-9][A-Za-z0-9.-]+$') {
-    throw 'Invalid PostgreSQL hostname.'
+if ($hostName -cnotmatch '^aws-[0-9]+-[a-z0-9-]+\.pooler\.supabase\.com$') {
+    throw 'Use the exact Supabase shared Session pooler hostname (not direct or transaction endpoints).'
 }
 
 $userName = (Read-Host 'Supabase Session pooler username').Trim()
-if ($userName -notmatch '^[A-Za-z0-9_.-]{3,128}$') {
-    throw 'Invalid PostgreSQL username.'
+if ($userName -cne 'postgres.upulkesaiwnwfagjgteh') {
+    throw 'Session pooler username does not belong to the FootballForecast Supabase project.'
 }
 
 $dbName = (Read-Host 'Database name [postgres]').Trim()
 if ($dbName.Length -eq 0) { $dbName = 'postgres' }
-if ($dbName -notmatch '^[A-Za-z_][A-Za-z0-9_]{0,62}$') {
-    throw 'Invalid PostgreSQL database name.'
+if ($dbName -cne 'postgres') {
+    throw 'FootballForecast imports must target the postgres database only.'
 }
 
 $password = Read-Host 'Database password (masked)' -AsSecureString

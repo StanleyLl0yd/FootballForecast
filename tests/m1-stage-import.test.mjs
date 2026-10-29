@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {createHash} from 'node:crypto';
-import {validateStageDataset,buildStageSql} from '../scripts/m1-stage-import.mjs';
+import {validateStageDataset,buildStageSql,validateStageTarget} from '../scripts/m1-stage-import.mjs';
 import {fixture} from './fixtures/m1-synthetic-dataset.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 function mutateSeason(data,season,edit){
@@ -79,4 +79,33 @@ test('dated planned fixture older than retrieval time is refused',()=>{
   });
   assert.throws(()=>validateStageDataset(data.manifest,data.seasonFiles),
     /stale scheduled fixture/);
+});
+
+test('private writer permits only the exact Frankfurt Supabase session tenant with full TLS verification',()=>{
+  const valid={
+    PGHOST:'aws-0-eu-central-1.pooler.supabase.com',
+    PGUSER:'postgres.upulkesaiwnwfagjgteh',
+    PGDATABASE:'postgres',PGPORT:'5432',PGSSLMODE:'verify-full'
+  };
+  assert.equal(validateStageTarget(valid),'supabase-verified-tenant');
+  for(const bad of [
+    {PGHOST:'db.upulkesaiwnwfagjgteh.supabase.co'},
+    {PGHOST:'other.pooler.supabase.com'},
+    {PGHOST:'aws-0-eu-central-1.pooler.supabase.com.evil.invalid'},
+    {PGUSER:'postgres.anotherproject'},
+    {PGDATABASE:'template1'},
+    {PGPORT:'6543'},
+    {PGSSLMODE:'require'},
+    {PGSSLMODE:'disable'},
+    {PGHOSTADDR:'127.0.0.1'},
+    {PGSERVICE:'untrusted-service'}
+  ])assert.throws(()=>validateStageTarget({...valid,...bad}),/Private stage refused/);
+  assert.equal(validateStageTarget({
+    PGHOST:'127.0.0.1',PGUSER:'postgres',PGDATABASE:'postgres',
+    PGPORT:'5432',PGSSLMODE:'disable',FF_M1_LOCAL_TEST_ONLY:'1'
+  }),'disposable-local-test');
+  assert.throws(()=>validateStageTarget({
+    PGHOST:'127.0.0.1',PGUSER:'postgres',PGDATABASE:'postgres',
+    PGPORT:'5432',PGSSLMODE:'disable'
+  }),/Private stage refused/);
 });

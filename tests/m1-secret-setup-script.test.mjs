@@ -35,3 +35,10 @@ test('exactly one optional, bounded PEM is accepted and verification checks name
   assert.match(script,/gh secret list --repo \$Repository --env \$EnvironmentName --json name/);
   assert.match(script,/Their values were never printed/);
 });
+
+test('local secret setup pins the real Supabase project and rejects mistaken host or database',()=>{
+  assert.match(script,/pooler\\\.supabase\\\.com/);
+  assert.match(script,/postgres\.upulkesaiwnwfagjgteh/);
+  assert.match(script,/\$dbName -cne 'postgres'/);
+  assert.doesNotMatch(script,/PGSSLMODE\s*=\s*require/);
+});

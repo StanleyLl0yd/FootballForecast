@@ -6,6 +6,24 @@ import {pathToFileURL} from 'node:url';
 import {SOURCE_URL,ATTRIBUTION_URL,SEASON_ROLES} from './m1-footbolno-normalize.mjs';
 
 const SEASONS=Object.keys(SEASON_ROLES);
+
+const TARGET_PROJECT_REF='upulkesaiwnwfagjgteh';
+export function validateStageTarget(env){
+  const host=env.PGHOST, user=env.PGUSER, database=env.PGDATABASE;
+  const mode=env.PGSSLMODE, port=env.PGPORT??'5432';
+  if(typeof host!=='string'||typeof user!=='string'||typeof database!=='string')
+    refuse('database target identity missing');
+  if(port!=='5432'||env.PGHOSTADDR||env.PGSERVICE||env.PGSERVICEFILE)
+    refuse('unsafe connection routing or port');
+  const local=(host==='localhost'||host==='127.0.0.1') &&
+    mode==='disable' && env.FF_M1_LOCAL_TEST_ONLY==='1';
+  const live=/^aws-[0-9]+-[a-z0-9-]+\.pooler\.supabase\.com$/.test(host) &&
+    user==='postgres.'+TARGET_PROJECT_REF &&
+    database==='postgres' && mode==='verify-full';
+  if(!local&&!live)refuse('database host, tenant or TLS mode does not match FootballForecast');
+  return live?'supabase-verified-tenant':'disposable-local-test';
+}
+
 const sha=s=>createHash('sha256').update(s).digest('hex');
 const hash64=s=>typeof s==='string'&&/^[a-f0-9]{64}$/.test(s);
 const refuse=s=>{throw Error('Private stage refused: '+s);};
@@ -158,12 +176,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     if(process.argv.length===7&&!committing)refuse('invalid operation');
     if(committing){
       const env=process.env;
-      if(env.FF_M1_DB_WRITE_ENABLED!=='1'||!env.PGHOST||!env.PGUSER||
-        !env.PGDATABASE||!env.PGPASSWORD||
-        (env.PGSSLMODE!=='verify-full'&&
-          !(env.PGSSLMODE==='disable'&&
-            ['localhost','127.0.0.1'].includes(env.PGHOST))))
+      if(env.FF_M1_DB_WRITE_ENABLED!=='1'||!env.PGPASSWORD)
         refuse('privileged database prerequisites absent');
+      validateStageTarget(env);
       const result=spawnSync('psql',['-X','-q','-v','ON_ERROR_STOP=1'],
         {input:buildStageSql(dataset),encoding:'utf8',timeout:55000,
           maxBuffer:131072,stdio:['pipe','pipe','pipe']});
