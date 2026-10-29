@@ -1,4 +1,5 @@
 import math
+from dataclasses import replace
 
 import pytest
 
@@ -36,3 +37,22 @@ def test_unshown_tail_does_not_bias_1x2() -> None:
 def test_invalid_intensities(home: float, away: float) -> None:
     with pytest.raises(ValueError):
         poisson_score_distribution(home, away)
+
+
+def test_direct_score_distribution_validation_rejects_nonfinite_and_invalid_mass() -> None:
+    baseline = poisson_score_distribution(1.4, 0.9)
+    invalid = [
+        replace(baseline, home_win=float("nan")),
+        replace(baseline, draw=float("inf")),
+        replace(baseline, tail_mass=float("nan")),
+        replace(baseline, scores={(0, 0): float("nan")}),
+        replace(baseline, scores={(0, 0): -0.1}),
+        replace(baseline, scores={(0, 0): 1.1}),
+        replace(baseline, expected_home=float("inf")),
+    ]
+    for distribution in invalid:
+        with pytest.raises(ValueError):
+            distribution.validate()
+    for bad_tolerance in (0.0, -1.0, float("nan"), float("inf")):
+        with pytest.raises(ValueError):
+            baseline.validate(bad_tolerance)
