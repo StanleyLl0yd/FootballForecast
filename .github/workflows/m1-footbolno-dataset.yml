@@ -5,7 +5,9 @@ on:
       - 'scripts/m1-footbolno-normalize.mjs'
       - 'tests/m1-footbolno-normalize.test.mjs'
       - 'scripts/m1-sportscore-current.mjs'
+      - 'scripts/m1-openfootball-score-gate.mjs'
       - 'tests/m1-sportscore-current.test.mjs'
+      - 'tests/m1-openfootball-score-gate.test.mjs'
       - '.github/workflows/m1-footbolno-dataset.yml'
   push:
     branches: [main]
@@ -13,7 +15,9 @@ on:
       - 'scripts/m1-footbolno-normalize.mjs'
       - 'tests/m1-footbolno-normalize.test.mjs'
       - 'scripts/m1-sportscore-current.mjs'
+      - 'scripts/m1-openfootball-score-gate.mjs'
       - 'tests/m1-sportscore-current.test.mjs'
+      - 'tests/m1-openfootball-score-gate.test.mjs'
       - '.github/workflows/m1-footbolno-dataset.yml'
   workflow_dispatch:
 permissions:
@@ -33,7 +37,8 @@ jobs:
         run: |
           node --check scripts/m1-footbolno-normalize.mjs
           node --check scripts/m1-sportscore-current.mjs
-          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-sportscore-current.test.mjs
+          node --check scripts/m1-openfootball-score-gate.mjs
+          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-sportscore-current.test.mjs tests/m1-openfootball-score-gate.test.mjs
   private-source-snapshot:
     if: github.event_name != 'pull_request'
     needs: [normalize-unit]
@@ -91,7 +96,16 @@ jobs:
             echo '~~~json'
           } >> "$GITHUB_STEP_SUMMARY"
           node scripts/m0-cross-source-fixture-reconcile.mjs \
-            "$work/footbolno.csv" "$work/openfootball.txt" >> "$GITHUB_STEP_SUMMARY"
+            "$work/footbolno.csv" "$work/openfootball.txt" > "$work/aggregate-crosscheck.json"
+          cat "$work/aggregate-crosscheck.json" >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo '### M1 score-consistency gate (240/240 directed fixtures)'
+            echo '~~~json'
+          } >> "$GITHUB_STEP_SUMMARY"
+          node scripts/m1-openfootball-score-gate.mjs \
+            "$work/aggregate-crosscheck.json" > "$work/score-gate.json"
+          cat "$work/score-gate.json" >> "$GITHUB_STEP_SUMMARY"
           echo '~~~' >> "$GITHUB_STEP_SUMMARY"
           {
             echo
