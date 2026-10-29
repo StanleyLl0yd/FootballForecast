@@ -116,6 +116,22 @@ Create these **environment-scoped secrets** (the workflow never prints values):
 | `M1_PGPASSWORD` | Existing Supabase database password. Set directly in GitHub; never share in chat, scripts, screenshots or committed files. |
 | `M1_PGROOTCERT_B64` | Optional base64 encoding of the Supabase database SSL root CA certificate (download privately from Supabase dashboard). Without it, `PGSSLROOTCERT=system` verifies against the runner's trusted CAs. |
 
+A PowerShell 7 setup helper is available in
+`scripts/Set-M1PrivateImportSecrets.ps1`. It creates the required
+`m1-source-import` GitHub Environment with exactly one allowed deployment
+branch, `main`, checks main branch protection, and prompts privately for
+the four database connection values and optional Supabase CA PEM. It passes
+secret values to the GitHub CLI through child-process stdin, never through
+command-line arguments, plaintext files, terminal output or GitHub Actions
+logs. It **does not** launch an import; verify that environment restrictions
+and secret names exist before dispatch.
+
+```powershell
+$script = Join-Path $HOME 'Downloads/Set-M1PrivateImportSecrets.ps1'
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/StanleyLl0yd/FootballForecast/main/scripts/Set-M1PrivateImportSecrets.ps1' -OutFile $script
+pwsh -NoProfile -File $script
+```
+
 The runner fixes `PGPORT=5432`, requires `PGSSLMODE=verify-full`,
 downloads only the bounded fixed free Footbolno RPL CSV, runs the independent
 720-record role/hash/time/score checks, then issues one atomic, content-hash
