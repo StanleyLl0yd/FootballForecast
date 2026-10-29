@@ -45,6 +45,7 @@ const text=value=>{
     return [value.name,value.title,value.slug,value.country].filter(x=>typeof x==='string').join(' ');
   return '';
 };
+export const canonicalRplClub=club;
 const rplCompetition=item=>{
   const name=clean(text(item.competition??item.league??item.tournament??
     item.competition_name??item.league_name));
@@ -53,6 +54,7 @@ const rplCompetition=item=>{
   return english.test(name)||['российская премьер лига','премьер лига россии','рпл'].some(x=>
     name===x||name.startsWith(x+' '));
 };
+export const explicitlyLabeledRpl=rplCompetition;
 const extract=payload=>{
   if(Array.isArray(payload))return payload;
   if(!payload||typeof payload!=='object')return null;
