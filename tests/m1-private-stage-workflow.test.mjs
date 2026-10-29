@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {X509Certificate} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
 
@@ -53,4 +54,29 @@ test('pinned OpenFootball score and directed-fixture gate precedes privileged im
   assert.match(workflow,/--max-filesize 200000/);
   assert.match(workflow,/score-gate\.json/);
   assert.doesNotMatch(workflow,/upload-artifact/);
+});
+
+test('Supabase pooler TLS uses pinned CA, validated before secrets and again before import',()=>{
+  const ca=readFileSync(new URL('../security/certs/supabase-root-2021-ca.crt',import.meta.url),'utf8');
+  assert.ok(ca.startsWith('-----BEGIN CERTIFICATE-----'));
+  assert.ok(ca.trimEnd().endsWith('-----END CERTIFICATE-----'));
+  const pre=workflow.indexOf('Verify pinned Supabase root CA before secrets are exposed');
+  const live=workflow.indexOf('Validate live source then stage into protected PostgreSQL');
+  assert.ok(pre>0&&live>pre);
+  const fingerprint='807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa';
+  const parsed=new X509Certificate(ca);
+  assert.equal(parsed.fingerprint256.replaceAll(':','').toLowerCase(),fingerprint);
+  assert.equal(parsed.ca,true);
+  assert.ok(Date.parse(parsed.validTo)>Date.now()+86400000);
+  assert.equal(workflow.split(fingerprint).length-1,2);
+  for(const required of [
+    'openssl x509 -in "$ca" -outform DER | sha256sum',
+    'cp security/certs/supabase-root-2021-ca.crt "$work/ca.crt"',
+    'export PGSSLROOTCERT="$work/ca.crt"',
+    'openssl x509 -in "$work/ca.crt" -noout -checkend 86400',
+    'PGSSLMODE: verify-full'
+  ])assert.ok(workflow.includes(required),required);
+  assert.ok(!workflow.includes('PGSSLROOTCERT=system'));
+  assert.ok(!workflow.includes('PGSSLMODE: require'));
+  assert.ok(!workflow.includes('PGSSLMODE: disable'));
 });
