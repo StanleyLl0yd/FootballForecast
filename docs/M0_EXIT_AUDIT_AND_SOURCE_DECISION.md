@@ -1,0 +1,51 @@
+# M0 exit evidence and bounded free-source acceptance (2026-10-29)
+
+Status: **audit passes reviewed; M0 NOT accepted until owner-visible production-SHA verification and final decision**. No M1 work is authorized by this document.
+
+## Scope and two separate full-repository passes
+
+The independently queried GitHub tree for input `c1d9e6bc66d5a9cce6b994b3e1cca5cd6517fd60` contains 220 entries, 180 tracked files, and is not truncated. Categories: root/config 10, GitHub automation 9, Next.js/web/tests/assets 50, PostgreSQL migrations/tests 13, docs/evidence 32, Python ML/tests 11, JSON contract 1, scripts 25, top-level tests 29. The same source base was examined by both passes; changes in the exit PR must be independently verified on its exact head and merged main.
+
+**Pass 1 - correctness and security:** Reconcile architecture and HTTP paths with read-only anonymous REST, owner-only OAuth route, public JSON/CSV browser tools, Python source-as-of contracts and Poisson/scoring math, all four PostgreSQL migrations and accompanying negative tests, role grants/RLS and privileged routines, GitHub workflow permissions, dependency audit and fixed dev-only exception, research scripts, source licensing and evidence, docs, tests and deployment boundaries. Earlier demonstrated findings were fixed under PR #116 (scheduled fixtures), #118 (finite probabilities), #119 (status-score CSV), #120 (stale documentation), and #121 (strict ML outcomes, IDs, cutoff), with #115 routine updates. Reinspect new changes on the exit PR. Source agreement does not prove official results, license chain or historical availability.
+
+**Pass 2 - independent complexity and regression-risk review:** Review every tracked blob a second time by file/category rather than relying on diffs; independently screen source/automation for code-execution/HTML-injection sinks, unsafe workflow permissions/force-push, TODO/dead-workaround markers, and module/entry-point reachability. All 180/180 blobs were fetched for this sweep (13 batches, zero read failures). The only scanner hits were intentional `continue-on-error` on three explicitly diagnostic production/browser jobs, a reference to that concept in operations documentation, and explanatory TODO/FIXME words in AGENTS.md. No new demonstrated executable sink or unauthorized CI permissions. This pattern-based sweep **does not prove the absence of all security vulnerabilities or dead code**; it is supported by checked imports/lint/typecheck, Python Ruff, CodeQL, tested route/framework entry points, script use by workflow or CLI, and regression tests. Do not remove convention-driven exports, historical audit scripts or compatibility code without a proven safe reachability result. Previously demonstrated duplicate team-name parsing was safely consolidated under PR #117; no other source-level deletions are justified by current evidence. Do not create cosmetic churn for an unproved gain.
+
+### Test and operational evidence
+
+- Before this exit PR, protected `main=c1d9e6bc66d5a9cce6b994b3e1cca5cd6517fd60` postmerge exact-main [CI #40865486171](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/40865486171) SUCCESS (all 5 jobs: Python pytest/Ruff, PostgreSQL 17 migrations/RLS/negative real disposable PostgREST, synthetic encrypted restore, web lint/typecheck/build/Node tests/Chrome, Safari, Firefox+Edge, production HTTP smoke); [Security #40865485853](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/40865485853) SUCCESS (Gitleaks/production and full npm audit with one owner-accepted dev-only exception); [CodeQL #40865485849](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/40865485849) SUCCESS (JavaScript/TypeScript and Python).
+- Production HTTP/browser diagnostics include `continue-on-error: true` intentionally: they are separately recorded **observations**, never substitutes for mandatory `python-core` and `web` checks. Explicitly review their conclusions, not just workflow green. Independently observed Russian home/wired no-VPN 3/3 PASS (2026-10-22) is the sole owner-operated network acceptance; T-Mobile/T2 and MegaFon failed and remain #6.
+- Live Frankfurt Supabase Free PostgreSQL 17.11 was read-only audited 2026-10-29: four applied migrations, nine RLS tables, six intended anon SELECT, zero anon writes, validated match-score CHECK, zero source/match/forecast records, Security Advisor 0 findings. No real database backup/restore is claimed (#96 accepted risk). Production migration behavior with **real records** is not exercised.
+- The prior inspected Vercel production was READY and equal to `8facb07b`; exact post-#121/new-exit-PR production-SHA equality **has NOT been independently reverified** because Vercel team-scope access returned 403. A successful HTTP canary is **not SHA attestation**. Owner will handle this only after audit and source work.
+
+### Known residual security, architecture and statistical risks
+
+1. No real source data or forecasts yet; this is a functioning read-only foundation, not a predictive service or a validated model.
+2. The tracked `braces@3.0.3` high advisory is dev-only and accepted narrowly by owner (#8); all other high/critical audits fail closed. Lack of production offsite backup (#96) and two mobile carrier access failures (#6) are owner-accepted non-M0 blockers.
+3. No third-party-origin source has a demonstrated complete chain of upstream rights or authenticated historical pre-kickoff snapshots. Two publishers' match agreement can share an upstream. Footbolno 240/240 historical structural/score consistency for observed 2024/25 and 2025/26 and SportScore 16/16 sampled 2026/27 fixtures are **sampled publisher agreement**, not official/perfect accuracy.
+4. Optional owner GitHub OAuth end-to-end is not enabled or accepted as necessary for an anonymous read-only M0 prototype.
+5. The complete license/provenance/as-of evaluation for actual stored/trained season datasets is a **mandatory M1 intake gate**, not falsely marked complete by an owner instruction. No source activation, ingestion, historic strict scoring or live model forecasts in M0.
+
+## Owner decision: permitted zero-cost source use, not a transfer of third-party rights
+
+The owner explicitly accepts published free-source usage for FootballForecast, without buying data or waiting for optional vendor replies. Existing Footbolno/SportScore attributed user-triggered research functionality is approved and can continue; source integration **planning** may proceed. Apply each publisher's own terms:
+
+| Source | Accepted use | Boundary and remaining proof |
+| --- | --- | --- |
+| Footbolno CC BY 4.0 [publisher terms](https://footbolno.ru/otkrytye-dannye) | Attributed bounded download and private analysis of the publisher's licensed CSV/JSON, derivative analytics; owner approves *planning* future retained data and model use to the extent the publisher's license validly covers it | Credit, source URL and CC BY link/change notice where applicable; validate each field and current status, never assert complete upstream title, official authenticity or strict historic `as_of` from current CSV |
+| SportScore [API-specific terms](https://sportscore.com/developers/terms/) | Bounded direct documented free API, own-response caching and derived attributed dashboards/alerts/analytics with a visible dofollow `Powered by SportScore` link on each page showing its data | No mirrored raw feed, bulk historical extraction, rate-limit evasion, paid fallback, undocumented permission to train on multi-season vendor data; `/api/v1/` versus `/api/widget/`/general-site applicability remains unproven |
+| OpenFootball Europe published CC0 | Reproducible pinned-source structural corroboration and candidate offline historical result analysis | Known incorrect 2023/24 pairing and some awarded results; no assumption of complete 2025/26 or current fixture availability; no historic snapshots |
+| Wikimedia/official club/RFU/RPL/UEFA/restricted providers | Only within their own source-specific scope, including genuinely manual primary-source references where automated extraction is prohibited | No unilateral license grant, bulk scraping, raw redistribution or prohibited model training |
+
+Owner approval of an intended use is **not a license from the original publisher**. Where published scope or upstream rights are insufficient, keep the corresponding operation disabled rather than treating consent as legal proof. Record the exact downloaded version/hash, source attribution and UTC retrieval timestamp during any future lawful M1 ingestion. Use only genuinely free infrastructure and endpoints.
+
+### Minimal chronological pilot, still M1 work
+
+- 2024/25 completed historical baseline candidate; 2025/26 untouched sealed test; 2026/27 current fixtures. Preserve 16-club/240-directed-fixture checks, awarded/cancelled/postponed isolation and current kickoff status.
+- Retrospective observations lacking authenticated pre-kickoff revision history are **non-strict retrospective research**, not backdated production forecasts or verified walk-forward. A valid prospective prediction needs observed, eligible data available before its actual cutoff, immutable logged publication and no sealed-test feedback.
+- Nothing in this M0 decision permits enabling ETL/worker credentials, mutating production Supabase, reporting empirical model accuracy or entering M1 without separate M0 owner acceptance.
+
+## Final exit protocol
+
+1. PR exact-head: all required checks, pass/fail/skipped decisions, diff and regression review; then protected merge and exact-main CI/Security/CodeQL and branch reconciliation.
+2. Independent Vercel production deployment **READY on exactly the accepted main SHA** and live read-only HTTP canary after merge, without paid resources or secrets in chat. This is reserved for the owner's third step.
+3. Owner explicitly signs off M0. Only then may issue #111 and milestone M0 be closed and M1 started. Until then M0 remains **OPEN**.
