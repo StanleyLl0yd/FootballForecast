@@ -204,3 +204,12 @@ test('owner accepts only publisher-documented free source uses, not unverified E
   assert.match(record,/SportScore/);
   assert.match(record,/M0 remains \*\*OPEN\*\*/);
 });
+
+test('all twenty free sources carry owner usage scope independently of adapter state',()=>{
+  assert.equal(registry.policy.ownerAuthorizesAllListedFreeSourcesWithinPublishedTerms,true);
+  assert.equal(registry.policy.noRoutinePublisherLetterOrUpstreamChainProofGate,true);
+  assert.equal(registry.sources.length,20);
+  assert.ok(registry.sources.every(s=>s.ownerApprovedUseWithinPublishedTerms===true));
+  assert.equal(registry.policy.activeProviderIntegrations,0);
+  assert.ok(registry.sources.every(s=>s.active===false));
+});
