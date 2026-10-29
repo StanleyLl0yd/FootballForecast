@@ -1,0 +1,144 @@
+name: M1 Footbolno private three-season dataset
+on:
+  pull_request:
+    paths:
+      - 'scripts/m1-footbolno-normalize.mjs'
+      - 'tests/m1-footbolno-normalize.test.mjs'
+      - 'scripts/m1-sportscore-current.mjs'
+      - 'tests/m1-sportscore-current.test.mjs'
+      - '.github/workflows/m1-footbolno-dataset.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/m1-footbolno-normalize.mjs'
+      - 'tests/m1-footbolno-normalize.test.mjs'
+      - 'scripts/m1-sportscore-current.mjs'
+      - 'tests/m1-sportscore-current.test.mjs'
+      - '.github/workflows/m1-footbolno-dataset.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  normalize-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Check M1 three-season normalization and temporal quarantine
+        run: |
+          node --check scripts/m1-footbolno-normalize.mjs
+          node --check scripts/m1-sportscore-current.mjs
+          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-sportscore-current.test.mjs
+  private-source-snapshot:
+    if: github.event_name != 'pull_request'
+    needs: [normalize-unit]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Retrieve bounded licensed CSV and validate private dataset
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          mkdir -m 0700 "$work/private"
+          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 45 --max-filesize 2000000 \
+            --output "$work/footbolno.csv" \
+            'https://footbolno.ru/data/league/235-matches.csv'
+          test -s "$work/footbolno.csv"
+          test "$(wc -c < "$work/footbolno.csv")" -le 2000000
+          retrieved="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          set +e
+          node scripts/m1-footbolno-normalize.mjs \
+            "$work/footbolno.csv" "$retrieved" "$work/private" > "$work/qc.json"
+          result=$?
+          set -e
+          {
+            echo '## M1 real-source three-season private normalization'
+            echo
+            echo 'Source: Footbolno, CC BY 4.0 - https://footbolno.ru/otkrytye-dannye'
+            echo 'All data remains in a private temporary runner directory and is deleted.'
+            echo 'No model trained; no Supabase writes; no historical pre-kickoff publication proof.'
+            echo
+            echo '~~~json'
+            if test -s "$work/qc.json"; then cat "$work/qc.json"; else echo '{"normalization":"FAIL_CLOSED"}'; fi
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if test "$result" -ne 0; then exit "$result"; fi
+          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 45 --max-filesize 200000 \
+            --output "$work/openfootball.txt" \
+            'https://raw.githubusercontent.com/openfootball/europe/63df627f3c87ce71708f016522ea236cf74332c3/russia/2024-25_ru1.txt'
+          test -s "$work/openfootball.txt"
+          {
+            echo
+            echo '### 2024/25 independent published-source consistency check'
+            echo 'OpenFootball CC0 - https://github.com/openfootball/europe'
+            echo
+            echo '~~~json'
+          } >> "$GITHUB_STEP_SUMMARY"
+          node scripts/m0-cross-source-fixture-reconcile.mjs \
+            "$work/footbolno.csv" "$work/openfootball.txt" >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo
+            echo '### One-day attributed SportScore current-data corroboration'
+            echo '<a href="https://sportscore.com/" rel="dofollow">Powered by SportScore</a>'
+            echo 'One unique-RPL search and at most one competition-filtered UTC day, no scheduled polling.'
+          } >> "$GITHUB_STEP_SUMMARY"
+          search_status="$(curl --silent --show-error --fail \
+            --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 20 --max-filesize 200000 \
+            --header 'Accept: application/json' \
+            --header 'User-Agent: FootballForecastM1/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+            --output "$work/search.json" --write-out '%{http_code}' \
+            'https://sportscore.com/api/v1/search/?q=Russian%20Premier%20League&sport=football&limit=10' \
+            2>/dev/null || true)"
+          if [[ "$search_status" == '200' ]]; then
+            node scripts/m0-sportscore-filtered-rpl-research.mjs \
+              discover "$work/search.json" "$work/slug.txt" >> "$GITHUB_STEP_SUMMARY"
+            if [[ -s "$work/slug.txt" ]]; then
+              slug="$(cat "$work/slug.txt")"
+              [[ "$slug" =~ ^[a-z0-9][a-z0-9-]{2,79}$ ]]
+              sleep 1
+              day="$(date -u +'%Y-%m-%d')"
+              day_status="$(curl --silent --show-error --fail \
+                --proto '=https' --max-redirs 0 \
+                --connect-timeout 10 --max-time 20 --max-filesize 1000000 \
+                --header 'Accept: application/json' \
+                --header 'User-Agent: FootballForecastM1/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+                --output "$work/sportscore-day.json" --write-out '%{http_code}' \
+                "https://sportscore.com/api/v1/fixtures/?sport=football&date=$day&competition=$slug&limit=200" \
+                2>/dev/null || true)"
+              if [[ "$day_status" == '200' ]]; then
+                {
+                  echo
+                  echo '~~~json'
+                } >> "$GITHUB_STEP_SUMMARY"
+                node scripts/m1-sportscore-current.mjs \
+                  "$work/search.json" "$work/sportscore-day.json" \
+                  "$work/private/rpl-2026-2027.jsonl" \
+                  "$day" "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_STEP_SUMMARY"
+                echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+              else
+                echo 'SportScore daily response unavailable, source corroboration INCONCLUSIVE.' >> "$GITHUB_STEP_SUMMARY"
+              fi
+            else
+              echo 'No uniquely validated SportScore league slug, INCONCLUSIVE.' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          else
+            echo 'SportScore public search unavailable, INCONCLUSIVE.' >> "$GITHUB_STEP_SUMMARY"
+          fi
