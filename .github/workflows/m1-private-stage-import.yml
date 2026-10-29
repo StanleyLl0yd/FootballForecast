@@ -1,0 +1,99 @@
+name: M1 private Footbolno PostgreSQL import (manual only)
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type STAGE_FOOTBOLNO_PRIVATE to import only into ff_private'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: m1-private-source-import
+  cancel-in-progress: false
+jobs:
+  protected-import:
+    if: github.ref == 'refs/heads/main' && inputs.confirmation == 'STAGE_FOOTBOLNO_PRIVATE'
+    runs-on: ubuntu-latest
+    environment: m1-source-import
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Verify importer and source normalizer with synthetic data
+        run: |
+          node --check scripts/m1-footbolno-normalize.mjs
+          node --check scripts/m1-stage-import.mjs
+          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-stage-import.test.mjs
+      - name: Prepare PostgreSQL client before any secrets are exposed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v psql >/dev/null; then
+            sudo apt-get update -qq >/dev/null
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-client >/dev/null
+          fi
+          psql --version
+      - name: Validate live source then stage into protected PostgreSQL
+        shell: bash
+        env:
+          PGHOST: ${{ secrets.M1_PGHOST }}
+          PGUSER: ${{ secrets.M1_PGUSER }}
+          PGDATABASE: ${{ secrets.M1_PGDATABASE }}
+          PGPASSWORD: ${{ secrets.M1_PGPASSWORD }}
+          M1_PGROOTCERT_B64: ${{ secrets.M1_PGROOTCERT_B64 }}
+          PGPORT: '5432'
+          PGSSLMODE: verify-full
+          FF_M1_DB_WRITE_ENABLED: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          command -v psql >/dev/null || { echo 'FAIL: PostgreSQL client unavailable'; exit 2; }
+          if [[ -z "$PGHOST" || -z "$PGUSER" || -z "$PGDATABASE" || -z "$PGPASSWORD" ]]; then
+            echo 'FAIL: protected PostgreSQL connection value missing'
+            exit 2
+          fi
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          mkdir -m 0700 "$work/private"
+          if [[ -n "$M1_PGROOTCERT_B64" ]]; then
+            printf '%s' "$M1_PGROOTCERT_B64" | base64 --decode > "$work/ca.crt"
+            openssl x509 -in "$work/ca.crt" -noout >/dev/null
+            export PGSSLROOTCERT="$work/ca.crt"
+          else
+            export PGSSLROOTCERT=system
+          fi
+          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 45 --max-filesize 2000000 \
+            --output "$work/footbolno.csv" \
+            'https://footbolno.ru/data/league/235-matches.csv'
+          test -s "$work/footbolno.csv"
+          test "$(wc -c < "$work/footbolno.csv")" -le 2000000
+          retrieved="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          node scripts/m1-footbolno-normalize.mjs \
+            "$work/footbolno.csv" "$retrieved" "$work/private" > "$work/quality.json"
+          node scripts/m1-stage-import.mjs \
+            "$work/private/manifest.json" \
+            "$work/private/rpl-2024-2025.jsonl" \
+            "$work/private/rpl-2025-2026.jsonl" \
+            "$work/private/rpl-2026-2027.jsonl"
+          node scripts/m1-stage-import.mjs \
+            "$work/private/manifest.json" \
+            "$work/private/rpl-2024-2025.jsonl" \
+            "$work/private/rpl-2025-2026.jsonl" \
+            "$work/private/rpl-2026-2027.jsonl" --commit
+          {
+            echo '## M1 private Footbolno ingestion'
+            echo 'Source: Footbolno, CC BY 4.0 - https://footbolno.ru/otkrytye-dannye'
+            echo 'Validated all three RPL seasons and committed into ff_private only.'
+            echo 'No provider rows, credentials or raw artifacts were retained.'
+            echo 'No public match records or trained model were created.'
+            echo
+            echo '~~~json'
+            cat "$work/quality.json"
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"

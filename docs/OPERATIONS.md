@@ -88,3 +88,48 @@ investigated and retried without bypassing hashes, quality checks or RLS.
 Post-apply verification: inspect Supabase Security/Performance Advisors,
 table grants, RLS, private record count, and the unchanged empty public
 `ff_matches` table.
+
+## Protected manual real-source import (M1)
+
+Live Supabase Free `eu-central-1` migration `20261029162351_m1_private_source_staging`
+has already been applied. The two private tables have RLS without any
+browser-access policy by design; the four append-only triggers and anonymous
+grant denial were verified live. No real matches were imported when the migration
+was deployed. An intentional Supabase Security Advisor `INFO` about two
+RLS-enabled/no-policy private tables is **not** an exposed-data vulnerability.
+
+Run `M1 private Footbolno PostgreSQL import (manual only)` on the
+**protected `main`** branch with the exact workflow input
+`STAGE_FOOTBOLNO_PRIVATE`, **only after** configuring the GitHub Actions
+environment `m1-source-import` (Repository Settings > Environments).
+Its deployment branch rule must allow **only protected `main`**; require an
+environment reviewer if supported. Do not put these secrets in repository-wide
+Actions variables or the public web environment.
+
+Create these **environment-scoped secrets** (the workflow never prints values):
+
+| Name | Value |
+| --- | --- |
+| `M1_PGHOST` | Exact hostname from Supabase **Connect > Session pooler**, without `postgresql://`, port or user (use the IPv4-capable session pooler). |
+| `M1_PGUSER` | Exact session-pooler database username displayed by Supabase, usually `postgres.<project-ref>`. |
+| `M1_PGDATABASE` | Database name from Supabase Connect, normally `postgres`. |
+| `M1_PGPASSWORD` | Existing Supabase database password. Set directly in GitHub; never share in chat, scripts, screenshots or committed files. |
+| `M1_PGROOTCERT_B64` | Optional base64 encoding of the Supabase database SSL root CA certificate (download privately from Supabase dashboard). Without it, `PGSSLROOTCERT=system` verifies against the runner's trusted CAs. |
+
+The runner fixes `PGPORT=5432`, requires `PGSSLMODE=verify-full`,
+downloads only the bounded fixed free Footbolno RPL CSV, runs the independent
+720-record role/hash/time/score checks, then issues one atomic, content-hash
+idempotent transaction against the private staging schema. No provider rows
+or database credentials appear in logs, GitHub artifacts or public tables.
+The job fails closed if any credential, source-quality or TLS prerequisite
+is missing. GitHub Environment secret values cannot be verified by reading
+the repository or rerunning public CI; the protected dispatch is the actual
+connectivity verification.
+
+After a green dispatch, independently confirm 1 private source snapshot,
+240 matches per each of 3 seasons, 720 staged matches overall, unchanged
+public match/forecast counts, RLS/grant denial and Supabase Security Advisor.
+Keep future real snapshots append-only and stop on a quality drift: never
+disable the temporal checks to get a green run. A secure private import alone
+does not activate public results, historical leakage-free backtests or model
+training.
