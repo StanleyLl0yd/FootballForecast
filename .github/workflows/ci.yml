@@ -47,6 +47,17 @@ jobs:
         run: bash scripts/m0-isolated-restore-ci.sh "${{ job.services.postgres.id }}"
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned
         with: {node-version: '22'}
+      - name: Commit and replay 720 synthetic source rows against disposable PostgreSQL 17
+        shell: bash
+        run: |
+          set -euo pipefail
+          for pass in 1 2; do
+            node tests/m1-stage-sql-fixture.mjs |
+              docker exec -i "${{ job.services.postgres.id }}" psql -X -q -v ON_ERROR_STOP=1 -U postgres -d postgres > /dev/null
+          done
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c 'select count(*) from ff_private.ff_ingest_matches' | grep -x '720'
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c 'select count(*) from ff_private.ff_ingest_snapshots' | grep -x '1'
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c 'select count(*) from public.ff_matches' | grep -x '2'
       - name: Test anonymous HTTP against disposable real PostgREST v14
         shell: bash
         run: bash -n scripts/m0-disposable-postgrest-ci.sh && bash scripts/m0-disposable-postgrest-ci.sh "${{ job.services.postgres.id }}"
