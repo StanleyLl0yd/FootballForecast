@@ -48,12 +48,14 @@ export async function readPublicOverview(
   if (!url || !key) return {state:'not_configured',matches:null,forecasts:null,fixtures:[]};
   try {
     const client=createAnonymousReadClient(fetchImpl,env);
+    const cutoffMs=Date.now(),cutoff=new Date(cutoffMs).toISOString();
     const [matchCount,forecastCount,upcoming]=await Promise.all([
       client.from('ff_matches').select('id',{count:'exact',head:true}),
       client.from('ff_forecasts').select('id',{count:'exact',head:true}),
       client.from('ff_matches')
         .select('id,kickoff_at,status,home:ff_teams!ff_matches_home_id_fkey(name),away:ff_teams!ff_matches_away_id_fkey(name)')
-        .gte('kickoff_at',new Date().toISOString())
+        .gte('kickoff_at',cutoff)
+        .eq('status','scheduled')
         .order('kickoff_at',{ascending:true}).limit(8)
     ]);
     if (matchCount.error || forecastCount.error || upcoming.error ||
@@ -63,7 +65,8 @@ export async function readPublicOverview(
     for (const row of upcoming.data) {
       const home=teamName(row.home),away=teamName(row.away);
       if (home && away && typeof row.id==='string' &&
-          typeof row.kickoff_at==='string' && typeof row.status==='string') {
+          typeof row.kickoff_at==='string' && row.status==='scheduled' &&
+          Date.parse(row.kickoff_at)>=cutoffMs) {
         fixtures.push({id:row.id,kickoffAt:row.kickoff_at,home,away,status:row.status});
       }
     }
