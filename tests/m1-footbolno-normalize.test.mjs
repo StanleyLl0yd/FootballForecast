@@ -126,6 +126,7 @@ test('no outputs outside private 0700 folder; files require new 0600 paths',()=>
 test('input bounds, invalid UTC retrieval timestamp and missing schema fail closed',()=>{
   assert.throws(()=>normalizeFootbolnoCsv(Buffer.alloc(2_000_001),RETRIEVED),/byte budget/);
   assert.throws(()=>parse(baseline(),'2026-10-29T15:00:00+03:00'),/UTC ISO/);
+  assert.throws(()=>parse(baseline(),'2026-02-30T15:00:00Z'),/invalid retrieval time/);
   const rows=baseline();rows[0]=HEADER.replace('date_utc','date_guess');
   assert.throws(()=>parse(rows),/mandatory publisher columns/);
 });
