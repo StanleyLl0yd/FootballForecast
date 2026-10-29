@@ -12,7 +12,9 @@
     "activeProviderIntegrations": 0,
     "rankMeaning": "research priority by authority and fit; NOT an empirically measured accuracy score",
     "allowTrainingFromUnapprovedData": false,
-    "allowPublicRedistributionOfUnapprovedData": false
+    "allowPublicRedistributionOfUnapprovedData": false,
+    "ownerApprovedPublishedSourceUse": true,
+    "ownerApprovalDocument": "M0_EXIT_AUDIT_AND_SOURCE_DECISION.md"
   },
   "sourceDefinitions": {
     "priority1": "official documents and dated primary match protocols for factual dispute resolution",
@@ -113,7 +115,18 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerUsageDecision": {
+        "status": "accepted-cc0-structural-research-use",
+        "ownerApprovedAt": "2026-10-29",
+        "acceptedUse": [
+          "pinned-cc0-historical-structural-corroboration",
+          "bounded-offline-analysis"
+        ],
+        "license": "https://github.com/openfootball/europe",
+        "historicalPrematchAsOfVerified": false,
+        "m0ProductionIngestionEnabled": false
+      }
     },
     {
       "id": "footbolno",
@@ -137,7 +150,22 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerUsageDecision": {
+        "status": "accepted-attributed-publisher-licensed-use",
+        "ownerApprovedAt": "2026-10-29",
+        "acceptedUse": [
+          "bounded-csv-and-json-download",
+          "attributed-private-analysis",
+          "attributed-derived-analytics",
+          "future-private-training-intent-subject-to-publisher-valid-rights-and-M1-temporal-gate"
+        ],
+        "license": "publisher-claimed-CC-BY-4.0",
+        "attribution": "https://footbolno.ru/otkrytye-dannye",
+        "upstreamRightsIndependentlyVerified": false,
+        "historicalPrematchAsOfVerified": false,
+        "m0ProductionIngestionEnabled": false
+      }
     },
     {
       "id": "sportscore",
@@ -160,7 +188,22 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerUsageDecision": {
+        "status": "accepted-free-attributed-api-use",
+        "ownerApprovedAt": "2026-10-29",
+        "acceptedUse": [
+          "documented-free-bounded-api-get",
+          "own-response-caching",
+          "attributed-derived-dashboard-alerts-analytics"
+        ],
+        "license": "https://sportscore.com/developers/terms/",
+        "attribution": "visible-dofollow-link-to-https://sportscore.com-on-each-data-surface",
+        "rawBulkResaleApproved": false,
+        "historicalTrainingApproved": false,
+        "generalSiteConflictResolved": false,
+        "m0ProductionIngestionEnabled": false
+      }
     },
     {
       "id": "api-football-free",
