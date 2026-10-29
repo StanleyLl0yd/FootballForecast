@@ -117,7 +117,11 @@ if ($existingPolicies.Count -ne 1 -or
 Write-Host '[VERIFIED] Environment deploy restriction: main only'
 
 $hostName = (Read-Host 'Supabase Session pooler hostname (no protocol or port)').Trim()
-if ($hostName -cnotmatch '^aws-[0-9]+-[a-z0-9-]+\.pooler\.supabase\.com = (Read-Host 'Supabase Session pooler username').Trim()
+if ($hostName -cnotmatch '^aws-[0-9]+-[a-z0-9-]+\.pooler\.supabase\.com$') {
+    throw 'Use the exact Supabase shared Session pooler hostname (not direct or transaction endpoints).'
+}
+
+$userName = (Read-Host 'Supabase Session pooler username').Trim()
 if ($userName -cne 'postgres.upulkesaiwnwfagjgteh') {
     throw 'Session pooler username does not belong to the FootballForecast Supabase project.'
 }
@@ -126,65 +130,6 @@ $dbName = (Read-Host 'Database name [postgres]').Trim()
 if ($dbName.Length -eq 0) { $dbName = 'postgres' }
 if ($dbName -cne 'postgres') {
     throw 'FootballForecast imports must target the postgres database only.'
-}
-
-$password = Read-Host 'Database password (masked)' -AsSecureString
-if ($password.Length -eq 0) {
-    throw 'Empty password refused.'
-}
-$certificatePath = (Read-Host 'Optional path to Supabase database root CA PEM (Enter = system trust)').Trim()
-$certSecret = $null
-if ($certificatePath.Length -gt 0) {
-    $cert = (Resolve-Path -LiteralPath $certificatePath -ErrorAction Stop).Path
-    $certBytes = [System.IO.File]::ReadAllBytes($cert)
-    if ($certBytes.Length -lt 100 -or $certBytes.Length -gt 12000 -or
-        -not [System.Text.Encoding]::ASCII.GetString($certBytes).Contains('BEGIN CERTIFICATE')) {
-        throw 'Invalid root CA PEM file.'
-    }
-    $certSecret = [Convert]::ToBase64String($certBytes)
-}
-
-Set-EnvironmentSecret -Name 'M1_PGHOST' -Value $hostName
-Set-EnvironmentSecret -Name 'M1_PGUSER' -Value $userName
-Set-EnvironmentSecret -Name 'M1_PGDATABASE' -Value $dbName
-$clearPassword = [System.Net.NetworkCredential]::new('', $password).Password
-try {
-    Set-EnvironmentSecret -Name 'M1_PGPASSWORD' -Value $clearPassword
-}
-finally {
-    $clearPassword = $null
-    $password.Dispose()
-}
-if ($null -ne $certSecret) {
-    Set-EnvironmentSecret -Name 'M1_PGROOTCERT_B64' -Value $certSecret
-    $certSecret = $null
-}
-
-$secretListJson = & gh secret list --repo $Repository --env $EnvironmentName --json name
-if ($LASTEXITCODE -ne 0) {
-    throw 'Cannot verify environment secret names.'
-}
-$names = @($secretListJson | ConvertFrom-Json | ForEach-Object { $_.name })
-foreach ($required in @('M1_PGHOST', 'M1_PGUSER', 'M1_PGDATABASE', 'M1_PGPASSWORD')) {
-    if ($required -notin $names) {
-        throw "Required environment secret name is missing: $required"
-    }
-}
-Write-Host '[VERIFIED] Four required secrets exist. Their values were never printed.'
-Write-Host 'NEXT: manually dispatch m1-private-stage-import.yml on main with confirmation STAGE_FOOTBOLNO_PRIVATE.'
-) {
-    throw 'Use the exact Supabase shared Session pooler hostname (not direct or transaction endpoints).'
-}
-
-$userName = (Read-Host 'Supabase Session pooler username').Trim()
-if ($userName -notmatch '^[A-Za-z0-9_.-]{3,128}$') {
-    throw 'Invalid PostgreSQL username.'
-}
-
-$dbName = (Read-Host 'Database name [postgres]').Trim()
-if ($dbName.Length -eq 0) { $dbName = 'postgres' }
-if ($dbName -notmatch '^[A-Za-z_][A-Za-z0-9_]{0,62}$') {
-    throw 'Invalid PostgreSQL database name.'
 }
 
 $password = Read-Host 'Database password (masked)' -AsSecureString
