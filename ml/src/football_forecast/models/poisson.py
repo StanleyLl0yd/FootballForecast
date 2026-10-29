@@ -57,7 +57,7 @@ def poisson_score_distribution(
     for value in (expected_home, expected_away):
         if not isfinite(value) or value < 0 or value > 15:
             raise ValueError("intensity must be finite and between 0 and 15")
-    if not 0 <= cutoff <= 40:
+    if not isinstance(cutoff, int) or isinstance(cutoff, bool) or not 0 <= cutoff <= 40:
         raise ValueError("cutoff must be in 0..40")
     if not 0 < tolerance < 0.001:
         raise ValueError("invalid tolerance")
