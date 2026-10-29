@@ -31,8 +31,8 @@ test('external provider links are safe and a full-site no-account catalog remain
   assert.match(page,/rel="noopener noreferrer"/);
   assert.match(page,/src\.url|source\.url/);
   assert.match(page,/Этап проекта/);
-  assert.match(page,/Импорт данных не разрешён/);
-  assert.match(page,/Ни один источник пока не одобрен/);
+  assert.match(page,/Статус исторического реестра, не M1/);
+  assert.match(page,/Footbolno \(CC BY 4\.0\) импортирован/);
   assert.doesNotMatch(page,/API_KEY|secret|service_role|NEXT_PUBLIC_SUPABASE/);
 });
 
@@ -45,7 +45,7 @@ test('historical source panel reads only pinned aggregates and labels awards cor
   assert.match(page,/season\.sourceReportedPlayedGoals/);
   assert.match(page,/season\.sourceReportedAdministrativeGoals/);
   assert.match(page,/season\.missingPairs>0/);
-  assert.match(page,/У этих данных пока нет разрешения на автоматический импорт/);
+  assert.match(page,/Это историческая оценка OpenFootball периода M0/);
   assert.equal(report.sourceApproved,false);
   assert.equal(report.modelTrainingAllowed,false);
   assert.equal(report.empiricalMatchAccuracyMeasured,false);
@@ -75,4 +75,12 @@ test('real publisher archive panel shows only pinned aggregate statuses and no a
   assert.equal(aggregate.inferences.independentMatchLevelScoreAccuracyVerified,false);
   assert.equal(aggregate.inferences.trainingRightsApproved,false);
   assert.doesNotMatch(page,/fetch\(|createClient\(|localStorage|use client/);
+});
+
+test('M1 status credits licensed Footbolno import and preserves M0 audit context',()=>{
+  assert.match(page,/M1 \/ РЕЕСТР ИСТОЧНИКОВ/);
+  assert.match(page,/Footbolno \(CC BY 4\.0\) импортирован/);
+  assert.match(page,/source.id==='footbolno'/);
+  assert.match(page,/Не подключён/);
+  assert.match(page,/опубликованных прогнозов пока нет/);
 });
