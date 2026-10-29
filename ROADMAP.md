@@ -1,9 +1,9 @@
 # Roadmap
 
-Updated 2026-10-22. Milestone acceptance requires verification, not code presence.
+Updated 2026-10-29. Milestone acceptance requires verification, not code presence.
 
 ## M0 - Architecture & Web Foundation (OPEN)
-- [x] Research preliminary RPL data source coverage and terms; candidates NOT approved.
+- [x] Research preliminary RPL data source coverage and terms; owner-approved published-source uses are documented, not blanket production ingestion.
 - [x] Add browser-only, on-demand Footbolno `235-matches.csv` structural consistency checks for three approved RPL seasons (strict streaming cap, one CSV GET, no persistence or ML).
 - [x] Enable bounded, on-demand read-only Footbolno and SportScore browser research previews with immediate attribution; no vendor correspondence needed for the publicly permitted preview tier, no raw DB writes or ML.
 - [x] Local monorepo and Next.js browser-first design with navigation and honest empty states.
@@ -36,7 +36,7 @@ Updated 2026-10-22. Milestone acceptance requires verification, not code presenc
 - [x] Connect public read-only dashboard/matches to Supabase REST via publishable key with unconfigured/error/empty states and mocked REST contract tests.
 - [x] Verify live anonymous Supabase REST via production dashboard and external GitHub Actions HTTP canary.
 - [x] Verify **one real Russian home/wired network** separately from GitHub runners: owner browser report 2026-10-22 11:33:03 UTC; API 130 ms, dashboard 368 ms, archive 333 ms, all HTTP 200. This checks only the observed network, not universal access or Russian mobile service.
-- [ ] Confirm data acquisition and storage/distribution permissions in writing where necessary.
+- [x] Document and accept the actually published zero-cost source-use tier (Footbolno CC BY 4.0, SportScore attributed bounded API/derived analytics, OpenFootball CC0), with owner risk acceptance; see [scope/risks](docs/M0_EXIT_AUDIT_AND_SOURCE_DECISION.md). Production ETL, upstream rights, historical pre-kickoff snapshots and model training remain M1 intake requirements, not inferred M0 accomplishments.
 - [x] Create M0 GitHub issues and activate main ruleset #25266406 (six required checks, no mandatory reviewers).
 - [x] Verify protected PR merges #15 and #16 and exact-head/post-merge CI/Security/CodeQL.
 
@@ -70,7 +70,7 @@ Generic adapters and independently evaluated league-specific workflows.
 
 - [x] Stabilize Edge Chromium blank-DOM retry (PR #42) and verify post-merge exact-main browser diagnostics.
 
-## Remaining external M0 acceptance (no M1 transition)
+## Final M0 acceptance, independent of later data-foundation training (no M1 transition yet)
 
 The reduced M0 recovery gate is **application migration re-creation**, **documented non-secret infrastructure configuration**, and **explicit acceptance of database-loss risk**. The live 2026-10-22 read-only check found zero imported matches, forecasts, source records or access grants. This is **not** proof of a complete Supabase platform restore. Backup work is tracked after a fully functional project in #96 and is not an M0/M1 acceptance condition.
 
@@ -81,3 +81,7 @@ The reduced M0 recovery gate is **application migration re-creation**, **documen
 - [x] #8 **M0 security exception accepted by owner 2026-10-22**: narrowly limited dev-only `braces@3.0.3` / `GHSA-vfj7-8cjw-p6xm` chain. Enforced production audit and fail-closed full audit for all other HIGH/CRITICAL findings remain active. **Unpatched advisory is NOT fixed**; issue #8 stays OPEN as **non-gating upstream patch watch**, reviewed when Dependabot/advisory or dependency graph changes (see `SECURITY.md`).
 
 Green CI and Vercel deployment are **necessary but not sufficient** for M0 sign-off. Verified wired reachability is one observed success only; the mobile failure cannot be labeled PASS. M0 still needs #2 legally usable, match-accurate RPL training/holdout/current data and independent full milestone audit. The narrowly accepted dev-only #8 risk is **not an M0 blocker**. No model training, data import, subscription or M1 work is authorized.
+
+### 2026-10-29 M0 exit audit / owner source-use decision
+
+The repository-wide security/correctness and independent complexity sweeps and residual risks are documented in [M0 exit evidence](docs/M0_EXIT_AUDIT_AND_SOURCE_DECISION.md), based on protected `main=c1d9e6bc` and subsequent reviewed PR checks. Publicly licensed and attributed **research use** has owner approval; legal rights to individual original third-party records, real train/holdout datasets, historical prematch cutoffs and live model publication remain a separate mandatory **M1 intake gate**. Source issue #2 stays owner-closed. **M0 remains OPEN until exact-main production SHA attestation and explicit acceptance; M1 remains BLOCKED.**
