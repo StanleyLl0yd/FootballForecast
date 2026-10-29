@@ -73,6 +73,19 @@ begin
   select source_id,retrieved_at into strict v_source,v_retrieved
   from ff_private.ff_ingest_snapshots where id=p_snapshot;
 
+  -- A previously published snapshot is a no-op, including its immutable
+  -- earlier audit events. Do not try to insert duplicate transition events.
+  if v_baseline=p_snapshot then
+    perform ff_private.ff_promote_footbolno_snapshot(p_snapshot);
+    select count(*) into v_linked from ff_private.ff_published_fixture_links
+      where snapshot_id=p_snapshot;
+    return pg_catalog.jsonb_build_object(
+      'snapshot_id',p_snapshot,'public_links',v_linked,
+      'already_published',true,'newly_confirmed_scheduled',0,
+      'scheduled_to_finished',0,'historical_or_holdout_updates',0,
+      'automatic_refresh_enabled',false,'historical_as_of_verified',false);
+  end if;
+
   for v_item in
     select n.source_match_id,n.kickoff_at as new_kickoff,
       n.home_goals as new_home,n.away_goals as new_away,
@@ -137,6 +150,7 @@ begin
   end if;
   return pg_catalog.jsonb_build_object(
     'snapshot_id',p_snapshot,'public_links',v_linked,
+    'already_published',false,
     'newly_confirmed_scheduled',v_confirmed,
     'scheduled_to_finished',v_updated,
     'historical_or_holdout_updates',0,
