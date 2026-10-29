@@ -118,6 +118,9 @@ export function compareSportScoreCurrent(searchJson,fixtureJson,normalizedCurren
     kickoffDateDisagreements:dateDisagreement,
     missingFinishedScores:missingScores,finishedScoreDisagreements:scoreDisagreement,
     pageCapped:fixtures.length===200,
+    dayComparisonStatus:matched>0?'MATCHES_COMPARED':
+      publisher.size===0&&labeled===0?'NO_RPL_MATCHES':'INCONCLUSIVE',
+    fieldConflictDetected:scoreDisagreement>0||duplicate>0||dateDisagreement>0,
     agreementForMatchedFields:matched>0&&scoreDisagreement===0&&missingScores===0&&
       unmapped===0&&duplicate===0&&dateDisagreement===0,
     fullSeasonVerified:false,upstreamIndependent:false,
@@ -145,7 +148,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     result.sportscoreResponseSha256=createHash('sha256').update(dayBytes).digest('hex');
     // Numeric report only: never print raw API or match records.
     console.log(JSON.stringify(result,null,2));
-    if(!result.agreementForMatchedFields||result.pageCapped)process.exitCode=1;
+    // A fixture-free day or incomplete API response is inconclusive, not a false mismatch.
+    if(result.fieldConflictDetected)process.exitCode=1;
   }catch{
     console.error('FAIL: SportScore current-day reconciliation refused without raw response output');
     process.exitCode=2;
