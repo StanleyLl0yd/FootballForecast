@@ -110,9 +110,9 @@ Create these **environment-scoped secrets** (the workflow never prints values):
 
 | Name | Value |
 | --- | --- |
-| `M1_PGHOST` | Exact hostname from Supabase **Connect > Session pooler**, without `postgresql://`, port or user (use the IPv4-capable session pooler). |
-| `M1_PGUSER` | Exact session-pooler database username displayed by Supabase, usually `postgres.<project-ref>`. |
-| `M1_PGDATABASE` | Database name from Supabase Connect, normally `postgres`. |
+| `M1_PGHOST` | Exact shared **Session pooler** hostname from Supabase Connect, matching `aws-[INDEX]-[REGION].pooler.supabase.com` (IPv4/port 5432). No direct host, IPv6-only endpoint, URL or transaction-pooler port. |
+| `M1_PGUSER` | Exact FootballForecast tenant user `postgres.upulkesaiwnwfagjgteh` (other projects rejected). |
+| `M1_PGDATABASE` | Database name must be exactly `postgres`. |
 | `M1_PGPASSWORD` | Existing Supabase database password. Set directly in GitHub; never share in chat, scripts, screenshots or committed files. |
 | `M1_PGROOTCERT_B64` | Optional base64 encoding of the Supabase database SSL root CA certificate (download privately from Supabase dashboard). Without it, `PGSSLROOTCERT=system` verifies against the runner's trusted CAs. |
 
@@ -149,3 +149,15 @@ Keep future real snapshots append-only and stop on a quality drift: never
 disable the temporal checks to get a green run. A secure private import alone
 does not activate public results, historical leakage-free backtests or model
 training.
+
+### Target integrity (M1)
+
+The offline importer refuses wrong Supabase tenant identifiers even when valid
+PostgreSQL credentials are supplied. For production only the shared Session
+pooler host, `postgres.upulkesaiwnwfagjgteh`, database `postgres`, port
+`5432`, and verified TLS are accepted. The local PowerShell setup checks the
+same destination **before** encrypting or saving any secret. A localhost bypass
+exists solely for disposable tests and additionally requires
+`FF_M1_LOCAL_TEST_ONLY=1`; this value must never be present in the protected
+GitHub Actions job. The purpose is to prevent accidentally staging FootballForecast
+data into a different project or a paid database.
