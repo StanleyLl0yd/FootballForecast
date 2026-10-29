@@ -32,6 +32,15 @@ def test_naive_timestamps_are_rejected() -> None:
         SourceObservation('vendor', 'a', T.replace(tzinfo=None), T, T, 'v1')
 
 
+@pytest.mark.parametrize('field', ['event_at', 'published_at', 'ingested_at'])
+def test_datetime_type_errors_are_data_errors(field: str) -> None:
+    values = {'event_at': T, 'published_at': T, 'ingested_at': T}
+    values[field] = '2025-09-01T00:00:00Z'
+    with pytest.raises(DataError):
+        SourceObservation('vendor', 'a', values['event_at'],
+                          values['published_at'], values['ingested_at'], 'v1')
+
+
 def test_publication_cannot_follow_ingestion() -> None:
     with pytest.raises(DataError):
         SourceObservation('vendor', 'a', T, T + timedelta(days=1), T, 'v1')
