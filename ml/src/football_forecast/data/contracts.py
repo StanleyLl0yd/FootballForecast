@@ -18,7 +18,7 @@ class MatchStatus(StrEnum):
 
 
 def aware(value: datetime, field: str) -> None:
-    if value.tzinfo is None or value.utcoffset() is None:
+    if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
         raise DataError(f"{field} must have an explicit timezone")
 
 
