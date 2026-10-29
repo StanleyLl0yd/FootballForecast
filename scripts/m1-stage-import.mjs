@@ -107,10 +107,10 @@ export function buildStageSql(dataset){
     'insert into ff_private.ff_ingest_snapshots',
     '(source_id,source_url,license_url,source_sha256,normalized_sha256,retrieved_at)',
     "values(src,'"+SOURCE_URL+"','"+ATTRIBUTION_URL+"','"+hash+"','"+hashes+"'::jsonb,'"+retrieval+"'::timestamptz)",
-    'on conflict (source_id,source_sha256,retrieved_at) do nothing;'
+    'on conflict (source_id,source_sha256) do nothing;',
     "select id into strict snap from ff_private.ff_ingest_snapshots where source_id=src",
-    "and source_sha256='"+hash+"' and retrieved_at='"+retrieval+"'::timestamptz",
-    "and normalized_sha256='"+hashes+"'::jsonb;"
+    "and source_sha256='"+hash+"'",
+    "and normalized_sha256='"+hashes+"'::jsonb;",
     'select count(*) into n from ff_private.ff_ingest_matches where snapshot_id=snap;',
     "if n not in (0,720) then raise exception 'Partial source snapshot'; end if;",
     'if n=0 then',
