@@ -33,7 +33,7 @@ jobs:
         shell: bash
         run: |
           docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c "show server_version_num" | grep -E '^17[0-9]{4}$'
-          cat database/tests/0000_ci_supabase_stub.sql database/migrations/0001_foundation.sql database/tests/0001_rls_and_forecasts.sql database/migrations/0002_public_read.sql database/tests/0002_public_read.sql database/migrations/0003_match_fk_indexes.sql database/tests/0003_match_fk_indexes.sql database/migrations/0004_match_status_scores.sql database/migrations/0005_m1_private_source_staging.sql database/tests/0005_live_anon_posture.sql database/tests/0006_live_immutable_ledger.sql database/tests/0007_live_public_surface.sql database/tests/0008_match_status_scores.sql database/tests/0009_m1_private_source_staging.sql |
+          cat database/tests/0000_ci_supabase_stub.sql database/migrations/0001_foundation.sql database/tests/0001_rls_and_forecasts.sql database/migrations/0002_public_read.sql database/tests/0002_public_read.sql database/migrations/0003_match_fk_indexes.sql database/tests/0003_match_fk_indexes.sql database/migrations/0004_match_status_scores.sql database/migrations/0005_m1_private_source_staging.sql database/migrations/0006_m1_guarded_canonical_promotion.sql database/tests/0010_m1_canonical_promotion.sql database/tests/0005_live_anon_posture.sql database/tests/0006_live_immutable_ledger.sql database/tests/0007_live_public_surface.sql database/tests/0008_match_status_scores.sql database/tests/0009_m1_private_source_staging.sql |
             docker exec -i "${{ job.services.postgres.id }}" psql -v ON_ERROR_STOP=1 -U postgres -d postgres
       - name: Reject unexpected publicly exposed tables, views, sequences and routines
         shell: bash
@@ -58,6 +58,29 @@ jobs:
           docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c 'select count(*) from ff_private.ff_ingest_matches' | grep -x '720'
           docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c 'select count(*) from ff_private.ff_ingest_snapshots' | grep -x '1'
           docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c 'select count(*) from public.ff_matches' | grep -x '2'
+      - name: Promote synthetic M1 fixtures with stable links and no invented kickoffs
+        shell: bash
+        run: |
+          set -euo pipefail
+          pre_forecasts="$(docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c 'select count(*) from public.ff_forecasts')"
+          for pass in 1 2; do
+            docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
+              -c "select ff_private.ff_promote_footbolno_snapshot(id)->>'public_rows_linked' from ff_private.ff_ingest_snapshots" | grep -x '480'
+          done
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
+            -c "select count(*) from ff_private.ff_published_fixture_links" | grep -x '480'
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
+            -c "select count(*) from ff_private.ff_provider_team_links" | grep -x '16'
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
+            -c "select count(*) from public.ff_source_records" | grep -x '480'
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
+            -c "select count(*) from public.ff_matches" | grep -x '482'
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
+            -c "select count(*) from public.ff_forecasts" | grep -x "$pre_forecasts"
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
+            -c "select count(*) from public.ff_source_records where published_at is not null" | grep -x '0'
+          docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
+            -c "select count(*) from ff_private.ff_ingest_matches where kickoff_at is null" | grep -x '240'
       - name: Test anonymous HTTP against disposable real PostgREST v14
         shell: bash
         run: bash -n scripts/m0-disposable-postgrest-ci.sh && bash scripts/m0-disposable-postgrest-ci.sh "${{ job.services.postgres.id }}"
