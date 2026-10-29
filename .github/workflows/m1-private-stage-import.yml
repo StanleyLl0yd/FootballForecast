@@ -28,7 +28,8 @@ jobs:
         run: |
           node --check scripts/m1-footbolno-normalize.mjs
           node --check scripts/m1-stage-import.mjs
-          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-stage-import.test.mjs
+          node --check scripts/m1-revision-report.mjs
+          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-stage-import.test.mjs tests/m1-revision-report.test.mjs
       - name: Prepare PostgreSQL client before any secrets are exposed
         shell: bash
         run: |
