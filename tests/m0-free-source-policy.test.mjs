@@ -202,7 +202,7 @@ test('owner accepts only publisher-documented free source uses, not unverified E
   assert.match(record,/two separate full-repository passes/);
   assert.match(record,/Footbolno CC BY 4\.0/);
   assert.match(record,/SportScore/);
-  assert.match(record,/M0 remains \*\*OPEN\*\*/);
+  assert.match(record,/M0 ACCEPTED/);
 });
 
 test('all twenty free sources carry owner usage scope independently of adapter state',()=>{
