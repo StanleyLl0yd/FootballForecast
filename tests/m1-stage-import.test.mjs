@@ -60,7 +60,7 @@ test('720 role-separated immutable source records validate without PostgreSQL wr
   assert.match(sql,/ff_private\.ff_ingest_matches/);
   assert.match(sql,/pg_advisory_xact_lock/);
   assert.match(sql,/normalized_sha256/);
-  assert.match(sql,/on conflict \(source_id,source_sha256,retrieved_at\)/);
+  assert.match(sql,/on conflict \(source_id,source_sha256\)/);
   assert.ok(!sql.includes('Club 1'));
   assert.ok(!sql.includes('match-24-1'));
 });
