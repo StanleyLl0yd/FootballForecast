@@ -1,4 +1,4 @@
-import {createAnonymousReadClient, publicSettingsConfigured} from './public-overview.ts';
+import {createAnonymousReadClient, publicSettingsConfigured, publicTeamName} from './public-overview.ts';
 
 export type PublishedForecast = {
   id:string; revision:number; predictedAt:string; asOfAt:string;
@@ -9,12 +9,6 @@ export type PublishedForecast = {
 export type ArchiveSnapshot =
   | {state:'not_configured'|'unavailable'; forecasts:[]}
   | {state:'ready'; forecasts:PublishedForecast[]};
-
-function nestedTeam(value:unknown):string|null {
-  if(!value || typeof value!=='object' || Array.isArray(value)) return null;
-  const name=(value as Record<string,unknown>).name;
-  return typeof name==='string' && name.trim().length>0 ? name : null;
-}
 
 // PostgreSQL timestamptz must be explicit and unambiguous. Date.parse alone
 // also accepts date-only, local-time and loosely formatted strings, which can
@@ -34,7 +28,7 @@ function normalized(row:unknown):PublishedForecast|null {
   const r=row as Record<string,unknown>;
   if(!r.match || typeof r.match!=='object' || Array.isArray(r.match)) return null;
   const match=r.match as Record<string,unknown>;
-  const home=nestedTeam(match.home),away=nestedTeam(match.away);
+  const home=publicTeamName(match.home),away=publicTeamName(match.away);
   if(typeof r.id!=='string' || !home || !away ||
     typeof r.revision!=='number' || !Number.isSafeInteger(r.revision) || r.revision<1 ||
     typeof r.model_version!=='string' || !r.model_version.trim() ||
