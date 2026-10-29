@@ -23,7 +23,7 @@ The independently queried GitHub tree for input `c1d9e6bc66d5a9cce6b994b3e1cca5c
 2. The tracked `braces@3.0.3` high advisory is dev-only and accepted narrowly by owner (#8); all other high/critical audits fail closed. Lack of production offsite backup (#96) and two mobile carrier access failures (#6) are owner-accepted non-M0 blockers.
 3. No third-party-origin source has a demonstrated complete chain of upstream rights or authenticated historical pre-kickoff snapshots. Two publishers' match agreement can share an upstream. Footbolno 240/240 historical structural/score consistency for observed 2024/25 and 2025/26 and SportScore 16/16 sampled 2026/27 fixtures are **sampled publisher agreement**, not official/perfect accuracy.
 4. Optional owner GitHub OAuth end-to-end is not enabled or accepted as necessary for an anonymous read-only M0 prototype.
-5. The complete license/provenance/as-of evaluation for actual stored/trained season datasets is a **mandatory M1 intake gate**, not falsely marked complete by an owner instruction. No source activation, ingestion, historic strict scoring or live model forecasts in M0.
+5. M1 must validate actual imported match rows, provenance identifiers, score/status semantics and retrospective as-of boundaries. Owner-approved licensed-source use is not held up by speculative upstream license letters. No source activation, ingestion or live forecasts were performed during M0.
 
 ## Owner decision: permitted zero-cost source use, not a transfer of third-party rights
 
@@ -47,7 +47,7 @@ Owner approval of an intended use is **not a license from the original publisher
 ## Final exit protocol
 
 1. PR exact-head: all required checks, pass/fail/skipped decisions, diff and regression review; then protected merge and exact-main CI/Security/CodeQL and branch reconciliation.
-2. Independent Vercel production deployment **READY on exactly the accepted main SHA** and live read-only HTTP canary after merge, without paid resources or secrets in chat. This is reserved for the owner's third step.
+2. Independent Vercel production READY on the then-accepted `main=523d70d5...` was verified on 2026-10-29, including the three production aliases and `fra1` region. Later M0-closeout documentation commits require their own postmerge checks and deployment SHA reconciliation.
 3. The owner accepted M0 on 2026-10-29 after the two audit passes and independent Vercel SHA verification. Close issue #111 after final exact-main CI/Security/CodeQL verification of the documentation/policy PR. Mark M0 ACCEPTED and M1 OPEN; do not claim a trained service until delivered.
 
 ## Final owner acceptance and practical source-use rule (2026-10-29)
