@@ -28,22 +28,22 @@ export default function DataCenter(){
   const active=sources.filter(source=>source.active).length;
   const measured=sources.filter(source=>source.empiricalResultErrorRate!==null).length;
   return <>
-    <PageHeading eyebrow="M0 / РЕЕСТР ИСТОЧНИКОВ" title="Центр данных"
-      subtitle="Бесплатные источники, доказательства надёжности и ограничения использования. Это исследование, а не подключённые прогнозные данные."/>
+    <PageHeading eyebrow="M1 / РЕЕСТР ИСТОЧНИКОВ" title="Центр данных"
+      subtitle="Бесплатные источники, доказательства надёжности и ограничения использования. M1: приватный импорт Footbolno проверен. Ниже также сохранены исследования M0 для проверки происхождения данных; опубликованных прогнозов пока нет."/>
     <div className="stat-grid">
       <div className="stat"><span>Источников в реестре</span><strong>{sources.length}</strong>
         <small>Бесплатные и общедоступные справочные</small></div>
-      <div className="stat"><span>Активных импортов</span><strong>{active}</strong>
-        <small>Импорт данных не разрешён на M0</small></div>
+      <div className="stat"><span>Активных импортов в реестре M0</span><strong>{active}</strong>
+        <small>Статус исторического реестра, не M1</small></div>
       <div className="stat"><span>Измеренная точность</span><strong>{measured}</strong>
         <small>Нужна независимая сверка матчей</small></div>
-      <div className="stat"><span>Этап проекта</span><strong>M0</strong>
+      <div className="stat"><span>Этап проекта</span><strong>M1</strong>
         <small>Обучение моделей ещё не начиналось</small></div>
     </div>
     <section className="panel sources-intro">
       <h2>Как определяется надёжность</h2>
       <p>Приоритеты от 1 до 4 означают полезность и авторитетность источника для конкретных сведений, а не измеренный процент точности. Для настоящего рейтинга нужны сверенные матчи, учёт ошибок счёта и хозяев поля, пропусков, даты публикации и зависимости сайтов от общего поставщика.</p>
-      <p>Ни один источник пока не одобрен для автоматического импорта или обучения. Все функции сайта остаются бесплатными; платные источники исключены. Публичность сайта с результатами не означает разрешение на скачивание его базы.</p>
+      <p>В M1 Footbolno (CC BY 4.0) импортирован в защищённую базу: 720 матчей РПЛ сезонов 2024/25, 2025/26 и 2026/27 проверены 29.10.2026. OpenFootball использован для независимой сверки 2024/25. Обучение и публикация прогнозов ещё не выполнялись. Все функции сайта остаются бесплатными; платные источники исключены. Публичность сайта с результатами не означает разрешение на скачивание его базы.</p>
       <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M0_SOURCE_ACCURACY_PROTOCOL.md"
         target="_blank" rel="noopener noreferrer">Методика проверки точности <span aria-hidden="true">↗</span></a>
     </section>
@@ -120,7 +120,7 @@ export default function DataCenter(){
       <p className="source-lab-warning">
         В 2019/20 и 2020/21 суммарно шесть административных результатов [awarded].
         В 2023/24 присутствует известная ошибка места проведения матча «Сочи» - «Спартак».
-        У этих данных пока нет разрешения на автоматический импорт и обучение модели.
+        Это историческая оценка OpenFootball периода M0, без автоматического импорта OpenFootball или обучения модели.
       </p>
       <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M0_OPENFOOTBALL_RPL_STRUCTURAL_EVIDENCE.json"
         target="_blank" rel="noopener noreferrer">Доказательства, версии исходных файлов и ограничения ↗</a>
@@ -147,7 +147,7 @@ export default function DataCenter(){
               <p>{source.limitations}</p>
               <div className="source-entry-footer">
                 <span>Точность не измерена</span>
-                <span>Не подключён</span>
+                <span>{source.id==='footbolno'?'M1: приватный импорт принят':'Не подключён'}</span>
               </div>
             </li>)}
           </ul>
