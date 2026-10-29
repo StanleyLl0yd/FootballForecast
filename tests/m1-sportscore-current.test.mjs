@@ -50,6 +50,15 @@ test('quarantined Footbolno fixture stays excluded from daily comparison',()=>{
   assert.equal(report.matchedDirectedFixtures,0);
   assert.equal(report.agreementForMatchedFields,false);
 });
+test('no-match day and unavailable day coverage remain inconclusive, not fabricated conflict',()=>{
+  const noMatches=run([],[{...sourceRow,calendarDateUtc:'2026-10-30'}]);
+  assert.equal(noMatches.dayComparisonStatus,'NO_RPL_MATCHES');
+  assert.equal(noMatches.fieldConflictDetected,false);
+  assert.equal(noMatches.agreementForMatchedFields,false);
+  const missingApi=run([],[sourceRow]);
+  assert.equal(missingApi.dayComparisonStatus,'INCONCLUSIVE');
+  assert.equal(missingApi.fieldConflictDetected,false);
+});
 test('ambiguous slug, unsafe day ranges and duplicate provider schedule fail closed',()=>{
   assert.throws(()=>run([apiRow],[sourceRow],{results:{competitions:[]}}),/unique verified RPL/);
   assert.throws(()=>run([apiRow],[sourceRow],SEARCH,'2026-10-25'),/only today/);
