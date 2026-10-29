@@ -1,9 +1,6 @@
 -- M1: guarded canonical RPL promotion from an immutable, quality-gated snapshot.
 -- Not an automatic ingestion trigger; only privileged postgres can explicitly invoke it.
 -- Unknown exact kickoffs are never projected into NOT NULL public.ff_matches.
-create unique index if not exists ff_matches_unique_directed_fixture
-  on public.ff_matches (season_id, home_id, away_id);
-
 create table if not exists ff_private.ff_provider_team_links (
   source_id uuid not null references public.ff_sources(id),
   provider_team_id text not null check (length(provider_team_id) between 1 and 100),
@@ -186,8 +183,10 @@ begin
 
   -- Public schema cannot store date-only fixtures. Never synthesize 00:00.
   insert into public.ff_matches
-    (season_id,home_id,away_id,kickoff_at,status,home_goals,away_goals)
-  select season.id,h.team_id,a.team_id,r.kickoff_at,r.status,
+    (id,season_id,home_id,away_id,kickoff_at,status,home_goals,away_goals)
+  select pg_catalog.md5('footballforecast:m1:'||v_source::text||':'||
+      r.season||':'||r.home_source_id||':'||r.away_source_id)::uuid,
+    season.id,h.team_id,a.team_id,r.kickoff_at,r.status,
     r.home_goals,r.away_goals
   from ff_private.ff_ingest_matches r
   join public.ff_competitions c on c.code='RPL'
@@ -199,7 +198,7 @@ begin
     on a.source_id=v_source and a.provider_team_id=r.away_source_id
   where r.snapshot_id=p_snapshot and r.kickoff_time_confirmed
     and r.kickoff_at is not null
-  on conflict(season_id,home_id,away_id) do nothing;
+  on conflict(id) do nothing;
 
   if exists(
     select 1 from ff_private.ff_ingest_matches r
@@ -211,9 +210,13 @@ begin
     join ff_private.ff_provider_team_links a
       on a.source_id=v_source and a.provider_team_id=r.away_source_id
     left join public.ff_matches m
-      on m.season_id=season.id and m.home_id=h.team_id and m.away_id=a.team_id
+      on m.id=pg_catalog.md5('footballforecast:m1:'||v_source::text||':'||
+        r.season||':'||r.home_source_id||':'||r.away_source_id)::uuid
     where r.snapshot_id=p_snapshot and r.kickoff_time_confirmed
-      and (m.id is null or m.kickoff_at is distinct from r.kickoff_at
+      and (m.id is null or m.season_id is distinct from season.id
+        or m.home_id is distinct from h.team_id
+        or m.away_id is distinct from a.team_id
+        or m.kickoff_at is distinct from r.kickoff_at
         or m.status is distinct from r.status
         or m.home_goals is distinct from r.home_goals
         or m.away_goals is distinct from r.away_goals)
@@ -232,7 +235,8 @@ begin
   join ff_private.ff_provider_team_links a
     on a.source_id=v_source and a.provider_team_id=r.away_source_id
   join public.ff_matches m
-    on m.season_id=season.id and m.home_id=h.team_id and m.away_id=a.team_id
+    on m.id=pg_catalog.md5('footballforecast:m1:'||v_source::text||':'||
+      r.season||':'||r.home_source_id||':'||r.away_source_id)::uuid
   where r.snapshot_id=p_snapshot and r.kickoff_time_confirmed
   on conflict(snapshot_id,source_match_id) do nothing;
   select count(*) into v_mapped from ff_private.ff_published_fixture_links
