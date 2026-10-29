@@ -18,12 +18,17 @@ class ScoreDistribution:
     expected_away: float
 
     def validate(self, tolerance: float = 1e-10) -> None:
+        if not isfinite(tolerance) or not 0 < tolerance < 0.001:
+            raise ValueError("invalid tolerance")
+        probabilities = (self.home_win, self.draw, self.away_win, self.tail_mass, *self.scores.values())
+        if any(not isfinite(p) or p < -tolerance or p > 1 + tolerance for p in probabilities):
+            raise ValueError("probability is non-finite or out of range")
+        if any(not isfinite(x) or x < 0 or x > 15 for x in (self.expected_home, self.expected_away)):
+            raise ValueError("invalid intensity")
         if abs(self.home_win + self.draw + self.away_win - 1.0) > tolerance:
             raise ValueError("1X2 probabilities do not sum to one")
         if abs(sum(self.scores.values()) + self.tail_mass - 1.0) > tolerance:
             raise ValueError("score probabilities and unmodelled tail do not sum to one")
-        if min(self.home_win, self.draw, self.away_win, self.tail_mass) < -tolerance:
-            raise ValueError("negative probability")
 
 
 def _poisson_vector(expected: float, cutoff: int) -> list[float]:
