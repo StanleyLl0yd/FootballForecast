@@ -49,6 +49,8 @@ test('reject quarantine, fake kickoff and nonfinal scores even if hashes are rec
     r=>r.publishedAtUtc='2024-07-30T10:00:00Z',
     r=>{r.kickoffUtc=null;r.kickoffTimeConfirmed=true;},
     r=>r.homeGoals=99,
+    r=>r.status='live',
+    r=>{r.calendarDateUtc='2024-08-01';r.kickoffUtc='2026-11-01T12:00:00.000Z';},
     r=>r.awayTeamId=r.homeTeamId
   ]){
     const data=fixture();
@@ -66,4 +68,15 @@ test('repeated match identities within one season are refused',()=>{
   data.seasonFiles[season]=lines.join('\n')+'\n';
   data.manifest.snapshotSHA256[season]=hash(Buffer.from(data.seasonFiles[season]));
   assert.throws(()=>validateStageDataset(data.manifest,data.seasonFiles),/duplicate source fixture/);
+});
+
+test('dated planned fixture older than retrieval time is refused',()=>{
+  const data=fixture();
+  mutateSeason(data,'2026/2027',r=>{
+    r.calendarDateUtc='2026-08-01';
+    r.kickoffUtc=null;
+    r.kickoffTimeConfirmed=false;
+  });
+  assert.throws(()=>validateStageDataset(data.manifest,data.seasonFiles),
+    /stale scheduled fixture/);
 });
