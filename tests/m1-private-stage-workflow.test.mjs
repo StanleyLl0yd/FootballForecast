@@ -30,7 +30,7 @@ test('privileged database credentials are restricted to the write step',()=>{
   assert.doesNotMatch(workflow,/::(?:add-mask|set-output)::/);
 });
 
-test('source access is exactly one bounded free HTTPS download and no model training',()=>{
+test('source access uses bounded fixed HTTPS URLs and no model training',()=>{
   assert.match(workflow,/--max-filesize 2000000/);
   assert.match(workflow,/https:\/\/footbolno\.ru\/data\/league\/235-matches\.csv/);
   assert.match(workflow,/scripts\/m1-footbolno-normalize\.mjs/);
@@ -42,4 +42,15 @@ test('source access is exactly one bounded free HTTPS download and no model trai
   assert.match(workflow,/trap 'rm -rf "\$work"' EXIT/);
   assert.doesNotMatch(workflow,/\b(?:train|predict|supabase auth login)\b/i);
   assert.match(current,/^\s*private-source-snapshot:/m);
+});
+
+test('pinned OpenFootball score and directed-fixture gate precedes privileged import',()=>{
+  const cross=workflow.indexOf('scripts/m0-cross-source-fixture-reconcile.mjs');
+  const gate=workflow.indexOf('scripts/m1-openfootball-score-gate.mjs');
+  const commit=workflow.indexOf('"$work/private/rpl-2026-2027.jsonl" --commit');
+  assert.ok(cross>0&&gate>cross&&commit>gate);
+  assert.match(workflow,/openfootball\/europe\/63df627f3c87ce71708f016522ea236cf74332c3\/russia\/2024-25_ru1\.txt/);
+  assert.match(workflow,/--max-filesize 200000/);
+  assert.match(workflow,/score-gate\.json/);
+  assert.doesNotMatch(workflow,/upload-artifact/);
 });
