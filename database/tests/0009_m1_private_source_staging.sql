@@ -78,6 +78,9 @@ select pg_temp.expect_rejection($sql$
   delete from ff_private.ff_ingest_snapshots
   where id='32000000-0000-0000-0000-000000000001'
 $sql$,'P0001','Source snapshot history is append-only');
+select pg_temp.expect_rejection($sql$
+  truncate ff_private.ff_ingest_matches
+$sql$,'P0001','Source snapshot history is append-only');
 rollback;
 select 1 / case when (select count(*) from ff_private.ff_ingest_snapshots)=0
     and (select count(*) from ff_private.ff_ingest_matches)=0
