@@ -89,6 +89,8 @@ export function buildStageSql(dataset){
     !utc(dataset.manifest?.retrievedAtUtc))refuse('database batch contract');
   const hash=dataset.manifest.sourceFileSha256;
   const retrieval=dataset.manifest.retrievedAtUtc;
+  const hashes=JSON.stringify(Object.fromEntries(SEASONS.map(s=>[s,dataset.manifest.snapshotSHA256[s]])));
+  if(SEASONS.some(s=>!hash64(dataset.manifest.snapshotSHA256[s])))refuse('normalized hashes missing');
   // Base64 encoding makes provider contents literal data, not SQL syntax.
   const payload=Buffer.from(JSON.stringify(dataset.records),'utf8').toString('base64');
   return [
@@ -103,11 +105,12 @@ export function buildStageSql(dataset){
     "select id into strict src from public.ff_sources where name='Footbolno'",
     "and license_status='approved' and license_reference='"+ATTRIBUTION_URL+"';",
     'insert into ff_private.ff_ingest_snapshots',
-    '(source_id,source_url,license_url,source_sha256,retrieved_at)',
-    "values(src,'"+SOURCE_URL+"','"+ATTRIBUTION_URL+"','"+hash+"','"+retrieval+"'::timestamptz)",
-    'on conflict (source_id,source_sha256) do nothing;',
+    '(source_id,source_url,license_url,source_sha256,normalized_sha256,retrieved_at)',
+    "values(src,'"+SOURCE_URL+"','"+ATTRIBUTION_URL+"','"+hash+"','"+hashes+"'::jsonb,'"+retrieval+"'::timestamptz)",
+    'on conflict (source_id,source_sha256,retrieved_at) do nothing;'
     "select id into strict snap from ff_private.ff_ingest_snapshots where source_id=src",
-    "and source_sha256='"+hash+"';",
+    "and source_sha256='"+hash+"' and retrieved_at='"+retrieval+"'::timestamptz",
+    "and normalized_sha256='"+hashes+"'::jsonb;"
     'select count(*) into n from ff_private.ff_ingest_matches where snapshot_id=snap;',
     "if n not in (0,720) then raise exception 'Partial source snapshot'; end if;",
     'if n=0 then',
