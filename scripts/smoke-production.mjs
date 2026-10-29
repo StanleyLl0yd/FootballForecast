@@ -10,7 +10,7 @@ async function get(path,extraHeaders={}) {
   for (let i=0;i<attempts;i++) {
     try {
       const res=await fetch(origin+path, {redirect:'manual',cache:'no-store',
-        signal:AbortSignal.timeout(12000),headers:{'user-agent':'FootballForecast-M0-Canary/1',...extraHeaders}});
+        signal:AbortSignal.timeout(12000),headers:{'user-agent':'FootballForecast-Canary/2',...extraHeaders}});
       console.log(path, 'HTTP', res.status, 'redirect',res.headers.get('location')||'none');
       return res;
     } catch(err) {
@@ -42,7 +42,14 @@ assert.doesNotMatch(html,/Данные временно недоступны/);
 
 const matches=await get('/matches');
 assert.equal(matches.status,200,'public matches must render');
-assert.match(await matches.text(),/Матчи и прогнозы/);
+const matchesPage=await matches.text();
+assert.ok(matchesPage.includes('Матчи и прогнозы'));
+if(matchesPage.includes('Последние результаты РПЛ')) {
+  assert.ok(matchesPage.includes('Footbolno (CC BY 4.0)'),
+    'real M1 match catalog must attribute its CC BY source');
+  assert.ok(!matchesPage.includes('Результаты временно недоступны'),
+    'new public recent results API must respond without outage');
+}
 
 const admin=await get('/admin');
 assert.ok([303,307,308].includes(admin.status),'admin must redirect without owner auth');
@@ -70,7 +77,13 @@ if(dataPage.includes('Официальные первоисточники')){
   // The PR HTTP canary targets deployed main; enforce full catalog after merge.
   assert.match(dataPage,/Источников в реестре/);
   assert.match(dataPage,/Точность не измерена/);
-  assert.match(dataPage,/Ни один источник пока не одобрен/);
+  if(dataPage.includes('M1 / РЕЕСТР ИСТОЧНИКОВ')) {
+    assert.ok(dataPage.includes('Footbolno (CC BY 4.0) импортирован'),
+      'current M1 catalog must acknowledge verified private Footbolno ingestion');
+  } else {
+    assert.match(dataPage,/Ни один источник пока не одобрен/,
+      'historic M0 version must retain honest no-import status');
+  }
 }else{
   assert.match(dataPage,/Источники ещё не подключены/,
     'older deployed main must still accurately say no feeds are connected');
