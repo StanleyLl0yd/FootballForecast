@@ -42,10 +42,9 @@ create table if not exists ff_private.ff_ingest_matches (
   check (quarantine_reason is null or length(quarantine_reason) between 1 and 80),
   check ((home_goals is null and away_goals is null)
       or (home_goals between 0 and 20 and away_goals between 0 and 20)),
-  check ((status = 'finished' and home_goals is not null and away_goals is not null)
+  check ((status = 'finished' and (home_goals is not null or quarantine_reason is not null))
       or (status <> 'finished' and home_goals is null and away_goals is null)),
-  check (status = 'finished' or quarantine_reason is not null or status = 'scheduled'),
-  check (published_at is null or published_at <= now())
+  check (status = 'finished' or quarantine_reason is not null or status = 'scheduled')
 );
 create index if not exists ff_ingest_matches_season_role_idx
   on ff_private.ff_ingest_matches (season, dataset_role);
