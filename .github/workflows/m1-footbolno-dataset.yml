@@ -5,6 +5,12 @@ on:
       - 'scripts/m1-footbolno-normalize.mjs'
       - 'tests/m1-footbolno-normalize.test.mjs'
       - '.github/workflows/m1-footbolno-dataset.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/m1-footbolno-normalize.mjs'
+      - 'tests/m1-footbolno-normalize.test.mjs'
+      - '.github/workflows/m1-footbolno-dataset.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,7 +30,7 @@ jobs:
           node --check scripts/m1-footbolno-normalize.mjs
           node --test tests/m1-footbolno-normalize.test.mjs
   private-source-snapshot:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name != 'pull_request'
     needs: [normalize-unit]
     runs-on: ubuntu-latest
     timeout-minutes: 5
