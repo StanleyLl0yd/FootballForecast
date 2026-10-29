@@ -1,7 +1,7 @@
 // M1: bounded offline normalization. No network, database, forecast fitting or raw logging.
 // Source: https://footbolno.ru/otkrytye-dannye (CC BY 4.0, attribution required).
 import {createHash} from 'node:crypto';
-import {readFileSync, lstatSync, writeFileSync} from 'node:fs';
+import {openSync,closeSync,fstatSync,readFileSync,lstatSync,writeFileSync,constants} from 'node:fs';
 import {isAbsolute, join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {parseBoundedCsv} from '../apps/web/lib/source-preview-core.mjs';
@@ -26,7 +26,7 @@ function utcTimestamp(value){
   if(typeof value!=='string'||!/^20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(value))
     refuse('retrieval time must be explicit UTC ISO-8601');
   const ms=Date.parse(value);
-  if(!Number.isFinite(ms)||new Date(ms).toISOString()!==new Date(value).toISOString())
+  if(!Number.isFinite(ms)||new Date(ms).toISOString().slice(0,19)!==value.slice(0,19))
     refuse('invalid retrieval time');
   return ms;
 }
@@ -176,7 +176,13 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{
     if(process.argv.length!==4&&process.argv.length!==5)
       refuse('usage: node scripts/m1-footbolno-normalize.mjs CSV RETRIEVED_UTC [PRIVATE_0700_DIRECTORY]');
-    const bytes=readFileSync(process.argv[2]);
+    const fd=openSync(process.argv[2],constants.O_RDONLY|(constants.O_NOFOLLOW??0));
+    let bytes;
+    try{
+      const stat=fstatSync(fd);
+      if(!stat.isFile()||stat.size<1||stat.size>MAX_BYTES)refuse('input is not a bounded regular file');
+      bytes=readFileSync(fd);
+    }finally{closeSync(fd);}
     const snapshot=normalizeFootbolnoCsv(bytes,process.argv[3]);
     if(process.argv[4])writePrivateSnapshot(snapshot,process.argv[4]);
     // Only counts/hashes/license metadata reach CI logs; never raw rows.
