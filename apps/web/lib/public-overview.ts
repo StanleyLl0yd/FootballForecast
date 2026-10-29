@@ -18,7 +18,7 @@ export function publicSettingsConfigured(env:Record<string,string|undefined> = p
   } catch {return false;}
 }
 
-function teamName(value:unknown):string|null {
+export function publicTeamName(value:unknown):string|null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const name=(value as {name?:unknown}).name;
   return typeof name === 'string' && name.trim().length>0 ? name : null;
@@ -63,7 +63,7 @@ export async function readPublicOverview(
         !Array.isArray(upcoming.data)) throw new Error('Public REST read failed');
     const fixtures:Fixture[]=[];
     for (const row of upcoming.data) {
-      const home=teamName(row.home),away=teamName(row.away);
+      const home=publicTeamName(row.home),away=publicTeamName(row.away);
       if (home && away && typeof row.id==='string' &&
           typeof row.kickoff_at==='string' && row.status==='scheduled' &&
           Date.parse(row.kickoff_at)>=cutoffMs) {
