@@ -71,6 +71,11 @@ class FinishedMatch:
         aware(self.finished_at, "finished_at")
         if self.finished_at < self.kickoff_at:
             raise DataError("match cannot finish before kickoff")
+        if not all(
+            isinstance(value, str) and value.strip()
+            for value in (self.match_id, self.home_team_id, self.away_team_id)
+        ):
+            raise DataError("match and team identities must be nonempty strings")
         if self.home_team_id == self.away_team_id:
             raise DataError("same team on both sides")
         if self.status != MatchStatus.FINISHED:
