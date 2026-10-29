@@ -14,9 +14,9 @@ create table if not exists ff_private.ff_published_fixture_links (
   match_id uuid not null references public.ff_matches(id),
   created_at timestamptz not null default now(),
   primary key(snapshot_id,source_match_id),
-  unique(snapshot_id,match_id),
-  foreign key (snapshot_id,source_match_id)
-    references ff_private.ff_ingest_matches(snapshot_id,source_match_id)
+  unique(snapshot_id,match_id)
+  -- Snapshot and source record existence are checked in the guarded procedure.
+  -- A FK would change the existing append-only staging TRUNCATE refusal contract.
 );
 
 alter table ff_private.ff_provider_team_links enable row level security;
