@@ -16,5 +16,5 @@ export default async function Page(){
         description={data.state==='unavailable'?'Публичные данные временно недоступны. Попробуйте позже.':
           data.state==='not_configured'?'Администратор ещё не указал публичные настройки Supabase.':
           'Матчи появятся после импорта верифицированного календаря РПЛ. Демонстрационные результаты скрыты.'}/>}
-    </section></>;
+    </section><p className="source-disclaimer">Данные результатов и календаря: <a href="https://footbolno.ru/otkrytye-dannye" target="_blank" rel="noopener noreferrer">Footbolno (CC BY 4.0)</a>. Время и статус будущих матчей могут меняться; неподтверждённые часы начала не публикуются. Проверенных прогнозов пока нет.</p></>;
 }
