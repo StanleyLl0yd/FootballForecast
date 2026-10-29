@@ -59,15 +59,25 @@ export function validateStageDataset(manifest,seasonFiles){
         typeof r.kickoffTimeConfirmed!=='boolean'||
         (r.kickoffUtc===null)!==!r.kickoffTimeConfirmed||
         (r.kickoffUtc!==null&&!utc(r.kickoffUtc))||!day(r.calendarDateUtc)||
-        !['finished','scheduled','live','cancelled','postponed','awarded'].includes(r.status))
+        !['finished','scheduled'].includes(r.status))
         refuse('untrusted or quarantined source record');
       const [a,b]=season.split('/').map(Number);
       if(r.calendarDateUtc<a+'-07-01'||r.calendarDateUtc>=b+'-07-01')
         refuse('date outside source season');
+      const retrieved=Date.parse(manifest.retrievedAtUtc);
       if(r.status==='finished'){
         if(!goal(r.homeGoals)||!goal(r.awayGoals))refuse('invalid finished score');
-      }else if(r.homeGoals!==null||r.awayGoals!==null)
-        refuse('nonfinal goals not permitted');
+        if(r.calendarDateUtc>manifest.retrievedAtUtc.slice(0,10)||
+          (r.kickoffUtc!==null&&Date.parse(r.kickoffUtc)>retrieved))
+          refuse('future result unavailable at retrieval');
+      }else{
+        if(r.homeGoals!==null||r.awayGoals!==null)
+          refuse('nonfinal goals not permitted');
+        if(r.kickoffTimeConfirmed?
+          Date.parse(r.kickoffUtc)<retrieved:
+          r.calendarDateUtc<manifest.retrievedAtUtc.slice(0,10))
+          refuse('stale scheduled fixture');
+      }
       const pair=JSON.stringify([r.homeTeamId,r.awayTeamId]);
       if(ids.has(r.sourceMatchId)||pairs.has(pair))refuse('duplicate source fixture');
       ids.add(r.sourceMatchId);pairs.add(pair);
