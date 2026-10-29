@@ -68,6 +68,16 @@ create trigger ff_ingest_matches_immutable
   before update or delete on ff_private.ff_ingest_matches
   for each row execute function ff_private.ff_reject_ingest_mutation();
 
+drop trigger if exists ff_ingest_snapshots_no_truncate on ff_private.ff_ingest_snapshots;
+create trigger ff_ingest_snapshots_no_truncate
+  before truncate on ff_private.ff_ingest_snapshots
+  for each statement execute function ff_private.ff_reject_ingest_mutation();
+
+drop trigger if exists ff_ingest_matches_no_truncate on ff_private.ff_ingest_matches;
+create trigger ff_ingest_matches_no_truncate
+  before truncate on ff_private.ff_ingest_matches
+  for each statement execute function ff_private.ff_reject_ingest_mutation();
+
 alter table ff_private.ff_ingest_snapshots enable row level security;
 alter table ff_private.ff_ingest_matches enable row level security;
 revoke all on ff_private.ff_ingest_snapshots,
