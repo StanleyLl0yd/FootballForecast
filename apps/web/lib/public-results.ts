@@ -1,4 +1,4 @@
-import {createAnonymousReadClient,publicTeamName} from './public-overview';
+import {createAnonymousReadClient,publicTeamName} from './public-overview.ts';
 
 // Bounded, anonymous and strictly read-only. No guessed scores or kickoff times.
 export type RecentResult = {
