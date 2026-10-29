@@ -1,6 +1,6 @@
 # M0 exit evidence and bounded free-source acceptance (2026-10-29)
 
-Status: **audit passes reviewed; M0 NOT accepted until owner-visible production-SHA verification and final decision**. No M1 work is authorized by this document.
+Status: **M0 ACCEPTED by the owner on 2026-10-29, verified**. The two full audit passes, PR #122 exact-main CI/Security/CodeQL (all SUCCESS) and the independently attested Vercel production deployment `dpl_7JvAPEn6Jp2K4WWZbfnAiVTYwuqU` (`fra1`, READY) matched `main=523d70d50a6f079ecbf9c84e48e469409c6fb765`. The owner subsequently directed immediate use of all eligible free data under published terms. M1 is open for implementation.
 
 ## Scope and two separate full-repository passes
 
@@ -23,7 +23,7 @@ The independently queried GitHub tree for input `c1d9e6bc66d5a9cce6b994b3e1cca5c
 2. The tracked `braces@3.0.3` high advisory is dev-only and accepted narrowly by owner (#8); all other high/critical audits fail closed. Lack of production offsite backup (#96) and two mobile carrier access failures (#6) are owner-accepted non-M0 blockers.
 3. No third-party-origin source has a demonstrated complete chain of upstream rights or authenticated historical pre-kickoff snapshots. Two publishers' match agreement can share an upstream. Footbolno 240/240 historical structural/score consistency for observed 2024/25 and 2025/26 and SportScore 16/16 sampled 2026/27 fixtures are **sampled publisher agreement**, not official/perfect accuracy.
 4. Optional owner GitHub OAuth end-to-end is not enabled or accepted as necessary for an anonymous read-only M0 prototype.
-5. The complete license/provenance/as-of evaluation for actual stored/trained season datasets is a **mandatory M1 intake gate**, not falsely marked complete by an owner instruction. No source activation, ingestion, historic strict scoring or live model forecasts in M0.
+5. M1 must validate actual imported match rows, provenance identifiers, score/status semantics and retrospective as-of boundaries. Owner-approved licensed-source use is not held up by speculative upstream license letters. No source activation, ingestion or live forecasts were performed during M0.
 
 ## Owner decision: permitted zero-cost source use, not a transfer of third-party rights
 
@@ -47,5 +47,11 @@ Owner approval of an intended use is **not a license from the original publisher
 ## Final exit protocol
 
 1. PR exact-head: all required checks, pass/fail/skipped decisions, diff and regression review; then protected merge and exact-main CI/Security/CodeQL and branch reconciliation.
-2. Independent Vercel production deployment **READY on exactly the accepted main SHA** and live read-only HTTP canary after merge, without paid resources or secrets in chat. This is reserved for the owner's third step.
-3. Owner explicitly signs off M0. Only then may issue #111 and milestone M0 be closed and M1 started. Until then M0 remains **OPEN**.
+2. Independent Vercel production READY on the then-accepted `main=523d70d5...` was verified on 2026-10-29, including the three production aliases and `fra1` region. Later M0-closeout documentation commits require their own postmerge checks and deployment SHA reconciliation.
+3. The owner accepted M0 on 2026-10-29 after the two audit passes and independent Vercel SHA verification. Close issue #111 after final exact-main CI/Security/CodeQL verification of the documentation/policy PR. Mark M0 ACCEPTED and M1 OPEN; do not claim a trained service until delivered.
+
+## Final owner acceptance and practical source-use rule (2026-10-29)
+
+The owner explicitly directs the team to stop treating speculative upstream legal uncertainty or optional vendor letters as a project-wide blocker. All 20 cataloged genuinely free sources are authorized **by the owner for their published permissible uses**, with ordinary attribution and quota controls. Use Footbolno's publisher-licensed CC BY 4.0 data for M1 training-candidate preparation and derivatives (attribution), OpenFootball CC0 for independent corroboration, SportScore's documented free API for bounded attributed current data and derived dashboards; use other free references according to their specific access mode. No other owner consent needed for each dataset or provider. A source that prohibits scraping remains manual-only; this does not stop alternatives. Source-level licensing uncertainty without a concrete conflicting restriction is documented as a non-gating residual risk, not a reason to demand a provider letter.
+
+M1 work may now begin. This is **not a claim** that source connectors, imported match rows, model training or validated prospective predictions already exist. Enforce recorded source version, retrieval time, score/status checks, output attribution, match deduplication and strict prospective cutoff. Label retrospective experiments that lack original prematch snapshots as non-strict, do not tune on the 2025/26 sealed holdout, and do not invent data. Zero-cost and least-privilege safeguards remain unchanged.

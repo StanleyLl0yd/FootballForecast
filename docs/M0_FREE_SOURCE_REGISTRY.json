@@ -14,7 +14,11 @@
     "allowTrainingFromUnapprovedData": false,
     "allowPublicRedistributionOfUnapprovedData": false,
     "ownerApprovedPublishedSourceUse": true,
-    "ownerApprovalDocument": "M0_EXIT_AUDIT_AND_SOURCE_DECISION.md"
+    "ownerApprovalDocument": "M0_EXIT_AUDIT_AND_SOURCE_DECISION.md",
+    "ownerAcceptedSourceUsageDecisionAt": "2026-10-29",
+    "ownerAuthorizesAllListedFreeSourcesWithinPublishedTerms": true,
+    "noRoutinePublisherLetterOrUpstreamChainProofGate": true,
+    "sourceUseMode": "Use field-specific permitted free data and published facts; verify practical quality and temporal limits rather than demand individual upstream permission letters without a concrete reason"
   },
   "sourceDefinitions": {
     "priority1": "official documents and dated primary match protocols for factual dispute resolution",
@@ -45,7 +49,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "rpl-official",
@@ -70,7 +75,8 @@
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
       "active": false,
-      "automatedExtraction": "prohibited-without-official-permission"
+      "automatedExtraction": "prohibited-without-official-permission",
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "club-official",
@@ -93,7 +99,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "openfootball-europe",
@@ -126,7 +133,8 @@
         "license": "https://github.com/openfootball/europe",
         "historicalPrematchAsOfVerified": false,
         "m0ProductionIngestionEnabled": false
-      }
+      },
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "footbolno",
@@ -165,7 +173,8 @@
         "upstreamRightsIndependentlyVerified": false,
         "historicalPrematchAsOfVerified": false,
         "m0ProductionIngestionEnabled": false
-      }
+      },
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "sportscore",
@@ -203,7 +212,8 @@
         "historicalTrainingApproved": false,
         "generalSiteConflictResolved": false,
         "m0ProductionIngestionEnabled": false
-      }
+      },
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "api-football-free",
@@ -227,7 +237,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "rsssf",
@@ -249,7 +260,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "championat",
@@ -272,7 +284,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "sportbox",
@@ -294,7 +307,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "wikidata",
@@ -316,7 +330,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "wikipedia",
@@ -339,7 +354,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "rusfootball",
@@ -361,7 +377,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "football-data-uk",
@@ -383,7 +400,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "thesportsdb-free",
@@ -405,7 +423,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "footystats-website",
@@ -426,7 +445,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "understat-public-mirror",
@@ -449,7 +469,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "open-matchday-rpl",
@@ -472,7 +493,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "sstats-football-api",
@@ -495,7 +517,8 @@
       "verifiedPrematchSnapshots": false,
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
-      "active": false
+      "active": false,
+      "ownerApprovedUseWithinPublishedTerms": true
     },
     {
       "id": "uefa-rpl-domestic",
@@ -519,7 +542,8 @@
       "authorizedAutomatedTraining": false,
       "authorizedRawRepublication": false,
       "active": false,
-      "automatedExtraction": "prohibited-for-database-compilation-by-site-terms"
+      "automatedExtraction": "prohibited-for-database-compilation-by-site-terms",
+      "ownerApprovedUseWithinPublishedTerms": true
     }
   ]
 }
