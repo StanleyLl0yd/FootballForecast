@@ -62,6 +62,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          pre_forecasts="$(docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c 'select count(*) from public.ff_forecasts')"
           for pass in 1 2; do
             docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
               -c "select ff_private.ff_promote_footbolno_snapshot(id)->>'public_rows_linked' from ff_private.ff_ingest_snapshots" | grep -x '480'
@@ -75,7 +76,7 @@ jobs:
           docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
             -c "select count(*) from public.ff_matches" | grep -x '482'
           docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
-            -c "select count(*) from public.ff_forecasts" | grep -x '0'
+            -c "select count(*) from public.ff_forecasts" | grep -x "$pre_forecasts"
           docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
             -c "select count(*) from public.ff_source_records where published_at is not null" | grep -x '0'
           docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At \
