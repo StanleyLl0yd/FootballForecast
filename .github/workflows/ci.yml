@@ -109,6 +109,8 @@ jobs:
         run: bash -n scripts/m0-manual-isolated-restore.sh && node --test tests/m0-manual-isolated-restore.test.mjs
       - name: Validate anonymous Supabase REST integration without credentials
         run: npm run test:public-data
+      - name: Validate real-score recent-results feed without provider mutations
+        run: node --experimental-strip-types --test apps/web/tests/public-results.test.mjs
       - name: Validate public forecast archive schema and read-only REST
         run: npm run test:archive
       - name: Enforce free-only source register and zero-cost rank evidence
