@@ -26,22 +26,29 @@ SHA-256 provenance, never private records, names, scores or match URLs.
    `select ff_private.ff_preview_footbolno_revision('<snapshot-uuid>'::uuid);`
    through a privileged Supabase SQL client. Never put the database password,
    URI or raw source rows into GitHub comments or chat.
-3. The preview selects the latest **published** snapshot as the baseline.
+3. The protected manual import now automatically runs that same private preview
+   **after** its atomic staging commit and prints only the sanitized per-season
+   counters in the GitHub Actions job summary. This does not write public rows.
+   If review fails after a successful stage, the workflow explicitly reports
+   that staging was committed but the review failed, never claiming a rollback.
+   The report validator rejects unexpected fields/counters, invented historical
+   as-of approval, and auto-promotion claims. Nothing is uploaded as an artifact.
+4. The preview selects the latest **published** snapshot as the baseline.
    It rejects unknown/disallowed source or reversed retrieval chronology;
    enforces 720 rows, three 240-row seasons, roles, 16 distinct teams each,
    valid scores and confirmed timestamps, and no quarantines.
-4. Compare by **season + directed provider team IDs**, never fuzzy names or
+5. Compare by **season + directed provider team IDs**, never fuzzy names or
    source match IDs. Review totals for added, removed, changed, unchanged,
    score/status/kickoff/calendar/name/provider-ID edits, newly confirmed times,
    newly finished matches, finished-result regressions, and changes to sealed
    historical seasons.
-5. A newly confirmed current-season kickoff is expected data improvement, but
+6. A newly confirmed current-season kickoff is expected data improvement, but
    any actual difference still returns `requires_review=true` and
    `auto_updates_enabled=false`. **There is no automatic publication or
    correction in this migration.** Review source accuracy and any incumbent
    immutable prediction/outcome references before implementing a separately
    tested, versioned correction transaction.
-6. Preserve the 2025/26 sealed holdout, unproven historical as-of timestamps,
+7. Preserve the 2025/26 sealed holdout, unproven historical as-of timestamps,
    existing forecasts and all prior source snapshots. If the publisher changes
    historical scores, do not silently rewrite training/evaluation evidence or
    claim old backtests were contemporaneous. Use separate, dated dataset

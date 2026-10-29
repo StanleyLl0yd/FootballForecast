@@ -80,3 +80,17 @@ test('Supabase pooler TLS uses pinned CA, validated before secrets and again bef
   assert.ok(!workflow.includes('PGSSLMODE: require'));
   assert.ok(!workflow.includes('PGSSLMODE: disable'));
 });
+
+test('a manually committed private snapshot receives only an aggregate drift review',()=>{
+  const commit=workflow.indexOf('"$work/private/rpl-2026-2027.jsonl" --commit');
+  const review=workflow.indexOf('ff_private.ff_preview_footbolno_revision(s.id)');
+  const report=workflow.indexOf('scripts/m1-revision-report.mjs "$work/private/revision.json"');
+  assert.ok(commit>0 && review>commit && report>review);
+  assert.match(workflow,/src.name='Footbolno'/);
+  assert.match(workflow,/s.source_sha256='\$hash'/);
+  assert.match(workflow,/psql -X -qAt -v ON_ERROR_STOP=1/);
+  assert.match(workflow,/revision-summary.json/);
+  assert.match(workflow,/GITHUB_STEP_SUMMARY/);
+  assert.doesNotMatch(workflow,/ff_promote_footbolno_snapshot|ff_refresh_footbolno_snapshot/);
+  assert.doesNotMatch(workflow,/upload-artifact/);
+});
