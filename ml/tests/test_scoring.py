@@ -25,6 +25,14 @@ def test_invalid_outcome_classes_rejected(scorer, outcome) -> None:
         scorer((0.2, 0.6, 0.2), outcome)
 
 
+@pytest.mark.parametrize('scorer', [log_loss, brier_score, ranked_probability_score])
+@pytest.mark.parametrize('probs', [(True, 0.0, 0.0), (1.0, False, 0.0),
+                                    (0.0, 0.0, None), (0.0, 0.0, '1')])
+def test_reject_boolean_and_nonnumeric_probabilities(scorer, probs) -> None:
+    with pytest.raises(ValueError):
+        scorer(probs, 0)
+
+
 def test_bad_probabilities() -> None:
     with pytest.raises(ValueError):
         brier_score((.5, .5, .5), 0)

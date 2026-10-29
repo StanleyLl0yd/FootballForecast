@@ -528,3 +528,7 @@ This gate also applies automatically to future milestones, without requiring ano
 - In long conversations, provide a compact `HANDOFF FOR NEW CHAT` covering authoritative main SHA, active milestone, changed files, current PR/issues, exact-head/main CI, blockers and next actions, without private reasoning or duplicated history.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [ROADMAP.md](ROADMAP.md) and [data-source policy](docs/DATA_SOURCES.md).
+
+## Source-use clarification (owner, 2026-10-29)
+
+The owner expressly approves usage of genuinely free FootballForecast data sources within their published terms and accepts the documented third-party provenance uncertainty. See [M0 exit/source decision](docs/M0_EXIT_AUDIT_AND_SOURCE_DECISION.md). This authorizes already implemented attributed, bounded browser previews, publisher-licensed Footbolno CSV/JSON research, CC0 OpenFootball corroboration, and free SportScore derived/display API use with its visible dofollow attribution. It **does not** grant rights belonging to third-party publishers, authorize prohibited automatic extraction, free-tier evasion, unlicensed bulk mirroring, or claim authenticated historical prematch snapshots. M0 read-only production, zero-cost, no-ETL/no-training/no-M1 gate are preserved pending separate milestone acceptance. M1 must independently verify and version lawful training datasets and chronological intake before training; missing rights/data must fail closed.

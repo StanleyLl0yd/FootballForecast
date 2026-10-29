@@ -171,3 +171,36 @@ test('public source catalog reflects measured historical and current match sampl
   }
   assert.equal(registry.policy.activeProviderIntegrations,0);
 });
+
+
+test('owner accepts only publisher-documented free source uses, not unverified ETL or bulk rights',()=>{
+  assert.equal(registry.policy.ownerApprovedPublishedSourceUse,true);
+  assert.equal(registry.policy.ownerApprovalDocument,'M0_EXIT_AUDIT_AND_SOURCE_DECISION.md');
+  const byId=Object.fromEntries(registry.sources.map(s=>[s.id,s]));
+  const footbolno=byId.footbolno.ownerUsageDecision;
+  assert.equal(footbolno.status,'accepted-attributed-publisher-licensed-use');
+  assert.ok(footbolno.acceptedUse.includes('bounded-csv-and-json-download'));
+  assert.ok(footbolno.acceptedUse.includes('attributed-derived-analytics'));
+  assert.equal(footbolno.upstreamRightsIndependentlyVerified,false);
+  assert.equal(footbolno.historicalPrematchAsOfVerified,false);
+  assert.equal(footbolno.m0ProductionIngestionEnabled,false);
+  const sportscore=byId.sportscore.ownerUsageDecision;
+  assert.equal(sportscore.status,'accepted-free-attributed-api-use');
+  assert.ok(sportscore.acceptedUse.includes('own-response-caching'));
+  assert.ok(sportscore.attribution.includes('dofollow'));
+  assert.equal(sportscore.historicalTrainingApproved,false);
+  assert.equal(sportscore.rawBulkResaleApproved,false);
+  assert.equal(sportscore.generalSiteConflictResolved,false);
+  assert.equal(sportscore.m0ProductionIngestionEnabled,false);
+  assert.equal(byId['openfootball-europe'].ownerUsageDecision.status,
+    'accepted-cc0-structural-research-use');
+  assert.equal(registry.sources.filter(s=>s.ownerUsageDecision).length,3);
+  assert.equal(registry.policy.activeProviderIntegrations,0);
+  assert.ok(registry.sources.every(s=>!s.active&&!s.authorizedAutomatedTraining));
+  const record=readFileSync(
+    new URL('../docs/M0_EXIT_AUDIT_AND_SOURCE_DECISION.md',import.meta.url),'utf8');
+  assert.match(record,/two separate full-repository passes/);
+  assert.match(record,/Footbolno CC BY 4\.0/);
+  assert.match(record,/SportScore/);
+  assert.match(record,/M0 remains \*\*OPEN\*\*/);
+});
