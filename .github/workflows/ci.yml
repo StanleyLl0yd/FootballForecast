@@ -96,6 +96,8 @@ jobs:
         run: node --check scripts/m0-footbolno-csv-aggregate.mjs && node --test tests/m0-footbolno-csv-aggregate.test.mjs
       - name: Validate private M1 PostgreSQL stage importer without real records
         run: node --check scripts/m1-stage-import.mjs && node --test tests/m1-stage-import.test.mjs
+      - name: Validate M1 pinned OpenFootball full-score source gate without private data
+        run: node --check scripts/m1-openfootball-score-gate.mjs && node --test tests/m1-openfootball-score-gate.test.mjs
       - name: Verify manual-only M1 source import workflow access and secret boundaries
         run: node --test tests/m1-private-stage-workflow.test.mjs
       - name: Verify safe M1 protected GitHub Environment setup
