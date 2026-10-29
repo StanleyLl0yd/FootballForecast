@@ -76,6 +76,15 @@ jobs:
           retrieved="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           node scripts/m1-footbolno-normalize.mjs \
             "$work/footbolno.csv" "$retrieved" "$work/private" > "$work/quality.json"
+          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 45 --max-filesize 200000 \
+            --output "$work/openfootball-2024-25.txt" \
+            'https://raw.githubusercontent.com/openfootball/europe/63df627f3c87ce71708f016522ea236cf74332c3/russia/2024-25_ru1.txt'
+          test -s "$work/openfootball-2024-25.txt"
+          node scripts/m0-cross-source-fixture-reconcile.mjs \
+            "$work/footbolno.csv" "$work/openfootball-2024-25.txt" > "$work/aggregate-crosscheck.json"
+          node scripts/m1-openfootball-score-gate.mjs \
+            "$work/aggregate-crosscheck.json" > "$work/score-gate.json"
           node scripts/m1-stage-import.mjs \
             "$work/private/manifest.json" \
             "$work/private/rpl-2024-2025.jsonl" \
@@ -95,5 +104,9 @@ jobs:
             echo
             echo '~~~json'
             cat "$work/quality.json"
+            echo '~~~'
+            echo '### Pinned OpenFootball 2024/25 match-level score gate'
+            echo '~~~json'
+            cat "$work/score-gate.json"
             echo '~~~'
           } >> "$GITHUB_STEP_SUMMARY"

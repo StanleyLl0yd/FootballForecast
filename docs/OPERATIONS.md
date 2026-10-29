@@ -161,3 +161,20 @@ exists solely for disposable tests and additionally requires
 `FF_M1_LOCAL_TEST_ONLY=1`; this value must never be present in the protected
 GitHub Actions job. The purpose is to prevent accidentally staging FootballForecast
 data into a different project or a paid database.
+
+### Historical match-level source agreement before private import
+
+The protected manual import additionally downloads the **pinned** OpenFootball
+2024/25 CC0 file and verifies its Git blob SHA-1 against the repository
+evidence. The offline comparison requires all 240 distinct home/away fixtures
+to match Footbolno, with no conflicting completed scores, administrative
+result types, missing fixtures, or invalid source date structures. Only an
+aggregate report enters the GitHub job summary. Provider rows remain private.
+
+Disagreements limited to calendar dates are separately counted and do **not**
+silently become timestamp corrections or historical pre-kickoff knowledge;
+they must be resolved before time-dependent learning or strict backtests.
+Any score, fixture identity, structural or award disagreement stops the
+private import transaction **before** privileged database access. Agreement
+between these two secondary publishers does not prove source independence
+or official match truth. No additional paid API or new legal permission is needed.
