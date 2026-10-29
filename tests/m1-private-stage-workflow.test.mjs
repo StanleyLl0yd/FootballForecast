@@ -54,3 +54,21 @@ test('pinned OpenFootball score and directed-fixture gate precedes privileged im
   assert.match(workflow,/score-gate\.json/);
   assert.doesNotMatch(workflow,/upload-artifact/);
 });
+
+test('Supabase pooler TLS uses pinned CA, validated before secrets and again before import',()=>{
+  const ca=readFileSync(new URL('../security/certs/supabase-root-2021-ca.crt',import.meta.url),'utf8');
+  const expected='807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa';
+  assert.match(ca,/^-----BEGIN CERTIFICATE-----/);
+  assert.match(ca,/-----END CERTIFICATE-----\\s*$/);
+  const pre=workflow.indexOf('Verify pinned Supabase root CA before secrets are exposed');
+  const live=workflow.indexOf('Validate live source then stage into protected PostgreSQL');
+  assert.ok(pre>0&&live>pre);
+  const caChecks=workflow.match(/807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa/g)??[];
+  assert.equal(caChecks.length,2);
+  assert.match(workflow,/openssl x509 -in "\\$ca" -outform DER \\| sha256sum/);
+  assert.match(workflow,/cp security\\/certs\\/supabase-root-2021-ca\\.crt "\\$work\\/ca\\.crt"/);
+  assert.match(workflow,/export PGSSLROOTCERT="\\$work\\/ca\\.crt"/);
+  assert.match(workflow,/openssl x509 -in "\\$work\\/ca\\.crt" -noout -checkend 86400/);
+  assert.doesNotMatch(workflow,/PGSSLROOTCERT=system/);
+  assert.doesNotMatch(workflow,/PGSSLMODE:\\s*(?:require|prefer|disable)/);
+});
