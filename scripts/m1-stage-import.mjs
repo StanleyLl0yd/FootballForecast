@@ -27,6 +27,28 @@ export function validateStageTarget(env){
 const sha=s=>createHash('sha256').update(s).digest('hex');
 const hash64=s=>typeof s==='string'&&/^[a-f0-9]{64}$/.test(s);
 const refuse=s=>{throw Error('Private stage refused: '+s);};
+// Never print libpq/SQL stderr: it may contain query text or provider records.
+// Return an allowlisted diagnostic code only, never an excerpt of stderr.
+export function classifyPsqlFailure(result){
+  if(result?.error?.code==='ETIMEDOUT')return 'DB_CLIENT_TIMEOUT';
+  if(result?.error)return 'DB_CLIENT_START';
+  const stderr=typeof result?.stderr==='string'?result.stderr:'';
+  if(/password authentication failed|SASL authentication failed|invalid password/i.test(stderr))
+    return 'DB_AUTH';
+  if(/certificate verify failed|root certificate|SSL error|server certificate|certificate file/i.test(stderr))
+    return 'DB_TLS';
+  if(/could not translate host name|name or service not known|no address associated/i.test(stderr))
+    return 'DB_DNS';
+  if(/connection refused|connection timed out|no route to host|network is unreachable/i.test(stderr))
+    return 'DB_NETWORK';
+  if(result?.status===2)return 'DB_CONNECTION';
+  if(result?.status===3){
+    if(/permission denied|must be owner/i.test(stderr))return 'DB_PERMISSION';
+    if(/relation .+ does not exist|schema .+ does not exist/i.test(stderr))return 'DB_SCHEMA';
+    return 'DB_SQL';
+  }
+  return 'DB_CLIENT_EXIT';
+}
 const utc=s=>typeof s==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/.test(s)&&
   Number.isFinite(Date.parse(s))&&new Date(Date.parse(s)).toISOString().slice(0,19)===s.slice(0,19);
 const day=s=>typeof s==='string'&&/^\d{4}-\d\d-\d\d$/.test(s)&&
@@ -183,15 +205,20 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
         {input:buildStageSql(dataset),encoding:'utf8',timeout:55000,
           maxBuffer:131072,stdio:['pipe','pipe','pipe']});
       // Raw PostgreSQL errors might include query text. Never log them.
-      if(result.error||result.status!==0)refuse('atomic transaction failed');
+      if(result.error||result.status!==0)
+        refuse('atomic transaction failed '+classifyPsqlFailure(result));
     }
     console.log(JSON.stringify({
       kind:'M1_PRIVATE_STAGE',rows:720,sourceSha256:manifest.sourceFileSha256,
       retrievedAtUtc:manifest.retrievedAtUtc,writeCommitted:committing,
       publicMatchesPromoted:0,strictHistoricalBacktest:false
     }));
-  }catch{
-    console.error('FAIL: private stage refused without logging provider records');
+  }catch(error){
+    const code=/^Private stage refused: atomic transaction failed (DB_[A-Z_]+)$/.exec(
+      error?.message??'')?.[1];
+    console.error(code?
+      'FAIL: private PostgreSQL stage '+code+' (no credentials or raw records logged)':
+      'FAIL: private stage refused without logging provider records');
     process.exitCode=2;
   }
 }

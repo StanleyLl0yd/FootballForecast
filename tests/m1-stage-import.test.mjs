@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {createHash} from 'node:crypto';
-import {validateStageDataset,buildStageSql,validateStageTarget} from '../scripts/m1-stage-import.mjs';
+import {validateStageDataset,buildStageSql,validateStageTarget,classifyPsqlFailure} from '../scripts/m1-stage-import.mjs';
 import {fixture} from './fixtures/m1-synthetic-dataset.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 function mutateSeason(data,season,edit){
@@ -108,4 +108,28 @@ test('private writer permits only the exact Frankfurt Supabase session tenant wi
     PGHOST:'127.0.0.1',PGUSER:'postgres',PGDATABASE:'postgres',
     PGPORT:'5432',PGSSLMODE:'disable'
   }),/Private stage refused/);
+});
+
+test('PostgreSQL failure messages are classified without returning SQL, provider records or secrets',()=>{
+  const secret='unique_sensitive_example_password';
+  const sql='insert into ff_private.ff_ingest_matches values (\'private-raw-record\')';
+  const cases=[
+    [{error:{code:'ETIMEDOUT'}},'DB_CLIENT_TIMEOUT'],
+    [{error:{code:'ENOENT'}},'DB_CLIENT_START'],
+    [{status:2,stderr:'FATAL: password authentication failed '+secret},'DB_AUTH'],
+    [{status:2,stderr:'root certificate was not verified '+secret},'DB_TLS'],
+    [{status:2,stderr:'could not translate host name '+secret},'DB_DNS'],
+    [{status:2,stderr:'connection refused '+secret},'DB_NETWORK'],
+    [{status:2,stderr:secret},'DB_CONNECTION'],
+    [{status:3,stderr:'ERROR: permission denied '+sql},'DB_PERMISSION'],
+    [{status:3,stderr:'ERROR: relation foo does not exist '+sql},'DB_SCHEMA'],
+    [{status:3,stderr:'ERROR: check constraint violation '+sql},'DB_SQL'],
+    [{status:1,stderr:secret},'DB_CLIENT_EXIT']
+  ];
+  for(const [failed,expected] of cases){
+    const actual=classifyPsqlFailure(failed);
+    assert.equal(actual,expected);
+    assert.match(actual,/^DB_[A-Z_]+$/);
+    assert.ok(!actual.includes(secret)&&!actual.includes(sql));
+  }
 });
