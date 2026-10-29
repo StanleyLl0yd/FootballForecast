@@ -38,6 +38,18 @@ jobs:
             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-client >/dev/null
           fi
           psql --version
+      - name: Verify pinned Supabase root CA before secrets are exposed
+        shell: bash
+        run: |
+          set -euo pipefail
+          ca="security/certs/supabase-root-2021-ca.crt"
+          test -s "$ca"
+          fingerprint="$(openssl x509 -in "$ca" -outform DER | sha256sum | cut -d ' ' -f1)"
+          [[ "$fingerprint" == "807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa" ]] || {
+            echo 'FAIL: pinned Supabase CA fingerprint mismatch'
+            exit 2
+          }
+          openssl x509 -in "$ca" -noout -checkend 86400 >/dev/null
       - name: Validate live source then stage into protected PostgreSQL
         shell: bash
         env:
@@ -62,11 +74,16 @@ jobs:
           mkdir -m 0700 "$work/private"
           if [[ -n "$M1_PGROOTCERT_B64" ]]; then
             printf '%s' "$M1_PGROOTCERT_B64" | base64 --decode > "$work/ca.crt"
-            openssl x509 -in "$work/ca.crt" -noout >/dev/null
-            export PGSSLROOTCERT="$work/ca.crt"
           else
-            export PGSSLROOTCERT=system
+            cp security/certs/supabase-root-2021-ca.crt "$work/ca.crt"
           fi
+          fingerprint="$(openssl x509 -in "$work/ca.crt" -outform DER | sha256sum | cut -d ' ' -f1)"
+          [[ "$fingerprint" == "807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa" ]] || {
+            echo 'FAIL: Supabase CA fingerprint mismatch'
+            exit 2
+          }
+          openssl x509 -in "$work/ca.crt" -noout -checkend 86400 >/dev/null
+          export PGSSLROOTCERT="$work/ca.crt"
           curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
             --connect-timeout 10 --max-time 45 --max-filesize 2000000 \
             --output "$work/footbolno.csv" \
