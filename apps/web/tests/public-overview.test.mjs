@@ -37,12 +37,37 @@ test('all data is obtained through public GET/HEAD requests and zero rows are ge
   assert.ok(requests.every(x=>x.url.searchParams.get('select')));
 });
 test('RPL fixture names come from linked public teams, without invented predictions',async()=>{
-  const {fetchImpl}=mockedRest({fixtures:[{id:'match-1',kickoff_at:'2026-10-18T12:00:00Z',
+  const future=new Date(Date.now()+86400000).toISOString();
+  const {fetchImpl,requests}=mockedRest({fixtures:[{id:'match-1',kickoff_at:future,
     status:'scheduled',home:{name:'Север'},away:{name:'Юг'}}]});
   const r=await readPublicOverview(fetchImpl,env);
   assert.equal(r.state,'ready');
-  assert.deepEqual(r.fixtures,[{id:'match-1',kickoffAt:'2026-10-18T12:00:00Z',
+  assert.deepEqual(r.fixtures,[{id:'match-1',kickoffAt:future,
     status:'scheduled',home:'Север',away:'Юг'}]);
+  const fixtureQuery=requests.find(x=>x.method==='GET');
+  assert.equal(fixtureQuery.url.searchParams.get('status'),'eq.scheduled');
+  assert.ok(fixtureQuery.url.searchParams.get('kickoff_at').startsWith('gte.'));
+});
+test('future cancelled, postponed and finished matches cannot appear as upcoming',async()=>{
+  const future=new Date(Date.now()+86400000).toISOString();
+  const past=new Date(Date.now()-86400000).toISOString();
+  const fixture=(id,status,kickoff_at)=>({id,status,kickoff_at,
+    home:{name:'Север'},away:{name:'Юг'}});
+  const {fetchImpl,requests}=mockedRest({fixtures:[
+    fixture('cancelled','cancelled',future),
+    fixture('postponed','postponed',future),
+    fixture('finished','finished',future),
+    fixture('old','scheduled',past),
+    fixture('next','scheduled',future)
+  ]});
+  // Even if an inconsistent upstream REST mock ignores query filters,
+  // the public view does not present cancelled or stale fixtures as upcoming.
+  const report=await readPublicOverview(fetchImpl,env);
+  assert.equal(report.state,'ready');
+  assert.deepEqual(report.fixtures.map(x=>x.id),['next']);
+  const query=requests.find(x=>x.method==='GET').url.searchParams;
+  assert.equal(query.get('status'),'eq.scheduled');
+  assert.ok(query.get('kickoff_at').startsWith('gte.'));
 });
 test('an API error or invalid configuration must not produce fictitious zero metrics',async()=>{
   const r=await readPublicOverview(mockedRest({fail:true}).fetchImpl,env);
