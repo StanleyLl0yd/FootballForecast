@@ -39,6 +39,12 @@ def test_invalid_intensities(home: float, away: float) -> None:
         poisson_score_distribution(home, away)
 
 
+@pytest.mark.parametrize('cutoff', [0.1, 3.0, True, None])
+def test_cutoff_requires_integer_not_boolean(cutoff) -> None:
+    with pytest.raises(ValueError, match='cutoff'):
+        poisson_score_distribution(1.2, 0.8, cutoff=cutoff)
+
+
 def test_direct_score_distribution_validation_rejects_nonfinite_and_invalid_mass() -> None:
     baseline = poisson_score_distribution(1.4, 0.9)
     invalid = [

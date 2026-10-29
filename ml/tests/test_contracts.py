@@ -48,6 +48,18 @@ def test_awarded_match_requires_separate_policy() -> None:
         FinishedMatch('m', T, T + timedelta(hours=2), 'h', 'a', 2, 0, MatchStatus.AWARDED)
 
 
+@pytest.mark.parametrize(
+    'match_id,home_id,away_id',
+    [
+        ('', 'h', 'a'), ('  ', 'h', 'a'), ('m', '', 'a'),
+        ('m', 'h', ' '), ('m', 'h', 'h'), (None, 'h', 'a'), ('m', 5, 'a'),
+    ],
+)
+def test_invalid_match_identifiers_rejected(match_id, home_id, away_id) -> None:
+    with pytest.raises(DataError):
+        FinishedMatch(match_id, T, T + timedelta(hours=2), home_id, away_id, 1, 0)
+
+
 def test_bad_goals_rejected() -> None:
     for goals in (-1, 1.5, True, None):
         with pytest.raises(DataError):

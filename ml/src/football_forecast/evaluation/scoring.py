@@ -3,7 +3,11 @@ from math import isfinite, log
 
 
 def _validate(probs: tuple[float, float, float], outcome: int) -> None:
-    if outcome not in (0, 1, 2) or isinstance(outcome, bool):
+    if (
+        not isinstance(outcome, int)
+        or isinstance(outcome, bool)
+        or outcome not in (0, 1, 2)
+    ):
         raise ValueError("outcome must be H=0, D=1 or A=2")
     if len(probs) != 3 or any(not isfinite(p) or p < 0 or p > 1 for p in probs):
         raise ValueError("invalid probabilities")
