@@ -6,10 +6,16 @@ import {test} from 'node:test';
 const workflow=readFileSync(new URL('../.github/workflows/m1-private-stage-import.yml',import.meta.url),'utf8');
 const current=readFileSync(new URL('../.github/workflows/m1-footbolno-dataset.yml',import.meta.url),'utf8');
 
-test('production importer requires an explicit manual main-branch dispatch',()=>{
-  assert.match(workflow,/^on:\n  workflow_dispatch:/m);
-  assert.doesNotMatch(workflow,/^  (?:push|pull_request|schedule|workflow_run):/m);
-  assert.match(workflow,/if: github\.ref == 'refs\/heads\/main' && inputs\.confirmation == 'STAGE_FOOTBOLNO_PRIVATE'/);
+test('only main gets scheduled and source-controlled protected import; manual dispatch requires confirmation',()=>{
+  assert.match(workflow,/^on:\n  schedule:/m);
+  assert.match(workflow,/cron: '17 6,18 \* \* \*'/);
+  assert.match(workflow,/^  push:\n    branches: \[main\]/m);
+  assert.match(workflow,/paths: \['\.github\/workflows\/m1-private-stage-import\.yml'\]/);
+  assert.match(workflow,/^  workflow_dispatch:/m);
+  assert.doesNotMatch(workflow,/^  (?:pull_request|workflow_run):/m);
+  assert.match(workflow,/if: github\.ref == 'refs\/heads\/main' && \(github\.event_name == 'schedule'/);
+  assert.match(workflow,/github\.event_name == 'push'/);
+  assert.match(workflow,/github\.event_name == 'workflow_dispatch' && inputs\.confirmation == 'STAGE_FOOTBOLNO_PRIVATE'/);
   assert.match(workflow,/environment: m1-source-import/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.match(workflow,/permissions:\n  contents: read/);
@@ -81,7 +87,7 @@ test('Supabase pooler TLS uses pinned CA, validated before secrets and again bef
   assert.ok(!workflow.includes('PGSSLMODE: disable'));
 });
 
-test('a manually committed private snapshot receives only an aggregate drift review',()=>{
+test('private committed snapshots receive aggregate drift review before any guarded current refresh',()=>{
   const commit=workflow.indexOf('"$work/private/rpl-2026-2027.jsonl" --commit');
   const review=workflow.indexOf('ff_private.ff_preview_footbolno_revision(s.id)');
   const report=workflow.indexOf('scripts/m1-revision-report.mjs "$work/private/revision.json"');
@@ -92,5 +98,20 @@ test('a manually committed private snapshot receives only an aggregate drift rev
   assert.match(workflow,/revision-summary.json/);
   assert.match(workflow,/GITHUB_STEP_SUMMARY/);
   assert.doesNotMatch(workflow,/ff_promote_footbolno_snapshot|ff_refresh_footbolno_snapshot/);
+  assert.doesNotMatch(workflow,/upload-artifact/);
+});
+
+test('only reviewed safe current fixtures can trigger a private write, after staging',()=>{
+  const commit=workflow.indexOf('"$work/private/rpl-2026-2027.jsonl" --commit');
+  const triage=workflow.indexOf('scripts/m1-autonomous-refresh.mjs decision');
+  const guarded=workflow.indexOf('ff_private.ff_apply_safe_current_refresh(s.id)');
+  const report=workflow.indexOf('scripts/m1-autonomous-refresh.mjs outcome');
+  assert.ok(commit>0&&triage>commit&&guarded>triage&&report>guarded);
+  assert.match(workflow,/SAFE_CURRENT_ONLY\)/);
+  assert.match(workflow,/REVIEW_REQUIRED\)/);
+  assert.match(workflow,/NO_CHANGE\)/);
+  assert.match(workflow,/outcome":"PRIVATE_REVIEW_REQUIRED"/);
+  assert.match(workflow,/outcome":"UNCHANGED"/);
+  assert.match(workflow,/FF_M1_DB_WRITE_ENABLED: '1'/);
   assert.doesNotMatch(workflow,/upload-artifact/);
 });

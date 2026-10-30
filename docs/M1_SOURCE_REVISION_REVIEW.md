@@ -16,8 +16,10 @@ SHA-256 provenance, never private records, names, scores or match URLs.
 
 ## Operator sequence, zero-cost only
 
-1. Execute the existing **manual**, main-restricted GitHub Actions M1 importer
-   when a published Footbolno snapshot is available; it must pass normalization,
+1. The existing **protected** GitHub Actions M1 importer runs automatically at
+   06:17 and 18:17 UTC each day and once after its workflow file changes on
+   protected `main`. An optional manual dispatch requires
+   `STAGE_FOOTBOLNO_PRIVATE`. Every run must pass normalization,
    independent corroboration, attribution, tenant-specific verified TLS,
    quality and role gates. Replaying identical source bytes does not duplicate
    snapshots.
@@ -26,9 +28,10 @@ SHA-256 provenance, never private records, names, scores or match URLs.
    `select ff_private.ff_preview_footbolno_revision('<snapshot-uuid>'::uuid);`
    through a privileged Supabase SQL client. Never put the database password,
    URI or raw source rows into GitHub comments or chat.
-3. The protected manual import now automatically runs that same private preview
+3. The protected import automatically runs that same private preview
    **after** its atomic staging commit and prints only the sanitized per-season
-   counters in the GitHub Actions job summary. This does not write public rows.
+   counters in the GitHub Actions job summary. The preview alone does not
+   write public rows.
    If review fails after a successful stage, the workflow explicitly reports
    that staging was committed but the review failed, never claiming a rollback.
    The report validator rejects unexpected fields/counters, invented historical
@@ -70,11 +73,13 @@ remain unchanged. M1 is OPEN; M2 has not been authorized.
 
 ## Explicit guarded current-season refresh (migration 0009)
 
-After a **new and different** publisher snapshot has passed the existing
-manual protected ingestion and aggregate revision review, a privileged
-operator may invoke
-`select ff_private.ff_apply_safe_current_refresh('<candidate-uuid>'::uuid);`.
-This is **not** called automatically by GitHub Actions or a web route.
+After a **new and different** publisher snapshot has passed the protected
+ingestion and aggregate revision review, a separate, bounded decision process
+allows GitHub Actions to invoke
+`select ff_private.ff_apply_safe_current_refresh('<candidate-uuid>'::uuid);`
+**only when the count-level differences match the two explicitly permitted
+current-season transition types**. This is never callable from a web route.
+The existing manual Supabase SQL operator option remains available.
 
 The operation takes the same serialized PostgreSQL advisory lock as canonical
 promotion and executes as **SECURITY INVOKER**. `anon` and `authenticated`
@@ -113,3 +118,43 @@ has been safely imported, the current live counts remain 720 protected rows
 and 616 publicly promoted matches. Deployment of this routine is not proof
 that any new real result has been refreshed. No M2 models or backtests
 are enabled by this feature.
+
+## Automated GitHub Actions operator path (M1)
+
+Workflow: `.github/workflows/m1-private-stage-import.yml`, constrained to
+protected `main` and the preconfigured `m1-source-import` Environment
+(secrets `M1_PGHOST`, `M1_PGUSER`, `M1_PGDATABASE`,
+`M1_PGPASSWORD`; optional pinned certificate). **No local Mac, password
+entry, Vercel mutation endpoint or additional paid service is required.**
+
+GitHub Actions `schedule` requests every day at **06:17 and 18:17 UTC**.
+A protected main push changing this workflow also initiates one self-check.
+Scheduled work uses the latest default-branch commit. GitHub may delay or skip
+busy schedule windows, and GitHub can disable scheduled workflows after
+60 days of inactivity on public repositories. It is a low-cost best-effort
+sync cadence, **not a guaranteed live-score SLA**.
+
+Every run:
+1. Downloads at most 2 MB of licensed Footbolno CSV, normalizes three complete
+   seasons and checks 2024/25 against pinned OpenFootball score evidence.
+   Private raw rows exist only on the runner and protected DB. No provider
+   artifacts or credentials are uploaded.
+2. Atomically stages a new distinct source hash, or replays an existing one.
+   A source bytes change does **not** automatically mean a fixture change.
+3. Computes only a redacted revision summary. If all 720 records are
+   unchanged, does **no public write**; if a historical/holdout/unknown change
+   exists, outputs `PRIVATE_REVIEW_REQUIRED` and leaves the candidate
+   **private** without silently correcting public history.
+4. If and only if aggregate differences match safe current-season transitions,
+   runs the existing `SECURITY INVOKER` guarded PostgreSQL procedure, which
+   re-checks all per-match rules under a transaction/advisory lock and either
+   commits **all** eligible changes with immutable audit evidence or rolls
+   back. Results are summarized using a strict field allowlist.
+5. Never trains ML, changes historical/holdout data or publishes a prediction.
+
+The workflow keeps `contents:read`, HTTPS byte/time caps,
+`PGSSLMODE=verify-full` and the pinned CA. SQL stderr and source rows are
+never printed. A failure **after successful staging** accurately reports
+that staging succeeded but public refresh was not confirmed. Anything outside
+the safe transition policy requires a separate reviewed change, not a broad
+automatic correction rule.
