@@ -148,8 +148,8 @@ jobs:
               if ($errors.Count -gt 0) { exit 1 }
             '
           fi
-      - name: Verify published M1 milestones and README reflect actual data foundation
-        run: node --test tests/m1-status-consistency.test.mjs
+      - name: Verify published M1 milestones and current source operations documentation
+        run: node --test tests/m1-status-consistency.test.mjs tests/m1-docs-consistency.test.mjs
       - name: Verify registry-driven public source catalog without activated providers
         run: node --test apps/web/tests/data-catalog.test.mjs
       - name: Test offline cross-provider score, status, venue and temporal accuracy logic

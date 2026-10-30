@@ -1,10 +1,10 @@
 # Operations
 
-Daily sync, Friday forecast, Tuesday review, model training, staging/production callbacks and privileged database writes remain **disabled** during M1 data-foundation work.
+**M1 source synchronization is active:** protected Footbolno import/guarded current-season refresh runs at 06:17 and 18:17 UTC daily, with independent bounded SportScore research at 07:43 UTC. **Forecast creation, Friday/Tuesday report delivery, model training, public privileged callbacks and historical corrections remain disabled.**
 
-## M1 three-season source normalization (private and opt-in)
+## M1 three-season source normalization (bounded daily verification)
 
-The [M1 Footbolno workflow](../.github/workflows/m1-footbolno-dataset.yml) tests offline parsing on PRs and, on a merged change to `main` or explicit manual `workflow_dispatch`, downloads the publisher's fixed free RPL CSV URL (max 2 MB), records UTC retrieval time and SHA-256, validates 2024/25, 2025/26 and 2026/27, and compares 2024/25 against the pinned OpenFootball CC0 source. The private normalized JSONL files are created with `0600` permissions inside an ephemeral `0700` runner directory, never uploaded, logged, committed, or imported into Supabase. Only aggregate QC, hashes and attribution appear in the job summary.
+The [M1 Footbolno workflow](../.github/workflows/m1-footbolno-dataset.yml) tests offline parsing on PRs and, on its daily schedule, an eligible merged change to `main`, or explicit manual `workflow_dispatch`, downloads the publisher's fixed free RPL CSV URL (max 2 MB), records UTC retrieval time and SHA-256, validates 2024/25, 2025/26 and 2026/27, and compares 2024/25 against the pinned OpenFootball CC0 source. The private normalized JSONL files are created with `0600` permissions inside an ephemeral `0700` runner directory, never uploaded, logged, committed, or imported into Supabase. Only aggregate QC, hashes and attribution appear in the job summary.
 
 The current data contract keeps 2024/25 as `train_baseline`, 2025/26 as `sealed_holdout`, and 2026/27 as `current`. Each season requires 16 teams, 240 unique directed fixtures and valid IDs. Finished games require legal integer scores; cancelled, postponed, awarded, live, invalid or stale fixtures are quarantined. Unconfirmed kickoff times remain null, not fabricated midnight. Historical records have `publishedAtUtc: null`; downloading them today does not establish historical pre-match availability. Any QC failure fails the real-source job and blocks data promotion. Neither an ML model nor public forecasts are produced by this workflow.
 
@@ -16,7 +16,7 @@ mkdir -m 700 /tmp/ff-rpl-private
 node scripts/m1-footbolno-normalize.mjs /tmp/footbolno.csv "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" /tmp/ff-rpl-private
 ```
 
-The retrieval UTC argument must be the actual retrieval time, not a constructed historical publication date. Never commit the generated private files. Before persistent database ingestion, implement and review a non-browser authenticated write worker with a restricted role, transactionality, idempotence and source-provenance mapping; existing public RLS must remain unchanged. Source credit: [Footbolno CC BY 4.0](https://footbolno.ru/otkrytye-dannye) and [OpenFootball CC0](https://github.com/openfootball/europe). The same runner performs at most one free, competition-filtered SportScore UTC-day corroboration after unique RPL slug discovery, with a one-second spacing between API calls. Only aggregate agreement and response hash are printed, including a visible dofollow `Powered by SportScore` credit in the job summary. This is not ongoing polling, complete season coverage, a persistent SportScore mirror, or a public SportScore-backed UI; every future data surface must display the same attribution.
+The retrieval UTC argument must be the actual retrieval time, not a constructed historical publication date. Never commit the generated private files. A protected, tenant-locked, server-only PostgreSQL importer with transactionality, idempotence and provenance checks is already deployed, together with separate private revision review and guarded current-season promotion. Only the fixed existing GitHub Environment holds database credentials; public RLS is unchanged. Source credit: [Footbolno CC BY 4.0](https://footbolno.ru/otkrytye-dannye) and [OpenFootball CC0](https://github.com/openfootball/europe). The same runner performs at most one free, competition-filtered SportScore UTC-day corroboration after unique RPL slug discovery, with a one-second spacing between API calls. Only aggregate agreement and response hash are printed, including a visible dofollow `Powered by SportScore` credit in the job summary. This is now bounded **daily** source research, not complete season coverage, a persistent SportScore mirror, or a public SportScore-backed UI; every future data surface must display the same attribution.
 
 
 ## Intended future cadence
@@ -89,19 +89,15 @@ Post-apply verification: inspect Supabase Security/Performance Advisors,
 table grants, RLS, private record count, and the unchanged empty public
 `ff_matches` table.
 
-## Protected manual real-source import (M1)
+## Protected autonomous real-source import (M1; optional manual fallback)
 
 Live Supabase Free `eu-central-1` migration `20261029162351_m1_private_source_staging`
 has already been applied. The two private tables have RLS without any
 browser-access policy by design; the four append-only triggers and anonymous
-grant denial were verified live. No real matches were imported when the migration
-was deployed. An intentional Supabase Security Advisor `INFO` about two
+grant denial were verified live. At the moment this initial migration was deployed, no real matches had been imported. By 2026-10-30 the live private database contained **two immutable 720-row snapshots**, and the verified canonical catalog had **616 public matches**. An intentional Supabase Security Advisor `INFO` about two
 RLS-enabled/no-policy private tables is **not** an exposed-data vulnerability.
 
-Run `M1 private Footbolno PostgreSQL import (manual only)` on the
-**protected `main`** branch with the exact workflow input
-`STAGE_FOOTBOLNO_PRIVATE`, **only after** configuring the GitHub Actions
-environment `m1-source-import` (Repository Settings > Environments).
+The workflow `M1 protected free Footbolno ingest and safe RPL refresh` runs automatically from **protected `main`** at 06:17 and 18:17 UTC, as well as when its YAML changes on main. Its already-configured GitHub Actions environment `m1-source-import` contains the four required secrets. Optional manual dispatch still requires exact input `STAGE_FOOTBOLNO_PRIVATE`; no Mac, PowerShell, local database password or owner action is needed for scheduled operation.
 Its deployment branch rule must allow **only protected `main`**; require an
 environment reviewer if supported. Do not put these secrets in repository-wide
 Actions variables or the public web environment.
@@ -114,7 +110,7 @@ Create these **environment-scoped secrets** (the workflow never prints values):
 | `M1_PGUSER` | Exact FootballForecast tenant user `postgres.upulkesaiwnwfagjgteh` (other projects rejected). |
 | `M1_PGDATABASE` | Database name must be exactly `postgres`. |
 | `M1_PGPASSWORD` | Existing Supabase database password. Set directly in GitHub; never share in chat, scripts, screenshots or committed files. |
-| `M1_PGROOTCERT_B64` | Optional base64 encoding of the Supabase database SSL root CA certificate (download privately from Supabase dashboard). Without it, `PGSSLROOTCERT=system` verifies against the runner's trusted CAs. |
+| `M1_PGROOTCERT_B64` | Optional base64 encoding of the Supabase database SSL root CA certificate (download privately from Supabase dashboard). Without it, the workflow uses the **committed, fingerprint-pinned Supabase 2021 root CA**; it never silently switches to the runner's system trust store or downgrades `verify-full`. |
 
 A PowerShell 7 setup helper is available in
 `scripts/Set-M1PrivateImportSecrets.ps1`. It creates the required
@@ -142,9 +138,7 @@ is missing. GitHub Environment secret values cannot be verified by reading
 the repository or rerunning public CI; the protected dispatch is the actual
 connectivity verification.
 
-After a green dispatch, independently confirm 1 private source snapshot,
-240 matches per each of 3 seasons, 720 staged matches overall, unchanged
-public match/forecast counts, RLS/grant denial and Supabase Security Advisor.
+After every protected run, independently verify the aggregate revision report and, when relevant, the guarded-refresh result. The **first autonomous run #41025442702** on 2026-10-30 succeeded and verified a second different raw-source SHA with 720 unchanged normalized fixtures. Supabase independently showed 2 snapshots / 1440 private rows, 616 public matches, 0 refresh events and 0 forecasts. RLS/grant denial remains enforced; the guarded PostgreSQL transaction alone can allow narrow current-season score/time changes.
 Keep future real snapshots append-only and stop on a quality drift: never
 disable the temporal checks to get a green run. A secure private import alone
 does not activate public results, historical leakage-free backtests or model
