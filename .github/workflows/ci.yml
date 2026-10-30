@@ -34,7 +34,7 @@ jobs:
         shell: bash
         run: |
           docker exec "${{ job.services.postgres.id }}" psql -U postgres -d postgres -At -c "show server_version_num" | grep -E '^17[0-9]{4}$'
-          cat database/tests/0000_ci_supabase_stub.sql database/migrations/0001_foundation.sql database/tests/0001_rls_and_forecasts.sql database/migrations/0002_public_read.sql database/tests/0002_public_read.sql database/migrations/0003_match_fk_indexes.sql database/tests/0003_match_fk_indexes.sql database/migrations/0004_match_status_scores.sql database/migrations/0005_m1_private_source_staging.sql database/migrations/0006_m1_guarded_canonical_promotion.sql database/migrations/0007_m1_private_mapping_fk_indexes.sql database/migrations/0008_m1_private_snapshot_revision_review.sql database/migrations/0009_m1_safe_current_refresh.sql database/tests/0014_m1_safe_current_refresh_access.sql database/tests/0012_m1_revision_preview_access.sql database/tests/0010_m1_canonical_promotion.sql database/tests/0011_m1_mapping_fk_indexes.sql database/tests/0005_live_anon_posture.sql database/tests/0006_live_immutable_ledger.sql database/tests/0007_live_public_surface.sql database/tests/0008_match_status_scores.sql database/tests/0009_m1_private_source_staging.sql |
+          cat database/tests/0000_ci_supabase_stub.sql database/migrations/0001_foundation.sql database/tests/0001_rls_and_forecasts.sql database/migrations/0002_public_read.sql database/tests/0002_public_read.sql database/migrations/0003_match_fk_indexes.sql database/tests/0003_match_fk_indexes.sql database/migrations/0004_match_status_scores.sql database/migrations/0005_m1_private_source_staging.sql database/migrations/0006_m1_guarded_canonical_promotion.sql database/migrations/0007_m1_private_mapping_fk_indexes.sql database/migrations/0008_m1_private_snapshot_revision_review.sql database/migrations/0009_m1_safe_current_refresh.sql database/migrations/0010_m1_compact_source_observations.sql database/tests/0016_m1_compact_source_access.sql database/tests/0014_m1_safe_current_refresh_access.sql database/tests/0012_m1_revision_preview_access.sql database/tests/0010_m1_canonical_promotion.sql database/tests/0011_m1_mapping_fk_indexes.sql database/tests/0005_live_anon_posture.sql database/tests/0006_live_immutable_ledger.sql database/tests/0007_live_public_surface.sql database/tests/0008_match_status_scores.sql database/tests/0009_m1_private_source_staging.sql |
             docker exec -i "${{ job.services.postgres.id }}" psql -v ON_ERROR_STOP=1 -U postgres -d postgres
       - name: Reject unexpected publicly exposed tables, views, sequences and routines
         shell: bash
@@ -95,6 +95,17 @@ jobs:
       - name: Test anonymous HTTP against disposable real PostgREST v14
         shell: bash
         run: bash -n scripts/m0-disposable-postgrest-ci.sh && bash scripts/m0-disposable-postgrest-ci.sh "${{ job.services.postgres.id }}"
+
+      - name: Validate immutable compact raw-SHA observations versus genuine match drift (PG17)
+        shell: bash
+        run: |
+          set -euo pipefail
+          for variant in equivalent changed; do
+            node tests/m1-equivalent-stage-sql-fixture.mjs "$variant" |
+              docker exec -i "${{ job.services.postgres.id }}" psql -X -q -v ON_ERROR_STOP=1 -U postgres -d postgres > /dev/null
+          done
+          docker exec -i "${{ job.services.postgres.id }}" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres \
+            < database/tests/0017_m1_compact_source_semantics.sql
 
   web:
     runs-on: ubuntu-latest
