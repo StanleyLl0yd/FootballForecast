@@ -122,7 +122,7 @@ jobs:
             "$work/private/rpl-2026-2027.jsonl" --commit
           hash="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(!/^[a-f0-9]{64}$/.test(m.sourceFileSha256))process.exit(2);process.stdout.write(m.sourceFileSha256)" "$work/private/manifest.json")"
           if ! psql -X -qAt -v ON_ERROR_STOP=1 -v VERBOSITY=terse \
-            -c "select ff_private.ff_preview_footbolno_revision(s.id) from ff_private.ff_ingest_snapshots s join public.ff_sources src on src.id=s.source_id where src.name='Footbolno' and s.source_sha256='$hash'" \
+            -c "select ff_private.ff_preview_footbolno_revision(ff_private.ff_resolve_footbolno_source_sha('$hash'))" \
             > "$work/private/revision.json" 2>/dev/null; then
             echo 'FAIL: private source committed, but revision review unavailable'
             exit 2
@@ -133,6 +133,8 @@ jobs:
               exit 2
             }
           cat "$work/revision-summary.json"
+          # Equivalent raw-byte observations can resolve to an unchanged
+          # immutable canonical snapshot; no 720-row duplication is needed.
           decision="$(node scripts/m1-autonomous-refresh.mjs decision "$work/revision-summary.json")"
           case "$decision" in
             NO_CHANGE)
@@ -145,7 +147,7 @@ jobs:
               # The DB transaction independently repeats all constraints and
               # either fully commits a safe current-season change or rolls back.
               if ! psql -X -qAt -v ON_ERROR_STOP=1 -v VERBOSITY=terse \
-                -c "select ff_private.ff_apply_safe_current_refresh(s.id) from ff_private.ff_ingest_snapshots s join public.ff_sources src on src.id=s.source_id where src.name='Footbolno' and s.source_sha256='$hash'" \
+                -c "select ff_private.ff_apply_safe_current_refresh(ff_private.ff_resolve_footbolno_source_sha('$hash'))" \
                 > "$work/private/refresh-result.json" 2>/dev/null; then
                 echo 'FAIL: private source committed, guarded current-only update declined'
                 exit 2
