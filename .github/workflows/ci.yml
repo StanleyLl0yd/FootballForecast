@@ -150,6 +150,8 @@ jobs:
           fi
       - name: Verify published M1 milestones and current source operations documentation
         run: node --test tests/m1-status-consistency.test.mjs tests/m1-docs-consistency.test.mjs
+      - name: Verify data-backed dashboard never misstates absent future kickoff as empty catalog
+        run: node --test tests/m1-dashboard-upcoming-state.test.mjs
       - name: Verify registry-driven public source catalog without activated providers
         run: node --test apps/web/tests/data-catalog.test.mjs
       - name: Test offline cross-provider score, status, venue and temporal accuracy logic
