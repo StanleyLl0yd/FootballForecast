@@ -92,7 +92,7 @@ test('private committed snapshots receive aggregate drift review before any guar
   const review=workflow.indexOf('ff_private.ff_preview_footbolno_revision(ff_private.ff_resolve_footbolno_source_sha');
   const report=workflow.indexOf('scripts/m1-revision-report.mjs "$work/private/revision.json"');
   assert.ok(commit>0 && review>commit && report>review);
-  assert.match(workflow,/ff_private\\.ff_resolve_footbolno_source_sha/);
+  assert.ok(workflow.includes('ff_private.ff_resolve_footbolno_source_sha'));
   assert.match(workflow,/sourceFileSha256/);
   assert.match(workflow,/psql -X -qAt -v ON_ERROR_STOP=1/);
   assert.match(workflow,/revision-summary.json/);
