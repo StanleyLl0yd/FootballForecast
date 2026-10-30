@@ -39,7 +39,7 @@ test('free database budget applies only after exact source-hash reuse and equiva
     comparison>budget&&insert>comparison&&observation>insert);
   assert.ok(sql.includes("then raise exception 'M1 private free-budget guard: database at 256 MiB'"));
   assert.ok(sql.includes('ff_private.ff_source_byte_observations'));
-  assert.match(sql,/on conflict \\(source_id,source_sha256\\) do nothing/);
+  assert.ok(sql.includes('on conflict (source_id,source_sha256) do nothing'));
   assert.match(sql,/source hash provenance mismatch/);
 });
 
