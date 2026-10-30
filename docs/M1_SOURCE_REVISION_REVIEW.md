@@ -158,3 +158,21 @@ never printed. A failure **after successful staging** accurately reports
 that staging succeeded but public refresh was not confirmed. Anything outside
 the safe transition policy requires a separate reviewed change, not a broad
 automatic correction rule.
+
+## Independent bounded current-day corroboration
+
+A separate **unprivileged** `.github/workflows/m1-footbolno-dataset.yml`
+research run checks licensed Footbolno and pinned OpenFootball consistency, then
+performs at most **one** uniquely validated RPL SportScore search and **one**
+competition-filtered UTC-day fixture request. This runs daily at **07:43 UTC**
+and may also run on protected main updates or manual dispatch. It does **not**
+have Supabase DB credentials, persist SportScore API rows, crawl match history,
+train models, or insert public forecasts. Only aggregate discrepancy indicators
+and the required `Powered by SportScore` attribution appear in the GitHub
+Actions summary. Missing source, uncertain mapping, zero fixtures, or partial
+API responses are labeled **INCONCLUSIVE**, not invented provider agreement.
+
+This independent study is useful supporting evidence, **not a global 240-match
+season certification** and not a promise of two independently authored
+upstream records. The transactional current refresh continues to make only
+the narrow changes authorized by migration `0009`.
