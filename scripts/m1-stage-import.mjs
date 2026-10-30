@@ -159,6 +159,12 @@ export function buildStageSql(dataset){
     'on conflict (name) do nothing;',
     "select id into strict src from public.ff_sources where name='Footbolno'",
     "and license_status='approved' and license_reference='"+ATTRIBUTION_URL+"';",
+    // Keep a wide margin for Supabase Free database overhead, indexes and
+    // other application data. An existing hash replay remains available.
+    "if not exists (select 1 from ff_private.ff_ingest_snapshots",
+    "where source_id=src and source_sha256='"+hash+"')",
+    "and pg_catalog.pg_database_size(pg_catalog.current_database()) >= 268435456",
+    "then raise exception 'M1 private free-budget guard: database at 256 MiB'; end if;",
     'insert into ff_private.ff_ingest_snapshots',
     '(source_id,source_url,license_url,source_sha256,normalized_sha256,retrieved_at)',
     "values(src,'"+SOURCE_URL+"','"+ATTRIBUTION_URL+"','"+hash+"','"+hashes+"'::jsonb,'"+retrieval+"'::timestamptz)",
