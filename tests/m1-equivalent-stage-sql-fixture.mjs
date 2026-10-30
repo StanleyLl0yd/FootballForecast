@@ -9,7 +9,7 @@ if(!['equivalent','changed'].includes(variant))throw Error('Unknown synthetic fi
 const data=fixture();
 const rawSha=sha('synthetic-source-bytes-'+(variant==='equivalent'?'v2':'v3'));
 data.manifest.sourceFileSha256=rawSha;
-data.manifest.retrievedAtUtc=variant==='equivalent'?'2026-10-30T12:00:00Z':'2026-10-31T12:00:00Z';
+data.manifest.retrievedAtUtc=variant==='equivalent'?'2026-10-29T15:30:00Z':'2026-10-29T16:00:00Z';
 for(const season of Object.keys(data.seasonFiles)){
   const rows=data.seasonFiles[season].trimEnd().split('\n').map(line=>JSON.parse(line));
   for(const row of rows)row.sourceFileSha256=rawSha;
