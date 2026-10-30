@@ -1,9 +1,15 @@
-name: M1 private Footbolno PostgreSQL import (manual only)
+name: M1 protected free Footbolno ingest and safe RPL refresh
 on:
+  schedule:
+    # Twice daily, off the hour. GitHub schedules run from protected default main.
+    - cron: '17 6,18 * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/m1-private-stage-import.yml']
   workflow_dispatch:
     inputs:
       confirmation:
-        description: 'Type STAGE_FOOTBOLNO_PRIVATE to import only into ff_private'
+        description: 'Optional manual override: STAGE_FOOTBOLNO_PRIVATE'
         required: true
         type: string
 permissions:
@@ -13,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   protected-import:
-    if: github.ref == 'refs/heads/main' && inputs.confirmation == 'STAGE_FOOTBOLNO_PRIVATE'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.confirmation == 'STAGE_FOOTBOLNO_PRIVATE'))
     runs-on: ubuntu-latest
     environment: m1-source-import
     timeout-minutes: 10
@@ -29,7 +35,8 @@ jobs:
           node --check scripts/m1-footbolno-normalize.mjs
           node --check scripts/m1-stage-import.mjs
           node --check scripts/m1-revision-report.mjs
-          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-stage-import.test.mjs tests/m1-revision-report.test.mjs
+          node --check scripts/m1-autonomous-refresh.mjs
+          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-stage-import.test.mjs tests/m1-revision-report.test.mjs tests/m1-autonomous-refresh.test.mjs
       - name: Prepare PostgreSQL client before any secrets are exposed
         shell: bash
         run: |
@@ -126,12 +133,41 @@ jobs:
               exit 2
             }
           cat "$work/revision-summary.json"
+          decision="$(node scripts/m1-autonomous-refresh.mjs decision "$work/revision-summary.json")"
+          case "$decision" in
+            NO_CHANGE)
+              printf '%s\n' '{"kind":"M1_GUARDED_REFRESH","outcome":"UNCHANGED","publicWritesPerformed":0}' > "$work/refresh-summary.json"
+              ;;
+            REVIEW_REQUIRED)
+              printf '%s\n' '{"kind":"M1_GUARDED_REFRESH","outcome":"PRIVATE_REVIEW_REQUIRED","publicWritesPerformed":0}' > "$work/refresh-summary.json"
+              ;;
+            SAFE_CURRENT_ONLY)
+              # The DB transaction independently repeats all constraints and
+              # either fully commits a safe current-season change or rolls back.
+              if ! psql -X -qAt -v ON_ERROR_STOP=1 -v VERBOSITY=terse \
+                -c "select ff_private.ff_apply_safe_current_refresh(s.id) from ff_private.ff_ingest_snapshots s join public.ff_sources src on src.id=s.source_id where src.name='Footbolno' and s.source_sha256='$hash'" \
+                > "$work/private/refresh-result.json" 2>/dev/null; then
+                echo 'FAIL: private source committed, guarded current-only update declined'
+                exit 2
+              fi
+              node scripts/m1-autonomous-refresh.mjs outcome \
+                "$work/private/refresh-result.json" > "$work/refresh-summary.json" || {
+                  echo 'FAIL: source stage committed, guarded refresh result invalid'
+                  exit 2
+                }
+              ;;
+            *)
+              echo 'FAIL: unsafe M1 autonomous decision'
+              exit 2
+              ;;
+          esac
+          cat "$work/refresh-summary.json"
           {
             echo '## M1 private Footbolno ingestion'
             echo 'Source: Footbolno, CC BY 4.0 - https://footbolno.ru/otkrytye-dannye'
             echo 'Validated all three RPL seasons and committed into ff_private only.'
             echo 'No provider rows, credentials or raw artifacts were retained.'
-            echo 'No public match records or trained model were created.'
+            echo 'Only guarded current-season changes can be published; no model training.'
             echo
             echo '~~~json'
             cat "$work/quality.json"
@@ -139,6 +175,10 @@ jobs:
             echo '### M1 private revision review (aggregate only; never auto-published)'
             echo '~~~json'
             cat "$work/revision-summary.json"
+            echo '~~~'
+            echo '### Protected current-season refresh outcome'
+            echo '~~~json'
+            cat "$work/refresh-summary.json"
             echo '~~~'
             echo '### Pinned OpenFootball 2024/25 match-level score gate'
             echo '~~~json'
