@@ -5,7 +5,6 @@ on:
     - cron: '43 7 * * *'
   pull_request:
     paths:
-      - '.github/workflows/m1-footbolno-dataset.yml'
       - 'scripts/m1-footbolno-normalize.mjs'
       - 'tests/m1-footbolno-normalize.test.mjs'
       - 'scripts/m1-sportscore-current.mjs'
