@@ -115,3 +115,20 @@ test('only reviewed safe current fixtures can trigger a private write, after sta
   assert.match(workflow,/FF_M1_DB_WRITE_ENABLED: '1'/);
   assert.doesNotMatch(workflow,/upload-artifact/);
 });
+
+test('daily SportScore research is bounded and has no protected DB credentials or provider-row persistence',()=>{
+  assert.match(current,/^on:\n  schedule:/m);
+  assert.match(current,/cron: '43 7 \* \* \*'/);
+  assert.match(current,/^  push:\n    branches: \[main\]/m);
+  assert.match(current,/if: github\.event_name != 'pull_request'/);
+  assert.match(current,/permissions:\n  contents: read/);
+  assert.match(current,/--max-filesize 2000000/);
+  assert.match(current,/--max-filesize 1000000/);
+  assert.match(current,/https:\/\/sportscore\.com\/api\/v1\/search\//);
+  assert.match(current,/https:\/\/sportscore\.com\/api\/v1\/fixtures\//);
+  assert.match(current,/scripts\/m1-sportscore-current\.mjs/);
+  assert.match(current,/Powered by SportScore/);
+  assert.doesNotMatch(current,/\$\{\{ secrets\./);
+  assert.doesNotMatch(current,/PGPASSWORD|--commit|upload-artifact|FF_M1_DB_WRITE_ENABLED/);
+  assert.doesNotMatch(current,/^  (?:workflow_run|pull_request_target):/m);
+});
