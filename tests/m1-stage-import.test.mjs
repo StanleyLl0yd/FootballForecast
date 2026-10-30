@@ -26,16 +26,21 @@ test('720 role-separated immutable source records validate without PostgreSQL wr
   assert.ok(!sql.includes('Club 1'));
   assert.ok(!sql.includes('match-24-1'));
 });
-test('free database budget is enforced before a new snapshot, without blocking identical SHA replay',()=>{
+test('free database budget applies only after exact source-hash reuse and equivalence review',()=>{
   const data=fixture(),sql=buildStageSql(validateStageDataset(data.manifest,data.seasonFiles));
-  const size=sql.indexOf('pg_database_size(pg_catalog.current_database()) >= 268435456');
-  const distinct=sql.indexOf('if not exists (select 1 from ff_private.ff_ingest_snapshots');
+  const lock=sql.indexOf('pg_advisory_xact_lock');
+  const direct=sql.indexOf('select id into snap from ff_private.ff_ingest_snapshots');
+  const compact=sql.indexOf('select snapshot_id into snap from ff_private.ff_source_byte_observations');
+  const budget=sql.indexOf('pg_database_size(pg_catalog.current_database()) >= 268435456');
+  const comparison=sql.indexOf('except all');
   const insert=sql.indexOf('insert into ff_private.ff_ingest_snapshots');
-  const advisory=sql.indexOf('pg_advisory_xact_lock');
-  assert.ok(advisory>=0&&distinct>advisory&&size>distinct&&insert>size);
+  const observation=sql.indexOf('insert into ff_private.ff_source_byte_observations');
+  assert.ok(lock>=0&&direct>lock&&compact>direct&&budget>compact&&
+    comparison>budget&&insert>comparison&&observation>insert);
   assert.ok(sql.includes("then raise exception 'M1 private free-budget guard: database at 256 MiB'"));
-  assert.ok(sql.includes("source_sha256='"+data.manifest.sourceFileSha256+"'"));
-  assert.match(sql,/on conflict \(source_id,source_sha256\) do nothing/);
+  assert.ok(sql.includes('ff_private.ff_source_byte_observations'));
+  assert.match(sql,/on conflict \\(source_id,source_sha256\\) do nothing/);
+  assert.match(sql,/source hash provenance mismatch/);
 });
 
 test('refuse any changed normalized bytes even if an upstream hash is claimed',()=>{
