@@ -154,6 +154,8 @@ jobs:
         run: node --test tests/m1-status-consistency.test.mjs tests/m1-docs-consistency.test.mjs
       - name: Verify data-backed dashboard never misstates absent future kickoff as empty catalog
         run: node --test tests/m1-dashboard-upcoming-state.test.mjs
+      - name: Audit all GitHub checkout steps for nonpersistent GitHub credentials
+        run: node --test tests/m1-checkout-credentials.test.mjs
       - name: Verify registry-driven public source catalog without activated providers
         run: node --test apps/web/tests/data-catalog.test.mjs
       - name: Test offline cross-provider score, status, venue and temporal accuracy logic
