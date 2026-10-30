@@ -1,5 +1,8 @@
 name: M1 Footbolno private three-season dataset
 on:
+  schedule:
+    # One bounded current-day provenance comparison, never a season crawler.
+    - cron: '43 7 * * *'
   pull_request:
     paths:
       - 'scripts/m1-footbolno-normalize.mjs'
@@ -111,7 +114,7 @@ jobs:
             echo
             echo '### One-day attributed SportScore current-data corroboration'
             echo '<a href="https://sportscore.com/" rel="dofollow">Powered by SportScore</a>'
-            echo 'One unique-RPL search and at most one competition-filtered UTC day, no scheduled polling.'
+            echo 'One unique-RPL search and at most one competition-filtered UTC day per protected/default-branch run.'
           } >> "$GITHUB_STEP_SUMMARY"
           search_status="$(curl --silent --show-error --fail \
             --proto '=https' --max-redirs 0 \
