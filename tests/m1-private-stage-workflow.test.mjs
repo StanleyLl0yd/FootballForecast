@@ -89,11 +89,11 @@ test('Supabase pooler TLS uses pinned CA, validated before secrets and again bef
 
 test('private committed snapshots receive aggregate drift review before any guarded current refresh',()=>{
   const commit=workflow.indexOf('"$work/private/rpl-2026-2027.jsonl" --commit');
-  const review=workflow.indexOf('ff_private.ff_preview_footbolno_revision(s.id)');
+  const review=workflow.indexOf('ff_private.ff_preview_footbolno_revision(ff_private.ff_resolve_footbolno_source_sha');
   const report=workflow.indexOf('scripts/m1-revision-report.mjs "$work/private/revision.json"');
   assert.ok(commit>0 && review>commit && report>review);
-  assert.match(workflow,/src.name='Footbolno'/);
-  assert.match(workflow,/s.source_sha256='\$hash'/);
+  assert.ok(workflow.includes('ff_private.ff_resolve_footbolno_source_sha'));
+  assert.match(workflow,/sourceFileSha256/);
   assert.match(workflow,/psql -X -qAt -v ON_ERROR_STOP=1/);
   assert.match(workflow,/revision-summary.json/);
   assert.match(workflow,/GITHUB_STEP_SUMMARY/);
@@ -104,7 +104,7 @@ test('private committed snapshots receive aggregate drift review before any guar
 test('only reviewed safe current fixtures can trigger a private write, after staging',()=>{
   const commit=workflow.indexOf('"$work/private/rpl-2026-2027.jsonl" --commit');
   const triage=workflow.indexOf('scripts/m1-autonomous-refresh.mjs decision');
-  const guarded=workflow.indexOf('ff_private.ff_apply_safe_current_refresh(s.id)');
+  const guarded=workflow.indexOf('ff_private.ff_apply_safe_current_refresh(ff_private.ff_resolve_footbolno_source_sha');
   const report=workflow.indexOf('scripts/m1-autonomous-refresh.mjs outcome');
   assert.ok(commit>0&&triage>commit&&guarded>triage&&report>guarded);
   assert.match(workflow,/SAFE_CURRENT_ONLY\)/);
