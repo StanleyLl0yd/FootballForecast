@@ -176,3 +176,28 @@ This independent study is useful supporting evidence, **not a global 240-match
 season certification** and not a promise of two independently authored
 upstream records. The transactional current refresh continues to make only
 the narrow changes authorized by migration `0009`.
+
+## Conservative database-size fail-closed gate
+
+Because two different upstream CSV byte hashes can normalize to the **same**
+720 football fixtures, successive immutable source snapshots can consume
+additional disk even with zero changes to the public catalog. Each snapshot
+remains necessary as immutable evidence of the exact observed source, so
+automatically deleting historic rows or changing their hashes is forbidden.
+
+The protected SQL stage writer now checks PostgreSQL
+`pg_database_size(current_database())` **inside its serialized transaction
+before inserting a new SHA-256 snapshot**. At **256 MiB or more**, a *new*
+source revision is declined before any rows are written; replays of an
+already-staged source hash are still allowed. This 256 MiB ceiling is an
+intentionally conservative **project-level safety threshold**, not a claim
+about Supabase's contractual Free storage quota. It leaves capacity for
+indexes, application tables and provider-specific overhead. It never
+requests a billing upgrade or disables retention/access policy.
+
+If the guard triggers, the workflow must clearly fail closed. Investigate
+whether upstream bytes change with identical normalized fixtures, review
+the size trend, and design a separate compact immutable *metadata-only*
+observation ledger with migration/tests before resuming new snapshot
+retention. **Do not delete accepted source history**, silently bypass the
+threshold or drop the sealed 2025/26 evidence to keep the cron green.
