@@ -1,9 +1,9 @@
-# Hosting and deployment - public M0
+# Hosting and deployment - M0 accepted / M1 operating
 
 ## Verified infrastructure
 
 - Repository: `StanleyLl0yd/FootballForecast`, protected `main`, six required exact-head checks.
-- Supabase: **Free** project `FootballForecast`, Frankfurt `eu-central-1`, PostgreSQL 17.11. Verified live migration history: `foundation_m0`, `public_read_m0`, `match_fk_indexes_m0`, `match_status_scores_m0` (version `20261023081004`, applied 2026-10-23).
+- Supabase: **Free** project `FootballForecast`, Frankfurt `eu-central-1`, PostgreSQL 17. Verified original M0 migrations `0001`-`0004` plus current M1 migrations `0005`-`0009` are applied; latest tracked version `20261029211103_m1_safe_current_refresh`. Live M1 data as of 2026-10-30: two immutable 720-row source snapshots, **616 public fixtures, 0 forecasts**; ongoing guarded import uses the previously configured private GitHub Environment secrets.
 - Vercel: **Hobby** project `footballforecast` connected to GitHub `main`, `apps/web` root, Next.js, npm workspace install `npm ci`, server function region `fra1` (Frankfurt).
 - Production: https://footballforecast.vercel.app. Anonymous viewing enabled; Vercel Authentication disabled for production. A GitHub-hosted HTTP canary verified health, dashboard, matches, archive, data and admin denial; a separate **real Russian wired/home browser no-VPN** report on 2026-10-22 confirmed health/dashboard/archive all HTTP 200. This establishes exactly **one** wired network, not all Russian ISPs or mobile reachability.
 - Deployment env: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` configured on Vercel. These are public/read-only client credentials; never use a service-role key in any browser-facing environment.
