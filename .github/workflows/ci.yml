@@ -25,6 +25,7 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned 2026-10-17
+        with: {persist-credentials: false}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6 pinned 2026-10-17
         with: {python-version: '3.13'}
       - name: Test core
@@ -100,6 +101,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned 2026-10-17
+        with: {persist-credentials: false}
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned 2026-10-17
         with:
           node-version: '22'
@@ -152,6 +154,8 @@ jobs:
         run: node --test tests/m1-status-consistency.test.mjs tests/m1-docs-consistency.test.mjs
       - name: Verify data-backed dashboard never misstates absent future kickoff as empty catalog
         run: node --test tests/m1-dashboard-upcoming-state.test.mjs
+      - name: Audit all GitHub checkout steps for nonpersistent GitHub credentials
+        run: node --test tests/m1-checkout-credentials.test.mjs
       - name: Verify registry-driven public source catalog without activated providers
         run: node --test apps/web/tests/data-catalog.test.mjs
       - name: Test offline cross-provider score, status, venue and temporal accuracy logic
@@ -205,6 +209,7 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned 2026-10-17
+        with: {persist-credentials: false}
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5 pinned 2026-10-17
         with: {node-version: '22'}
       - name: Check deployed public site from outside Vercel
@@ -219,6 +224,7 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with: {node-version: '22'}
       - name: Verify production on stable Firefox and Microsoft Edge
@@ -233,6 +239,7 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with: {node-version: '22'}
       - name: Enable standard Safari WebDriver
