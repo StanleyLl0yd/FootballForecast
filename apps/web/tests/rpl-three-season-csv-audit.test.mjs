@@ -214,6 +214,31 @@ test('scheduled, cancelled and live score values obey the M0 match-status contra
   }
 });
 
+test('postponed and awarded publisher statuses are research-only, not unknown CSV schemas',()=>{
+  const rows=createRows('2026/2027',{finished:238});
+  rows[238][4]='postponed';
+  rows[239][4]='awarded';
+  rows[239][7]='3';rows[239][8]='0';
+  const report=summarizeFootbolnoRplCsv(toCsv(rows),'2026-09-01T00:00:00Z');
+  const current=report.seasonSummaries[2];
+  assert.equal(current.matches,240);
+  assert.equal(current.postponed,1);
+  assert.equal(current.awarded,1);
+  assert.equal(current.invalidScores,0);
+  assert.equal(current.homeGoals,238*2);
+  assert.equal(current.awayGoals,238);
+  assert.equal(report.upcomingFixtures.length,0);
+  // A postponed fixture must not carry an apparent final result.
+  rows[238][7]='1';
+  assert.equal(summarizeFootbolnoRplCsv(toCsv(rows),'2026-09-01T00:00:00Z')
+    .seasonSummaries[2].invalidScores,1);
+  // A malformed technical result is counted as invalid, never a played score.
+  rows[238][7]='';
+  rows[239][7]='invalid';
+  assert.equal(summarizeFootbolnoRplCsv(toCsv(rows),'2026-09-01T00:00:00Z')
+    .seasonSummaries[2].invalidScores,1);
+});
+
 test('wrong tournament IDs and irrelevant years are never counted as RPL pilot seasons',()=>{
  const rows=createRows('2024/2025').slice(0,4);
  rows[0][1]='444';rows[1][2]='2022/2023';
