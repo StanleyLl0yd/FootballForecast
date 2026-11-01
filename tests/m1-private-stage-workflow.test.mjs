@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {X509Certificate} from 'node:crypto';
 import {readFileSync} from 'node:fs';
+import {join,posix} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {test} from 'node:test';
 
 const workflow=readFileSync(new URL('../.github/workflows/m1-private-stage-import.yml',import.meta.url),'utf8');
@@ -18,6 +20,10 @@ test('only main gets scheduled and source-controlled protected import; manual di
     return item[1];
   }),[
     '.github/workflows/m1-private-stage-import.yml',
+    'apps/web/lib/source-preview-core.mjs',
+    'scripts/m0-cross-source-fixture-reconcile.mjs',
+    'scripts/m0-fixture-reconcile.mjs',
+    'scripts/m0-source-quality.mjs',
     'scripts/m1-autonomous-refresh.mjs',
     'scripts/m1-footbolno-normalize.mjs',
     'scripts/m1-openfootball-score-gate.mjs',
@@ -33,6 +39,33 @@ test('only main gets scheduled and source-controlled protected import; manual di
   assert.match(workflow,/environment: m1-source-import/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.match(workflow,/permissions:\n  contents: read/);
+});
+
+test('protected push paths cover direct and transitive source modules',()=>{
+  const root=fileURLToPath(new URL('../',import.meta.url));
+  const paths=workflow.match(/^    paths:\n((?:      - '[^']+'\n)+)/m)?.[1];
+  assert.ok(paths);
+  const allowed=new Set([...paths.matchAll(/^      - '([^']+)'$/gm)].map(match=>match[1]));
+  assert.equal(allowed.size,11);
+  const direct=new Set([...workflow.matchAll(/^\s*node (scripts\/[-\w]+\.mjs)(?=\s|$)/gm)]
+    .map(match=>match[1]));
+  assert.ok(direct.has('scripts/m0-cross-source-fixture-reconcile.mjs'));
+  assert.ok(direct.has('scripts/m1-stage-import.mjs'));
+  const visited=new Set();
+  const visit=file=>{
+    assert.match(file,/^(?:scripts|apps\/web\/lib)\/[-\w./]+\.mjs$/);
+    assert.ok(!file.includes('..'), 'source dependency must remain inside audited directories');
+    if(visited.has(file))return;
+    visited.add(file);
+    const source=readFileSync(join(root,file),'utf8');
+    assert.doesNotMatch(source,/\bimport\s*\(/, 'dynamic source imports need a separately audited trigger');
+    for(const match of source.matchAll(/\bfrom\s*['"](\.{1,2}\/[^'"]+\.mjs)['"]/g)){
+      visit(posix.normalize(posix.join(posix.dirname(file),match[1])));
+    }
+  };
+  for(const file of direct)visit(file);
+  assert.deepEqual([...allowed].sort(),
+    ['.github/workflows/m1-private-stage-import.yml',...visited].sort());
 });
 
 test('privileged database credentials are restricted to the write step',()=>{
