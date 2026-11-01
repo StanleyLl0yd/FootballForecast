@@ -69,7 +69,7 @@ test('normalization uses code-unit order for mixed-case provider match IDs',()=>
   rows[1]=rows[1].replace(/^24-0,/, '24-a,');
   rows[2]=rows[2].replace(/^24-1,/, '24-A,');
   const records=parse(rows).seasonFiles['2024/2025'].trimEnd()
-    .split('\\n').map(JSON.parse);
+    .split('\n').map(JSON.parse);
   const ids=records.map(r=>r.sourceMatchId);
   assert.ok(ids.indexOf('24-A')<ids.indexOf('24-a'));
   assert.deepEqual(ids,[...ids].sort());
