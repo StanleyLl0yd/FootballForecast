@@ -121,6 +121,18 @@ test('repeated match identities within one season are refused',()=>{
   assert.throws(()=>validateStageDataset(data.manifest,data.seasonFiles),/duplicate source fixture/);
 });
 
+test('different provider-team pairs cannot alias the published UUID seed',()=>{
+  const data=fixture(),season='2024/2025';
+  const lines=data.seasonFiles[season].trimEnd().split('\n');
+  const a=JSON.parse(lines[0]),b=JSON.parse(lines[1]);
+  a.homeTeamId='a:b';a.awayTeamId='c';
+  b.homeTeamId='a';b.awayTeamId='b:c';
+  lines[0]=JSON.stringify(a);lines[1]=JSON.stringify(b);
+  data.seasonFiles[season]=lines.join('\n')+'\n';
+  data.manifest.snapshotSHA256[season]=hash(Buffer.from(data.seasonFiles[season]));
+  assert.throws(()=>validateStageDataset(data.manifest,data.seasonFiles),
+    /ambiguous canonical match identity/);
+});
 test('dated planned fixture older than retrieval time is refused',()=>{
   const data=fixture();
   mutateSeason(data,'2026/2027',r=>{

@@ -90,7 +90,8 @@ export function validateStageDataset(manifest,seasonFiles){
       q?.rows!==240||q?.teams!==16||q?.directedPairs!==240||
       q?.quarantined!==0||(season!=='2026/2027'&&q.finished!==240))
       refuse('season source hash or quality gate');
-    const lines=body.trimEnd().split('\n'),ids=new Set(),pairs=new Set(),clubs=new Set();
+    const lines=body.trimEnd().split('\n'),ids=new Set(),pairs=new Set(),
+      canonicalKeys=new Set(),clubs=new Set();
     if(lines.length!==240)refuse('season row count');
     for(const line of lines){
       let r;
@@ -127,6 +128,10 @@ export function validateStageDataset(manifest,seasonFiles){
       const pair=JSON.stringify([r.homeTeamId,r.awayTeamId]);
       if(ids.has(r.sourceMatchId)||pairs.has(pair))refuse('duplicate source fixture');
       ids.add(r.sourceMatchId);pairs.add(pair);
+      // A distinct JSON tuple must never alias the colon-delimited canonical UUID seed.
+      const canonicalKey=season+':'+r.homeTeamId+':'+r.awayTeamId;
+      if(canonicalKeys.has(canonicalKey))refuse('ambiguous canonical match identity');
+      canonicalKeys.add(canonicalKey);
       clubs.add(r.homeTeamId);clubs.add(r.awayTeamId);
       normalized.push({
         external_id:r.sourceMatchId,season:r.season,role:r.role,

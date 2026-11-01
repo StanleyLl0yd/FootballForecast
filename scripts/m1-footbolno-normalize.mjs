@@ -62,7 +62,7 @@ export function normalizeFootbolnoCsv(bytes,retrievedUtc,{expectedFixtures=240}=
   for(const [season,role] of Object.entries(SEASON_ROLES)){
     const candidates=rows.filter(r=>r[keys.league_id].trim()==='235'&&
       r[keys.season].trim()===season);
-    const ids=new Set(),pairs=new Set(),teams=new Set(),normalized=[];
+    const ids=new Set(),pairs=new Set(),canonicalKeys=new Set(),teams=new Set(),normalized=[];
     const counters={finished:0,scheduled:0,live:0,cancelled:0,postponed:0,awarded:0,
       quarantined:0,invalidDates:0,invalidScores:0,staleScheduled:0,
       futureFinished:0,unconfirmedTimes:0,unconfirmedFinished:0};
@@ -75,7 +75,12 @@ export function normalizeFootbolnoCsv(bytes,retrievedUtc,{expectedFixtures=240}=
       ids.add(matchId);
       const ordered=stableJson([homeId,awayId]);
       if(pairs.has(ordered))refuse('duplicate directed fixture');
-      pairs.add(ordered);teams.add(homeId);teams.add(awayId);
+      pairs.add(ordered);
+      // Preserve existing UUID derivation, but reject ambiguous colon-delimited identities.
+      const canonicalKey=season+':'+homeId+':'+awayId;
+      if(canonicalKeys.has(canonicalKey))refuse('ambiguous canonical match identity');
+      canonicalKeys.add(canonicalKey);
+      teams.add(homeId);teams.add(awayId);
       const home=get('home'),away=get('away');
       if(!home||!away||home.length>120||away.length>120||
         /[\u0000-\u001f]/.test(home+away))refuse('invalid club display name');
