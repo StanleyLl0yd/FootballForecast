@@ -66,8 +66,8 @@ test('source access uses bounded fixed HTTPS URLs and no model training',()=>{
 });
 
 test('pinned OpenFootball score and directed-fixture gate precedes privileged import',()=>{
-  const cross=workflow.indexOf('scripts/m0-cross-source-fixture-reconcile.mjs');
-  const gate=workflow.indexOf('scripts/m1-openfootball-score-gate.mjs');
+  const cross=workflow.indexOf('node scripts/m0-cross-source-fixture-reconcile.mjs');
+  const gate=workflow.indexOf('node scripts/m1-openfootball-score-gate.mjs');
   const commit=workflow.indexOf('"$work/private/rpl-2026-2027.jsonl" --commit');
   assert.ok(cross>0&&gate>cross&&commit>gate);
   assert.match(workflow,/openfootball\/europe\/63df627f3c87ce71708f016522ea236cf74332c3\/russia\/2024-25_ru1\.txt/);
