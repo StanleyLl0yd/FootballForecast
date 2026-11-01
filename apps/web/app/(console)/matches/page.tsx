@@ -1,10 +1,13 @@
 import {EmptyState,PageHeading} from '@/components/empty-state';
 import {readPublicOverview} from '@/lib/public-overview';
 import {readRecentResults} from '@/lib/public-results';
+import {readOverdueScheduledFixtures} from '@/lib/current-freshness';
 
 export const dynamic='force-dynamic';
 export default async function Page(){
-  const [data,recent]=await Promise.all([readPublicOverview(),readRecentResults()]);
+  const [data,recent,overdue]=await Promise.all([
+    readPublicOverview(),readRecentResults(),readOverdueScheduledFixtures()
+  ]);
   return <><PageHeading eyebrow="МАТЧИ" title="Матчи и прогнозы"
     subtitle="Проверенные результаты и расписание РПЛ. Прогнозы появятся после оценки статистической модели."/>
     <section className="panel"><h2>Ближайшие матчи</h2>
@@ -17,6 +20,17 @@ export default async function Page(){
         description={data.state==='unavailable'?'Публичные данные временно недоступны. Попробуйте позже.':
           data.state==='not_configured'?'Администратор ещё не указал публичные настройки Supabase.':
           'Часть будущих встреч пока имеет только дату без подтверждённого часа начала. Такие матчи не отображаются как точное расписание.'}/>}
+    </section>
+    <section className="panel"><h2>Матчи с неподтверждённым результатом</h2>
+      <p>Время начала этих матчей прошло более двух часов назад, но в базе по-прежнему указан статус «запланирован». Это не подтверждение завершения матча или его счёта.</p>
+      {overdue.state==='ready' ? overdue.fixtures.length
+        ? <ul className="fixture-list">{overdue.fixtures.map(f=>
+            <li key={f.id}><strong>{f.home} - {f.away}</strong>
+              <span>{new Intl.DateTimeFormat('ru-RU',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/Moscow'}).format(new Date(f.kickoffAt))} МСК — результат не подтверждён</span></li>
+          )}</ul>
+        : <p>Просроченных статусов по двухчасовому порогу не обнаружено.</p>
+        : <EmptyState title="Не удалось проверить задержку обновления матчей"
+          description="Актуальность статусов неизвестна; отсутствие результата не означает, что матч не состоялся."/>}
     </section>
     <section className="panel"><h2>Последние результаты РПЛ</h2>
       {recent.results.length ? <ul className="fixture-list">{recent.results.map(r=>
