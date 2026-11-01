@@ -54,6 +54,28 @@ test('novel raw SHA must be time-monotonic but exact-byte replay bypasses new-ob
   assert.ok(sql.includes('select retrieved_at from ff_private.ff_source_byte_observations where source_id=src'));
 });
 
+test('canonical semantic SHA ignores JSONL row order but preserves exact Cyrillic code points',()=>{
+  const base=fixture();
+  mutateSeason(base,'2024/2025',r=>{r.homeTeam='Йога';});
+  const fingerprint=d=>{
+    const sql=buildStageSql(validateStageDataset(d.manifest,d.seasonFiles));
+    const match=/and semantic_sha256='([a-f0-9]{64})';/.exec(sql);
+    assert.ok(match);
+    return match[1];
+  };
+  const canonical=fingerprint(base);
+  const shuffled=structuredClone(base);
+  for(const season of Object.keys(shuffled.seasonFiles)){
+    shuffled.seasonFiles[season]=shuffled.seasonFiles[season].trimEnd()
+      .split('\\n').reverse().join('\\n')+'\\n';
+    shuffled.manifest.snapshotSHA256[season]=hash(Buffer.from(shuffled.seasonFiles[season]));
+  }
+  assert.equal(fingerprint(shuffled),canonical);
+  const distinctUnicode=structuredClone(base);
+  mutateSeason(distinctUnicode,'2024/2025',r=>{r.homeTeam='И\\u0306ога';});
+  assert.notEqual(fingerprint(distinctUnicode),canonical);
+});
+
 test('refuse any changed normalized bytes even if an upstream hash is claimed',()=>{
   const data=fixture();
   data.seasonFiles['2024/2025']=data.seasonFiles['2024/2025'].replace('Club 1','Club X');
