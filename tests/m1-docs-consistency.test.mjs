@@ -77,3 +77,11 @@ test('source register dates and supersedes historical M0 zero-data conclusions',
   assert.doesNotMatch(sourceRegister,/Until then: \*\*zero provider adapters active/);
   assert.doesNotMatch(sourceRegister,/All sources remain \*\*unapproved\*\*/);
 });
+
+test('live security inventory includes all fifteen protected tables',()=>{
+  assert.match(security,/All \*\*15\*\* Supabase tables have RLS/);
+  assert.match(security,/nine `public\.ff_\*` tables and six `ff_private` tables/);
+  assert.match(security,/Neither `anon` nor `authenticated` has table write privileges/);
+  assert.match(security,/ff_private\.ff_is_authorized\(\)/);
+  assert.doesNotMatch(security,/All nine Supabase `ff_\*` tables have RLS/);
+});
