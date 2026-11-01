@@ -4,6 +4,12 @@ Updated 2026-10-29. **M0 accepted, M1 OPEN.** The owner has authorized use of al
 
 The strictly local, fail-closed [multi-source empirical accuracy protocol](M0_SOURCE_ACCURACY_PROTOCOL.md) implements field-specific matched official-reference comparisons, Wilson uncertainty and independent-upstream warnings. It does **not** yet contain empirical RPL source observations or activate an ingestion pipeline.
 
+### Current M1 operations (verified 2026-11-01)
+
+M0 is **ACCEPTED**; M1 is **OPEN** and M2 must not start. The protected Footbolno importer is operational and has published **616 canonical RPL matches** (579 finished, 37 scheduled with confirmed kickoffs), with **3 immutable full source snapshots**, 2160 private match records and 3 audited current-match transitions. There are still **zero published forecasts and zero trained models**. The latest upstream Footbolno snapshot can be rejected by the unchanged fail-closed quality gate; rejection does not erase existing verified historical data or grant permission to guess the current result. See [the active M1 milestone](https://github.com/StanleyLl0yd/FootballForecast/issues/124) and [current freshness tracking](https://github.com/StanleyLl0yd/FootballForecast/issues/168).
+
+The **dated M0 source-research notes below are retained as historical evidence**. Their pre-acceptance language about no imported data, unapproved providers or an open M0 source gate must not be interpreted as the present M1 operational state.
+
 ## Reproducible 2026/27 source evidence (2026-10-22)
 
 The read-only, one-shot [SportScore filtered competition workflow](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/39816513768) independently inspected a six-day 2026/27 cohort with **one verified league search result**, six HTTP-200 filtered responses and **16/16 same-directed-pair matches** against Footbolno's published CC BY 4.0 CSV: Oct 17 (3), Oct 18 (4), Oct 19 (1), Oct 23 (1), Oct 24 (4), Oct 25 (3). There were **0 observed completed-score discrepancies** among the eight fixtures already played by Oct 22, and no page limit or unknown schema on these six responses. The match-level source records were used only in temporary research memory/files and discarded; no raw source rows or identifiers were retained. The precise no-provider-rows machine-readable evidence and checkable limitations are [pinned here](M0_SPORTSCORE_FILTERED_RPL_EVIDENCE.json).
@@ -322,7 +328,7 @@ Reference records must provide the *full* season's unique directed fixtures, one
 1. **Website != API.** FootyStats explicitly directs programmatic use to its API, and the API has different conditions from the website. API model/app permission does **not** authorize publishing a copy of the vendor's dataset or third-party team assets.
 2. **Historical API parameter != historical evidence.** FootyStats `max_time` limits returned statistics to a specified time according to API documentation. Before treating it as an as-of snapshot, independently test whether historical corrections, match publication times, lineups, injuries and xG were actually available at that cutoff. Otherwise label experiments retrospective/non-strict.
 
-## M0 source gate still open
+## Archived M0 source-gate criteria (2026-10-20; superseded at M0 acceptance)
 
 A provider may enter `approved` in `ff_sources` **only** after documenting all of:
 
@@ -332,7 +338,7 @@ A provider may enter `approved` in `ff_sources` **only** after documenting all o
 - **Provenance**: event time, provider-published time (if genuinely available), ingestion time and revision hashes. No backdated access inferred merely because data were downloaded later.
 - Paid accounts and source plans are prohibited by the 2026-10-19 owner decision, regardless of cost-benefit analysis. Free credentials, if ever separately authorized, must not appear in public Git, chats or issue comments.
 
-Until then: **zero provider adapters active, zero imported matches, zero trained models and zero real predictions**. Source changes should be recorded in this register, not in a repetitive README status log.
+**Historical state at the 2026-10-20 research gate:** zero provider adapters, zero imported matches, zero trained models and zero real predictions. This statement is superseded by the current M1 operational status above; new changes continue to require source provenance and auditable review.
 
 ## Free-tier fact check (2026-10-17)
 
@@ -340,8 +346,8 @@ Until then: **zero provider adapters active, zero imported matches, zero trained
 - [API-Football terms](https://www.api-football.com/terms) permit creating apps/websites and prohibit data resale. They explicitly say the API subscription **does not grant competition-data publication rights**; league/club and third-party permissions remain the developer's responsibility. Free API access cannot automatically authorize public raw-data republishing or ML redistribution.
 - [football-data.org coverage](https://www.football-data.org/coverage) includes Russia / RFPL among **all competitions**, but RFPL is **not** in the provider's listed Free tier. [Pricing](https://www.football-data.org/pricing) separately restricts historical season/model fields to paid tiers. Do not assume the Russian league can be obtained under its €0 plan.
 
-No provider registration, data import or payments were performed by this terms review. All sources remain **unapproved**.
+At the **2026-10-17 terms review**, no provider registration, data import or payments were performed; all sources were **unapproved at that time**. The current M1 Footbolno acceptance and protected imports are separately documented above.
 
-## Next decision
+## Archived M0 next decision (superseded by M1)
 
 For the public read-only RPL/Zenit prototype, **first evaluate Footbolno's no-cost structured RPL feed and independently verify its upstream rights, exact free data coverage and pre-match publication history**. Continue the offline CC0 OpenFootball provenance/error checks in parallel; separately assess SportScore's attribution-required live widgets and API-Football's current-season free access/rights. TheSportsDB remains blocked on complete $0 production feed evidence. All providers remain candidates only until their rights and season availability are demonstrated. Do not treat Football-Data.co.uk free research files as training rights, select any paid plan or import data on assumptions.
