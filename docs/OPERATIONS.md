@@ -79,15 +79,18 @@ checks source licensing metadata and reuses identical source-content hashes,
 so repeated observations do not duplicate all 720 records and exceed Free
 storage limits.
 
-Only the private, RLS-enabled `ff_private.ff_ingest_snapshots` and
-`ff_private.ff_ingest_matches` are written. Source observations are
-append-only; unknown kickoff times remain NULL and historical
-`published_at` remains NULL. There is no public match promotion, live model
-fit or change to anonymous read permissions. A failed import must be
+The staging transaction writes immutable private snapshots/matches, or a compact
+`ff_private.ff_source_byte_observations` entry for repeated equivalent data;
+it can also register licensed source metadata in `public.ff_sources`.
+It does **not** itself change public `ff_matches`: separately guarded promotion
+and current-season refresh handle only permitted canonical changes. Unknown
+kickoff times and historical `published_at` remain NULL, and model fitting
+and anonymous read permissions are unaffected. A failed import must be
 investigated and retried without bypassing hashes, quality checks or RLS.
 Post-apply verification: inspect Supabase Security/Performance Advisors,
-table grants, RLS, private record count, and the unchanged empty public
-`ff_matches` table.
+table grants, RLS, private record count, and confirm that public
+`ff_matches` is unchanged by staging itself (it has **616 rows as of
+2026-11-01**, not zero).
 
 ## Protected autonomous real-source import (M1; optional manual fallback)
 
