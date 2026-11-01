@@ -17,7 +17,7 @@ test('current M1 docs do not claim live RPL database is empty or M1 blocked',()=
   assert.match(limitations,/616/);
   assert.match(architecture,/M0 was accepted 2026-10-29/);
   assert.match(architecture,/M1 is OPEN/);
-  assert.match(deploy,/m1_safe_current_refresh/);
+  assert.match(deploy,/m1_compact_source_observations/);
   assert.match(security,/M0 was accepted on 2026-10-29/);
   for(const doc of [readme,limitations,operations,architecture,deploy,security])
     assert.doesNotMatch(doc,/M0 remains OPEN|M1 stays blocked|The real database is empty/);
