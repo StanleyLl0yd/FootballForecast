@@ -1,5 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
 import type {Database} from './database.types';
+import {explicitTimestamp} from './temporal.ts';
 
 // Only public SELECT operations. No cookies, user sessions or service-role keys.
 export type Fixture = {id:string; kickoffAt:string; home:string; away:string; status:string};
@@ -65,7 +66,7 @@ export async function readPublicOverview(
     for (const row of upcoming.data) {
       const home=publicTeamName(row.home),away=publicTeamName(row.away);
       if (home && away && typeof row.id==='string' &&
-          typeof row.kickoff_at==='string' && row.status==='scheduled' &&
+          explicitTimestamp(row.kickoff_at) && row.status==='scheduled' &&
           Date.parse(row.kickoff_at)>=cutoffMs) {
         fixtures.push({id:row.id,kickoffAt:row.kickoff_at,home,away,status:row.status});
       }
