@@ -5,6 +5,7 @@ import test from 'node:test';
 const read=path=>readFileSync(new URL(path,import.meta.url),'utf8');
 const readme=read('../README.md');
 const shell=read('../apps/web/components/shell.tsx');
+const admin=read('../apps/web/app/(console)/admin/page.tsx');
 
 test('public shell and README acknowledge accepted M0 and open M1 without inventing models',()=>{
   assert.match(shell,/M1 · Проверенные матчи/);
@@ -17,4 +18,12 @@ test('public shell and README acknowledge accepted M0 and open M1 without invent
   assert.match(readme,/Обученных моделей, опубликованных прогнозов и подтверждённой точности пока нет/);
   assert.match(readme,/M2.*ещё не начат/);
   assert.doesNotMatch(readme,/База РПЛ ещё пустая|Статус: M0, разработка|M1 начинается исключительно/);
+});
+
+test('owner admin page does not advertise obsolete M0 or disabled protected ingestion',()=>{
+  assert.match(admin,/M1: защищённая проверка данных/);
+  assert.match(admin,/GitHub Actions/);
+  assert.match(admin,/Из веб-интерфейса нельзя запускать импорт/);
+  assert.match(admin,/M2 не начат/);
+  assert.doesNotMatch(admin,/M0: разработка|Импорт, обучение и управление источниками остаются выключенными/);
 });
