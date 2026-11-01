@@ -246,3 +246,20 @@ snapshots**. New logically equivalent raw bytes from future observations
 will be compact, while existing SHA resolution remains backward-compatible.
 A successful migration without a changed live byte input does not establish
 the occurrence of a new match result or any model-training accuracy.
+
+### Additional fail-closed chronology and replay controls
+
+A previously staged raw SHA is replayed idempotently even if its original
+retrieval time precedes a newer observation: it cannot create new source rows
+or rewrite historical evidence. For a **new** raw SHA, the importer also
+requires its UTC retrieval timestamp not to predate the most recently stored
+full or compact source observation. Out-of-order data must not be silently
+accepted as a fresh data revision.
+
+The disposable PostgreSQL 17 regression explicitly repeats a compact raw
+SHA, rejects an old-timestamp novel SHA and a changed semantic payload under
+an already-observed raw SHA, and confirms transactional rollback/no public
+writes. It then stages a modified sealed-holdout score as a complete new
+private candidate and requires the review/apply safeguards to refuse its
+publication. None of these tests alters production fixtures or trains models.
+
