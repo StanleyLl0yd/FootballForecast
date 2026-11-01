@@ -65,7 +65,7 @@ export function normalizeFootbolnoCsv(bytes,retrievedUtc,{expectedFixtures=240}=
     const ids=new Set(),pairs=new Set(),teams=new Set(),normalized=[];
     const counters={finished:0,scheduled:0,live:0,cancelled:0,postponed:0,awarded:0,
       quarantined:0,invalidDates:0,invalidScores:0,staleScheduled:0,
-      futureFinished:0,unconfirmedTimes:0};
+      futureFinished:0,unconfirmedTimes:0,unconfirmedFinished:0};
     for(const row of candidates){
       const get=column=>row[keys[column]].trim();
       const matchId=get('match_id'),homeId=get('home_id'),awayId=get('away_id');
@@ -95,6 +95,9 @@ export function normalizeFootbolnoCsv(bytes,retrievedUtc,{expectedFixtures=240}=
       const homeRaw=get('home_goals'),awayRaw=get('away_goals');
       const homeGoals=score(homeRaw),awayGoals=score(awayRaw);
       if(status==='finished'){
+        if(flag!=='1'){
+          counters.unconfirmedFinished++;reason??='unconfirmed_finished_kickoff';
+        }
         if(homeGoals===null||awayGoals===null){
           counters.invalidScores++;reason??='invalid_finished_score';
         }
