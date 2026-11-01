@@ -5,7 +5,16 @@ on:
     - cron: '17 6,18 * * *'
   push:
     branches: [main]
-    paths: ['.github/workflows/m1-private-stage-import.yml']
+    # Rerun the protected import after changes to the verified source pipeline.
+    # Only protected main may inject the database credentials; never PR code.
+    paths:
+      - '.github/workflows/m1-private-stage-import.yml'
+      - 'scripts/m1-autonomous-refresh.mjs'
+      - 'scripts/m1-footbolno-normalize.mjs'
+      - 'scripts/m1-openfootball-score-gate.mjs'
+      - 'scripts/m1-revision-report.mjs'
+      - 'scripts/m1-source-quality-diagnostic.mjs'
+      - 'scripts/m1-stage-import.mjs'
   workflow_dispatch:
     inputs:
       confirmation:
