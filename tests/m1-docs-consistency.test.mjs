@@ -9,6 +9,8 @@ const operations=read('../docs/OPERATIONS.md');
 const architecture=read('../docs/ARCHITECTURE.md');
 const deploy=read('../docs/DEPLOYMENT.md');
 const security=read('../SECURITY.md');
+const tls=read('../docs/m1-verified-tls.md');
+const sourceRegister=read('../docs/DATA_SOURCES.md');
 
 test('current M1 docs do not claim live RPL database is empty or M1 blocked',()=>{
   assert.match(readme,/M1 OPEN/);
@@ -29,6 +31,16 @@ test('automated sources and absence of trained model/deliveries are consistently
   assert.match(operations,/Forecast creation.*model training.*remain disabled/);
   assert.match(readme,/Обученных моделей, опубликованных прогнозов и подтверждённой точности пока нет/);
   assert.match(limitations,/model training and live predictions remain disabled/);
+});
+
+test('M1 operator instructions do not require an empty public catalog or deny autonomous import',()=>{
+  assert.match(operations,/616 rows as of/);
+  assert.match(operations,/unchanged by staging itself/);
+  assert.doesNotMatch(operations,/unchanged empty public/);
+  assert.match(tls,/scheduled with optional manual dispatch/);
+  assert.doesNotMatch(tls,/manual-only FootballForecast M1 importer/);
+  assert.match(sourceRegister,/current registry contains 20/);
+  assert.doesNotMatch(sourceRegister,/M0 #2 remains open/);
 });
 
 // Detect a stale M0-only schema/deployment story after private M1 ingestion.
