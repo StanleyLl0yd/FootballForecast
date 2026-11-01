@@ -2,8 +2,12 @@
 
 ## Purpose
 
-The protected M1 importer stores each different upstream CSV content hash as a
-new **append-only private snapshot**. Its existing canonical promotion procedure
+The protected M1 importer preserves every newly observed upstream CSV content
+SHA in append-only private provenance. A new **full** 720-row snapshot is stored
+only when normalized match records differ from the latest full snapshot.
+Semantically equivalent raw-byte revisions are recorded as compact, immutable
+`ff_private.ff_source_byte_observations`, pointing to that existing snapshot.
+The canonical promotion procedure
 correctly refuses contradictory published kickoffs, scores or statuses, rather
 than silently rewriting matches. To make such refusals actionable without
 exposing provider rows, migration `0008` adds
@@ -179,17 +183,23 @@ the narrow changes authorized by migration `0009`.
 
 ## Conservative database-size fail-closed gate
 
-Because two different upstream CSV byte hashes can normalize to the **same**
-720 football fixtures, successive immutable source snapshots can consume
-additional disk even with zero changes to the public catalog. Each snapshot
-remains necessary as immutable evidence of the exact observed source, so
-automatically deleting historic rows or changing their hashes is forbidden.
+Two different CSV byte hashes can normalize to the **same** 720 football
+fixtures. To avoid duplicating 720 immutable records, the protected importer
+first compares the **complete set of normalized match fields** with the latest
+720-row full snapshot using PostgreSQL `EXCEPT ALL`, including identities,
+teams/names, role, calendar date, exact kickoff/status and scores. A SHA-256
+semantic fingerprint is recorded as secondary provenance, **not** as sufficient
+proof of equality. An equivalent raw byte SHA gets a compact append-only
+observation with its exact retrieval timestamp and source/license identity.
+Real changed match contents still create a new full immutable candidate for
+the existing strict review; neither old raw SHA evidence nor full snapshots
+are deleted or modified.
 
 The protected SQL stage writer now checks PostgreSQL
 `pg_database_size(current_database())` **inside its serialized transaction
-before inserting a new SHA-256 snapshot**. At **256 MiB or more**, a *new*
-source revision is declined before any rows are written; replays of an
-already-staged source hash are still allowed. This 256 MiB ceiling is an
+before staging a new SHA-256 observation or full snapshot**. At **256 MiB or
+more**, any new source byte revision is declined before rows are written;
+replays of previously staged raw SHA hashes remain allowed. This 256 MiB ceiling is an
 intentionally conservative **project-level safety threshold**, not a claim
 about Supabase's contractual Free storage quota. It leaves capacity for
 indexes, application tables and provider-specific overhead. It never
@@ -201,3 +211,38 @@ the size trend, and design a separate compact immutable *metadata-only*
 observation ledger with migration/tests before resuming new snapshot
 retention. **Do not delete accepted source history**, silently bypass the
 threshold or drop the sealed 2025/26 evidence to keep the cron green.
+
+## Compact raw-byte observations (migration 0010)
+
+The additive private, RLS-denied ledger `ff_source_byte_observations` stores
+source identity, exact new raw SHA, normalized semantic fingerprint, first
+retrieval UTC, and immutable snapshot UUID. Every new byte SHA is unique; an
+exact raw replay is idempotent. The privileged read-only resolver
+`ff_private.ff_resolve_footbolno_source_sha(text)` returns either the original
+full snapshot or the target of a compact observation. Anonymous/authenticated
+roles cannot read the ledger or execute the resolver.
+
+A compact equivalence decision does **not** assume that matching season totals
+or equal hashes prove row-level correctness. PostgreSQL compares the incoming
+720 normalized rows against the **latest** fully staged snapshot, field for
+field with typed `EXCEPT ALL`, after the normalizer has checked uniqueness,
+score/time contracts, 16 teams and exact source SHA. A reverted historic
+source revision cannot be silently matched against an arbitrarily old full
+snapshot; only the latest is eligible. If fields differ, staging creates
+a new private 720-row candidate and the existing diff review decides whether
+it can ever be published. The 2025/26 sealed holdout is never modified.
+
+A new SHA from identical football records therefore adds only one small
+private ledger record, not 720 copies. The GitHub protected workflow uses
+the resolver for both read-only preview and conditional guarded refresh.
+It still fails closed on unknown SHA, mismatched semantic provenance,
+wrong-source URL/license, source-quality failure, DB budget or a prohibited
+fixture transition. The 256 MiB project safety guard remains as additional
+Free-tier containment.
+
+The first live database already contained two 720-row full snapshots by
+2026-10-30. This migration **does not rewrite or collapse those historic
+snapshots**. New logically equivalent raw bytes from future observations
+will be compact, while existing SHA resolution remains backward-compatible.
+A successful migration without a changed live byte input does not establish
+the occurrence of a new match result or any model-training accuracy.
