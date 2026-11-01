@@ -23,6 +23,7 @@ test('only main gets scheduled and source-controlled protected import; manual di
     'apps/web/lib/source-preview-core.mjs',
     'scripts/m0-cross-source-fixture-reconcile.mjs',
     'scripts/m0-fixture-reconcile.mjs',
+    'scripts/m0-fixture-structure.mjs',
     'scripts/m0-source-quality.mjs',
     'scripts/m1-autonomous-refresh.mjs',
     'scripts/m1-footbolno-normalize.mjs',
@@ -46,7 +47,7 @@ test('protected push paths cover direct and transitive source modules',()=>{
   const paths=workflow.match(/^    paths:\n((?:      - '[^']+'\n)+)/m)?.[1];
   assert.ok(paths);
   const allowed=new Set([...paths.matchAll(/^      - '([^']+)'$/gm)].map(match=>match[1]));
-  assert.equal(allowed.size,11);
+  assert.equal(allowed.size,12);
   const direct=new Set([...workflow.matchAll(/^\s*node (scripts\/[-\w]+\.mjs)(?=\s|$)/gm)]
     .map(match=>match[1]));
   assert.ok(direct.has('scripts/m0-cross-source-fixture-reconcile.mjs'));
