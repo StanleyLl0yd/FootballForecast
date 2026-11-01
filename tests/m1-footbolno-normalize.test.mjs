@@ -74,6 +74,14 @@ test('normalization uses code-unit order for mixed-case provider match IDs',()=>
   assert.ok(ids.indexOf('24-A')<ids.indexOf('24-a'));
   assert.deepEqual(ids,[...ids].sort());
 });
+test('different directed pairs must not alias the canonical UUID seed',()=>{
+  const rows=baseline();
+  const a=rows[1].split(','),b=rows[2].split(',');
+  a[4]='a:b';a[5]='c';
+  b[4]='a';b[5]='b:c';
+  rows[1]=a.join(',');rows[2]=b.join(',');
+  assert.throws(()=>parse(rows),/ambiguous canonical match identity/);
+});
 test('quarantine stale scheduled fixtures; never relabel as finished',()=>{
   const rows=baseline();
   const index=rows.findIndex(r=>r.startsWith('26-8,235,2026/2027,scheduled'));
