@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {
-  readOverdueScheduledCount,OVERDUE_KICKOFF_GRACE_MS
+  readOverdueScheduledCount,readOverdueScheduledFixtures,OVERDUE_KICKOFF_GRACE_MS
 } from '../lib/current-freshness.ts';
 
 const env={
@@ -47,4 +47,64 @@ test('zero is a verified count; transport failures are unknown, never zero',asyn
   assert.deepEqual(await readOverdueScheduledCount(zero,{
     ...env,NEXT_PUBLIC_SUPABASE_URL:'http://invalid.example'
   },now),{state:'unavailable',count:null});
+});
+
+test('public overdue list is bounded anonymous GET without scores or write operations',async()=>{
+  const requests=[];
+  const fetchImpl=async(input,init={})=>{
+    const url=new URL(typeof input==='string'?input:input.url);
+    requests.push({url,init});
+    return new Response(JSON.stringify([{
+      id:'overdue',kickoff_at:'2026-11-01T10:00:00Z',
+      status:'scheduled',home:{name:'Оренбург'},away:{name:'ЦСКА'}
+    }]),{status:200,headers:{'content-type':'application/json'}});
+  };
+  const report=await readOverdueScheduledFixtures(fetchImpl,env,now);
+  assert.deepEqual(report,{state:'ready',fixtures:[{
+    id:'overdue',kickoffAt:'2026-11-01T10:00:00Z',home:'Оренбург',away:'ЦСКА'
+  }]});
+  assert.equal(requests.length,1);
+  const {url,init}=requests[0];
+  assert.equal(init.method??'GET','GET');
+  assert.equal(init.body,undefined);
+  assert.equal(init.cache,'no-store');
+  assert.equal(url.pathname,'/rest/v1/ff_matches');
+  assert.equal(url.searchParams.get('status'),'eq.scheduled');
+  assert.equal(url.searchParams.get('kickoff_at'),'lt.2026-11-01T14:00:00.000Z');
+  assert.equal(url.searchParams.get('order'),'kickoff_at.desc');
+  assert.equal(url.searchParams.get('limit'),'8');
+  assert.doesNotMatch(url.searchParams.get('select'),/goals|source_sha|snapshot/);
+});
+
+test('public overdue list rejects invalid timestamps, wrong statuses, and uncertain identities',async()=>{
+  const row=(id,kickoff_at,status='scheduled')=>({
+    id,kickoff_at,status,home:{name:'Север'},away:{name:'Юг'}
+  });
+  const bad=[
+    row('future','2026-11-01T15:00:00Z'),
+    row('ongoing','2026-11-01T13:30:00Z'),
+    row('date-only','2026-10-31'),
+    row('timezone-free','2026-10-31T12:00:00'),
+    row('final','2026-11-01T10:00:00Z','finished'),
+    {...row('no-team','2026-11-01T10:00:00Z'),home:{name:''}}
+  ];
+  for(const fixture of bad){
+    const fetchImpl=async()=>new Response(JSON.stringify([fixture]),{status:200,
+      headers:{'content-type':'application/json'}});
+    assert.deepEqual(await readOverdueScheduledFixtures(fetchImpl,env,now),
+      {state:'unavailable',fixtures:[]});
+  }
+});
+
+test('public overdue list distinguishes genuine zero, outage and missing configuration',async()=>{
+  const ok=async()=>new Response('[]',{status:200,headers:{'content-type':'application/json'}});
+  const fail=async()=>new Response('unavailable',{status:503});
+  assert.deepEqual(await readOverdueScheduledFixtures(ok,env,now),
+    {state:'ready',fixtures:[]});
+  assert.deepEqual(await readOverdueScheduledFixtures(fail,env,now),
+    {state:'unavailable',fixtures:[]});
+  assert.deepEqual(await readOverdueScheduledFixtures(()=>{throw Error('unexpected');},{},now),
+    {state:'not_configured',fixtures:[]});
+  assert.deepEqual(await readOverdueScheduledFixtures(ok,env,NaN),
+    {state:'unavailable',fixtures:[]});
 });
