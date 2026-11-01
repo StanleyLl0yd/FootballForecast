@@ -100,7 +100,7 @@ browser-access policy by design; the four append-only triggers and anonymous
 grant denial were verified live. At the moment this initial migration was deployed, no real matches had been imported. By 2026-10-30 the live private database contained **two immutable 720-row snapshots**, and the verified canonical catalog had **616 public matches**. An intentional Supabase Security Advisor `INFO` about two
 RLS-enabled/no-policy private tables is **not** an exposed-data vulnerability.
 
-The workflow `M1 protected free Footbolno ingest and safe RPL refresh` runs automatically from **protected `main`** at 06:17 and 18:17 UTC and on changes to its YAML or the seven allowlisted guarded-source pipeline files on `main` (PR #176). Its already-configured GitHub Actions environment `m1-source-import` contains the four required secrets. Optional manual dispatch still requires exact input `STAGE_FOOTBOLNO_PRIVATE`; no Mac, PowerShell, local database password or owner action is needed for scheduled operation.
+The workflow `M1 protected free Footbolno ingest and safe RPL refresh` runs automatically from **protected `main`** at 06:17 and 18:17 UTC and on changes to its YAML or one of six explicitly allowlisted source pipeline scripts on `main` (PR #176). Its already-configured GitHub Actions environment `m1-source-import` contains the four required secrets. Optional manual dispatch still requires exact input `STAGE_FOOTBOLNO_PRIVATE`; no Mac, PowerShell, local database password or owner action is needed for scheduled operation.
 Its deployment branch rule must allow **only protected `main`**; require an
 environment reviewer if supported. Do not put these secrets in repository-wide
 Actions variables or the public web environment.
