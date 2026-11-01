@@ -146,13 +146,15 @@ test('input bounds, invalid UTC retrieval timestamp and missing schema fail clos
   assert.throws(()=>parse(rows),/mandatory publisher columns/);
 });
 
-test('failed source normalization exposes bounded aggregate counters only',()=>{
+test('failed source normalization invokes the bounded shared quality diagnostic',()=>{
   const workflow=readFileSync(fileURLToPath(new URL('../.github/workflows/m1-footbolno-dataset.yml',import.meta.url)),'utf8');
-  assert.match(workflow,/M1_SOURCE_QUALITY_REJECTED/);
-  assert.match(workflow,/currentSeasonStaleScheduled:count\('staleScheduled'\)/);
-  assert.match(workflow,/currentSeasonQuarantined:count\('quarantined'\)/);
-  assert.match(workflow,/currentSeasonUnconfirmedFinished:count\('unconfirmedFinished'\)/);
-  assert.match(workflow,/Number\.isSafeInteger\(quality\[k\]\)/);
+  const diagnostic=readFileSync(fileURLToPath(new URL('../scripts/m1-source-quality-diagnostic.mjs',import.meta.url)),'utf8');
+  assert.match(workflow,/scripts\/m1-source-quality-diagnostic\.mjs "\$work\/qc\.json" \|\| true/);
   assert.match(workflow,/if test "\$result" -ne 0; then[\s\S]*?exit "\$result"/);
+  assert.match(diagnostic,/M1_SOURCE_QUALITY_REJECTED/);
+  for(const key of ['staleScheduled','quarantined','unconfirmedFinished','live','postponed'])
+    assert.ok(diagnostic.includes("'"+key+"'"),key);
+  assert.match(diagnostic,/Number\.isSafeInteger\(n\)/);
   assert.doesNotMatch(workflow,/console\.error\([^\n]*sourceMatchId/);
+  assert.doesNotMatch(diagnostic,/console\.error\([^\n]*sourceMatchId/);
 });

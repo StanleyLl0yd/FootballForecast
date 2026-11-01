@@ -145,3 +145,14 @@ test('both autonomous source workflows emit safe and explicit missing/oversized 
     assert.ok(!content.includes('cat "$work/openfootball-2024-25.txt"'));
   }
 });
+
+test('both M1 source workflows print only bounded classified failure signals',()=>{
+  for(const source of [workflow,current]){
+    assert.match(source,/scripts\/m1-source-quality-diagnostic\.mjs "\$work\/(?:qc|quality)\.json" \|\| true/);
+    assert.match(source,/tests\/m1-source-quality-diagnostic\.test\.mjs/);
+  }
+  assert.match(workflow,/if \[\[ "\$quality_rc" -ne 0 \]\]; then/);
+  assert.match(workflow,/exit "\$quality_rc"/);
+  assert.ok(workflow.indexOf('scripts/m1-source-quality-diagnostic.mjs "$work/quality.json"') <
+    workflow.indexOf('          node scripts/m1-stage-import.mjs \\'));
+});

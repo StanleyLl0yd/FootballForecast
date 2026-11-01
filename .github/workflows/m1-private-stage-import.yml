@@ -33,10 +33,11 @@ jobs:
       - name: Verify importer and source normalizer with synthetic data
         run: |
           node --check scripts/m1-footbolno-normalize.mjs
+          node --check scripts/m1-source-quality-diagnostic.mjs
           node --check scripts/m1-stage-import.mjs
           node --check scripts/m1-revision-report.mjs
           node --check scripts/m1-autonomous-refresh.mjs
-          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-stage-import.test.mjs tests/m1-revision-report.test.mjs tests/m1-autonomous-refresh.test.mjs
+          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-source-quality-diagnostic.test.mjs tests/m1-stage-import.test.mjs tests/m1-revision-report.test.mjs tests/m1-autonomous-refresh.test.mjs
       - name: Prepare PostgreSQL client before any secrets are exposed
         shell: bash
         run: |
@@ -105,8 +106,16 @@ jobs:
             exit 2
           fi
           retrieved="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          set +e
           node scripts/m1-footbolno-normalize.mjs \
             "$work/footbolno.csv" "$retrieved" "$work/private" > "$work/quality.json"
+          quality_rc=$?
+          set -e
+          if [[ "$quality_rc" -ne 0 ]]; then
+            node scripts/m1-source-quality-diagnostic.mjs "$work/quality.json" || true
+            echo 'FAIL: Footbolno source quality gate refused; no staging or public writes' >&2
+            exit "$quality_rc"
+          fi
           curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
             --connect-timeout 10 --max-time 45 --max-filesize 200000 \
             --output "$work/openfootball-2024-25.txt" \
