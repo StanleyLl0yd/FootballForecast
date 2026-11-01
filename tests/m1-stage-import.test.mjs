@@ -43,6 +43,17 @@ test('free database budget applies only after exact source-hash reuse and equiva
   assert.match(sql,/source hash provenance mismatch/);
 });
 
+test('novel raw SHA must be time-monotonic but exact-byte replay bypasses new-observation gate',()=>{
+  const data=fixture(),sql=buildStageSql(validateStageDataset(data.manifest,data.seasonFiles));
+  const lookup=sql.indexOf('select snapshot_id into snap from ff_private.ff_source_byte_observations');
+  const guard=sql.indexOf('M1 source observation: non-monotonic retrieval time');
+  const budget=sql.indexOf('M1 private free-budget guard: database at 256 MiB');
+  const insert=sql.indexOf('insert into ff_private.ff_source_byte_observations');
+  assert.ok(lookup>0&&guard>lookup&&budget>guard&&insert>budget);
+  assert.ok(sql.includes('select retrieved_at from ff_private.ff_ingest_snapshots where source_id=src'));
+  assert.ok(sql.includes('select retrieved_at from ff_private.ff_source_byte_observations where source_id=src'));
+});
+
 test('refuse any changed normalized bytes even if an upstream hash is claimed',()=>{
   const data=fixture();
   data.seasonFiles['2024/2025']=data.seasonFiles['2024/2025'].replace('Club 1','Club X');
