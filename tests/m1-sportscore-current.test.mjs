@@ -1,5 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {compareSportScoreCurrent} from '../scripts/m1-sportscore-current.mjs';
 
 const SEARCH={results:{competitions:[{name:'Russian Premier League',
@@ -79,4 +80,13 @@ test('ambiguous slug, unsafe day ranges and duplicate provider schedule fail clo
   assert.throws(()=>run([apiRow], [sourceRow,{...sourceRow,sourceMatchId:'f2'}]),
     /duplicate publisher/);
   assert.throws(()=>run(Array.from({length:201},()=>apiRow)),/oversized API/);
+});
+
+test('daily workflow exposes aggregate diagnostics and preserves comparator failure status',()=>{
+  const workflow=readFileSync(
+    new URL('../.github/workflows/m1-footbolno-dataset.yml',import.meta.url),'utf8');
+  assert.match(workflow,/node scripts\/m1-sportscore-current\.mjs[\s\S]*?\| tee -a "\$GITHUB_STEP_SUMMARY"/);
+  assert.match(workflow,/comparison_rc="\$\{PIPESTATUS\[0\]\}"/);
+  assert.match(workflow,/if \[\[ "\$comparison_rc" -ne 0 \]\]/);
+  assert.match(workflow,/FAIL: verified SportScore competition slug rejected/);
 });

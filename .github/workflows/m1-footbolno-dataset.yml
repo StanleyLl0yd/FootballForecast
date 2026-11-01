@@ -138,7 +138,10 @@ jobs:
               discover "$work/search.json" "$work/slug.txt" >> "$GITHUB_STEP_SUMMARY"
             if [[ -s "$work/slug.txt" ]]; then
               slug="$(cat "$work/slug.txt")"
-              [[ "$slug" =~ ^[a-z0-9][a-z0-9-]{2,79}$ ]]
+              [[ "$slug" =~ ^[a-z0-9][a-z0-9-]{2,79}$ ]] || {
+                echo 'FAIL: verified SportScore competition slug rejected' >&2
+                exit 2
+              }
               sleep 1
               day="$(date -u +'%Y-%m-%d')"
               day_status="$(curl --silent --show-error --fail \
@@ -154,11 +157,18 @@ jobs:
                   echo
                   echo '~~~json'
                 } >> "$GITHUB_STEP_SUMMARY"
+                set +e
                 node scripts/m1-sportscore-current.mjs \
                   "$work/search.json" "$work/sportscore-day.json" \
                   "$work/private/rpl-2026-2027.jsonl" \
-                  "$day" "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_STEP_SUMMARY"
+                  "$day" "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" | tee -a "$GITHUB_STEP_SUMMARY"
+                comparison_rc="${PIPESTATUS[0]}"
+                set -e
                 echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+                if [[ "$comparison_rc" -ne 0 ]]; then
+                  echo 'FAIL: SportScore day comparison declined; only aggregate evidence is logged' >&2
+                  exit "$comparison_rc"
+                fi
               else
                 echo 'SportScore daily response unavailable, source corroboration INCONCLUSIVE.' >> "$GITHUB_STEP_SUMMARY"
               fi
