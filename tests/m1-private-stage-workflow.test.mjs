@@ -10,7 +10,21 @@ test('only main gets scheduled and source-controlled protected import; manual di
   assert.match(workflow,/^on:\n  schedule:/m);
   assert.match(workflow,/cron: '17 6,18 \* \* \*'/);
   assert.match(workflow,/^  push:\n    branches: \[main\]/m);
-  assert.match(workflow,/paths: \['\.github\/workflows\/m1-private-stage-import\.yml'\]/);
+  const paths=workflow.match(/^    paths:\n((?:      - '[^']+'\n)+)/m)?.[1];
+  assert.ok(paths, 'protected push paths must be explicit');
+  assert.deepEqual(paths.trimEnd().split('\n').map(line=>{
+    const item=line.match(/^      - '([^']+)'$/);
+    assert.ok(item, 'a source-trigger path must be an exact quoted file');
+    return item[1];
+  }),[
+    '.github/workflows/m1-private-stage-import.yml',
+    'scripts/m1-autonomous-refresh.mjs',
+    'scripts/m1-footbolno-normalize.mjs',
+    'scripts/m1-openfootball-score-gate.mjs',
+    'scripts/m1-revision-report.mjs',
+    'scripts/m1-source-quality-diagnostic.mjs',
+    'scripts/m1-stage-import.mjs',
+  ]);
   assert.match(workflow,/^  workflow_dispatch:/m);
   assert.doesNotMatch(workflow,/^  (?:pull_request|workflow_run):/m);
   assert.match(workflow,/if: github\.ref == 'refs\/heads\/main' && \(github\.event_name == 'schedule'/);
@@ -52,8 +66,8 @@ test('source access uses bounded fixed HTTPS URLs and no model training',()=>{
 });
 
 test('pinned OpenFootball score and directed-fixture gate precedes privileged import',()=>{
-  const cross=workflow.indexOf('scripts/m0-cross-source-fixture-reconcile.mjs');
-  const gate=workflow.indexOf('scripts/m1-openfootball-score-gate.mjs');
+  const cross=workflow.indexOf('node scripts/m0-cross-source-fixture-reconcile.mjs');
+  const gate=workflow.indexOf('node scripts/m1-openfootball-score-gate.mjs');
   const commit=workflow.indexOf('"$work/private/rpl-2026-2027.jsonl" --commit');
   assert.ok(cross>0&&gate>cross&&commit>gate);
   assert.match(workflow,/openfootball\/europe\/63df627f3c87ce71708f016522ea236cf74332c3\/russia\/2024-25_ru1\.txt/);
