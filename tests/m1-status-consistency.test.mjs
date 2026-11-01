@@ -6,6 +6,9 @@ const read=path=>readFileSync(new URL(path,import.meta.url),'utf8');
 const readme=read('../README.md');
 const shell=read('../apps/web/components/shell.tsx');
 const admin=read('../apps/web/app/(console)/admin/page.tsx');
+const models=read('../apps/web/app/(console)/models/page.tsx');
+const login=read('../apps/web/app/login/page.tsx');
+const setup=read('../apps/web/app/setup/page.tsx');
 
 test('public shell and README acknowledge accepted M0 and open M1 without inventing models',()=>{
   assert.match(shell,/M1 · Проверенные матчи/);
@@ -26,4 +29,12 @@ test('owner admin page does not advertise obsolete M0 or disabled protected inge
   assert.match(admin,/Из веб-интерфейса нельзя запускать импорт/);
   assert.match(admin,/M2 не начат/);
   assert.doesNotMatch(admin,/M0: разработка|Импорт, обучение и управление источниками остаются выключенными/);
+});
+
+test('auth and model screens accurately describe imported M1 source data and disabled training',()=>{
+  assert.match(login,/АДМИНИСТРИРОВАНИЕ \/ M1/);
+  assert.match(setup,/FOOTBALLFORECAST \/ M1/);
+  assert.match(models,/Данные Footbolno уже импортированы в защищённую базу/);
+  assert.match(models,/Обучение ещё не запущено/);
+  assert.doesNotMatch(models,/отсутствуют лицензированный датасет/);
 });
