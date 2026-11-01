@@ -174,6 +174,15 @@ export function buildStageSql(dataset){
     "where source_id=src and source_sha256='"+hash+"'))",
     "then raise exception 'M1 source hash provenance mismatch'; end if;",
     "if snap is null then",
+    // A new source SHA cannot be presented as an earlier observation than
+    // the latest recorded full or compact observation. Exact replays bypass.
+    "if '"+retrieval+"'::timestamptz < coalesce((",
+    "select max(t.retrieved_at) from (",
+    "select retrieved_at from ff_private.ff_ingest_snapshots where source_id=src",
+    "union all",
+    "select retrieved_at from ff_private.ff_source_byte_observations where source_id=src",
+    ") t),'-infinity'::timestamptz)",
+    "then raise exception 'M1 source observation: non-monotonic retrieval time'; end if;",
     // Keep a wide margin for Free-tier database overhead. Exact hash
     // replays bypass this guard and never insert another observation.
     "if pg_catalog.pg_database_size(pg_catalog.current_database()) >= 268435456",
