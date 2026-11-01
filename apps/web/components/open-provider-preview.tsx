@@ -158,7 +158,7 @@ export function OpenProviderPreview(){
             и переносов. На каждый просмотр используется тот же одиночный CSV-запрос.</p>
           <p>Проблемы структуры, дат и прошлых запланированных матчей: {csvAudit.seasonSummaries.reduce(
             (n,s)=>n+s.duplicates+s.duplicateMatchIds+s.missingTeams+s.invalidScores+
-                  s.invalidDates+s.invalidTimeFlags+s.pastScheduled+
+                  s.invalidDates+s.invalidTimeFlags+s.pastScheduled+s.futureFinished+
                   Math.abs(s.distinctClubCount-16)+(240-s.distinctDirectedPairs),0)}.
             Технические результаты, сторонние исправления и историческая дата публикации
             каждого матча всё ещё требуют отдельной сверки.</p>
