@@ -4,7 +4,7 @@ FootballForecast currently provides **public, anonymous, read-only** non-commerc
 
 ## Active protections
 
-- All nine Supabase `ff_*` tables have RLS. Only six non-personal catalogs, fixtures and published forecast/evaluation tables grant `anon` SELECT with explicit read policies; `anon` cannot write or see grants, raw provider records, license metadata or the private authorization schema. This was checked in the real Frankfurt Free project.
+- All **15** Supabase tables have RLS: nine `public.ff_*` tables and six `ff_private` tables. Only six non-personal public catalog, fixture and forecast/evaluation tables grant `anon` SELECT. Neither `anon` nor `authenticated` has table write privileges; private source tables and ingest procedures are inaccessible to browser roles. The `ff_private.ff_is_authorized()` helper is intentionally callable by `authenticated` solely for RLS authorization checks, not ingestion. This permission inventory was verified read-only against the live Frankfurt Free database on 2026-11-01.
 - Postgres live forecast and outcome records are append-only, with publication-time and fixture integrity guards. Untrusted browser clients are never provisioned as database writers.
 - Administrative `/admin` is denied unless an explicitly configured, verified owner-only GitHub OAuth identity is present. Owner login is optional and is **not yet enabled**; public pages do not require login.
 - No service-role key, privileged user token, third-party football provider credential or editable job API is present in the browser code. Next.js sets framing/sniffing restrictions and a minimal CSP.
