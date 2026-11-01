@@ -15,7 +15,7 @@ select 1 / case when
   and (select count(*) from ff_private.ff_published_fixture_links)=480
   and (select count(*) from ff_private.ff_current_refresh_events)=0
   and (select count(*) from public.ff_matches)=482
-  and (select count(*) from public.ff_forecasts)=0
+  and (select count(*) from public.ff_forecasts)=:expected_forecasts
 then 1 else 0 end as unchanged_public_and_private_counts;
 
 do $m1_test$
