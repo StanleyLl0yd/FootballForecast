@@ -9,6 +9,11 @@ on:
     # Only protected main may inject the database credentials; never PR code.
     paths:
       - '.github/workflows/m1-private-stage-import.yml'
+      - 'apps/web/lib/source-preview-core.mjs'
+      - 'scripts/m0-cross-source-fixture-reconcile.mjs'
+      - 'scripts/m0-fixture-reconcile.mjs'
+      - 'scripts/m0-fixture-structure.mjs'
+      - 'scripts/m0-source-quality.mjs'
       - 'scripts/m1-autonomous-refresh.mjs'
       - 'scripts/m1-footbolno-normalize.mjs'
       - 'scripts/m1-openfootball-score-gate.mjs'
