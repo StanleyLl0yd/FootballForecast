@@ -134,7 +134,8 @@ export function normalizeFootbolnoCsv(bytes,retrievedUtc,{expectedFixtures=240}=
         sourceFileSha256:fileSha256
       });
     }
-    normalized.sort((a,b)=>a.sourceMatchId.localeCompare(b.sourceMatchId,'en'));
+    normalized.sort((a,b)=>a.sourceMatchId<b.sourceMatchId?-1:
+      a.sourceMatchId>b.sourceMatchId?1:0);
     const structural=candidates.length===expectedFixtures&&
       ids.size===expectedFixtures&&pairs.size===expectedFixtures&&
       teams.size===16;
