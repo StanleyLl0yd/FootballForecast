@@ -91,7 +91,33 @@ jobs:
             if test -s "$work/qc.json"; then cat "$work/qc.json"; else echo '{"normalization":"FAIL_CLOSED"}'; fi
             echo '~~~'
           } >> "$GITHUB_STEP_SUMMARY"
-          if test "$result" -ne 0; then exit "$result"; fi
+          if test "$result" -ne 0; then
+            # Print only explicitly allowlisted numeric quality signals, never
+            # private fixture rows or unbounded upstream error responses.
+            node --input-type=module - "$work/qc.json" <<'NODE' || true
+          import {readFileSync} from 'node:fs';
+          try {
+            const report=JSON.parse(readFileSync(process.argv[2],'utf8'));
+            if(report?.kind!=='M1_PRIVATE_RPL_DATASET')throw Error('bad report');
+            const quality=report.quality?.['2026/2027'];
+            if(!quality||typeof quality!=='object')throw Error('no current season');
+            const count=k=>Number.isSafeInteger(quality[k])&&quality[k]>=0?quality[k]:null;
+            console.error('M1_SOURCE_QUALITY_REJECTED '+JSON.stringify({
+              currentSeasonReady:quality.ready===true,
+              currentSeasonStructural:quality.structural===true,
+              currentSeasonQuarantined:count('quarantined'),
+              currentSeasonStaleScheduled:count('staleScheduled'),
+              currentSeasonFutureFinished:count('futureFinished'),
+              currentSeasonInvalidDates:count('invalidDates'),
+              currentSeasonInvalidScores:count('invalidScores')
+            }));
+          } catch {
+            console.error('M1_SOURCE_QUALITY_REJECTED: aggregate quality report unavailable');
+          }
+          NODE
+            echo 'FAIL: Footbolno normalization quality gate refused; no fixture records emitted' >&2
+            exit "$result"
+          fi
           curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
             --connect-timeout 10 --max-time 45 --max-filesize 200000 \
             --output "$work/openfootball.txt" \

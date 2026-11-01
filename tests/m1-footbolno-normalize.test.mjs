@@ -4,6 +4,7 @@ import {Buffer} from 'node:buffer';
 import {mkdtempSync,readFileSync,lstatSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {
   normalizeFootbolnoCsv,writePrivateSnapshot,SOURCE_URL,ATTRIBUTION_URL
 } from '../scripts/m1-footbolno-normalize.mjs';
@@ -129,4 +130,14 @@ test('input bounds, invalid UTC retrieval timestamp and missing schema fail clos
   assert.throws(()=>parse(baseline(),'2026-02-30T15:00:00Z'),/invalid retrieval time/);
   const rows=baseline();rows[0]=HEADER.replace('date_utc','date_guess');
   assert.throws(()=>parse(rows),/mandatory publisher columns/);
+});
+
+test('failed source normalization exposes bounded aggregate counters only',()=>{
+  const workflow=readFileSync(fileURLToPath(new URL('../.github/workflows/m1-footbolno-dataset.yml',import.meta.url)),'utf8');
+  assert.match(workflow,/M1_SOURCE_QUALITY_REJECTED/);
+  assert.match(workflow,/currentSeasonStaleScheduled:count\('staleScheduled'\)/);
+  assert.match(workflow,/currentSeasonQuarantined:count\('quarantined'\)/);
+  assert.match(workflow,/Number\.isSafeInteger\(quality\[k\]\)/);
+  assert.match(workflow,/if test "\$result" -ne 0; then[\s\S]*?exit "\$result"/);
+  assert.doesNotMatch(workflow,/console\.error\([^\n]*sourceMatchId/);
 });
