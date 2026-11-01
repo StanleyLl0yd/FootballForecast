@@ -282,3 +282,33 @@ immutable finalization event and maintains the original team/fixture identity;
 a third replay is a no-op. Pre-existing synthetic forecast rows and sealed
 historical evidence must stay unchanged. This is contract verification, not
 evidence of a real-time provider update or model performance.
+
+
+## Independently published evidence for the 2026-10-31 RPL final-score transitions
+
+Verified on **2026-11-01** using the protected live Frankfurt PostgreSQL
+ledger and three separately published club match reports. This is a bounded,
+post-match final-score check, **not** proof of upstream authorship independence,
+historical prematch availability, full-season coverage or model accuracy.
+
+| 2026/27 RPL round 13 match (2026-10-31) | Canonical UTC kickoff | Live audited transition | Club-published full-time score | Evidence |
+| --- | --- | --- | --- | --- |
+| Rubin – Fakel | 12:15 UTC | scheduled → finished, 1:0 | 1:0 | [FC Rubin match report](https://www.rubin-kazan.ru/news/rubin-fakel-1_0/) |
+| Dynamo Moscow – Akhmat | 14:30 UTC | scheduled → finished, 2:0 | 2:0 | [FC Dynamo match report](https://fcdynamo.ru/news/goly-fomina-i-tiukavina-prinesli-dynamovcam-pobedu-nad-axmatom/) |
+| Rodina – Krasnodar | 16:45 UTC | scheduled → finished, 2:1 | 2:1 | [FC Krasnodar match report](https://www.fckrasnodar.ru/team/news/object/?object_id=154395) |
+
+Live evidence at review: **3 append-only finish-transition audit records** observed
+at approximately `2026-10-31T21:41:42Z`, and all three canonical final
+statuses/scores agree with their audit destinations. Each report identifies
+the fixture and score; the protected source remains Footbolno CC BY 4.0.
+Only short metadata and links are recorded, without retaining the external
+clubs' match-level article content.
+
+Scope and safeguards: **3/3 checked final scores agreed**, not a certification
+of all 720 source rows or of the 2026/27 schedule. No database writes, model
+training, sealed-holdout access changes, historical outcome corrections or
+provider subscriptions were performed to collect this evidence. Continue
+separately checking newly changed results and no-match days; ambiguous,
+unavailable or contradictory evidence remains **INCONCLUSIVE**, not accepted
+by inference. M1 stays OPEN pending the remaining source-freshness evidence,
+both mandatory full repository-wide exit audits and final verification.
