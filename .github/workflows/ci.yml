@@ -106,6 +106,8 @@ jobs:
           done
           docker exec -i "${{ job.services.postgres.id }}" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres \
             < database/tests/0017_m1_compact_source_semantics.sql
+          pre_forecasts="$(docker exec "${{ job.services.postgres.id }}" psql -X -qAt -U postgres -d postgres -c 'select count(*) from public.ff_forecasts')"
+          [[ "$pre_forecasts" =~ ^[0-9]+$ ]]
           # Exact raw-byte replays keep both full-row and compact-ledger
           # counts unchanged. New, older timestamps and claimed raw SHAs
           # with different normalized content must roll back atomically.
@@ -124,7 +126,7 @@ jobs:
             node tests/m1-equivalent-stage-sql-fixture.mjs holdout |
               docker exec -i "${{ job.services.postgres.id }}" psql -X -q -v ON_ERROR_STOP=1 -U postgres -d postgres > /dev/null
           done
-          docker exec -i "${{ job.services.postgres.id }}" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres \
+          docker exec -i "${{ job.services.postgres.id }}" psql -X -v ON_ERROR_STOP=1 -v expected_forecasts="$pre_forecasts" -U postgres -d postgres \
             < database/tests/0018_m1_compact_negative_semantics.sql
 
   web:
