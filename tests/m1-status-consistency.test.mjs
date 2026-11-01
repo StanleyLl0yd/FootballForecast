@@ -15,8 +15,8 @@ test('public shell and README acknowledge accepted M0 and open M1 without invent
   assert.doesNotMatch(shell,/M0 · Подготовка данных/);
   assert.match(readme,/M1 OPEN/);
   assert.match(readme,/M0 принят 29\.10\.2026/);
-  assert.match(readme,/720 реальных записей Footbolno \(CC BY 4\.0\)/);
-  assert.match(readme,/616 матчей опубликованы/);
+  assert.match(readme,/4 полных снимка по 720 матчей \(2880 записей\)/);
+  assert.match(readme,/616 матчей \(583 завершённых, 33 запланированных\)/);
   assert.match(readme,/104 будущих матча/);
   assert.match(readme,/Обученных моделей, опубликованных прогнозов и подтверждённой точности пока нет/);
   assert.match(readme,/M2.*ещё не начат/);
