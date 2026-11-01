@@ -151,6 +151,7 @@ test('failed source normalization exposes bounded aggregate counters only',()=>{
   assert.match(workflow,/M1_SOURCE_QUALITY_REJECTED/);
   assert.match(workflow,/currentSeasonStaleScheduled:count\('staleScheduled'\)/);
   assert.match(workflow,/currentSeasonQuarantined:count\('quarantined'\)/);
+  assert.match(workflow,/currentSeasonUnconfirmedFinished:count\('unconfirmedFinished'\)/);
   assert.match(workflow,/Number\.isSafeInteger\(quality\[k\]\)/);
   assert.match(workflow,/if test "\$result" -ne 0; then[\s\S]*?exit "\$result"/);
   assert.doesNotMatch(workflow,/console\.error\([^\n]*sourceMatchId/);
