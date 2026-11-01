@@ -111,6 +111,7 @@ export function validateStageDataset(manifest,seasonFiles){
         refuse('date outside source season');
       const retrieved=Date.parse(manifest.retrievedAtUtc);
       if(r.status==='finished'){
+        if(!r.kickoffTimeConfirmed)refuse('finished kickoff unconfirmed');
         if(!goal(r.homeGoals)||!goal(r.awayGoals))refuse('invalid finished score');
         if(r.calendarDateUtc>manifest.retrievedAtUtc.slice(0,10)||
           (r.kickoffUtc!==null&&Date.parse(r.kickoffUtc)>retrieved))

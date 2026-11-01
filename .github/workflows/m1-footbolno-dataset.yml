@@ -109,7 +109,8 @@ jobs:
               currentSeasonStaleScheduled:count('staleScheduled'),
               currentSeasonFutureFinished:count('futureFinished'),
               currentSeasonInvalidDates:count('invalidDates'),
-              currentSeasonInvalidScores:count('invalidScores')
+              currentSeasonInvalidScores:count('invalidScores'),
+              currentSeasonUnconfirmedFinished:count('unconfirmedFinished')
             }));
           } catch {
             console.error('M1_SOURCE_QUALITY_REJECTED: aggregate quality report unavailable');

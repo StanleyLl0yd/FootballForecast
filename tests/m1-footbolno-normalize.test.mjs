@@ -82,6 +82,20 @@ test('a finished match after retrieval is quarantined, never trained',()=>{
   assert.equal(q.futureFinished,1);
   assert.equal(q.ready,false);
 });
+test('finished fixtures without confirmed kickoff cannot pass the quality gate',()=>{
+  const rows=baseline();
+  const i=rows.findIndex(r=>r.startsWith('24-0,235'));
+  rows[i]=rows[i].replace(',2024-08-01T12:00:00Z,1',',2024-08-01,0');
+  const snapshot=parse(rows);
+  const quality=snapshot.manifest.quality['2024/2025'];
+  assert.equal(quality.unconfirmedFinished,1);
+  assert.equal(quality.quarantined,1);
+  assert.equal(quality.ready,false);
+  const fixture=snapshot.seasonFiles['2024/2025'].trimEnd().split('\n')
+    .map(JSON.parse).find(r=>r.sourceMatchId==='24-0');
+  assert.equal(fixture.kickoffUtc,null);
+  assert.equal(fixture.quarantineReason,'unconfirmed_finished_kickoff');
+});
 test('missing or absurd score quarantines completed training matches',()=>{
   const rows=baseline();
   const i=rows.findIndex(r=>r.startsWith('24-0,235'));
@@ -137,6 +151,7 @@ test('failed source normalization exposes bounded aggregate counters only',()=>{
   assert.match(workflow,/M1_SOURCE_QUALITY_REJECTED/);
   assert.match(workflow,/currentSeasonStaleScheduled:count\('staleScheduled'\)/);
   assert.match(workflow,/currentSeasonQuarantined:count\('quarantined'\)/);
+  assert.match(workflow,/currentSeasonUnconfirmedFinished:count\('unconfirmedFinished'\)/);
   assert.match(workflow,/Number\.isSafeInteger\(quality\[k\]\)/);
   assert.match(workflow,/if test "\$result" -ne 0; then[\s\S]*?exit "\$result"/);
   assert.doesNotMatch(workflow,/console\.error\([^\n]*sourceMatchId/);

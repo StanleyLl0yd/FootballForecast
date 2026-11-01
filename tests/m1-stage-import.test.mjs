@@ -98,6 +98,7 @@ test('reject quarantine, fake kickoff and nonfinal scores even if hashes are rec
     r=>r.quarantineReason='invalid_finished_score',
     r=>r.publishedAtUtc='2024-07-30T10:00:00Z',
     r=>{r.kickoffUtc=null;r.kickoffTimeConfirmed=true;},
+    r=>{r.kickoffUtc=null;r.kickoffTimeConfirmed=false;},
     r=>r.homeGoals=99,
     r=>r.status='live',
     r=>{r.calendarDateUtc='2024-08-01';r.kickoffUtc='2026-11-01T12:00:00.000Z';},
