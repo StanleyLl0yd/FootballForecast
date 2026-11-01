@@ -17,7 +17,8 @@ const createRows=(season,{finished=240,score=[2,1]}={})=>{
     if(i===j)continue;
     const n=out.length,complete=n<finished;
     const date=season==='2024/2025'?'2025-03-01T13:00:00Z':
-      season==='2025/2026'?'2026-03-01T13:00:00Z':'2026-10-01T13:00:00Z';
+      season==='2025/2026'?'2026-03-01T13:00:00Z':
+      complete?'2026-08-01T13:00:00Z':'2026-10-01T13:00:00Z';
     out.push([season+'-'+i+'-'+j,235,season,date,
       complete?'finished':'scheduled',i+1,j+1,
       complete?score[0]:'',complete?score[1]:'',
@@ -212,6 +213,21 @@ test('scheduled, cancelled and live score values obey the M0 match-status contra
     assert.equal(s.invalidScores,c.invalid,JSON.stringify(c));
     assert.equal(s.structuralCandidate,c.invalid===0,JSON.stringify(c));
   }
+});
+
+test('finished match after the observation time never passes research temporal QC',()=>{
+  const rows=createRows('2026/2027',{finished:1});
+  rows[0][3]='2026-09-01T13:00:00Z';
+  const report=summarizeFootbolnoRplCsv(toCsv(rows),'2026-09-01T11:00:00Z');
+  const current=report.seasonSummaries[2];
+  assert.equal(current.futureFinished,1);
+  assert.equal(current.invalidDates,0);
+  assert.equal(current.structuralCandidate,false);
+  rows[0][3]='2026-08-01T13:00:00Z';
+  const valid=summarizeFootbolnoRplCsv(toCsv(rows),'2026-09-01T11:00:00Z')
+    .seasonSummaries[2];
+  assert.equal(valid.futureFinished,0);
+  assert.equal(valid.structuralCandidate,true);
 });
 
 test('postponed and awarded publisher statuses are research-only, not unknown CSV schemas',()=>{
