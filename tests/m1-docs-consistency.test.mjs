@@ -12,6 +12,8 @@ const security=read('../SECURITY.md');
 const tls=read('../docs/m1-verified-tls.md');
 const sourceRegister=read('../docs/DATA_SOURCES.md');
 const m0AccuracyProtocol=read('../docs/M0_SOURCE_ACCURACY_PROTOCOL.md');
+const backtesting=read('../docs/BACKTESTING.md');
+const licensing=read('../docs/LICENSING.md');
 
 test('current M1 docs do not claim live RPL database is empty or M1 blocked',()=>{
   assert.match(readme,/M1 OPEN/);
@@ -52,6 +54,16 @@ test('historical M0 source protocol cannot imply M0 is still open or Footbolno u
   assert.match(m0AccuracyProtocol,/M1 remains \*\*OPEN\*\*/);
   assert.doesNotMatch(m0AccuracyProtocol,/keep #2 and M0 OPEN/);
   assert.doesNotMatch(m0AccuracyProtocol,/All M0 providers are inactive and remain unapproved/);
+});
+
+test('M1 backtesting and licensing distinguish historical M0 research from live protected ingestion',()=>{
+  assert.match(backtesting,/M0 was ACCEPTED on 2026-10-29/);
+  assert.match(backtesting,/M1 remains OPEN/);
+  assert.match(backtesting,/no ML model has been trained/);
+  assert.doesNotMatch(backtesting,/M0 remains OPEN|no provider is approved or data imported/);
+  assert.match(licensing,/protected M1 Footbolno CC BY 4\.0 importer became operational/);
+  assert.match(licensing,/Model training and forecasts remain disabled/);
+  assert.doesNotMatch(licensing,/No provider is activated for production ingestion or ML training in M0/);
 });
 
 // Detect a stale M0-only schema/deployment story after private M1 ingestion.
