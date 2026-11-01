@@ -1,4 +1,5 @@
 import {createAnonymousReadClient,publicTeamName} from './public-overview.ts';
+import {explicitTimestamp} from './temporal.ts';
 
 // Bounded, anonymous and strictly read-only. No guessed scores or kickoff times.
 export type RecentResult = {
@@ -29,7 +30,7 @@ export async function readRecentResults(
     const results:RecentResult[]=[];
     for(const row of data){
       const home=publicTeamName(row.home),away=publicTeamName(row.away);
-      const kickoff=typeof row.kickoff_at==='string'?Date.parse(row.kickoff_at):NaN;
+      const kickoff=explicitTimestamp(row.kickoff_at)?Date.parse(row.kickoff_at):NaN;
       if(typeof row.id!=='string' || !row.id ||
         row.status!=='finished' || !home || !away ||
         !Number.isFinite(kickoff) || kickoff>nowMs ||
