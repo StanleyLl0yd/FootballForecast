@@ -128,6 +128,12 @@ jobs:
           done
           docker exec -i "${{ job.services.postgres.id }}" psql -X -v ON_ERROR_STOP=1 -v expected_forecasts="$pre_forecasts" -U postgres -d postgres \
             < database/tests/0018_m1_compact_negative_semantics.sql
+          for variant in current finished-current; do
+            node tests/m1-equivalent-stage-sql-fixture.mjs "$variant" |
+              docker exec -i "${{ job.services.postgres.id }}" psql -X -q -v ON_ERROR_STOP=1 -U postgres -d postgres > /dev/null
+          done
+          docker exec -i "${{ job.services.postgres.id }}" psql -X -v ON_ERROR_STOP=1 -v expected_forecasts="$pre_forecasts" -U postgres -d postgres \
+            < database/tests/0019_m1_compact_current_refresh.sql
 
   web:
     runs-on: ubuntu-latest

@@ -263,3 +263,22 @@ writes. It then stages a modified sealed-holdout score as a complete new
 private candidate and requires the review/apply safeguards to refuse its
 publication. None of these tests alters production fixtures or trains models.
 
+
+### Canonical record fingerprint and current-season replay
+
+The semantic SHA is SHA-256 of UTF-8 JSON over **the full validated record
+sequence sorted by season and exact source match ID**, not the order of JSONL
+rows. Sorting uses deterministic code-unit comparisons, independent of locale
+or ICU version. All record fields are included, including team names, schedule,
+status, exact kickoff flag and goals. No Unicode normalization is applied:
+visually similar but byte-distinct Cyrillic names remain different and must
+not be silently collapsed into the same source evidence. The complete
+PostgreSQL `EXCEPT ALL` comparison still has final authority.
+
+Disposable PostgreSQL 17 additionally exercises a source SHA for a newly
+confirmed exact kickoff, followed by a different full snapshot marking the
+same fixture finished with a real score. The guarded promotion records one
+immutable finalization event and maintains the original team/fixture identity;
+a third replay is a no-op. Pre-existing synthetic forecast rows and sealed
+historical evidence must stay unchanged. This is contract verification, not
+evidence of a real-time provider update or model performance.
