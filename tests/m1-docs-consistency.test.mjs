@@ -11,6 +11,7 @@ const deploy=read('../docs/DEPLOYMENT.md');
 const security=read('../SECURITY.md');
 const tls=read('../docs/m1-verified-tls.md');
 const sourceRegister=read('../docs/DATA_SOURCES.md');
+const m0AccuracyProtocol=read('../docs/M0_SOURCE_ACCURACY_PROTOCOL.md');
 
 test('current M1 docs do not claim live RPL database is empty or M1 blocked',()=>{
   assert.match(readme,/M1 OPEN/);
@@ -41,6 +42,14 @@ test('M1 operator instructions do not require an empty public catalog or deny au
   assert.doesNotMatch(tls,/manual-only FootballForecast M1 importer/);
   assert.match(sourceRegister,/current registry contains 20/);
   assert.doesNotMatch(sourceRegister,/M0 #2 remains open/);
+});
+
+test('historical M0 source protocol cannot imply M0 is still open or Footbolno unused',()=>{
+  assert.match(m0AccuracyProtocol,/Historical M0 research document/);
+  assert.match(m0AccuracyProtocol,/M0 is now \*\*ACCEPTED\*\*/);
+  assert.match(m0AccuracyProtocol,/M1 remains \*\*OPEN\*\*/);
+  assert.doesNotMatch(m0AccuracyProtocol,/keep #2 and M0 OPEN/);
+  assert.doesNotMatch(m0AccuracyProtocol,/All M0 providers are inactive and remain unapproved/);
 });
 
 // Detect a stale M0-only schema/deployment story after private M1 ingestion.
