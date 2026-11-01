@@ -1,5 +1,13 @@
 -- Real PG17 integration, synthetic-only: negative replay, chronology and holdout checks.
 \echo 'M1 source byte history: failed writes roll back, sealed holdout stays private'
+select
+  (select count(*) from ff_private.ff_ingest_snapshots) as full_snapshots,
+  (select count(*) from ff_private.ff_ingest_matches) as private_rows,
+  (select count(*) from ff_private.ff_source_byte_observations) as observed_byte_shas,
+  (select count(*) from ff_private.ff_published_fixture_links) as public_links,
+  (select count(*) from ff_private.ff_current_refresh_events) as refresh_events,
+  (select count(*) from public.ff_matches) as public_matches,
+  (select count(*) from public.ff_forecasts) as public_forecasts;
 select 1 / case when
   (select count(*) from ff_private.ff_ingest_snapshots)=3
   and (select count(*) from ff_private.ff_ingest_matches)=2160
