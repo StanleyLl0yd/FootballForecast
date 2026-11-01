@@ -131,6 +131,10 @@ export function OpenProviderPreview(){
                 :'Текущий сезон, контрольного итога нет'}</td>
             </tr>)}</tbody>
           </table>
+          <p>Неокончательные и технические статусы (live, cancelled, postponed, awarded):
+            {' '}{csvAudit.seasonSummaries.reduce((n,s)=>
+              n+s.live+s.cancelled+s.postponed+s.awarded,0)}.
+            Эти записи не подтверждают окончательный счёт и не принимаются защищённым импортом.</p>
           <p>Контрольные итоги 2024/25 и 2025/26 взяты из ранее зафиксированного
             снимка самого Footbolno. Совпадение агрегатов не подтверждает
             правильность каждого счёта, а изменение не обязательно означает ошибку.
@@ -154,7 +158,7 @@ export function OpenProviderPreview(){
             и переносов. На каждый просмотр используется тот же одиночный CSV-запрос.</p>
           <p>Проблемы структуры, дат и прошлых запланированных матчей: {csvAudit.seasonSummaries.reduce(
             (n,s)=>n+s.duplicates+s.duplicateMatchIds+s.missingTeams+s.invalidScores+
-                  s.invalidDates+s.invalidTimeFlags+s.pastScheduled+
+                  s.invalidDates+s.invalidTimeFlags+s.pastScheduled+s.futureFinished+
                   Math.abs(s.distinctClubCount-16)+(240-s.distinctDirectedPairs),0)}.
             Технические результаты, сторонние исправления и историческая дата публикации
             каждого матча всё ещё требуют отдельной сверки.</p>
