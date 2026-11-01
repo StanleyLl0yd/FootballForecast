@@ -15,8 +15,8 @@ const m0AccuracyProtocol=read('../docs/M0_SOURCE_ACCURACY_PROTOCOL.md');
 
 test('current M1 docs do not claim live RPL database is empty or M1 blocked',()=>{
   assert.match(readme,/M1 OPEN/);
-  assert.match(readme,/второй реальный снимок/);
-  assert.match(limitations,/2160 private source records/);
+  assert.match(readme,/4 полных снимка по 720 матчей \(2880 записей\)/);
+  assert.match(limitations,/2880 private source records/);
   assert.match(limitations,/616/);
   assert.match(architecture,/M0 was accepted 2026-10-29/);
   assert.match(architecture,/M1 is OPEN/);
@@ -28,6 +28,8 @@ test('current M1 docs do not claim live RPL database is empty or M1 blocked',()=
 
 test('automated sources and absence of trained model/deliveries are consistently disclosed',()=>{
   assert.match(operations,/06:17 and 18:17 UTC/);
+  assert.match(operations,/specifically allowlisted source pipeline dependency/);
+  assert.match(tls,/freshness issue #168 are complete/);
   assert.match(operations,/07:43 UTC/);
   assert.match(operations,/Forecast creation.*model training.*remain disabled/);
   assert.match(readme,/Обученных моделей, опубликованных прогнозов и подтверждённой точности пока нет/);
@@ -58,10 +60,10 @@ test('live M1 migration, canonical match and private row counts match documented
   assert.match(architecture,/nine RLS-enabled `public\.ff_\*`/);
   assert.match(deploy,/`0001`-`0010`/);
   assert.match(deploy,/20261030092045_m1_compact_source_observations/);
-  assert.match(deploy,/2160 protected source records/);
-  assert.match(deploy,/579 finished, 37 scheduled/);
-  assert.match(limitations,/3 immutable full Footbolno snapshots \/ 2160 private source records/);
-  assert.match(limitations,/1 compact byte observation/);
+  assert.match(deploy,/2880 protected source records/);
+  assert.match(deploy,/583 finished, 33 scheduled/);
+  assert.match(limitations,/4 immutable full Footbolno snapshots \/ 2880 private source records/);
+  assert.match(limitations,/2 compact byte observations/);
   assert.doesNotMatch(deploy,/The live database is empty/);
   assert.doesNotMatch(limitations,/nine reviewed source-controlled migrations/);
 });
@@ -70,7 +72,7 @@ test('source register dates and supersedes historical M0 zero-data conclusions',
   assert.match(sourceRegister,/### Current M1 operations \(verified 2026-11-01\)/);
   assert.match(sourceRegister,/M0 is \*\*ACCEPTED\*\*; M1 is \*\*OPEN\*\*/);
   assert.match(sourceRegister,/616 canonical RPL matches/);
-  assert.match(sourceRegister,/2160 private match records/);
+  assert.match(sourceRegister,/2880 private match records/);
   assert.match(sourceRegister,/Archived M0 source-gate criteria/);
   assert.match(sourceRegister,/Archived M0 next decision/);
   assert.doesNotMatch(sourceRegister,/## M0 source gate still open/);

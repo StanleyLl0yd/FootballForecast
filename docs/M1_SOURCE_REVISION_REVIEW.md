@@ -310,5 +310,4 @@ training, sealed-holdout access changes, historical outcome corrections or
 provider subscriptions were performed to collect this evidence. Continue
 separately checking newly changed results and no-match days; ambiguous,
 unavailable or contradictory evidence remains **INCONCLUSIVE**, not accepted
-by inference. M1 stays OPEN pending the remaining source-freshness evidence,
-both mandatory full repository-wide exit audits and final verification.
+by inference. The subsequent [2026-11-01 protected run #41349407434](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41349407434) applied exactly four further current-season scheduled-to-finished results, with four immutable events and no sealed-holdout change, resolving source freshness #168. M1 remains OPEN pending the two mandatory independent deep repository-wide exit audits, GitHub ruleset security #165 and final #124 acceptance.

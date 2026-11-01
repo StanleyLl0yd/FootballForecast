@@ -40,7 +40,6 @@ certificate or accept a new root merely because a network endpoint presented
 it. Re-run synthetic tests and exact-main CI before a manual import.
 
 TLS verification alone does **not** prove a successful import. Subsequent protected
-runs have imported real attributed Footbolno records, including three full snapshots.
-M1 remains OPEN pending current-season source freshness, independent checks,
-complete repository-wide exit audits and the issue #124 acceptance criteria;
+runs have imported real attributed Footbolno records, including four full snapshots and two compact SHA observations, as verified on 2026-11-01.
+M1 remains OPEN: the 2026-11-01 protected refresh and freshness issue #168 are complete, but independent deep repository-wide exit audits and the issue #165 ruleset hardening and #124 acceptance criteria remain;
 no model has been trained.

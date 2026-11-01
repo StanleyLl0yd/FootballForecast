@@ -100,7 +100,7 @@ browser-access policy by design; the four append-only triggers and anonymous
 grant denial were verified live. At the moment this initial migration was deployed, no real matches had been imported. By 2026-10-30 the live private database contained **two immutable 720-row snapshots**, and the verified canonical catalog had **616 public matches**. An intentional Supabase Security Advisor `INFO` about two
 RLS-enabled/no-policy private tables is **not** an exposed-data vulnerability.
 
-The workflow `M1 protected free Footbolno ingest and safe RPL refresh` runs automatically from **protected `main`** at 06:17 and 18:17 UTC, as well as when its YAML changes on main. Its already-configured GitHub Actions environment `m1-source-import` contains the four required secrets. Optional manual dispatch still requires exact input `STAGE_FOOTBOLNO_PRIVATE`; no Mac, PowerShell, local database password or owner action is needed for scheduled operation.
+The workflow `M1 protected free Footbolno ingest and safe RPL refresh` runs automatically from **protected `main`** at 06:17 and 18:17 UTC and on changes to its YAML or a specifically allowlisted source pipeline dependency on `main` (PR #176). Its already-configured GitHub Actions environment `m1-source-import` contains the four required secrets. Optional manual dispatch still requires exact input `STAGE_FOOTBOLNO_PRIVATE`; no Mac, PowerShell, local database password or owner action is needed for scheduled operation.
 Its deployment branch rule must allow **only protected `main`**; require an
 environment reviewer if supported. Do not put these secrets in repository-wide
 Actions variables or the public web environment.
@@ -141,7 +141,7 @@ is missing. GitHub Environment secret values cannot be verified by reading
 the repository or rerunning public CI; the protected dispatch is the actual
 connectivity verification.
 
-After every protected run, independently verify the aggregate revision report and, when relevant, the guarded-refresh result. The **first autonomous run #41025442702** on 2026-10-30 succeeded and verified a second different raw-source SHA with 720 unchanged normalized fixtures. Supabase independently showed 2 snapshots / 1440 private rows, 616 public matches, 0 refresh events and 0 forecasts. RLS/grant denial remains enforced; the guarded PostgreSQL transaction alone can allow narrow current-season score/time changes.
+After every protected run, independently verify the aggregate revision report and, when relevant, the guarded-refresh result. The **first autonomous run #41025442702** on 2026-10-30 established a second raw-source SHA with 720 unchanged fixtures; those counts are historical, not the latest live totals. The [protected exact-main run #41349407434](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41349407434) on 2026-11-01 then committed a complete fourth source snapshot and atomically applied four valid 2026/27 final scores. Independently verified live: **4 full snapshots / 2880 private rows**, **2 byte observations**, **616 public matches (583 finished, 33 scheduled)**, **7 audit events**, **0 forecasts**, **0 changed sealed-holdout fixtures**. RLS/grant denial remains enforced; the guarded PostgreSQL transaction alone can allow narrow current-season score/time changes.
 Keep future real snapshots append-only and stop on a quality drift: never
 disable the temporal checks to get a green run. A secure private import alone
 does not activate public results, historical leakage-free backtests or model
