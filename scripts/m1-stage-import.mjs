@@ -144,11 +144,17 @@ export function buildStageSql(dataset){
     !utc(dataset.manifest?.retrievedAtUtc))refuse('database batch contract');
   const hash=dataset.manifest.sourceFileSha256;
   const retrieval=dataset.manifest.retrievedAtUtc;
-  const semantic=sha(Buffer.from(JSON.stringify(dataset.records),'utf8'));
+  // Canonical source-record order is independent of input JSONL line order.
+  // Compare Unicode source IDs as exact UTF-16 code units; never fold labels.
+  const ordered=[...dataset.records].sort((a,b)=>a.season===b.season?
+    (a.external_id<b.external_id?-1:a.external_id>b.external_id?1:0):
+    (a.season<b.season?-1:1));
+  const normalizedBytes=Buffer.from(JSON.stringify(ordered),'utf8');
+  const semantic=sha(normalizedBytes);
   const hashes=JSON.stringify(Object.fromEntries(SEASONS.map(s=>[s,dataset.manifest.snapshotSHA256[s]])));
   if(SEASONS.some(s=>!hash64(dataset.manifest.snapshotSHA256[s])))refuse('normalized hashes missing');
   // Base64 encoding makes provider contents literal data, not SQL syntax.
-  const payload=Buffer.from(JSON.stringify(dataset.records),'utf8').toString('base64');
+  const payload=normalizedBytes.toString('base64');
   return [
     'begin;', "set local statement_timeout = '45s';",
     "set local lock_timeout = '5s';",
