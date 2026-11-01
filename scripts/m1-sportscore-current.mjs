@@ -73,7 +73,7 @@ export function compareSportScoreCurrent(searchJson,fixtureJson,normalizedCurren
       publisher.set(key,row);
   }
   let labeled=0,matched=0,scoreDisagreement=0,missingScores=0,
-    unexpectedPairs=0,unmapped=0,duplicate=0,dateDisagreement=0;
+    unexpectedPairs=0,unmapped=0,duplicate=0,dateDisagreement=0,unverifiableDates=0;
   const seenApi=new Set();
   for(const item of fixtures){
     if(!explicitlyLabeledRpl(item))continue;
@@ -85,13 +85,15 @@ export function compareSportScoreCurrent(searchJson,fixtureJson,normalizedCurren
     if(seenApi.has(key)){duplicate++;continue;}
     seenApi.add(key);
     const rawDate=item.time??item.kickoff??item.kickoff_utc??item.date;
-    if(typeof rawDate==='string'&&rawDate.trim()){
-      const dateOnly=/^\d{4}-\d{2}-\d{2}$/.test(rawDate);
-      const zoned=/[T ]\d{2}:\d{2}.*(?:Z|[+-]\d{2}:\d{2})$/.test(rawDate);
-      const iso=dateOnly?rawDate: zoned&&Number.isFinite(Date.parse(rawDate))?
-        new Date(rawDate).toISOString().slice(0,10):null;
-      if(iso!==utcDate){dateDisagreement++;continue;}
-    }
+    // A one-day API response is not proof of an individual fixture's date.
+    // Never corroborate an undated or unparsable event by team pair alone.
+    if(typeof rawDate!=='string'||!rawDate.trim()){unverifiableDates++;continue;}
+    const dateOnly=/^\d{4}-\d{2}-\d{2}$/.test(rawDate);
+    const zoned=/[T ]\d{2}:\d{2}.*(?:Z|[+-]\d{2}:\d{2})$/.test(rawDate);
+    const iso=dateOnly?rawDate: zoned&&Number.isFinite(Date.parse(rawDate))?
+      new Date(rawDate).toISOString().slice(0,10):null;
+    if(iso===null){unverifiableDates++;continue;}
+    if(iso!==utcDate){dateDisagreement++;continue;}
     const pub=publisher.get(key);
     if(!pub){unexpectedPairs++;continue;}
     matched++;
@@ -116,13 +118,14 @@ export function compareSportScoreCurrent(searchJson,fixtureJson,normalizedCurren
     providerUnmappedTeams:unmapped,duplicateProviderFixtures:duplicate,
     providerOtherOrUnmatchedPairs:unexpectedPairs,
     kickoffDateDisagreements:dateDisagreement,
+    providerUnverifiableFixtureDates:unverifiableDates,
     missingFinishedScores:missingScores,finishedScoreDisagreements:scoreDisagreement,
     pageCapped:fixtures.length===200,
     dayComparisonStatus:matched>0?'MATCHES_COMPARED':
       publisher.size===0&&labeled===0?'NO_RPL_MATCHES':'INCONCLUSIVE',
     fieldConflictDetected:scoreDisagreement>0||duplicate>0||dateDisagreement>0,
     agreementForMatchedFields:matched>0&&scoreDisagreement===0&&missingScores===0&&
-      unmapped===0&&duplicate===0&&dateDisagreement===0,
+      unmapped===0&&duplicate===0&&dateDisagreement===0&&unverifiableDates===0,
     fullSeasonVerified:false,upstreamIndependent:false,
     historicalAsOfVerified:false,persistentProviderCache:false,
     trainedOnSportScore:false
