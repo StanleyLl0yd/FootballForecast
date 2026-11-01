@@ -28,7 +28,7 @@ test('current M1 docs do not claim live RPL database is empty or M1 blocked',()=
 
 test('automated sources and absence of trained model/deliveries are consistently disclosed',()=>{
   assert.match(operations,/06:17 and 18:17 UTC/);
-  assert.match(operations,/seven allowlisted guarded-source pipeline files/);
+  assert.match(operations,/six explicitly allowlisted source pipeline scripts/);
   assert.match(tls,/freshness issue #168 are complete/);
   assert.match(operations,/07:43 UTC/);
   assert.match(operations,/Forecast creation.*model training.*remain disabled/);
