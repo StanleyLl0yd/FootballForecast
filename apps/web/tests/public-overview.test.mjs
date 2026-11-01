@@ -69,6 +69,21 @@ test('future cancelled, postponed and finished matches cannot appear as upcoming
   assert.equal(query.get('status'),'eq.scheduled');
   assert.ok(query.get('kickoff_at').startsWith('gte.'));
 });
+test('upcoming public fixtures require explicit zoned and valid calendar timestamps',async()=>{
+  const future=new Date(Date.now()+2*86400000).toISOString();
+  const fixture=(id,kickoff_at)=>({id,kickoff_at,status:'scheduled',
+    home:{name:'Север'},away:{name:'Юг'}});
+  const {fetchImpl}=mockedRest({fixtures:[
+    fixture('date-only',future.slice(0,10)),
+    fixture('timezone-free',future.slice(0,19)),
+    fixture('rollover-day','2030-02-30T12:00:00Z'),
+    fixture('valid',future)
+  ]});
+  const report=await readPublicOverview(fetchImpl,env);
+  assert.equal(report.state,'ready');
+  assert.deepEqual(report.fixtures.map(x=>x.id),['valid']);
+});
+
 test('an API error or invalid configuration must not produce fictitious zero metrics',async()=>{
   const r=await readPublicOverview(mockedRest({fail:true}).fetchImpl,env);
   assert.equal(r.state,'unavailable');
