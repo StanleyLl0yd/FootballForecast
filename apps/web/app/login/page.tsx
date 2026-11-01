@@ -7,7 +7,7 @@ export default function Login(){
   const enabled=configured();
   return <main className="auth-container"><div className="auth-card">
     <div className="logo-mark">F<span>F</span></div>
-    <p className="eyebrow">АДМИНИСТРИРОВАНИЕ / M0</p>
+    <p className="eyebrow">АДМИНИСТРИРОВАНИЕ / M1</p>
     <h1>Вход администратора</h1>
     <p>Просмотр матчей и прогнозов открыт всем. Учётная запись для него не требуется.</p>
     {enabled ? <LoginButton /> :
