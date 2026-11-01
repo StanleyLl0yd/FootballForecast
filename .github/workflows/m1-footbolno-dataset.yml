@@ -39,9 +39,10 @@ jobs:
       - name: Check M1 three-season normalization and temporal quarantine
         run: |
           node --check scripts/m1-footbolno-normalize.mjs
+          node --check scripts/m1-source-quality-diagnostic.mjs
           node --check scripts/m1-sportscore-current.mjs
           node --check scripts/m1-openfootball-score-gate.mjs
-          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-sportscore-current.test.mjs tests/m1-openfootball-score-gate.test.mjs
+          node --test tests/m1-footbolno-normalize.test.mjs tests/m1-source-quality-diagnostic.test.mjs tests/m1-sportscore-current.test.mjs tests/m1-openfootball-score-gate.test.mjs
   private-source-snapshot:
     if: github.event_name != 'pull_request'
     needs: [normalize-unit]
@@ -92,30 +93,7 @@ jobs:
             echo '~~~'
           } >> "$GITHUB_STEP_SUMMARY"
           if test "$result" -ne 0; then
-            # Print only explicitly allowlisted numeric quality signals, never
-            # private fixture rows or unbounded upstream error responses.
-            node --input-type=module - "$work/qc.json" <<'NODE' || true
-          import {readFileSync} from 'node:fs';
-          try {
-            const report=JSON.parse(readFileSync(process.argv[2],'utf8'));
-            if(report?.kind!=='M1_PRIVATE_RPL_DATASET')throw Error('bad report');
-            const quality=report.quality?.['2026/2027'];
-            if(!quality||typeof quality!=='object')throw Error('no current season');
-            const count=k=>Number.isSafeInteger(quality[k])&&quality[k]>=0?quality[k]:null;
-            console.error('M1_SOURCE_QUALITY_REJECTED '+JSON.stringify({
-              currentSeasonReady:quality.ready===true,
-              currentSeasonStructural:quality.structural===true,
-              currentSeasonQuarantined:count('quarantined'),
-              currentSeasonStaleScheduled:count('staleScheduled'),
-              currentSeasonFutureFinished:count('futureFinished'),
-              currentSeasonInvalidDates:count('invalidDates'),
-              currentSeasonInvalidScores:count('invalidScores'),
-              currentSeasonUnconfirmedFinished:count('unconfirmedFinished')
-            }));
-          } catch {
-            console.error('M1_SOURCE_QUALITY_REJECTED: aggregate quality report unavailable');
-          }
-          NODE
+            node scripts/m1-source-quality-diagnostic.mjs "$work/qc.json" || true
             echo 'FAIL: Footbolno normalization quality gate refused; no fixture records emitted' >&2
             exit "$result"
           fi
