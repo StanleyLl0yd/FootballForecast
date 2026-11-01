@@ -132,3 +132,15 @@ test('daily SportScore research is bounded and has no protected DB credentials o
   assert.doesNotMatch(current,/PGPASSWORD|--commit|upload-artifact|FF_M1_DB_WRITE_ENABLED/);
   assert.doesNotMatch(current,/^  (?:workflow_run|pull_request_target):/m);
 });
+
+// External source failures must be understandable without echoing source contents.
+test('both autonomous source workflows emit safe and explicit missing/oversized input diagnostics',()=>{
+  for(const content of [workflow,current]){
+    assert.match(content,/if \\[\\[ ! -s "\\$work\\/footbolno\\.csv" \\]\\]/);
+    assert.match(content,/M1_SOURCE_EMPTY/);
+    assert.match(content,/M1_SOURCE_TOO_LARGE/);
+    assert.match(content,/M1_REFERENCE_EMPTY/);
+    assert.doesNotMatch(content,/cat "\\$work\\/footbolno\\.csv"/);
+    assert.doesNotMatch(content,/cat "\\$work\\/openfootball(?:-2024-25)?\\.txt"/);
+  }
+});
