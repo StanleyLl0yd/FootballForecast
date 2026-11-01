@@ -106,6 +106,26 @@ jobs:
           done
           docker exec -i "${{ job.services.postgres.id }}" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres \
             < database/tests/0017_m1_compact_source_semantics.sql
+          # Exact raw-byte replays keep both full-row and compact-ledger
+          # counts unchanged. New, older timestamps and claimed raw SHAs
+          # with different normalized content must roll back atomically.
+          node tests/m1-equivalent-stage-sql-fixture.mjs equivalent |
+            docker exec -i "${{ job.services.postgres.id }}" psql -X -q -v ON_ERROR_STOP=1 -U postgres -d postgres > /dev/null
+          for rejected in out-of-order tampered-replay; do
+            if node tests/m1-equivalent-stage-sql-fixture.mjs "$rejected" |
+              docker exec -i "${{ job.services.postgres.id }}" psql -X -q -v ON_ERROR_STOP=1 -U postgres -d postgres >/dev/null 2>&1; then
+              echo "FAIL: M1 rejected source revision was unexpectedly accepted"
+              exit 2
+            fi
+          done
+          docker exec "${{ job.services.postgres.id }}" psql -X -qAt -U postgres -d postgres \
+            -c "select 1 / case when (select count(*) from ff_private.ff_ingest_snapshots)=2 and (select count(*) from ff_private.ff_ingest_matches)=1440 and (select count(*) from ff_private.ff_source_byte_observations)=3 then 1 else 0 end" | grep -x 1
+          for pass in 1 2; do
+            node tests/m1-equivalent-stage-sql-fixture.mjs holdout |
+              docker exec -i "${{ job.services.postgres.id }}" psql -X -q -v ON_ERROR_STOP=1 -U postgres -d postgres > /dev/null
+          done
+          docker exec -i "${{ job.services.postgres.id }}" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres \
+            < database/tests/0018_m1_compact_negative_semantics.sql
 
   web:
     runs-on: ubuntu-latest
