@@ -67,12 +67,12 @@ test('canonical semantic SHA ignores JSONL row order but preserves exact Cyrilli
   const shuffled=structuredClone(base);
   for(const season of Object.keys(shuffled.seasonFiles)){
     shuffled.seasonFiles[season]=shuffled.seasonFiles[season].trimEnd()
-      .split('\\n').reverse().join('\\n')+'\\n';
+      .split('\n').reverse().join('\n')+'\n';
     shuffled.manifest.snapshotSHA256[season]=hash(Buffer.from(shuffled.seasonFiles[season]));
   }
   assert.equal(fingerprint(shuffled),canonical);
   const distinctUnicode=structuredClone(base);
-  mutateSeason(distinctUnicode,'2024/2025',r=>{r.homeTeam='И\\u0306ога';});
+  mutateSeason(distinctUnicode,'2024/2025',r=>{r.homeTeam='И\u0306ога';});
   assert.notEqual(fingerprint(distinctUnicode),canonical);
 });
 
