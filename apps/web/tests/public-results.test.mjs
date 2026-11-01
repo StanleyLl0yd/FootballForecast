@@ -60,6 +60,18 @@ test('bad scores, future fixtures, nonfinal status and unknown team names are no
   assert.deepEqual(r.results.map(x=>x.id),['good']);
 });
 
+test('recent results reject ambiguous and impossible timestamp formats',async()=>{
+  const api=fixtureFetch([
+    row('date-only','2026-10-28'),
+    row('timezone-free','2026-10-28T18:00:00'),
+    row('rollover-day','2026-02-30T18:00:00Z'),
+    row('valid-offset','2026-10-28T21:00:00+03:00')
+  ]);
+  const result=await readRecentResults(api.fetchImpl,env,now);
+  assert.equal(result.state,'ready');
+  assert.deepEqual(result.results.map(x=>x.id),['valid-offset']);
+});
+
 test('outages and invalid endpoint fail closed without inventing zero results',async()=>{
   assert.deepEqual(await readRecentResults(fixtureFetch([],{http:503}).fetchImpl,env,now),
     {state:'unavailable',results:[]});
