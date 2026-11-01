@@ -65,3 +65,15 @@ test('live M1 migration, canonical match and private row counts match documented
   assert.doesNotMatch(deploy,/The live database is empty/);
   assert.doesNotMatch(limitations,/nine reviewed source-controlled migrations/);
 });
+
+test('source register dates and supersedes historical M0 zero-data conclusions',()=>{
+  assert.match(sourceRegister,/### Current M1 operations \(verified 2026-11-01\)/);
+  assert.match(sourceRegister,/M0 is \*\*ACCEPTED\*\*; M1 is \*\*OPEN\*\*/);
+  assert.match(sourceRegister,/616 canonical RPL matches/);
+  assert.match(sourceRegister,/2160 private match records/);
+  assert.match(sourceRegister,/Archived M0 source-gate criteria/);
+  assert.match(sourceRegister,/Archived M0 next decision/);
+  assert.doesNotMatch(sourceRegister,/## M0 source gate still open/);
+  assert.doesNotMatch(sourceRegister,/Until then: \*\*zero provider adapters active/);
+  assert.doesNotMatch(sourceRegister,/All sources remain \*\*unapproved\*\*/);
+});
