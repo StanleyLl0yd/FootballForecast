@@ -135,7 +135,7 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     homeGoals:0,awayGoals:0,duplicates:0,duplicateMatchIds:0,
     distinctClubCount:0,distinctDirectedPairs:0,
     missingTeams:0,invalidScores:0,
-    invalidDates:0,invalidTimeFlags:0,pastScheduled:0,
+    invalidDates:0,invalidTimeFlags:0,pastScheduled:0,futureFinished:0,
     structuralCandidate:false,historicalAggregateDrift:null
   }));
   const found=new Map(summaries.map(s=>[s.season,s]));
@@ -181,6 +181,8 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     const rawHome=col('home_goals'),rawAway=col('away_goals');
     const gh=score(rawHome),ga=score(rawAway);
     if(status==='finished'){
+      if(date&&(date.dateUtc.slice(0,10)>todayUtc||
+        (flag==='1'&&date.epoch>now)))data.futureFinished++;
       if(gh===null||ga===null)data.invalidScores++;
       else{data.homeGoals+=gh;data.awayGoals+=ga}
     }else if(status==='scheduled'||status==='cancelled'||status==='postponed'){
@@ -233,6 +235,7 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
       s.distinctDirectedPairs===240&&s.duplicates===0&&
       s.duplicateMatchIds===0&&s.missingTeams===0&&s.invalidScores===0&&
       s.invalidDates===0&&s.invalidTimeFlags===0&&s.pastScheduled===0&&
+      s.futureFinished===0&&
       s.matches===s.finished+s.scheduled+s.live+s.cancelled+s.postponed+s.awarded&&
       (s.season==='2026/2027'||s.finished===240);
   }
