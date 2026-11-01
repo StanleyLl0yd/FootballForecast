@@ -51,7 +51,7 @@ const publisherAnchorSHA256='dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1
 const csvRequired=['match_id','league_id','season','status','home_id','away_id','home_goals','away_goals'];
 const csvMaximumRows=5000;
 const csvMaximumColumns=48;
-const legalStatuses=new Set(['finished','scheduled','live','cancelled']);
+const legalStatuses=new Set(['finished','scheduled','live','cancelled','postponed','awarded']);
 
 /**
  * A strict, bounded RFC4180-style CSV parser for publisher CSV.
@@ -131,7 +131,7 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
   const upcoming=[];
   const upcomingSeen=new Set();
   const summaries=SEASONS.map(season=>({
-    season,matches:0,finished:0,scheduled:0,live:0,cancelled:0,
+    season,matches:0,finished:0,scheduled:0,live:0,cancelled:0,postponed:0,awarded:0,
     homeGoals:0,awayGoals:0,duplicates:0,duplicateMatchIds:0,
     distinctClubCount:0,distinctDirectedPairs:0,
     missingTeams:0,invalidScores:0,
@@ -183,9 +183,9 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
     if(status==='finished'){
       if(gh===null||ga===null)data.invalidScores++;
       else{data.homeGoals+=gh;data.awayGoals+=ga}
-    }else if(status==='scheduled'||status==='cancelled'){
+    }else if(status==='scheduled'||status==='cancelled'||status==='postponed'){
       if(rawHome!==''||rawAway!=='')data.invalidScores++;
-    }else if(status==='live'&&(rawHome!==''||rawAway!=='')&&
+    }else if((status==='live'||status==='awarded')&&(rawHome!==''||rawAway!=='')&&
       (gh===null||ga===null))data.invalidScores++;
     if(season==='2026/2027'&&status==='scheduled'){
       const kickoff=inside?date:null;
@@ -233,7 +233,7 @@ export function summarizeFootbolnoRplCsv(csv,nowIsoUtc=new Date().toISOString())
       s.distinctDirectedPairs===240&&s.duplicates===0&&
       s.duplicateMatchIds===0&&s.missingTeams===0&&s.invalidScores===0&&
       s.invalidDates===0&&s.invalidTimeFlags===0&&s.pastScheduled===0&&
-      s.matches===s.finished+s.scheduled+s.live+s.cancelled&&
+      s.matches===s.finished+s.scheduled+s.live+s.cancelled+s.postponed+s.awarded&&
       (s.season==='2026/2027'||s.finished===240);
   }
   return {
