@@ -21,7 +21,7 @@ The public browser never receives a service-role key or writes directly to Supab
 ## Boundaries and commitments
 
 - Web: public match/catalog/forecast read paths; render truthful empty/unavailable states and protect the admin route. Heavy model fitting never runs in an HTTP request.
-- PostgreSQL: nine RLS-enabled `ff_*` tables. Six public read tables, three private tables. Forecast and outcome rows append-only, with fixture mutation guards.
+- PostgreSQL: nine RLS-enabled `public.ff_*` tables (six anonymous SELECT-only catalog/match/forecast tables and three restricted metadata/authorization tables), plus six RLS-enabled `ff_private` source/ingestion/mapping/audit tables with browser-role access denied. Private source history is append-only; current-season fixture finalization is narrowly guarded and audited; forecasts and outcomes retain append-only triggers.
 - Python: deterministic mathematical kernel, isolated from web. Dataset licenses, publication timestamps and temporal cutoff must be verified before any import/training.
 - Hosting: Supabase **Free**, Vercel **Hobby** non-commercial, hosted in Frankfurt. No paid additions without explicit owner approval.
 - Monitoring: non-gating external production HTTP canary runs in the existing CI, including a live public dashboard REST-read check. That canary alone does not prove Russian ISP reachability, OAuth, multi-browser UX or database restore; the separate owner-observed wired pass and mobile failures are documented above.
