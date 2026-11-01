@@ -154,5 +154,5 @@ test('both M1 source workflows print only bounded classified failure signals',()
   assert.match(workflow,/if \[\[ "\$quality_rc" -ne 0 \]\]; then/);
   assert.match(workflow,/exit "\$quality_rc"/);
   assert.ok(workflow.indexOf('scripts/m1-source-quality-diagnostic.mjs "$work/quality.json"') <
-    workflow.indexOf('scripts/m1-stage-import.mjs'));
+    workflow.indexOf('          node scripts/m1-stage-import.mjs \\'));
 });
