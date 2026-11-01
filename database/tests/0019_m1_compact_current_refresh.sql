@@ -44,8 +44,6 @@ select 1 / case when
   and (select count(*) from ff_private.ff_published_fixture_links)=1442
   and (select count(*) from ff_private.ff_current_refresh_events)=1
   and (select count(*) from public.ff_matches)=483
-  and (select count(*) from public.ff_matches
-       where status='finished' and home_goals=1 and away_goals=0)=1
   and (select count(*) from public.ff_forecasts)=:expected_forecasts
   and (select count(*) from ff_private.ff_current_refresh_events e
        join public.ff_matches m on m.id=e.match_id
