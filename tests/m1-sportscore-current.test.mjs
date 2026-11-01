@@ -44,6 +44,20 @@ test('unknown teams, duplicate IDs, wrong dates and capped pages block confident
   assert.equal(run([{...apiRow,date:'2026-10-28'}]).kickoffDateDisagreements,1);
   assert.equal(run(Array.from({length:200},()=>({competition:'Some League'}))).pageCapped,true);
 });
+test('missing or invalid provider fixture dates cannot corroborate a score',()=>{
+  const missing={...apiRow};
+  delete missing.date;
+  for(const fixture of [missing,{...apiRow,date:'not-a-date'},
+    {...apiRow,date:'2026-10-29T12:00:00'}]){
+    const report=run([fixture]);
+    assert.equal(report.matchedDirectedFixtures,0);
+    assert.equal(report.providerUnverifiableFixtureDates,1);
+    assert.equal(report.dayComparisonStatus,'INCONCLUSIVE');
+    assert.equal(report.agreementForMatchedFields,false);
+    assert.equal(report.fieldConflictDetected,false);
+    assert.equal(report.finishedScoreDisagreements,0);
+  }
+});
 test('quarantined Footbolno fixture stays excluded from daily comparison',()=>{
   const report=run([apiRow],[{...sourceRow,quarantineReason:'stale_scheduled'}]);
   assert.equal(report.sourceMatchesOnDay,0);
