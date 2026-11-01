@@ -96,8 +96,14 @@ jobs:
             --connect-timeout 10 --max-time 45 --max-filesize 2000000 \
             --output "$work/footbolno.csv" \
             'https://footbolno.ru/data/league/235-matches.csv'
-          test -s "$work/footbolno.csv"
-          test "$(wc -c < "$work/footbolno.csv")" -le 2000000
+          if [[ ! -s "$work/footbolno.csv" ]]; then
+            echo 'FAIL: Footbolno CSV empty or missing (M1_SOURCE_EMPTY)'
+            exit 2
+          fi
+          if [[ "$(wc -c < "$work/footbolno.csv")" -gt 2000000 ]]; then
+            echo 'FAIL: Footbolno CSV exceeds 2 MB (M1_SOURCE_TOO_LARGE)'
+            exit 2
+          fi
           retrieved="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           node scripts/m1-footbolno-normalize.mjs \
             "$work/footbolno.csv" "$retrieved" "$work/private" > "$work/quality.json"
@@ -105,7 +111,10 @@ jobs:
             --connect-timeout 10 --max-time 45 --max-filesize 200000 \
             --output "$work/openfootball-2024-25.txt" \
             'https://raw.githubusercontent.com/openfootball/europe/63df627f3c87ce71708f016522ea236cf74332c3/russia/2024-25_ru1.txt'
-          test -s "$work/openfootball-2024-25.txt"
+          if [[ ! -s "$work/openfootball-2024-25.txt" ]]; then
+            echo 'FAIL: pinned OpenFootball reference empty or missing (M1_REFERENCE_EMPTY)'
+            exit 2
+          fi
           node scripts/m0-cross-source-fixture-reconcile.mjs \
             "$work/footbolno.csv" "$work/openfootball-2024-25.txt" > "$work/aggregate-crosscheck.json"
           node scripts/m1-openfootball-score-gate.mjs \
