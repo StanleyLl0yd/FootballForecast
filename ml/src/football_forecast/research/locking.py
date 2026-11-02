@@ -5,10 +5,10 @@ counts only. The caller must generate corroboration in a trusted, pinned-source 
 """
 import json
 from collections import Counter
+from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from hashlib import sha256
 from re import fullmatch
-from typing import Mapping
 
 from football_forecast.data.contracts import DataError
 from football_forecast.data.training_input import ReadCursor, read_training_input
