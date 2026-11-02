@@ -20,6 +20,9 @@ test('current M1 docs do not claim live RPL database is empty or M1 blocked',()=
   assert.match(readme,/4 полных снимка по 720 матчей \(2880 записей\)/);
   assert.match(limitations,/2880 private source records/);
   assert.match(limitations,/616/);
+  assert.match(limitations,/four guarded 2026-11-01 final scores/);
+  assert.match(limitations,/security issue #165 is closed/);
+  assert.doesNotMatch(limitations,/main ruleset hardening #165|three audited 2026-10-31 final scores/);
   assert.match(architecture,/M0 was accepted 2026-10-29/);
   assert.match(architecture,/M1 is OPEN/);
   assert.match(deploy,/m1_compact_source_observations/);
