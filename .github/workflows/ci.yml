@@ -186,6 +186,8 @@ jobs:
           node --test tests/m1-private-stage-workflow.test.mjs tests/m1-revision-report.test.mjs tests/m1-autonomous-refresh.test.mjs
       - name: Enforce manual-only M2 private research lock workflow
         run: node --test tests/m2-manual-lock-workflow.test.mjs
+      - name: Validate local-only M2 aggregate attestation viewer
+        run: node --test apps/web/tests/m2-lock-viewer.test.mjs
       - name: Verify safe M1 protected GitHub Environment setup
         run: |
           node --test tests/m1-secret-setup-script.test.mjs
