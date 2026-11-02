@@ -77,7 +77,8 @@ if(dataPage.includes('Официальные первоисточники')){
   // The PR HTTP canary targets deployed main; enforce full catalog after merge.
   assert.match(dataPage,/Источников в реестре/);
   assert.match(dataPage,/Точность не измерена/);
-  if(dataPage.includes('M1 / РЕЕСТР ИСТОЧНИКОВ')) {
+  if(dataPage.includes('M1 ПРИНЯТ / РЕЕСТР ИСТОЧНИКОВ') ||
+     dataPage.includes('M1 / РЕЕСТР ИСТОЧНИКОВ')) {
     assert.ok(dataPage.includes('Footbolno (CC BY 4.0) импортирован'),
       'current M1 catalog must acknowledge verified private Footbolno ingestion');
   } else {
