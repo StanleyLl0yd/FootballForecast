@@ -5,6 +5,7 @@ the comparator from a pinned source and enforces an exact CSV byte hash first.
 """
 import json
 import os
+from dataclasses import replace
 import sys
 from hashlib import sha256
 from pathlib import Path
@@ -12,9 +13,12 @@ from re import fullmatch
 
 from football_forecast.data.contracts import DataError
 from football_forecast.data.training_input import read_training_input
+from football_forecast.models.team_strength import fit_independent_poisson
 from football_forecast.research.locking import (
     _check_corroboration,
     _digest,
+    _model_fingerprint,
+    _training_rows_fingerprint,
     prepare_pre_holdout_lock,
 )
 
@@ -116,6 +120,47 @@ def produce_private_preflight(*, source_sha256: str, code_sha: str) -> dict:
     }
 
 
+
+def produce_private_candidate(*, source_sha256: str, code_sha: str) -> dict:
+    """Fit an ephemeral training-only research candidate, never an approved lock."""
+    _check_identity(source_sha256, code_sha)
+    with _private_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("set transaction isolation level repeatable read read only")
+            training = _approved_training_snapshot(cursor, source_sha256)
+    source_clubs = {club for row in training.fixtures
+                    for club in (row.home_team_id, row.away_team_id)}
+    club_mapping = training_only_mapping(source_clubs)
+    mapped = tuple(replace(
+        row, home_team_id=club_mapping[row.home_team_id],
+        away_team_id=club_mapping[row.away_team_id],
+    ) for row in training.fixtures)
+    model = fit_independent_poisson(mapped)
+    if model.training_matches != 240 or len(model.teams) != 16:
+        raise DataError("M2 candidate: incomplete training fit")
+    return {
+        "schemaVersion": 1,
+        "kind": "M2_STORED_TRAIN_CANDIDATE",
+        "codeSha": code_sha,
+        "sourceSha256": source_sha256,
+        "snapshotIdentitySha256": _digest([
+            training.snapshot_id, source_sha256, training.retrieved_at.isoformat()
+        ]),
+        "trainRowsSha256": _training_rows_fingerprint(training.fixtures),
+        "clubMappingSha256": _digest(sorted(club_mapping.items())),
+        "fittedModelSha256": _model_fingerprint(model),
+        "trainingMatches": model.training_matches,
+        "trainingClubs": len(model.teams),
+        "storedTrainOnly": True,
+        "externalSourceRechecked": False,
+        "modelFitted": True,
+        "preHoldoutLockApproved": False,
+        "holdoutRead": False,
+        "historicalPrematchVerified": False,
+        "modelAccuracyEvaluated": False,
+    }
+
+
 def produce_lock(*, report_path: Path, source_sha256: str, code_sha: str) -> dict:
     """One read-only snapshot transaction, two train-only reads, no DML."""
     _check_identity(source_sha256, code_sha)
@@ -149,6 +194,8 @@ def main() -> int:
         }
         if sys.argv[1] == "--preflight":
             result = produce_private_preflight(**identities)
+        elif sys.argv[1] == "--candidate":
+            result = produce_private_candidate(**identities)
         else:
             result = produce_lock(report_path=Path(sys.argv[1]), **identities)
         print(json.dumps(result, sort_keys=True, separators=(",", ":"), allow_nan=False))
