@@ -75,7 +75,7 @@ label**. No legitimate original historical publisher snapshot or round cluster
 proof exists; uncertainty is explicitly `INCONCLUSIVE` and any future result
 is non-strict descriptive research, not authenticated pre-match accuracy.
 
-## Guarded train-only runner (prepared, not dispatched)
+## Guarded train-only runner and independent stored-snapshot preflight
 
 A **manual-only** protected GitHub Action `.github/workflows/m2-manual-research-lock.yml`
 prepares one candidate lock from the same private role-gated train cohort. Only
@@ -115,3 +115,20 @@ entrypoint is an explicit, owner-authored manual action, not a periodic event.
 No run/real fit has been performed as part of preparing this workflow. The lack of independent third
 validation cohort defers Elo/Dixon–Coles selection and calibration; training
 these candidates for holdout selection is prohibited.
+
+## Source-outage path: stored snapshot preflight (no training)
+
+When Footbolno is unavailable, the same protected manual workflow accepts only
+the exact owner-written issue #182 comment `/m2-preflight 038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f`.
+This invokes `runner --preflight`, which performs one repeatable-read,
+read-only transaction against the **existing approved private snapshot** pinned
+by the unchanged Footbolno CSV SHA. It requires the same private certificate,
+SQL permissions, unique approved source record, 720-row envelope and 240
+verified 2024/25 train-only records (16 clubs, 30 appearances each).
+
+The bounded JSON report contains only the pinned code/source SHA, a hash of
+snapshot identity, train count and explicit `externalSourceRechecked: false`,
+`modelFitted: false`, `holdoutRead: false`. It cannot be used as the
+pre-holdout model lock, does not re-assert publisher availability, does not
+train, and does not permit opening the sealed 2025/26 labels.
+No private team identifiers or match rows are printed or uploaded.
