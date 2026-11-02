@@ -22,7 +22,7 @@ export default async function Page(){
       </section>
       <section className="panel informative">
         <h2>Защищённое исследовательское задание</h2>
-        <p>Подготовлен ручной запуск только с подтверждением владельца и точным SHA исходного CSV. Выполняется вне сайта, через GitHub Actions с защищённой средой, без записи в Supabase и без чтения результатов контрольного сезона.</p>
+        <p>Подготовлен ручной запуск только с подтверждением владельца и точным SHA исходного CSV — через GitHub Actions или точную команду владельца в issue #182. Выполняется вне сайта в защищённой среде GitHub, без записи в Supabase и без чтения результатов контрольного сезона.</p>
         <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/actions/workflows/m2-manual-research-lock.yml"
           target="_blank" rel="noopener noreferrer">Состояние и запуск в GitHub ↗</a>
         {researchRun.state==='run'?
