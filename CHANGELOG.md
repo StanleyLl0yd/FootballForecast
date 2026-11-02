@@ -2,7 +2,7 @@
 
 ## M2 statistical research opened — 2026-11-02 (in progress)
 
-Prepared a pinned 2024/25-only protected training input adapter (private SQL + Python and synthetic tests), without real training, holdout evaluation or model publication; see [M2 input contract](docs/M2_TRAINING_INPUT.md).
+Merged protected [PR #184](https://github.com/StanleyLl0yd/FootballForecast/pull/184) with the SHA-pinned 2024/25-only SQL/Python read adapter and synthetic tests (10/10 exact-head PASS). Applied migration `m2_training_read_only` to live Supabase Frankfurt and verified only aggregate 240 training rows/16 clubs; browser roles and service_role still cannot execute the function. No real model training, holdout evaluation or forecast publication. See [M2 input contract](docs/M2_TRAINING_INPUT.md).
 
 Owner authorized [M2 #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182). [Fixed Poisson baseline protocol](docs/M2_BASELINE_PROTOCOL.md) pre-registered, with 2024/25 train, 2025/26 sealed holdout and strict provenance limitations; implementation/testing begins on synthetic examples. No live model is trained or forecast published; M3 is unopened. Status and documentation are kept in sync with each guarded PR.
 
