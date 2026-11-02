@@ -11,7 +11,7 @@ Updated 2026-11-02. Milestone acceptance requires verification, not code presenc
 
 **M2 is OPEN, owner-authorized 2026-11-02** ([issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182)). The fixed independent-Poisson study must be pre-registered before any real-data training, with 2025/26 sealed. M3 remains not authorized. No model has been trained or published. Historical pre-match publication timestamps and independent calibration remain unproven.
 
-M2 step in review: [pinned protected 2024/25 training input](docs/M2_TRAINING_INPUT.md), synthetic SQL/Python gates, no real data extraction, no holdout evaluation. This component is not accepted until its PR, exact-head and post-merge checks pass; the remaining #182 checklist stays open.
+M2 protected training input implemented in [PR #184](https://github.com/StanleyLl0yd/FootballForecast/pull/184), protected squash merge, exact-head 10/10 PASS. The 11th Supabase Frankfurt migration is applied, live aggregate SELECT confirms 240/240 2024/25 training records, 16 clubs with 30 games each, 0 non-training rows and 0 published forecasts. [Read-only contract](docs/M2_TRAINING_INPUT.md). No real fitted model or opened holdout; five remaining #182 tasks after exact-main acceptance.
 
 The following M0 material is retained as historical acceptance evidence.
 
