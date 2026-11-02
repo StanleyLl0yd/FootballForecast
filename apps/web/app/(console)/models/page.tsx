@@ -1,7 +1,9 @@
 import {EmptyState,PageHeading} from '@/components/empty-state';
 import {ResearchLockViewer} from '@/components/research-lock-viewer';
+import {readM2TrainOnlyRun} from '@/lib/m2-run-status';
 
-export default function Page(){
+export default async function Page(){
+  const researchRun=await readM2TrainOnlyRun();
   return <>
     <PageHeading eyebrow="M2 · ИССЛЕДОВАНИЕ" title="Лаборатория моделей"
       subtitle="Протокол, подготовка обучения и контроль исследовательских доказательств. Отчёты не равны опубликованным прогнозам."/>
@@ -23,6 +25,21 @@ export default function Page(){
         <p>Подготовлен ручной запуск только с подтверждением владельца и точным SHA исходного CSV. Выполняется вне сайта, через GitHub Actions с защищённой средой, без записи в Supabase и без чтения результатов контрольного сезона.</p>
         <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/actions/workflows/m2-manual-research-lock.yml"
           target="_blank" rel="noopener noreferrer">Состояние и запуск в GitHub ↗</a>
+        {researchRun.state==='run'?
+          <p className="source-lab-note" role="status">
+            Последний публичный workflow: <strong>{researchRun.status}</strong>
+            {researchRun.conclusion?` · ${researchRun.conclusion}`:''}.
+            {' '}<a href={researchRun.url} target="_blank" rel="noopener noreferrer">
+              Запуск #{researchRun.id} ↗</a>. Успешный workflow не доказывает достоверность
+            аттестата, принятие модели или готовность оценки holdout.
+          </p>:researchRun.state==='no_runs'?
+          <p className="source-lab-note" role="status">
+            Публичный GitHub API не обнаружил защищённых ручных запусков M2.
+          </p>:
+          <p className="source-lab-note" role="status">
+            Состояние защищённого workflow сейчас не подтверждено GitHub API;
+            это не означает отсутствия запусков.
+          </p>}
         <p className="source-lab-note">Сайт не отправляет команды на обучение и не может удостоверить результаты GitHub Actions.</p>
       </section>
     </div>

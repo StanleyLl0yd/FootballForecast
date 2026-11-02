@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 live public workflow-status viewer (read-only)
+
+Added bounded 128 KiB, 3-second, five-minute-cache public GitHub Actions GET for the manual protected research workflow, strict run/event/ref/URL/SHA/status checks, honest unavailable/never-run distinctions and test-only mocked responses. Never includes secrets, GitHub job inputs, private training rows, DB writes or dispatch. Completion of a workflow does not certify an immutable study or predictive accuracy.
+
 ## M2 browser research status and offline candidate viewer (prepared)
 
 Added public read-only `/models` research status, GitHub protected job/protocol links and local-only strict 16 KiB JSON candidate lock inspection with synthetic negative tests. No upload, network write or privileged DB access from browser. A locally supplied digest is not an authenticated run or immutable study result. Corrected stale `/admin` M2 status; M2 still 3/8, no real fit/holdout evaluation/public forecast.
