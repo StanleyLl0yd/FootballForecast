@@ -100,6 +100,18 @@ jobs:
           node scripts/m1-openfootball-score-gate.mjs "$work/comparison.json" > /dev/null
           python -m football_forecast.research.runner "$work/comparison.json" > "$work/lock.json"
           [[ -s "$work/lock.json" ]]
+          # Strictly whitelist the public attestation before writing any job output.
+          node --input-type=module - "$work/lock.json" <<'M2_CHECK'
+          import {readFileSync} from 'node:fs';
+          import {inspectM2PreHoldoutLock} from './apps/web/lib/m2-lock-viewer.mjs';
+          const bytes=readFileSync(process.argv[2]);
+          if(bytes.byteLength===0||bytes.byteLength>16384)
+            throw Error('M2 attestation size refused');
+          inspectM2PreHoldoutLock(JSON.parse(bytes.toString('utf8')));
+          M2_CHECK
+          # Aggregate-only machine-readable markers for independent GitHub log verification.
+          printf 'M2_LOCK_ATTESTATION_JSON=%s\n' "$(cat "$work/lock.json")"
+          printf 'M2_LOCK_ATTESTATION_SHA256=%s\n' "$(sha256sum "$work/lock.json" | cut -d ' ' -f1)"
           {
             echo '## M2 manual train-only candidate lock (not yet immutable)'
             echo 'Train-only: holdout role counts checked, no holdout labels/IDs read, zero DB writes.'
