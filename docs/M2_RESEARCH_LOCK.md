@@ -1,7 +1,6 @@
 # M2 pre-holdout lock — bounded research design
 
-**Status (2026-11-02): implementation and synthetic tests only.** This is NOT a real lock,
-training run, retrospective benchmark, or independent proof of publisher authority.
+**Status (2026-11-02): bounded implementation and synthetic tests plus two real, reproducible, ephemeral source-offline train-only fits.** These are NOT an approved pre-holdout lock, retrospective benchmark or independent proof of publisher authority.
 M2 #182 remains **3/8 complete** until a permitted one-time study satisfies its
 acceptance checks. The 2025/26 sealed cohort must not be opened by this step.
 
@@ -112,7 +111,7 @@ not an immutable approved model record; the owner must verify and separately
 anchor its exact result in protected Git history before any holdout evaluation.
 The workflow is not triggered on push, PR or schedule; its issue-comment
 entrypoint is an explicit, owner-authored manual action, not a periodic event.
-No run/real fit has been performed as part of preparing this workflow. The lack of independent third
+No source-corroborated real lock has been produced by this workflow. Stored-snapshot preflight and two temporary, independently repeated fits succeeded without rechecking the unavailable publisher. The lack of independent third
 validation cohort defers Elo/Dixon–Coles selection and calibration; training
 these candidates for holdout selection is prohibited.
 
@@ -150,3 +149,13 @@ production-trained or approved model and **must not** be used to read/score
 the 2025/26 sealed holdout. Its deterministic fingerprints can later be
 compared against an independently source-corroborated protected lock, without
 changing the frozen protocol or tuning on any target labels.
+
+## Observed private research evidence (2026-11-02)
+
+- Protected [preflight #41442233583](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41442233583): read-only Supabase 240/16 train cohort, **PASS**, no model fit.
+- Two distinct protected train-only candidate runs [#41443294566](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41443294566) and [#41443547849](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41443547849): **PASS** on exactly the same code SHA `34570293d603d63fadd0f31cda34e88fb4ee9c4f`.
+- Both runs independently emitted the same `snapshotIdentitySha256=afe82bbf33d6e547403ef1ce9505493a655661e0e0f78dffecaea9e857f5b191`, `trainRowsSha256=991a97c6535eae244f8e6fa8189e3408d5c883f15da0423d9aa1be663628fe4e`, `clubMappingSha256=9650628b4d11b608a7e0d1afefa6fec94b514f4cccb937b20af360c802c68997`, and `fittedModelSha256=c4145f27d33eee3c77276ec78a838c491c226b80362588ce6c709869cad0b6f1`.
+- Complete bounded aggregate receipt SHA-256: `56d7ca8b1e40832718b971dd857bc51bf4a7c3146ec98ebbeb481374b348b36e`, independently recomputed from the logged JSON including its final newline. Full evidence is linked in [M2 issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182#issuecomment-6576955508).
+- **Not accepted:** `externalSourceRechecked=false`, `preHoldoutLockApproved=false`, `modelAccuracyEvaluated=false`, `holdoutRead=false`. Models were discarded after SHA generation; no coefficients, raw data, test labels or predictions were published. Even repeated agreement of ephemeral digests is **not** a source-authenticated immutable model lock.
+
+Remaining block: verify the exact Footbolno CSV revision when HTTPS service is restored, independently corroborate its 240 directed fixtures, pin model and environment in a protected accepted record **before** any future one-off holdout evaluation. The already fixed M2 protocol and sealed cohort must not change to compensate for source outage.
