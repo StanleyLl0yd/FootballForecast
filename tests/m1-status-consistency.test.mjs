@@ -29,7 +29,8 @@ test('owner admin page does not advertise obsolete M0 or disabled protected inge
   assert.match(admin,/M1: защищённая проверка данных/);
   assert.match(admin,/GitHub Actions/);
   assert.match(admin,/Из веб-интерфейса нельзя запускать импорт/);
-  assert.match(admin,/M2 не начат/);
+  assert.match(admin,/M2 открыт: исследовательский train-only запуск подготовлен/);
+  assert.doesNotMatch(admin,/M2 не начат/);
   assert.doesNotMatch(admin,/M0: разработка|Импорт, обучение и управление источниками остаются выключенными/);
 });
 
@@ -39,7 +40,11 @@ test('auth and model screens accurately describe imported M1 source data and dis
   assert.match(dataCenter,/Этап проекта<\/span><strong>M1 принят<\/strong>/);
   assert.match(dataCenter,/M2 открыт для разработки статистических моделей/);
   assert.match(setup,/FOOTBALLFORECAST \/ M1 ПРИНЯТ/);
-  assert.match(models,/Данные Footbolno уже импортированы в защищённую базу/);
-  assert.match(models,/Обучение ещё не запущено/);
+  assert.match(models,/Обучающая выборка/);
+  assert.match(models,/Реальный запуск ещё не подтверждён/);
+  assert.match(models,/2025\/26 доступ к оценке ещё не разрешён/);
+  const viewer=read('../apps/web/components/research-lock-viewer.tsx');
+  assert.match(viewer,/Файл обрабатывается исключительно в браузере/);
+  assert.doesNotMatch(viewer,/fetch\(|supabase\.from\(|createClient\(/);
   assert.doesNotMatch(models,/отсутствуют лицензированный датасет/);
 });
