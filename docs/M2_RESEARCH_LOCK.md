@@ -79,8 +79,16 @@ is non-strict descriptive research, not authenticated pre-match accuracy.
 
 A **manual-only** protected GitHub Action `.github/workflows/m2-manual-research-lock.yml`
 prepares one candidate lock from the same private role-gated train cohort. Only
-the repository owner may dispatch `LOCK_TRAIN_ONLY` from protected `main` with
-the **exact approved immutable Footbolno CSV SHA-256**. It refuses any mismatch
+the repository owner may dispatch `LOCK_TRAIN_ONLY` from protected `main`
+with the **exact approved immutable Footbolno CSV SHA-256**, or post the
+single exact command `/m2-lock 038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f` as a newly created comment
+on [M2 issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182).
+This second GitHub-native manual trigger exists solely for connected administration
+when `workflow_dispatch` is unavailable: the job additionally gates the event type,
+owner GitHub identity, `OWNER` association, exact comment body, issue number,
+non-PR issue, repository, and default branch. Both entrypoints share one
+protected environment, one 10-minute bounded read-only job, and the same pinned
+source SHA enforcement. Posting an arbitrary comment cannot start training. It refuses any mismatch
 between the downloaded current CSV and pinned private source version; if the
 publisher has changed, no fit is attempted. It independently retrieves the
 pinned OpenFootball text, checks exact 240/240 score and UTC-date agreement,
@@ -93,7 +101,8 @@ counts appear in the GitHub job summary. The job has no write SQL and **no 2025/
 the pre-existing SQL input contract checks only the sealed role/count envelope. A successful protected run is a reproducible *candidate attestation*,
 not an immutable approved model record; the owner must verify and separately
 anchor its exact result in protected Git history before any holdout evaluation.
-The workflow is not triggered on push, PR or schedule. No run/real fit has been
-performed as part of preparing this workflow. The lack of independent third
+The workflow is not triggered on push, PR or schedule; its issue-comment
+entrypoint is an explicit, owner-authored manual action, not a periodic event.
+No run/real fit has been performed as part of preparing this workflow. The lack of independent third
 validation cohort defers Elo/Dixon–Coles selection and calibration; training
 these candidates for holdout selection is prohibited.
