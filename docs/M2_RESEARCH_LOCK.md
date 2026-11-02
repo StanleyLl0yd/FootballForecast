@@ -159,3 +159,19 @@ changing the frozen protocol or tuning on any target labels.
 - **Not accepted:** `externalSourceRechecked=false`, `preHoldoutLockApproved=false`, `modelAccuracyEvaluated=false`, `holdoutRead=false`. Models were discarded after SHA generation; no coefficients, raw data, test labels or predictions were published. Even repeated agreement of ephemeral digests is **not** a source-authenticated immutable model lock.
 
 Remaining block: verify the exact Footbolno CSV revision when HTTPS service is restored, independently corroborate its 240 directed fixtures, pin model and environment in a protected accepted record **before** any future one-off holdout evaluation. The already fixed M2 protocol and sealed cohort must not change to compensate for source outage.
+
+## Local comparison of two train-only candidate receipts
+
+The browser Models laboratory includes a **local-only** viewer for two
+`M2_STORED_TRAIN_CANDIDATE` JSON receipts from separate protected runs.
+It validates an exact 17-key aggregate-only allowlist, fixed 240/16 training
+scope, explicitly false external-source/approval/holdout/accuracy flags and
+six SHA fields; it reports all differing identity fields or their equality.
+Files are read in browser memory (up to 16 KiB each), never uploaded, persisted,
+submitted to a research job or used to query the sealed cohort.
+
+The comparison detects accidental differences in *supplied* receipts. It does
+not authenticate GitHub Actions, independently verify the original source,
+prove the reports came from two executions or approve a pre-holdout lock. Only
+protected independently reviewed, immutable evidence can establish those
+facts. Existing test-scope restrictions remain unchanged.

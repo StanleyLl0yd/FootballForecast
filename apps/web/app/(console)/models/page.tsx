@@ -1,5 +1,6 @@
 import {EmptyState,PageHeading} from '@/components/empty-state';
 import {ResearchLockViewer} from '@/components/research-lock-viewer';
+import {M2CandidateReplay} from '@/components/m2-candidate-replay';
 import {readM2TrainOnlyRun} from '@/lib/m2-run-status';
 
 export default async function Page(){
@@ -43,6 +44,7 @@ export default async function Page(){
         <p className="source-lab-note">Сайт не отправляет команды на обучение и не может удостоверить результаты GitHub Actions.</p>
       </section>
     </div>
+    <M2CandidateReplay/>
     <ResearchLockViewer/>
     <section className="panel informative">
       <h2>Ограничения M2</h2>
