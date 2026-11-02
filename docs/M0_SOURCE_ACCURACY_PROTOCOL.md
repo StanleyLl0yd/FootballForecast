@@ -1,6 +1,6 @@
 # M0: empirical free-source accuracy protocol (offline, no ingestion)
 
-> **Historical M0 research document.** M0 is now **ACCEPTED**, issue #2 is **CLOSED**, and M1 remains **OPEN** (#124). The M0 research registry is preserved as evidence; it does not represent the active M1 import status. Footbolno CC BY 4.0 data is already staged privately and eligible current-season changes are guarded.
+> **Historical M0 research document.** M0 and M1 are now **ACCEPTED** (M1 [#124](https://github.com/StanleyLl0yd/FootballForecast/issues/124) closed 2026-11-02), issue #2 is **CLOSED**, and M2 is not authorized. The M0 research registry is preserved as evidence; it does not represent the active M1 import status. Footbolno CC BY 4.0 data is already staged privately and eligible current-season changes are guarded.
 
 This document implements the owner's **strict $0 and multi-source quality policy** from [DATA_SOURCES.md](DATA_SOURCES.md) and the [20-source registry](M0_FREE_SOURCE_REGISTRY.json). The M0 research registry used by this offline-only script recorded its providers as inactive; this historical classification is not the current M1 licensing or ingestion status. This script still cannot authorize data access or promote records.
 
