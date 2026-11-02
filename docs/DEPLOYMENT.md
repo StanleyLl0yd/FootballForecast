@@ -1,4 +1,6 @@
-# Hosting and deployment - M0 accepted / M1 operating
+# Hosting and deployment — M0/M1 accepted, M2 not authorized
+
+**M1 was accepted on 2026-11-02** ([closed #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124)) after full internal technical audits and exact-main Frankfurt production verification. The protected importer continues running; this milestone acceptance does not start M2 or enable model training. The deployment and database counts below are dated operational observations.
 
 ## Verified infrastructure
 
