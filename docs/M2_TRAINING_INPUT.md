@@ -1,0 +1,17 @@
+# M2 private training input — research-only read contract
+
+**Scope:** a pinned, privileged, read-only candidate for exactly 240 played RPL 2024/25 `train_baseline` fixtures. It is not a real training run, a 2025/26 benchmark, production deployment, or proof of historical pre-match accuracy. Follow the unchanged [pre-registered M2 protocol](M2_BASELINE_PROTOCOL.md).
+
+## Trust and execution boundary
+
+`database/migrations/0011_m2_training_read_only.sql` defines `ff_private.ff_m2_training_rows(snapshot_uuid,source_sha256)` as `STABLE SECURITY INVOKER`, fixed SQL (no dynamic query), with no DML and explicitly revoked `EXECUTE` for `PUBLIC`, `anon`, `authenticated`. The underlying RLS-protected snapshot tables remain private. It must only be called using an existing trusted PostgreSQL role permitted to SELECT those tables, **never** from Next.js, a browser, or a public API. The caller pins both the immutable snapshot UUID and its exact approved Footbolno CC BY 4.0 file hash. The reader does not pick the latest revision itself.
+
+A full 720-row role-separated snapshot is required. The 2025/26 `sealed_holdout` is consulted **only for role/count envelope integrity**, not scores, identities, tuning or output. Exactly 240 2024/25 finished, non-awarded, non-quarantined matches and 16 clubs with 30 appearances each are required. Confirmed kickoff is in UTC between 2024-07-01 and 2025-07-01, matches the calendar day and precedes retrieval. Missing or inconsistent provenance, scores, team coverage or chronology **rejects the whole operation**.
+
+Python `football_forecast.data.training_input.read_training_input` accepts an already authorized private SQL cursor, issues one parameterized SELECT, fetches **at most 241 records**, and double-checks 240 rows, identifiers, exact season/role, score, timestamp, source SHA, stable order, uniqueness, and club coverage. It returns immutable in-memory fixtures; it neither opens a connection nor fits, logs, exports or publishes anything. Row-level data never enters CI artifacts or public repositories.
+
+## Temporal caveat and next gate
+
+These results were observed during retrospective retrieval in 2026. That time is **not** a known final whistle, source publication time, or 2025/26 pre-match availability. Therefore the input deliberately has **no invented `finished_at` field**, and no strict as-of historical test is possible from these records. Before any separately authorized real evaluation, freeze an exact source UUID/SHA, code SHA, mapping and training output digest, and keep the 2025/26 holdout unobserved until a single pre-registered evaluation. Never write retrospective predictions into live `ff_forecasts`.
+
+CI proves SQL isolation on disposable PostgreSQL 17 synthetic snapshots and Python negative cases; production SQL deployment and any real private read require separate evidence. M3 remains unauthorized. [M2 tracking issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182).
