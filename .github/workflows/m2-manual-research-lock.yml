@@ -37,12 +37,12 @@ jobs:
       - name: Verify pinned exact-source comparison and fit private train only
         shell: bash
         env:
-          PGHOST: \${{ secrets.M1_PGHOST }}
-          PGUSER: \${{ secrets.M1_PGUSER }}
-          PGDATABASE: \${{ secrets.M1_PGDATABASE }}
-          PGPASSWORD: \${{ secrets.M1_PGPASSWORD }}
-          M1_PGROOTCERT_B64: \${{ secrets.M1_PGROOTCERT_B64 }}
-          M2_SOURCE_SHA: \${{ inputs.source_sha256 }}
+          PGHOST: ${{ secrets.M1_PGHOST }}
+          PGUSER: ${{ secrets.M1_PGUSER }}
+          PGDATABASE: ${{ secrets.M1_PGDATABASE }}
+          PGPASSWORD: ${{ secrets.M1_PGPASSWORD }}
+          M1_PGROOTCERT_B64: ${{ secrets.M1_PGROOTCERT_B64 }}
+          M2_SOURCE_SHA: ${{ inputs.source_sha256 }}
           PYTHONDONTWRITEBYTECODE: '1'
           PYTHONNOUSERSITE: '1'
         run: |
