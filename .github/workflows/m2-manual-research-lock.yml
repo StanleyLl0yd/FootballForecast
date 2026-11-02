@@ -116,7 +116,7 @@ jobs:
                   ips.append(str(address))
           if not 1 <= len(ips) <= 4:
               raise SystemExit('FAIL: source DNS cardinality refused')
-          Path(sys.argv[2]).write_text('\\n'.join(ips) + '\\n', encoding='utf-8')
+          Path(sys.argv[2]).write_text('\n'.join(ips) + '\n', encoding='utf-8')
           M2_DNS
             while IFS= read -r ip; do
               if curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
