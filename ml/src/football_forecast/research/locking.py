@@ -25,6 +25,14 @@ def _digest(value: object) -> str:
     ).encode("utf-8")).hexdigest()
 
 
+def _training_rows_fingerprint(fixtures) -> str:
+    return _digest([
+        [f.source_match_id, f.kickoff_at.isoformat(), f.home_team_id,
+         f.away_team_id, f.home_goals, f.away_goals]
+        for f in fixtures
+    ])
+
+
 def _model_fingerprint(model: TeamStrengthModel) -> str:
     return _digest({
         "protocol": PROTOCOL, "teams": model.teams,
@@ -147,11 +155,7 @@ def prepare_pre_holdout_lock(
         0 if f.home_goals > f.away_goals else 1 if f.home_goals == f.away_goals else 2
         for f in data.fixtures
     )
-    train_rows = [
-        [f.source_match_id, f.kickoff_at.isoformat(), f.home_team_id,
-         f.away_team_id, f.home_goals, f.away_goals]
-        for f in data.fixtures
-    ]
+    train_digest = _training_rows_fingerprint(data.fixtures)
     model_digest = _model_fingerprint(model)
     return PreHoldoutLock(
         protocol=PROTOCOL,
@@ -159,7 +163,7 @@ def prepare_pre_holdout_lock(
         source_sha256=source_sha256,
         snapshot_identity_sha256=_digest([data.snapshot_id, data.source_sha256,
                                          data.retrieved_at.isoformat()]),
-        train_rows_sha256=_digest(train_rows),
+        train_rows_sha256=train_digest,
         club_mapping_sha256=_digest(sorted(club_mapping.items())),
         fitted_model_sha256=model_digest,
         train_outcome_counts=(outcomes[0], outcomes[1], outcomes[2]),

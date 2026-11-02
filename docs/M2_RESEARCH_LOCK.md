@@ -132,3 +132,21 @@ snapshot identity, train count and explicit `externalSourceRechecked: false`,
 pre-holdout model lock, does not re-assert publisher availability, does not
 train, and does not permit opening the sealed 2025/26 labels.
 No private team identifiers or match rows are printed or uploaded.
+
+## Source-outage research candidate (not a protected lock)
+
+The owner may post the exact issue #182 command `/m2-candidate 038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f` to run one
+ephemeral fit **only** on the already stored, approved 2024/25 train cohort.
+The shared strict read-only SQL contract and private certificate are enforced;
+the source is not fetched. The fixed Independent-Poisson v1 parameters are
+the same as those used by the future corroborated lock runner. The model is
+discarded in memory after returning a bounded aggregate of training row,
+club mapping, model and snapshot fingerprints.
+
+The result explicitly declares `modelFitted: true` but
+`preHoldoutLockApproved: false`, `externalSourceRechecked: false`,
+`holdoutRead: false` and `modelAccuracyEvaluated: false`. It is not a
+production-trained or approved model and **must not** be used to read/score
+the 2025/26 sealed holdout. Its deterministic fingerprints can later be
+compared against an independently source-corroborated protected lock, without
+changing the frozen protocol or tuning on any target labels.
