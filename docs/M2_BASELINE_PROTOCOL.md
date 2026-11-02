@@ -39,3 +39,7 @@ sum(attack) = 0; sum(defence) = 0
 ## Safety and cost
 
 All work remains $0 using current Free/Hobby and protected GitHub Actions. No commercial bulk scraping, paid API, unauthorized private raw export to artifacts, personal data or new browser write capability. Keep M1 RLS/holdout/protected-merge invariants and existing non-gating risks #6/#8/#96. CI may use only synthetic fixtures and do not label synthetic metrics as real match evaluation.
+
+## Protected training input candidate
+
+The separate [M2 training-input contract](M2_TRAINING_INPUT.md) documents an explicitly pinned, privately invoked, bounded 2024/25-only read surface. Its SQL and Python checks are not an authorization to train a real model, open 2025/26 holdout labels, publish predictions or assert a timestamp-authenticated historical backtest.
