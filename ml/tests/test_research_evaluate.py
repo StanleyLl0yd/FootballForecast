@@ -13,7 +13,16 @@ from football_forecast.research.evaluate import (
     evaluate_fixed_locked_holdout,
 )
 from football_forecast.research.locking import prepare_pre_holdout_lock
-from test_research_lock import COMMIT, SHA, SNAPSHOT, RETRIEVED, SyntheticCursor, mapping, report, rows
+from test_research_lock import (
+    COMMIT,
+    RETRIEVED,
+    SHA,
+    SNAPSHOT,
+    SyntheticCursor,
+    mapping,
+    report,
+    rows,
+)
 
 
 def test_stable_non_strict_scoring_and_train_only_prior():
