@@ -89,8 +89,8 @@ The mapping is deterministic from *training-season source club IDs only* using
 SHA256 aliases; its cross-season continuity is not independently certified.
 
 Temporary downloaded inputs are deleted; only aggregate digests and training H/D/A
-counts appear in the GitHub job summary. The job has no write SQL and **no 2025/26
-read path**. A successful protected run is a reproducible *candidate attestation*,
+counts appear in the GitHub job summary. The job has no write SQL and **no 2025/26 result-label/identity read path**;
+the pre-existing SQL input contract checks only the sealed role/count envelope. A successful protected run is a reproducible *candidate attestation*,
 not an immutable approved model record; the owner must verify and separately
 anchor its exact result in protected Git history before any holdout evaluation.
 The workflow is not triggered on push, PR or schedule. No run/real fit has been
