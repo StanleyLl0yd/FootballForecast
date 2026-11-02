@@ -238,3 +238,24 @@ independent source corroboration, proof of protected GitHub execution, model
 escrow verification, immutable lock approval or holdout permission. No real
 source-corroborated request has been produced. Owner OAuth acceptance remains
 pending; M2 stays 4/8 and 2025/26 sealed.
+
+## Canonical private model codec (synthetic-only; no escrow executed)
+
+`football_forecast.research.model_escrow` provides a pure in-memory
+`serialize_private_model` / `load_private_model` pair for **future**
+protected coefficient storage. It accepts exactly the fixed Poisson v1,
+240 training fixtures, 16 sorted training-only hashed aliases, 30 appearances
+per club and finite bounded hexadecimal float coefficients. The 10-key
+canonical UTF-8 JSON payload is at most 8 KiB; the loader rejects changed
+bytes, extra keys, noncanonical encodings, altered coefficients or a mismatch
+with the existing `fittedModelSha256` contract.
+
+**The bytes are private and reconstructible model weights.** They must never
+be committed to Git, logged, uploaded to a public Actions artifact, returned
+from an API or shown in the browser. Only a digest of independently secured
+bytes may eventually enter an aggregate study-anchor request. This module
+has **no I/O, encryption, key management, model writer, database permission,
+GitHub workflow activation or holdout reader**. Tests use synthetic training
+fixtures exclusively. It does not establish a saved real model, secure
+private escrow, independently verified digest, approved model lock or
+permission to evaluate the sealed season. Those gates remain open.
