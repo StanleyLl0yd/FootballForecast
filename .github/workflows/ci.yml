@@ -188,6 +188,8 @@ jobs:
         run: node --test tests/m2-manual-lock-workflow.test.mjs
       - name: Validate local-only M2 aggregate attestation viewer
         run: node --test apps/web/tests/m2-lock-viewer.test.mjs
+      - name: Reject forged or oversized public M2 GitHub research run metadata
+        run: node --experimental-strip-types --test apps/web/tests/m2-run-status.test.mjs
       - name: Verify safe M1 protected GitHub Environment setup
         run: |
           node --test tests/m1-secret-setup-script.test.mjs
