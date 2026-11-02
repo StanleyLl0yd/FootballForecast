@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 private model escrow encoding preparation — 2026-11-02
+
+- Added synthetic-only, no-I/O canonical private fitted-model codec with strict 10-field schema, 8 KiB limit, finite float-hex checks and independent bytes/model SHA-256 verification. The coefficients remain unpersisted and private; no trusted storage, model approval, historical benchmark, production publication or holdout access was introduced. M2 remains 4/8 OPEN, M3 unauthorized.
+
 ## M2 pending-anchor request browser inspection — 2026-11-02
 
 - Added an owner-console local-only inspector for the future `M2_STUDY_ANCHOR_REQUEST`: strict 24-field closed schema, SHA and workflow/code consistency checks, explicit pending-only status and negative security tests. It does not authenticate the supplied JSON, persist a model, approve a study or read sealed results. Full owner OAuth acceptance remains pending; M2 stays 4/8, M3 unauthorized.
