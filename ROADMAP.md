@@ -1,6 +1,18 @@
 # Roadmap
 
-Updated 2026-10-29. Milestone acceptance requires verification, not code presence.
+Updated 2026-11-02. Milestone acceptance requires verification, not code presence.
+
+## M1 — RPL data foundation (ACCEPTED 2026-11-02)
+
+- [x] Owner accepted [M1 issue #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124) after two distinct full 232/232 **internal** technical audit passes, findings disposition and exact-main CI/Security/CodeQL/browser verification; no outside auditor signatures claimed.
+- [x] At acceptance: three three-season Footbolno CC BY 4.0 data roles (2024/25 train candidate, 2025/26 sealed holdout, 2026/27 current); four immutable full 720-row revisions (2880 private records), two byte observations, 616 public canonical matches (583 finished, 33 scheduled), seven guarded current-season result events, zero forecasts. Live counts are a dated observation, not fixed perpetual invariants.
+- [x] Protected $0-only source synchronization, immutable provenance, 15/15 RLS, client read/write denials, sealed holdout unchanged, server-enforced squash-only main, no bypasses, exact-main Frankfurt production READY.
+- [x] Accepted remaining non-gating risks [#6](https://github.com/StanleyLl0yd/FootballForecast/issues/6) (mobile reachability), [#8](https://github.com/StanleyLl0yd/FootballForecast/issues/8) (controlled dev-only advisory), [#96](https://github.com/StanleyLl0yd/FootballForecast/issues/96) (production recovery). These remain **open, not fixed**.
+
+**M2 is NOT authorized or started.** Any ML training, public predictions, or transition into M2 requires a separate owner decision. Historical pre-match publication timestamps and independent calibration remain unproven.
+
+The following M0 material is retained as historical acceptance evidence.
+
 
 ## M0 - Architecture & Web Foundation (ACCEPTED 2026-10-29)
 - [x] Research preliminary RPL data source coverage and terms; owner-approved published-source uses are documented, not blanket production ingestion.
@@ -84,4 +96,4 @@ M0 exit evidence: two full-repository audit passes and fixes, successful protect
 
 ### 2026-10-29 M0 exit audit / owner source-use decision
 
-The repository-wide security/correctness and independent complexity sweeps, the PR #122 regression fixes and residual risks are documented in [M0 exit evidence](docs/M0_EXIT_AUDIT_AND_SOURCE_DECISION.md). The owner explicitly directed use of all 20 recorded free sources within the corresponding published terms, without further routine requests for upstream permissions or vendor letters. Existing licensed data may be used for M1 ingestion and training where the provider's terms cover that operation. Never misrepresent prohibited extraction, raw redistribution, missing chronological evidence or measured model accuracy. **M0 accepted 2026-10-29; M1 OPEN.**
+The repository-wide security/correctness and independent complexity sweeps, the PR #122 regression fixes and residual risks are documented in [M0 exit evidence](docs/M0_EXIT_AUDIT_AND_SOURCE_DECISION.md). The owner explicitly directed use of all 20 recorded free sources within the corresponding published terms, without further routine requests for upstream permissions or vendor letters. Existing licensed data may be used for M1 ingestion and training where the provider's terms cover that operation. Never misrepresent prohibited extraction, raw redistribution, missing chronological evidence or measured model accuracy. **M0 accepted 2026-10-29; M1 was OPEN at that checkpoint, and was subsequently ACCEPTED 2026-11-02.**
