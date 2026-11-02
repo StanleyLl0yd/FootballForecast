@@ -13,6 +13,8 @@ Updated 2026-11-02. Milestone acceptance requires verification, not code presenc
 
 M2 protected training input implemented in [PR #184](https://github.com/StanleyLl0yd/FootballForecast/pull/184), protected squash merge, exact-head 10/10 PASS. The 11th Supabase Frankfurt migration is applied, live aggregate SELECT confirms 240/240 2024/25 training records, 16 clubs with 30 games each, 0 non-training rows and 0 published forecasts. [Read-only contract](docs/M2_TRAINING_INPUT.md). No real fitted model or opened holdout; four remaining #182 tasks after conditional model-family deferral; source/holdout/immutable-evidence gates remain unaccepted.
 
+M2 owner-facing UI work in progress: an owner-only `/admin/research` read-only console displays bounded committed train-only identifiers, GitHub workflow metadata and explicit blockers for exact-source reconfirmation, immutable pre-holdout anchoring and one-time evaluation. The public model lab stays read-only. The new page is guarded with `requireOwner()` before reading status or showing evidence; this is not acceptance of the entire UI, immutable-artifact or evaluation criterion. M2 remains OPEN 4/8.
+
 The following M0 material is retained as historical acceptance evidence.
 
 

@@ -68,6 +68,13 @@ export default async function Page(){
       <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M2_STORED_TRAIN_REPLAY_EVIDENCE.json"
         target="_blank" rel="noopener noreferrer">Проверить ограниченное evidence ↗</a>
     </section>
+    <section className="panel informative">
+      <h2>Рабочий экран владельца</h2>
+      <p>Сводка условий допуска, закреплённых SHA и статуса защищённого исследования доступна
+        только владельцу после GitHub-аутентификации. Ни обучение, ни контрольный сезон
+        через сайт не запускаются.</p>
+      <a className="sources-method" href="/admin/research">Открыть защищённый контроль M2 ↗</a>
+    </section>
     <M2CandidateReplay/>
     <ResearchLockViewer/>
     <section className="panel informative">
