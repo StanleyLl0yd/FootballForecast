@@ -39,7 +39,7 @@ test('opened M2 preserves sealed-holdout and preregistration boundaries',()=>{
   assert.match(roadmap,/M2 - Statistical Baselines \(OPEN 2026-11-02\)/);
   assert.match(m2Protocol,/Protocol version: \`m2-independent-poisson-v1\`/);
   assert.match(m2Protocol,/2025\/26.*sealed/i);
-  assert.match(m2Protocol,/No live model run, database write or public forecast/);
+  assert.match(m2Protocol,/No production model, database write or public forecast/);
   assert.match(agents,/M3 is not authorized/);
   assert.match(operations,/M2 OPEN 2026-11-02/);
 });
@@ -50,7 +50,7 @@ test('automated sources and absence of trained model/deliveries are consistently
   assert.match(tls,/M1 was \*\*ACCEPTED on 2026-11-02\*\*/);
   assert.match(operations,/07:43 UTC/);
   assert.match(operations,/Forecast publication.*real model-training jobs.*remain disabled/);
-  assert.match(readme,/Обученных моделей, опубликованных прогнозов и подтверждённой точности пока нет/);
+  assert.match(readme,/Утверждённых и опубликованных моделей, прогнозов и подтверждённой точности пока нет/);
   assert.match(limitations,/model training and live predictions remain disabled/);
 });
 
@@ -74,7 +74,7 @@ test('historical M0 source protocol cannot imply M0 is still open or Footbolno u
 test('M1 backtesting and licensing distinguish historical M0 research from live protected ingestion',()=>{
   assert.match(backtesting,/M0 was ACCEPTED on 2026-10-29/);
   assert.match(backtesting,/M1 #124\]\(https:\/\/github\.com\/StanleyLl0yd\/FootballForecast\/issues\/124\) was ACCEPTED on 2026-11-02/);
-  assert.match(backtesting,/no ML model has been trained/);
+  assert.match(backtesting,/two protected source-offline temporary train-only fits completed/);
   assert.doesNotMatch(backtesting,/M0 remains OPEN|no provider is approved or data imported/);
   assert.match(licensing,/protected M1 Footbolno CC BY 4\.0 importer became operational/);
   assert.match(licensing,/Model training and forecasts remain disabled/);
