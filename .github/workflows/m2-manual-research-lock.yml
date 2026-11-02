@@ -30,7 +30,8 @@ jobs:
          github.event.issue.number == 182 && !github.event.issue.pull_request &&
          github.event.comment.user.login == 'StanleyLl0yd' &&
          github.event.comment.author_association == 'OWNER' &&
-         github.event.comment.body == '/m2-lock 038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f')
+         (github.event.comment.body == '/m2-lock 038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f' ||
+          github.event.comment.body == '/m2-preflight 038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f'))
       )
     runs-on: ubuntu-latest
     environment: m1-source-import
@@ -56,6 +57,7 @@ jobs:
           PGPASSWORD: ${{ secrets.M1_PGPASSWORD }}
           M1_PGROOTCERT_B64: ${{ secrets.M1_PGROOTCERT_B64 }}
           M2_SOURCE_SHA: ${{ github.event_name == 'issue_comment' && '038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f' || inputs.source_sha256 }}
+          M2_PREFLIGHT: ${{ github.event_name == 'issue_comment' && github.event.comment.body == '/m2-preflight 038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f' }}
           PYTHONDONTWRITEBYTECODE: '1'
           PYTHONNOUSERSITE: '1'
         run: |
@@ -80,6 +82,41 @@ jobs:
           }
           openssl x509 -in "$work/ca.crt" -noout -checkend 86400 >/dev/null
           export PGSSLROOTCERT="$work/ca.crt"
+          if [[ "$M2_PREFLIGHT" == 'true' ]]; then
+            echo 'M2 offline preflight: validating existing pinned private train rows only, no model fitting or source download.'
+            python -m football_forecast.research.runner --preflight > "$work/preflight.json"
+            node --input-type=module - "$work/preflight.json" <<'M2_PREFLIGHT_CHECK'
+          import {readFileSync} from 'node:fs';
+          const path=process.argv[2], b=readFileSync(path);
+          if(!b.length||b.length>4096)throw Error('Invalid aggregate preflight bytes');
+          const v=JSON.parse(b.toString('utf8'));
+          const fields=['schemaVersion','kind','codeSha','sourceSha256',
+            'snapshotIdentitySha256','trainingMatches','trainingClubs','storedTrainOnly',
+            'externalSourceRechecked','modelFitted','holdoutRead','historicalPrematchVerified'];
+          if(Object.keys(v).length!==fields.length||
+             Object.keys(v).some(key=>!fields.includes(key))||
+             v.schemaVersion!==1||v.kind!=='M2_STORED_TRAIN_PREFLIGHT'||
+             !/^[a-f0-9]{40}$/.test(v.codeSha)||!/^[a-f0-9]{64}$/.test(v.sourceSha256)||
+             !/^[a-f0-9]{64}$/.test(v.snapshotIdentitySha256)||
+             v.trainingMatches!==240||v.trainingClubs!==16||
+             v.storedTrainOnly!==true||v.externalSourceRechecked!==false||
+             v.modelFitted!==false||v.holdoutRead!==false||
+             v.historicalPrematchVerified!==false)
+            throw Error('Untrusted private preflight aggregate');
+          M2_PREFLIGHT_CHECK
+            echo "M2_PRIVATE_PREFLIGHT_JSON=$(cat "$work/preflight.json")"
+            echo "M2_PRIVATE_PREFLIGHT_SHA256=$(sha256sum "$work/preflight.json" | cut -d ' ' -f1)"
+            {
+              echo '## M2 existing snapshot preflight — NOT a real training run'
+              echo 'Verified stored train only; publisher CSV was NOT fetched or reverified.'
+              echo 'No holdout identity/labels, model fit or forecast write.'
+              echo '~~~json'
+              cat "$work/preflight.json"
+              echo
+              echo '~~~'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           source_url='https://footbolno.ru/data/league/235-matches.csv'
           if ! curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
             --connect-timeout 10 --max-time 45 --max-filesize 2000000 \
