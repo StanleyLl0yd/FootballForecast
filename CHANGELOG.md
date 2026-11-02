@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 pending-anchor request browser inspection — 2026-11-02
+
+- Added an owner-console local-only inspector for the future `M2_STUDY_ANCHOR_REQUEST`: strict 24-field closed schema, SHA and workflow/code consistency checks, explicit pending-only status and negative security tests. It does not authenticate the supplied JSON, persist a model, approve a study or read sealed results. Full owner OAuth acceptance remains pending; M2 stays 4/8, M3 unauthorized.
+
 ## M2 owner research console and pre-anchor safety — 2026-11-02
 
 - Protected [#199](https://github.com/StanleyLl0yd/FootballForecast/pull/199) shipped owner-only `/admin/research` as read-only evidence/status and explicit holdout blockers. Exact-head 10/10 PASS and post-merge exact-main 9/9 PASS; Vercel Frankfurt deployment matched the protected merge SHA and primary alias.
