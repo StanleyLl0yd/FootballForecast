@@ -28,8 +28,8 @@ export default function DataCenter(){
   const active=sources.filter(source=>source.active).length;
   const measured=sources.filter(source=>source.empiricalResultErrorRate!==null).length;
   return <>
-    <PageHeading eyebrow="M1 / РЕЕСТР ИСТОЧНИКОВ" title="Центр данных"
-      subtitle="Бесплатные источники, доказательства надёжности и ограничения использования. M1: приватный импорт Footbolno проверен. Ниже также сохранены исследования M0 для проверки происхождения данных; опубликованных прогнозов пока нет."/>
+    <PageHeading eyebrow="M1 ПРИНЯТ / РЕЕСТР ИСТОЧНИКОВ" title="Центр данных"
+      subtitle="Бесплатные источники, доказательства надёжности и ограничения использования. M1 принят 02.11.2026: приватный импорт Footbolno проверен. M2 не открыт. Ниже также сохранены исследования M0 для проверки происхождения данных; опубликованных прогнозов пока нет."/>
     <div className="stat-grid">
       <div className="stat"><span>Источников в реестре</span><strong>{sources.length}</strong>
         <small>Бесплатные и общедоступные справочные</small></div>
@@ -37,7 +37,7 @@ export default function DataCenter(){
         <small>Статус исторического реестра, не M1</small></div>
       <div className="stat"><span>Измеренная точность</span><strong>{measured}</strong>
         <small>Нужна независимая сверка матчей</small></div>
-      <div className="stat"><span>Этап проекта</span><strong>M1</strong>
+      <div className="stat"><span>Этап проекта</span><strong>M1 принят</strong>
         <small>Обучение моделей ещё не начиналось</small></div>
     </div>
     <section className="panel sources-intro">
