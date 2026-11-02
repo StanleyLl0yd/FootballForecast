@@ -4,9 +4,9 @@ The caller must separately attest the training season, provenance, rights and
 sealed-holdout exclusion before passing matches. This pure solver does not do so.
 """
 from collections import Counter
+from collections.abc import Sequence
 from dataclasses import dataclass
 from math import exp, isfinite, log
-from typing import Sequence
 
 from football_forecast.data.contracts import DataError, FinishedMatch
 from football_forecast.models.poisson import ScoreDistribution, poisson_score_distribution
@@ -58,12 +58,12 @@ def fit_independent_poisson(matches: Sequence[FinishedMatch]) -> TeamStrengthMod
     records = sorted(matches, key=lambda m: (m.kickoff_at, m.match_id))
     if not records:
         raise InsufficientTrainingData("no train-season matches")
-    if len(records) > 240:
-        raise DataError("one train season cannot contain more than 240 fixtures")
     match_ids = [match.match_id for match in records]
     pairs = [(m.home_team_id, m.away_team_id) for m in records]
     if len(set(match_ids)) != len(match_ids) or len(set(pairs)) != len(pairs):
         raise DataError("duplicate match or directed fixture")
+    if len(records) > 240:
+        raise DataError("one train season cannot contain more than 240 fixtures")
     clubs = tuple(sorted({t for m in records for t in (m.home_team_id, m.away_team_id)}))
     if len(clubs) < 2 or len(clubs) > 16:
         raise InsufficientTrainingData("invalid train-season club count")
