@@ -60,3 +60,17 @@ walk-forward accuracy. Unseen clubs must abstain.
 References: [baseline protocol](M2_BASELINE_PROTOCOL.md),
 [private input contract](M2_TRAINING_INPUT.md),
 [tracking issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182).
+
+## Offline aggregate scorer (synthetic tests only)
+
+`football_forecast.research.evaluate.evaluate_fixed_locked_holdout` is a pure
+function for a *future* trusted, one-time benchmark: it verifies the locked
+model fingerprint and same immutable snapshot, rejects role/season/score/date
+violations, abstains on unseen train clubs, and computes aggregate N, exclusion
+counts and mean multiclass Log Loss, Brier (H/D/A sum), and two-threshold RPS.
+The comparator is frozen training-only H/D/A frequency. It has **no database
+access**, does not train, tune or publish, and is tested with synthetic labels
+only. A caller must verify/anchor the lock **before retrieving any real holdout
+label**. No legitimate original historical publisher snapshot or round cluster
+proof exists; uncertainty is explicitly `INCONCLUSIVE` and any future result
+is non-strict descriptive research, not authenticated pre-match accuracy.

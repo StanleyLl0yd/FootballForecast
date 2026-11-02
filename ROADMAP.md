@@ -64,7 +64,7 @@ Licensed adapters, provenance, normalized seasons and teams, timestamp checks, d
 - [x] Deterministic regularized Poisson team-strength fit with synthetic-only tests (PR #183); protected real training read (PR #184).
 - [ ] Protected pre-holdout model and source attestations: implementation/tests prepared; trusted real run and immutable anchoring NOT DONE ([contract](docs/M2_RESEARCH_LOCK.md)).
 - [ ] Protected real-data read-only training extraction and QC; no private raw records or provider credentials in artifacts.
-- [ ] Single fixed **non-strict retrospective** holdout evaluation, no test-label tuning; clear honest probability and uncertainty reporting.
+- [ ] One-time **non-strict retrospective** holdout evaluation after immutable real lock and provenance: offline scorer with strict 240/240 role/identity gates and synthetic-only tests prepared; **real study NOT RUN**, no tuning or accuracy claim.
 - [ ] Browser-based owner M2 research/status interface and reproducible constrained study jobs; no default public prediction writing.
 - [ ] Complete two repository-wide M2 exit audits, exact-main CI/Security/CodeQL/browser, verified production and explicit owner acceptance.
 

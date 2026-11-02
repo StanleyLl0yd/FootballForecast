@@ -1,6 +1,10 @@
 # Changelog
 
 
+## Fixed-model aggregate scorer (M2, synthetic-only)
+
+Added a pure no-I/O future evaluation gate verifying exact prior lock/model/snapshot, holdout role and fixture integrity, training-only H/D/A frequency baseline, aggregate Log Loss/Brier/RPS and unseen-club abstention. Synthetic labels only; no real holdout read, measured accuracy, calibration or publication. Deferred uncertainty remains INCONCLUSIVE.
+
 ## Pre-holdout research lock (M2, synthetic-only)
 
 Prepared a private-only, reproducible [M2 research-lock contract](docs/M2_RESEARCH_LOCK.md) with strict exact-revision Footbolno/OpenFootball score-gate input, predeclared 16-club mapping, and SHA-256 fingerprints of the train rows, model, mapping and code. No real fit, trusted-runner anchoring or holdout evaluation has occurred. M2 remains 3/8 complete; no public forecasts.
