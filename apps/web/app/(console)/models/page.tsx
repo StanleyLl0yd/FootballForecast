@@ -10,7 +10,7 @@ export default async function Page(){
     <PageHeading eyebrow="M2 · ИССЛЕДОВАНИЕ" title="Лаборатория моделей"
       subtitle="Протокол, подготовка обучения и контроль исследовательских доказательств. Отчёты не равны опубликованным прогнозам."/>
     <div className="stat-grid">
-      <div className="stat"><span>План M2</span><strong>3/8</strong><small>5 блоков ещё не приняты; статус на 02.11.2026</small></div>
+      <div className="stat"><span>План M2</span><strong>4/8</strong><small>4 блока ещё не приняты; перенос Elo/Dixon–Coles документирован</small></div>
       <div className="stat"><span>Обучающая выборка</span><strong>240</strong><small>2024/25 · 16 клубов · read-only</small></div>
       <div className="stat"><span>Утверждённых моделей</span><strong>0</strong><small>2 временных train-only fit подтверждены, модель не сохранена</small></div>
       <div className="stat"><span>Публикация прогнозов</span><strong>0</strong><small>Holdout 2025/26 закрыт</small></div>
@@ -74,7 +74,7 @@ export default async function Page(){
       <h2>Ограничения M2</h2>
       <p>Два временных train-only fit на сохранённых данных дали одинаковые SHA; это не утверждённый model lock. Пока не зафиксирован доверенный эксперимент и не подтверждено происхождение контрольных данных,
         нет реальных Log Loss, Brier, RPS, калибровки или разрешённой публичной модели.
-        Elo и Dixon–Coles отложены до независимой валидационной выборки.
+        Elo и Dixon–Coles отложены до независимой валидационной выборки — это решение об отсутствии достаточных данных, а не сравнение их точности.
         Даже будущая ретроспективная оценка не будет подтверждённым историческим предматчевым прогнозом.</p>
       <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/issues/182"
         target="_blank" rel="noopener noreferrer">Отслеживать M2 ↗</a>

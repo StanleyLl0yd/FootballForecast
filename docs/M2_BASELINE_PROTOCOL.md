@@ -43,3 +43,33 @@ All work remains $0 using current Free/Hobby and protected GitHub Actions. No co
 ## Protected training input candidate
 
 The separate [M2 training-input contract](M2_TRAINING_INPUT.md) documents an explicitly pinned, privately invoked, bounded 2024/25-only read surface. Its SQL and Python checks are not an authorization to train a real model, open 2025/26 holdout labels, publish predictions or assert a timestamp-authenticated historical backtest.
+
+## Conditional model-family decision — 2026-11-02
+
+**M2 issue #182, conditional candidate-selection task: ACCEPTED BY DEFERRAL, not
+by Elo/Dixon–Coles benchmarking.** The pre-registered Independent Poisson v1
+is the only currently eligible fixed baseline. No second independent,
+rights-cleared, fully provenance-reviewed validation cohort exists within the
+approved M2 three-season design:
+
+| RPL cohort | Scope | Can it tune/rank alternative families? |
+| --- | --- | --- |
+| 2024/25 | Fixed 240-match `train_baseline`; 16 clubs | **No**: used for fitting the sole frozen baseline; training fit quality is not independent validation |
+| 2025/26 | Sealed 240-match `sealed_holdout` | **No**: cannot be used for Elo/Dixon–Coles selection, regularization, calibration, aliases or thresholds |
+| 2026/27 | Current-season records and future fixtures | **No**: incomplete, with no verified historical pre-match-as-of cohort; live result labels are not permitted for this retrospective choice |
+| Earlier seasons/other free sources | Not separately accepted for training/validation in M2 | **No** until independently licensed, identified, quality-checked and temporally appropriate |
+
+**Decision:** do not fit, optimize, compare or publish Elo/Dixon–Coles contenders
+in M2; no leaderboard, champion/challenger selection, calibration curves,
+hyperparameter search or test-season model switching. These are deferred
+**experimental hypotheses**, not rejected due to any measured performance.
+If a genuinely independent and appropriately timestamped validation cohort
+is later accepted, prepare a new prospective protocol before inspecting
+its scores. M3 remains unauthorized until explicit owner acceptance of M2.
+Future single fixed-Poisson non-strict retrospective scoring, if separately
+authorized after a protected source-corroborated lock, must not be repurposed
+as validation of alternative model families.
+
+This closes only the conditional model-family decision criterion; it does
+**not** close the separate source-verification, holdout evaluation, immutable
+study artifact, UI authorization or two full repository-wide audit gates.
