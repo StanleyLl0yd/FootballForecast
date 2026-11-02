@@ -2,6 +2,8 @@
 
 ## M2 statistical research opened — 2026-11-02 (in progress)
 
+Prepared a pinned 2024/25-only protected training input adapter (private SQL + Python and synthetic tests), without real training, holdout evaluation or model publication; see [M2 input contract](docs/M2_TRAINING_INPUT.md).
+
 Owner authorized [M2 #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182). [Fixed Poisson baseline protocol](docs/M2_BASELINE_PROTOCOL.md) pre-registered, with 2024/25 train, 2025/26 sealed holdout and strict provenance limitations; implementation/testing begins on synthetic examples. No live model is trained or forecast published; M3 is unopened. Status and documentation are kept in sync with each guarded PR.
 
 ## M1 data foundation accepted — 2026-11-02 (milestone, not a versioned release)

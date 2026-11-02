@@ -11,6 +11,8 @@ Updated 2026-11-02. Milestone acceptance requires verification, not code presenc
 
 **M2 is OPEN, owner-authorized 2026-11-02** ([issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182)). The fixed independent-Poisson study must be pre-registered before any real-data training, with 2025/26 sealed. M3 remains not authorized. No model has been trained or published. Historical pre-match publication timestamps and independent calibration remain unproven.
 
+M2 step in review: [pinned protected 2024/25 training input](docs/M2_TRAINING_INPUT.md), synthetic SQL/Python gates, no real data extraction, no holdout evaluation. This component is not accepted until its PR, exact-head and post-merge checks pass; the remaining #182 checklist stays open.
+
 The following M0 material is retained as historical acceptance evidence.
 
 
