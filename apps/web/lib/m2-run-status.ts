@@ -1,6 +1,6 @@
 import {readResponseTextBounded} from './limited-response.mjs';
 
-const githubRunsURL='https://api.github.com/repos/StanleyLl0yd/FootballForecast/actions/workflows/m2-manual-research-lock.yml/runs?branch=main&per_page=1';
+const githubRunsURL='https://api.github.com/repos/StanleyLl0yd/FootballForecast/actions/workflows/m2-manual-research-lock.yml/runs?branch=main&per_page=10';
 const validStatuses=new Set(['queued','in_progress','completed','waiting','requested','pending']);
 const validConclusions=new Set(['success','failure','cancelled','timed_out','neutral','action_required','skipped','stale']);
 const shaPattern=/^[a-f0-9]{40}$/;
@@ -25,29 +25,37 @@ export async function readM2TrainOnlyRun(
       throw Error('Invalid run metadata');
     const body=value as Record<string,unknown>;
     if(typeof body.total_count!=='number'||!Number.isSafeInteger(body.total_count)||body.total_count<0||
-       !Array.isArray(body.workflow_runs)||body.workflow_runs.length>1)
+       !Array.isArray(body.workflow_runs)||body.workflow_runs.length>10)
       throw Error('Invalid run metadata shape');
     if(body.total_count===0&&body.workflow_runs.length===0)return {state:'no_runs'};
-    if(body.total_count===0||body.workflow_runs.length!==1)
+    if(body.total_count<body.workflow_runs.length||body.workflow_runs.length===0)
       throw Error('Inconsistent run metadata');
-    const candidate:unknown=body.workflow_runs[0];
-    if(!candidate||typeof candidate!=='object'||Array.isArray(candidate))
-      throw Error('Missing trusted run metadata');
-    const run=candidate as Record<string,unknown>;
-    const id=run.id, status=run.status, conclusion=run.conclusion;
-    if(typeof id!=='number'||!Number.isSafeInteger(id)||id<=0||
-       run.event!=='workflow_dispatch'||run.head_branch!=='main'||
-       typeof run.head_sha!=='string'||!shaPattern.test(run.head_sha)||
-       typeof status!=='string'||!validStatuses.has(status)||
-       (conclusion!==null&&(typeof conclusion!=='string'||!validConclusions.has(conclusion)))||
-       (status==='completed'&&conclusion===null)||
-       (status!=='completed'&&conclusion!==null)||
-       run.html_url!==`https://github.com/StanleyLl0yd/FootballForecast/actions/runs/${id}`)
-      throw Error('Untrusted run metadata');
-    return {
-      state:'run',id:Number(id),url:String(run.html_url),
-      status,conclusion:conclusion as string|null,sha:run.head_sha
-    };
+    for(const candidate of body.workflow_runs){
+      if(!candidate||typeof candidate!=='object'||Array.isArray(candidate))
+        throw Error('Untrusted run metadata');
+      const run=candidate as Record<string,unknown>;
+      const actor=run.actor;
+      if(run.event!=='workflow_dispatch'&&run.event!=='issue_comment')continue;
+      if(!actor||typeof actor!=='object'||Array.isArray(actor)||
+         (actor as Record<string,unknown>).login!=='StanleyLl0yd')continue;
+      // Unrelated owner comments create skipped Actions runs; these are not executed research.
+      if(run.event==='issue_comment'&&run.conclusion==='skipped')continue;
+      const id=run.id, status=run.status, conclusion=run.conclusion;
+      if(typeof id!=='number'||!Number.isSafeInteger(id)||id<=0||
+         run.head_branch!=='main'||
+         typeof run.head_sha!=='string'||!shaPattern.test(run.head_sha)||
+         typeof status!=='string'||!validStatuses.has(status)||
+         (conclusion!==null&&(typeof conclusion!=='string'||!validConclusions.has(conclusion)))||
+         (status==='completed'&&conclusion===null)||
+         (status!=='completed'&&conclusion!==null)||
+         run.html_url!==`https://github.com/StanleyLl0yd/FootballForecast/actions/runs/${id}`)
+        throw Error('Untrusted run metadata');
+      return {
+        state:'run',id:Number(id),url:String(run.html_url),
+        status,conclusion:conclusion as string|null,sha:run.head_sha
+      };
+    }
+    return {state:'unavailable'};
   }catch{
     return {state:'unavailable'};
   }
