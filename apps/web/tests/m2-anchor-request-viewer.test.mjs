@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
 import {inspectM2PendingAnchorRequest} from '../lib/m2-anchor-request-viewer.mjs';
 
@@ -64,4 +65,25 @@ test('invalid hashes and every unexpected digest type are rejected',()=>{
     assert.throws(()=>inspectM2PendingAnchorRequest({...sample(),[key]:'F'.repeat(64)}),
       /Недопустимый запрос/);
   }
+});
+
+
+test('browser schema stays in lockstep with Python pre-anchor request producer',()=>{
+  const python=readFileSync(new URL('../../../ml/src/football_forecast/research/anchor.py',import.meta.url),'utf8');
+  const tail=python.split('    return {\\n').at(-1);
+  assert.ok(tail!==python,'Python anchor request dictionary must exist');
+  const emitted=[...tail.matchAll(/^        "([A-Za-z0-9]+)":/gm)].map(match=>match[1]);
+  assert.equal(emitted.length,24,'Python request schema changed; review browser allowlist');
+  assert.deepEqual(new Set(Object.keys(sample())),new Set(emitted));
+});
+
+test('pending request inspector is guarded by owner authorization and has no server write path',()=>{
+  const route=readFileSync(new URL('../app/(console)/admin/research/page.tsx',import.meta.url),'utf8');
+  const auth=route.indexOf('await requireOwner()');
+  assert.ok(auth>0&&auth<route.indexOf('readM2TrainOnlyRun()'));
+  assert.match(route,/M2AnchorRequestViewer/);
+  const component=readFileSync(new URL('../components/m2-anchor-request-viewer.tsx',import.meta.url),'utf8');
+  assert.match(component,/'use client'/);
+  assert.match(component,/file\.arrayBuffer\(\)/);
+  assert.doesNotMatch(component,/fetch\s*\(|service_role|formAction=|action=|upload-artifact/);
 });
