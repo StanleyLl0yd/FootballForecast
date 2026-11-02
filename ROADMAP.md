@@ -65,7 +65,7 @@ Licensed adapters, provenance, normalized seasons and teams, timestamp checks, d
 - [ ] Protected pre-holdout model and source attestations: implementation/tests prepared; manual protected runner prepared but NOT RUN; immutable anchoring NOT DONE ([contract](docs/M2_RESEARCH_LOCK.md)).
 - [ ] Protected real-data read-only training extraction and QC; no private raw records or provider credentials in artifacts.
 - [ ] One-time **non-strict retrospective** holdout evaluation after immutable real lock and provenance: offline scorer with strict 240/240 role/identity gates and synthetic-only tests prepared; **real study NOT RUN**, no tuning or accuracy claim.
-- [ ] Browser-based owner M2 research/status interface and reproducible constrained study jobs: public read-only research status and local schema-guarded aggregate-attestation viewer prepared; trusted owner authentication, immutable evidence anchoring and real research jobs NOT COMPLETE. No browser DB writes or default predictions.
+- [ ] Browser-based owner M2 research/status interface and reproducible constrained study jobs: public read-only GitHub workflow status (bounded tokenless GET, fail-closed) and local schema-guarded aggregate-attestation viewer prepared; trusted owner authentication, immutable evidence anchoring and real research jobs NOT COMPLETE. No browser DB writes or default predictions.
 - [ ] Complete two repository-wide M2 exit audits, exact-main CI/Security/CodeQL/browser, verified production and explicit owner acceptance.
 
 Deferred calibration/Elo/Dixon-Coles selection requires independent validation/cohort; do not tune on the sealed holdout. **M3 is not open.**
