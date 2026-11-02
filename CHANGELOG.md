@@ -1,5 +1,10 @@
 # Changelog
 
+
+## Pre-holdout research lock (M2, synthetic-only)
+
+Prepared a private-only, reproducible [M2 research-lock contract](docs/M2_RESEARCH_LOCK.md) with strict exact-revision Footbolno/OpenFootball score-gate input, predeclared 16-club mapping, and SHA-256 fingerprints of the train rows, model, mapping and code. No real fit, trusted-runner anchoring or holdout evaluation has occurred. M2 remains 3/8 complete; no public forecasts.
+
 ## M2 statistical research opened — 2026-11-02 (in progress)
 
 Merged protected [PR #184](https://github.com/StanleyLl0yd/FootballForecast/pull/184) with the SHA-pinned 2024/25-only SQL/Python read adapter and synthetic tests (10/10 exact-head PASS). Applied migration `m2_training_read_only` to live Supabase Frankfurt and verified only aggregate 240 training rows/16 clubs; browser roles and service_role still cannot execute the function. No real model training, holdout evaluation or forecast publication. See [M2 input contract](docs/M2_TRAINING_INPUT.md).

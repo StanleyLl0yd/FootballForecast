@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from math import exp, isfinite, log
 
 from football_forecast.data.contracts import DataError, FinishedMatch
+from football_forecast.data.training_input import TrainingFixture
 from football_forecast.models.poisson import ScoreDistribution, poisson_score_distribution
 
 _RIDGE = 2.0
@@ -49,11 +50,13 @@ class TeamStrengthModel:
         return poisson_score_distribution(home_rate, away_rate)
 
 
-def fit_independent_poisson(matches: Sequence[FinishedMatch]) -> TeamStrengthModel:
+def fit_independent_poisson(
+    matches: Sequence[FinishedMatch | TrainingFixture],
+) -> TeamStrengthModel:
     """Fit fixed-v1 ridge Poisson strengths, without data fetching or evaluating labels.
 
-    The signed train/holdout identity and source as-of checks belong to a separate
-    protected input adapter, which has not yet been authorized for live execution.
+    Any TrainingFixture must originate from the protected role/provenance-gated
+    reader. Its source has no authenticated finish timestamp; none is invented.
     """
     records = sorted(matches, key=lambda m: (m.kickoff_at, m.match_id))
     if not records:

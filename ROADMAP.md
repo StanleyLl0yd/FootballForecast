@@ -61,7 +61,8 @@ Licensed adapters, provenance, normalized seasons and teams, timestamp checks, d
 
 - [x] Owner explicitly authorized [M2 issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182), while [M1 #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124) remains ACCEPTED.
 - [x] [Independent-Poisson protocol v1](docs/M2_BASELINE_PROTOCOL.md) frozen **before real training**, with 2024/25 train, 2025/26 sealed holdout and current-season time gates; no retrospective strict-as-of or accuracy claims.
-- [ ] Implement and verify deterministic regularized, identifiable Poisson team-strength fit on synthetic data with leakage/invalid-data tests.
+- [x] Deterministic regularized Poisson team-strength fit with synthetic-only tests (PR #183); protected real training read (PR #184).
+- [ ] Protected pre-holdout model and source attestations: implementation/tests prepared; trusted real run and immutable anchoring NOT DONE ([contract](docs/M2_RESEARCH_LOCK.md)).
 - [ ] Protected real-data read-only training extraction and QC; no private raw records or provider credentials in artifacts.
 - [ ] Single fixed **non-strict retrospective** holdout evaluation, no test-label tuning; clear honest probability and uncertainty reporting.
 - [ ] Browser-based owner M2 research/status interface and reproducible constrained study jobs; no default public prediction writing.

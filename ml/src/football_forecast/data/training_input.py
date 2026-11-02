@@ -37,6 +37,10 @@ class TrainingFixture:
     home_goals: int
     away_goals: int
 
+    @property
+    def match_id(self) -> str:
+        return self.source_match_id
+
 
 @dataclass(frozen=True, slots=True)
 class TrainingInput:
