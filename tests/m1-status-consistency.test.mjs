@@ -20,7 +20,7 @@ test('public shell and README acknowledge accepted M0 and M1 without inventing m
   assert.match(readme,/616 матчей \(583 завершённых, 33 запланированных\)/);
   assert.match(readme,/104 будущих матча/);
   assert.match(readme,/Обученных моделей, опубликованных прогнозов и подтверждённой точности пока нет/);
-  assert.match(readme,/M2.*ещё не начат/);
+  assert.match(readme,/M2.*ещё не открыт и не начат/);
   assert.doesNotMatch(readme,/База РПЛ ещё пустая|Статус: M0, разработка|M1 начинается исключительно/);
 });
 
