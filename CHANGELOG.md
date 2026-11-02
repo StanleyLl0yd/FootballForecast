@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 browser research status and offline candidate viewer (prepared)
+
+Added public read-only `/models` research status, GitHub protected job/protocol links and local-only strict 16 KiB JSON candidate lock inspection with synthetic negative tests. No upload, network write or privileged DB access from browser. A locally supplied digest is not an authenticated run or immutable study result. Corrected stale `/admin` M2 status; M2 still 3/8, no real fit/holdout evaluation/public forecast.
+
 
 ## Guarded private train-only research runner (M2, prepared)
 
