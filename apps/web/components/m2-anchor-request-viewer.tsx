@@ -30,7 +30,8 @@ export function M2AnchorRequestViewer(){
       const parsed:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
       setPending(inspectM2PendingAnchorRequest(parsed) as Pending);
     }catch(caught){
-      setError(caught instanceof Error?caught.message:'Не удалось проверить JSON.');
+      setError(caught instanceof SyntaxError?'Некорректный JSON-файл.':
+        caught instanceof Error?caught.message:'Не удалось проверить JSON.');
     }finally{setBusy(false);}
   };
   return <section className="panel source-lab">
