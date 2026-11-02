@@ -88,7 +88,7 @@ test('accepted M1 milestone is consistently represented in current operational s
   assert.match(agents,/M2 OPEN, authorized by owner 2026-11-02/);
   assert.match(readme,/M2 OPEN \(02\.11\.2026\)/);
   assert.match(limitations,/M1 ACCEPTED on 2026-11-02/);
-  assert.match(sourceRegister,/M0 and M1 accepted; M2 not authorized/);
+  assert.match(sourceRegister,/M0 and M1 accepted; M2 research OPEN 2026-11-02/);
   assert.match(deploy,/M1 was accepted on 2026-11-02/);
   assert.match(operations,/M1 accepted on 2026-11-02/);
   assert.match(licensing,/M1 accepted by owner on 2026-11-02/);
@@ -113,7 +113,7 @@ test('live M1 migration, canonical match and private row counts match documented
 
 test('source register dates and supersedes historical M0 zero-data conclusions',()=>{
   assert.match(sourceRegister,/### Accepted M1 operations \(last source snapshot verified 2026-11-01\)/);
-  assert.match(sourceRegister,/M2 is not authorized or started/);
+  assert.match(sourceRegister,/M2 is OPEN for bounded research/);
   assert.match(sourceRegister,/616 canonical RPL matches/);
   assert.match(sourceRegister,/2880 private match records/);
   assert.match(sourceRegister,/Archived M0 source-gate criteria/);
