@@ -80,10 +80,54 @@ jobs:
           }
           openssl x509 -in "$work/ca.crt" -noout -checkend 86400 >/dev/null
           export PGSSLROOTCERT="$work/ca.crt"
-          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+          source_url='https://footbolno.ru/data/league/235-matches.csv'
+          if ! curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
             --connect-timeout 10 --max-time 45 --max-filesize 2000000 \
-            --output "$work/footbolno.csv" \
-            'https://footbolno.ru/data/league/235-matches.csv'
+            --output "$work/footbolno.csv" "$source_url"; then
+            rm -f "$work/footbolno.csv"
+            echo 'Direct source DNS/network failed; attempting HTTPS verified host via bounded DoH A records.'
+            curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+              --connect-timeout 8 --max-time 15 --max-filesize 4096 \
+              -H 'Accept: application/dns-json' \
+              --output "$work/dns.json" \
+              'https://1.1.1.1/dns-query?name=footbolno.ru&type=A'
+            python - "$work/dns.json" "$work/ips.txt" <<'M2_DNS'
+          import ipaddress
+          import json
+          import sys
+          from pathlib import Path
+
+          reply = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+          if type(reply.get('Status')) is not int or reply['Status'] != 0:
+              raise SystemExit('FAIL: source DNS-over-HTTPS response refused')
+          ips = []
+          for answer in reply.get('Answer', []):
+              if not isinstance(answer, dict) or answer.get('type') != 1:
+                  continue
+              if str(answer.get('name', '')).rstrip('.').lower() != 'footbolno.ru':
+                  continue
+              try:
+                  address = ipaddress.ip_address(answer.get('data', ''))
+              except ValueError:
+                  raise SystemExit('FAIL: invalid source DNS address')
+              if address.version != 4 or not address.is_global:
+                  raise SystemExit('FAIL: non-public source DNS address')
+              if str(address) not in ips:
+                  ips.append(str(address))
+          if not 1 <= len(ips) <= 4:
+              raise SystemExit('FAIL: source DNS cardinality refused')
+          Path(sys.argv[2]).write_text('\\n'.join(ips) + '\\n', encoding='utf-8')
+          M2_DNS
+            while IFS= read -r ip; do
+              if curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+                --resolve "footbolno.ru:443:$ip" \
+                --connect-timeout 10 --max-time 45 --max-filesize 2000000 \
+                --output "$work/footbolno.csv" "$source_url"; then
+                break
+              fi
+              rm -f "$work/footbolno.csv"
+            done < "$work/ips.txt"
+          fi
           [[ -s "$work/footbolno.csv" ]]
           [[ "$(wc -c < "$work/footbolno.csv")" -le 2000000 ]]
           actual_sha="$(sha256sum "$work/footbolno.csv" | cut -d ' ' -f1)"
