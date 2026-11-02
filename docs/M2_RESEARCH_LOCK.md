@@ -221,3 +221,20 @@ reviewed immutable study record to protected history, independently verify that
 commit ancestry and record identity **before any holdout identity/label query**,
 and enforce single-use. None of those external attestations, approvals or
 holdout operations is implemented or authorized by this preparatory change.
+
+## Browser-local pending anchor request inspector (synthetic-only)
+
+The owner read-only `/admin/research` console can parse a future
+`M2_STUDY_ANCHOR_REQUEST` JSON (maximum 16 KiB) **locally in browser memory**.
+Its 24-field exact allowlist enforces `PENDING_INDEPENDENT_REVIEW`, no holdout
+permission, fixed protocol/repository/ref, 64-hex digest fields and matching
+workflow/code SHA. Unknown fields, private rows, raw model coefficients and
+self-proclaimed approval are rejected; no upload, server action, storage,
+workflow dispatch or database access occurs. The UI shows only selected
+aggregate fingerprints and workflow IDs.
+
+This is **syntax and internal-consistency inspection of untrusted JSON**, not
+independent source corroboration, proof of protected GitHub execution, model
+escrow verification, immutable lock approval or holdout permission. No real
+source-corroborated request has been produced. Owner OAuth acceptance remains
+pending; M2 stays 4/8 and 2025/26 sealed.
