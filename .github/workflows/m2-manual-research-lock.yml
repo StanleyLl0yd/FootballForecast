@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: 'Type LOCK_TRAIN_ONLY; no holdout access or forecast publication'
+        description: 'Type LOCK_TRAIN_ONLY; no holdout labels or forecast publication'
         required: true
         type: string
       source_sha256:
@@ -89,7 +89,7 @@ jobs:
           [[ -s "$work/lock.json" ]]
           {
             echo '## M2 manual train-only candidate lock (not yet immutable)'
-            echo 'Research only; zero sealed-holdout reads, zero database writes, no accuracy estimate.'
+            echo 'Train-only: holdout role counts checked, no holdout labels/IDs read, zero DB writes.'
             echo 'CC BY 4.0 Footbolno — https://footbolno.ru/otkrytye-dannye'
             echo 'Pinned OpenFootball reference — https://github.com/openfootball/europe'
             echo 'Source agreement does not prove independent original authorship or historical as-of.'
