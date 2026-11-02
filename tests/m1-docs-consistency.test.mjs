@@ -80,6 +80,9 @@ test('accepted M1 milestone is consistently represented in current operational s
   assert.match(readme,/M2 \(обучение и честная историческая оценка моделей\) ещё не открыт/);
   assert.match(limitations,/M1 ACCEPTED on 2026-11-02/);
   assert.match(sourceRegister,/M0 and M1 accepted; M2 not authorized/);
+  assert.match(deploy,/M1 was accepted on 2026-11-02/);
+  assert.match(operations,/M1 accepted on 2026-11-02/);
+  assert.match(licensing,/M1 accepted by owner on 2026-11-02/);
   for(const doc of [readme,roadmap,agents,limitations,operations,architecture,backtesting,security,tls,sourceRegister]){
     assert.doesNotMatch(doc,/M1 (?:remains OPEN|is OPEN|OPEN:)|Статус: M1 OPEN/);
   }
