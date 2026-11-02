@@ -1,6 +1,6 @@
 # Operations
 
-**M1 source synchronization is active:** protected Footbolno import/guarded current-season refresh runs at 06:17 and 18:17 UTC daily, with independent bounded SportScore research at 07:43 UTC. **Forecast creation, Friday/Tuesday report delivery, model training, public privileged callbacks and historical corrections remain disabled.**
+**M1 accepted on 2026-11-02; source synchronization remains active:** protected Footbolno import/guarded current-season refresh runs at 06:17 and 18:17 UTC daily, with independent bounded SportScore research at 07:43 UTC. **Forecast creation, Friday/Tuesday report delivery, model training, public privileged callbacks and historical corrections remain disabled.**
 
 ## M1 three-season source normalization (bounded daily verification)
 
