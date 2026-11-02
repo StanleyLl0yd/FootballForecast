@@ -32,3 +32,85 @@ def test_reject_bad_mapping_source_cohorts(clubs):
 def test_runner_is_importable_without_database_driver_or_credentials():
     from football_forecast.research import runner
     assert runner.main is not None
+
+class PrivateCursor:
+    def __init__(self, training_rows):
+        self.training_rows = training_rows
+        self.statements = []
+        self.pending = ""
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        return False
+
+    def execute(self, statement, parameters=None):
+        self.statements.append((statement, parameters))
+        self.pending = statement
+
+    def fetchmany(self, size):
+        if size == 2:
+            return [("a0000000-0000-0000-0000-000000000001",)]
+        if size == 241:
+            return self.training_rows
+        raise AssertionError("unexpected private read")
+
+
+class PrivateConnection:
+    def __init__(self, cursor):
+        self.private_cursor = cursor
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        return False
+
+    def cursor(self):
+        return self.private_cursor
+
+
+def test_stored_snapshot_preflight_reads_only_verified_train_without_source_download(monkeypatch):
+    from football_forecast.research import runner
+    cursor = PrivateCursor(rows())
+    monkeypatch.setattr(runner, "_private_connection", lambda: PrivateConnection(cursor))
+    result = runner.produce_private_preflight(
+        source_sha256="a" * 64, code_sha="b" * 40,
+    )
+    assert result["kind"] == "M2_STORED_TRAIN_PREFLIGHT"
+    assert result["trainingMatches"] == 240
+    assert result["trainingClubs"] == 16
+    assert result["storedTrainOnly"] is True
+    assert result["externalSourceRechecked"] is False
+    assert result["modelFitted"] is False
+    assert result["holdoutRead"] is False
+    assert result["historicalPrematchVerified"] is False
+    assert len(result["snapshotIdentitySha256"]) == 64
+    assert len(cursor.statements) == 3
+    assert "repeatable read read only" in cursor.statements[0][0]
+    assert "ff_ingest_snapshots" in cursor.statements[1][0]
+    assert "ff_m2_training_rows" in cursor.statements[2][0]
+    assert all(not any(word in sql.lower() for word in (
+        "insert into", "update ", "delete from", "ff_m2_holdout_rows"
+    )) for sql, _ in cursor.statements)
+    assert "synthetic" not in str(result)
+    assert "src-" not in str(result)
+
+
+def test_stored_snapshot_preflight_refuses_bad_hash_and_nontraining_row_before_output(monkeypatch):
+    from football_forecast.research import runner
+    cursor = PrivateCursor(rows())
+    monkeypatch.setattr(runner, "_private_connection", lambda: PrivateConnection(cursor))
+    with pytest.raises(DataError):
+        runner.produce_private_preflight(source_sha256="broken", code_sha="b"*40)
+    assert cursor.statements == []
+    bad_rows = rows()
+    first = list(bad_rows[0])
+    first[2] = "sealed_holdout"
+    bad_rows[0] = tuple(first)
+    monkeypatch.setattr(runner, "_private_connection", lambda: PrivateConnection(
+        PrivateCursor(bad_rows)
+    ))
+    with pytest.raises(DataError, match="non-training"):
+        runner.produce_private_preflight(source_sha256="a"*64, code_sha="b"*40)
