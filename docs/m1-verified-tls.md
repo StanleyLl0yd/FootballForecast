@@ -41,5 +41,4 @@ it. Re-run synthetic tests and exact-main CI before a manual import.
 
 TLS verification alone does **not** prove a successful import. Subsequent protected
 runs have imported real attributed Footbolno records, including four full snapshots and two compact SHA observations, as verified on 2026-11-01.
-M1 remains OPEN: the 2026-11-01 protected refresh and freshness issue #168 are complete, but independent deep repository-wide exit audits and the issue #165 ruleset hardening and #124 acceptance criteria remain;
-no model has been trained.
+M1 was **ACCEPTED on 2026-11-02** ([closed #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124)): the real protected refresh and #168 were verified, both distinct internal full-repository technical audits were documented, and #165 server-side squash-only/PR-thread protection was confirmed. **M2 is not authorized and no model has been trained.**
