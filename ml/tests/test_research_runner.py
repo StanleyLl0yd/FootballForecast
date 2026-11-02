@@ -1,6 +1,6 @@
 """Synthetic-only private M2 runner preparation; never requires DB credentials."""
 import pytest
-from test_research_lock import rows
+from test_research_lock import COMMIT, SHA, SNAPSHOT, SyntheticCursor, report, rows
 
 from football_forecast.data.contracts import DataError
 from football_forecast.research.runner import training_only_mapping
@@ -114,3 +114,47 @@ def test_stored_snapshot_preflight_refuses_bad_hash_and_nontraining_row_before_o
     ))
     with pytest.raises(DataError, match="non-training"):
         runner.produce_private_preflight(source_sha256="a"*64, code_sha="b"*40)
+
+
+
+def test_stored_snapshot_candidate_is_deterministic_and_matches_future_corroborated_lock(monkeypatch):
+    from football_forecast.research import runner
+    from football_forecast.research.locking import prepare_pre_holdout_lock
+    def private_read():
+        return PrivateConnection(PrivateCursor(rows()))
+    monkeypatch.setattr(runner, "_private_connection", private_read)
+    candidate = runner.produce_private_candidate(source_sha256=SHA, code_sha=COMMIT)
+    assert candidate == runner.produce_private_candidate(source_sha256=SHA, code_sha=COMMIT)
+    teams = {t for row in rows() for t in (row[4], row[5])}
+    future_lock = prepare_pre_holdout_lock(
+        SyntheticCursor(rows()), snapshot_id=SNAPSHOT, source_sha256=SHA,
+        code_sha=COMMIT, club_mapping=runner.training_only_mapping(teams),
+        corroboration=report(),
+    )
+    assert candidate["snapshotIdentitySha256"] == future_lock.snapshot_identity_sha256
+    assert candidate["trainRowsSha256"] == future_lock.train_rows_sha256
+    assert candidate["clubMappingSha256"] == future_lock.club_mapping_sha256
+    assert candidate["fittedModelSha256"] == future_lock.fitted_model_sha256
+    assert candidate["modelFitted"] is True
+    assert candidate["preHoldoutLockApproved"] is False
+    assert candidate["externalSourceRechecked"] is False
+    assert candidate["holdoutRead"] is False
+    assert candidate["modelAccuracyEvaluated"] is False
+    assert "src-" not in str(candidate) and "synthetic-" not in str(candidate)
+
+
+def test_stored_candidate_rejects_holdout_role_and_invalid_identity_without_fitting(monkeypatch):
+    from football_forecast.research import runner
+    private = PrivateCursor(rows())
+    monkeypatch.setattr(runner, "_private_connection", lambda: PrivateConnection(private))
+    with pytest.raises(DataError):
+        runner.produce_private_candidate(source_sha256="x", code_sha=COMMIT)
+    assert private.statements == []
+    invalid = rows()
+    first = list(invalid[0])
+    first[2] = "sealed_holdout"
+    invalid[0] = tuple(first)
+    monkeypatch.setattr(runner, "_private_connection",
+                        lambda: PrivateConnection(PrivateCursor(invalid)))
+    with pytest.raises(DataError, match="non-training"):
+        runner.produce_private_candidate(source_sha256=SHA, code_sha=COMMIT)
