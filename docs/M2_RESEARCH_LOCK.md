@@ -90,7 +90,13 @@ non-PR issue, repository, and default branch. Both entrypoints share one
 protected environment, one 10-minute bounded read-only job, and the same pinned
 source SHA enforcement. Posting an arbitrary comment cannot start training. It refuses any mismatch
 between the downloaded current CSV and pinned private source version; if the
-publisher has changed, no fit is attempted. It independently retrieves the
+publisher has changed, no fit is attempted. Following two independently observed
+2026-11-02 GitHub Runner DNS timeouts before training (run 41436355466,
+attempts 1–2), the same HTTPS origin may be retried with bounded DNS-over-HTTPS
+public A records and `curl --resolve`; the hostname's TLS certificate, original
+URL, maximum bytes and exact SHA-256 are unchanged. Only public IPv4 addresses
+are accepted, with no arbitrary caller-supplied host, redirect or private IP.
+If DNS, HTTPS or bytes fail, training still refuses. It independently retrieves the
 pinned OpenFootball text, checks exact 240/240 score and UTC-date agreement,
 and enforces reviewed Supabase CA / private read-only PostgreSQL transaction.
 The mapping is deterministic from *training-season source club IDs only* using

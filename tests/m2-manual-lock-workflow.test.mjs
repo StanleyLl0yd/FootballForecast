@@ -42,6 +42,10 @@ test('M2 owner-created exact issue command is manual, bounded and default-branch
 
 test('M2 research uses pinned verified source, CA and read-only snapshot transaction',()=>{
   assert.match(wf,/sha256sum "\$work\/footbolno\.csv"/);
+  assert.match(wf,/https:\/\/1\.1\.1\.1\/dns-query\?name=footbolno\.ru&type=A/);
+  assert.match(wf,/--resolve "footbolno\.ru:443:\$ip"/);
+  assert.match(wf,/address\.is_global/);
+  assert.match(wf,/source DNS cardinality refused/);
   assert.match(wf,/actual_sha" == "\$M2_SOURCE_SHA"/);
   assert.match(wf,/807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa/);
   assert.match(wf,/m0-cross-source-fixture-reconcile\.mjs/);
