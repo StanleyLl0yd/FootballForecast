@@ -15,6 +15,8 @@ M2 protected training input implemented in [PR #184](https://github.com/StanleyL
 
 M2 owner-facing UI work in progress: an owner-only `/admin/research` read-only console displays bounded committed train-only identifiers, GitHub workflow metadata and explicit blockers for exact-source reconfirmation, immutable pre-holdout anchoring and one-time evaluation. The public model lab stays read-only. The new page is guarded with `requireOwner()` before reading status or showing evidence; this is not acceptance of the entire UI, immutable-artifact or evaluation criterion. M2 remains OPEN 4/8.
 
+A synthetic-only M2 study-anchor request envelope is prepared: SHA-bound source comparison, execution identity, runtime/dependency digests and a future private model-artifact reference. It always states pending review/no holdout permission; no source-verified real lock, protected immutable anchor or evaluator authorization exists. M2 stays 4/8.
+
 The following M0 material is retained as historical acceptance evidence.
 
 
