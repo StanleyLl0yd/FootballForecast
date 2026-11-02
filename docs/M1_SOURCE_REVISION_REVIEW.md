@@ -73,7 +73,7 @@ summary is 2 modified, 718 unchanged, 1 score change, 1 new confirmed time,
 1 historical holdout change, and no public-table writes.
 
 Free-only requirement, attribution and existing owner-accepted #6/#8/#96 risks
-remain unchanged. M1 was accepted by the owner 2026-11-02 ([#124](https://github.com/StanleyLl0yd/FootballForecast/issues/124)); M2 has not been authorized.
+remain unchanged. M1 was accepted by the owner 2026-11-02 ([#124](https://github.com/StanleyLl0yd/FootballForecast/issues/124)); M2 research was subsequently authorized on 2026-11-02 ([#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182)); M1 data safeguards remain in force.
 
 ## Explicit guarded current-season refresh (migration 0009)
 
@@ -310,4 +310,4 @@ training, sealed-holdout access changes, historical outcome corrections or
 provider subscriptions were performed to collect this evidence. Continue
 separately checking newly changed results and no-match days; ambiguous,
 unavailable or contradictory evidence remains **INCONCLUSIVE**, not accepted
-by inference. The subsequent [2026-11-01 protected run #41349407434](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41349407434) applied exactly four further current-season scheduled-to-finished results, with four immutable events and no sealed-holdout change, resolving source freshness #168. M1 was subsequently accepted on 2026-11-02 after two distinct complete internal 232/232 technical audit passes and server-side squash-only ruleset hardening [#165](https://github.com/StanleyLl0yd/FootballForecast/issues/165). [#124](https://github.com/StanleyLl0yd/FootballForecast/issues/124) is CLOSED; M2 remains unopened. The preceding 2026-11-01 evidence and counts remain historical observations.
+by inference. The subsequent [2026-11-01 protected run #41349407434](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41349407434) applied exactly four further current-season scheduled-to-finished results, with four immutable events and no sealed-holdout change, resolving source freshness #168. M1 was subsequently accepted on 2026-11-02 after two distinct complete internal 232/232 technical audit passes and server-side squash-only ruleset hardening [#165](https://github.com/StanleyLl0yd/FootballForecast/issues/165). [#124](https://github.com/StanleyLl0yd/FootballForecast/issues/124) is CLOSED; M2 opened for statistical research on 2026-11-02, with no real trained model or public forecasts. The preceding 2026-11-01 evidence and counts remain historical observations.

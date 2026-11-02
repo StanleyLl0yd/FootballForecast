@@ -12,16 +12,16 @@ const setup=read('../apps/web/app/setup/page.tsx');
 const dataCenter=read('../apps/web/app/(console)/data/page.tsx');
 
 test('public shell and README acknowledge accepted M0 and M1 without inventing models',()=>{
-  assert.match(shell,/M1 принят · Проверенные матчи/);
+  assert.match(shell,/M2 · Разработка моделей/);
   assert.doesNotMatch(shell,/M0 · Подготовка данных/);
   assert.match(readme,/M1 ACCEPTED \(02\.11\.2026\)/);
   assert.match(readme,/M0 принят 29\.10\.2026/);
-  assert.match(readme,/M2 \(обучение и честная историческая оценка моделей\) ещё не открыт/);
+  assert.match(readme,/M2 OPEN \(02\.11\.2026\)/);
   assert.match(readme,/4 полных снимка по 720 матчей \(2880 записей\)/);
   assert.match(readme,/616 матчей \(583 завершённых, 33 запланированных\)/);
   assert.match(readme,/104 будущих матча/);
   assert.match(readme,/Обученных моделей, опубликованных прогнозов и подтверждённой точности пока нет/);
-  assert.match(readme,/M2.*ещё не открыт и не начат/);
+  assert.match(readme,/M2 открыт 02\.11\.2026/);
   assert.doesNotMatch(readme,/База РПЛ ещё пустая|Статус: M0, разработка|M1 начинается исключительно/);
 });
 
@@ -37,6 +37,7 @@ test('auth and model screens accurately describe imported M1 source data and dis
   assert.match(login,/АДМИНИСТРИРОВАНИЕ \/ M1 ПРИНЯТ/);
   assert.match(dataCenter,/M1 ПРИНЯТ \/ РЕЕСТР ИСТОЧНИКОВ/);
   assert.match(dataCenter,/Этап проекта<\/span><strong>M1 принят<\/strong>/);
+  assert.match(dataCenter,/M2 открыт для разработки статистических моделей/);
   assert.match(setup,/FOOTBALLFORECAST \/ M1 ПРИНЯТ/);
   assert.match(models,/Данные Footbolno уже импортированы в защищённую базу/);
   assert.match(models,/Обучение ещё не запущено/);

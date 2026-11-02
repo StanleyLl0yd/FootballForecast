@@ -17,6 +17,7 @@ const licensing=read('../docs/LICENSING.md');
 const roadmap=read('../ROADMAP.md');
 const agents=read('../AGENTS.md');
 const changelog=read('../CHANGELOG.md');
+const m2Protocol=read('../docs/M2_BASELINE_PROTOCOL.md');
 
 test('accepted M1 docs do not claim live RPL database is empty or M1 blocked',()=>{
   assert.match(readme,/M1 ACCEPTED \(02\.11\.2026\)/);
@@ -34,12 +35,21 @@ test('accepted M1 docs do not claim live RPL database is empty or M1 blocked',()
     assert.doesNotMatch(doc,/M0 remains OPEN|M1 stays blocked|The real database is empty/);
 });
 
+test('opened M2 preserves sealed-holdout and preregistration boundaries',()=>{
+  assert.match(roadmap,/M2 - Statistical Baselines \(OPEN 2026-11-02\)/);
+  assert.match(m2Protocol,/Protocol version: \`m2-independent-poisson-v1\`/);
+  assert.match(m2Protocol,/2025\/26.*sealed/i);
+  assert.match(m2Protocol,/No live model run, database write or public forecast/);
+  assert.match(agents,/M3 is not authorized/);
+  assert.match(operations,/M2 OPEN 2026-11-02/);
+});
+
 test('automated sources and absence of trained model/deliveries are consistently disclosed',()=>{
   assert.match(operations,/06:17 and 18:17 UTC/);
   assert.match(operations,/specifically allowlisted source pipeline dependency/);
   assert.match(tls,/M1 was \*\*ACCEPTED on 2026-11-02\*\*/);
   assert.match(operations,/07:43 UTC/);
-  assert.match(operations,/Forecast creation.*model training.*remain disabled/);
+  assert.match(operations,/Forecast publication.*real model-training jobs.*remain disabled/);
   assert.match(readme,/Обученных моделей, опубликованных прогнозов и подтверждённой точности пока нет/);
   assert.match(limitations,/model training and live predictions remain disabled/);
 });
@@ -75,10 +85,10 @@ test('accepted M1 milestone is consistently represented in current operational s
   assert.match(roadmap,/M1 — RPL data foundation \(ACCEPTED 2026-11-02\)/);
   assert.match(changelog,/M1 data foundation accepted — 2026-11-02/);
   assert.match(agents,/M1 ACCEPTED 2026-11-02/);
-  assert.match(agents,/M2 is NOT OPEN or authorized/);
-  assert.match(readme,/M2 \(обучение и честная историческая оценка моделей\) ещё не открыт/);
+  assert.match(agents,/M2 OPEN, authorized by owner 2026-11-02/);
+  assert.match(readme,/M2 OPEN \(02\.11\.2026\)/);
   assert.match(limitations,/M1 ACCEPTED on 2026-11-02/);
-  assert.match(sourceRegister,/M0 and M1 accepted; M2 not authorized/);
+  assert.match(sourceRegister,/M0 and M1 accepted; M2 research OPEN 2026-11-02/);
   assert.match(deploy,/M1 was accepted on 2026-11-02/);
   assert.match(operations,/M1 accepted on 2026-11-02/);
   assert.match(licensing,/M1 accepted by owner on 2026-11-02/);
@@ -103,7 +113,7 @@ test('live M1 migration, canonical match and private row counts match documented
 
 test('source register dates and supersedes historical M0 zero-data conclusions',()=>{
   assert.match(sourceRegister,/### Accepted M1 operations \(last source snapshot verified 2026-11-01\)/);
-  assert.match(sourceRegister,/M2 is not authorized or started/);
+  assert.match(sourceRegister,/M2 is OPEN for bounded research/);
   assert.match(sourceRegister,/616 canonical RPL matches/);
   assert.match(sourceRegister,/2880 private match records/);
   assert.match(sourceRegister,/Archived M0 source-gate criteria/);

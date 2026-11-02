@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 statistical research opened — 2026-11-02 (in progress)
+
+Owner authorized [M2 #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182). [Fixed Poisson baseline protocol](docs/M2_BASELINE_PROTOCOL.md) pre-registered, with 2024/25 train, 2025/26 sealed holdout and strict provenance limitations; implementation/testing begins on synthetic examples. No live model is trained or forecast published; M3 is unopened. Status and documentation are kept in sync with each guarded PR.
+
 ## M1 data foundation accepted — 2026-11-02 (milestone, not a versioned release)
 
 Owner accepted [M1 #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124) after two internal full-repository technical reviews and exact-main CI/Security/CodeQL/browser and Vercel Frankfurt verification. Protected attributed Footbolno RPL ingestion, guarded current-season finalization and immutable private revision history are operational; 2025/26 holdout remains sealed. At acceptance: 616 published matches and 0 published forecasts/trained models. M2 is not authorized. Existing non-gating risks #6, #8, #96 remain tracked.

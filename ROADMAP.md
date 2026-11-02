@@ -9,7 +9,7 @@ Updated 2026-11-02. Milestone acceptance requires verification, not code presenc
 - [x] Protected $0-only source synchronization, immutable provenance, 15/15 RLS, client read/write denials, sealed holdout unchanged, server-enforced squash-only main, no bypasses, exact-main Frankfurt production READY.
 - [x] Accepted remaining non-gating risks [#6](https://github.com/StanleyLl0yd/FootballForecast/issues/6) (mobile reachability), [#8](https://github.com/StanleyLl0yd/FootballForecast/issues/8) (controlled dev-only advisory), [#96](https://github.com/StanleyLl0yd/FootballForecast/issues/96) (production recovery). These remain **open, not fixed**.
 
-**M2 is NOT authorized or started.** Any ML training, public predictions, or transition into M2 requires a separate owner decision. Historical pre-match publication timestamps and independent calibration remain unproven.
+**M2 is OPEN, owner-authorized 2026-11-02** ([issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182)). The fixed independent-Poisson study must be pre-registered before any real-data training, with 2025/26 sealed. M3 remains not authorized. No model has been trained or published. Historical pre-match publication timestamps and independent calibration remain unproven.
 
 The following M0 material is retained as historical acceptance evidence.
 
@@ -55,8 +55,17 @@ The following M0 material is retained as historical acceptance evidence.
 ## M1 - Data Foundation (ACCEPTED 2026-11-02 — see exit evidence above)
 Licensed adapters, provenance, normalized seasons and teams, timestamp checks, data center and sync.
 
-## M2 - Statistical Baselines
-Train Poisson/Dixon-Coles/Elo on proven historical data; strict chronological walk-forward; view results in browser.
+## M2 - Statistical Baselines (OPEN 2026-11-02)
+
+- [x] Owner explicitly authorized [M2 issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182), while [M1 #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124) remains ACCEPTED.
+- [x] [Independent-Poisson protocol v1](docs/M2_BASELINE_PROTOCOL.md) frozen **before real training**, with 2024/25 train, 2025/26 sealed holdout and current-season time gates; no retrospective strict-as-of or accuracy claims.
+- [ ] Implement and verify deterministic regularized, identifiable Poisson team-strength fit on synthetic data with leakage/invalid-data tests.
+- [ ] Protected real-data read-only training extraction and QC; no private raw records or provider credentials in artifacts.
+- [ ] Single fixed **non-strict retrospective** holdout evaluation, no test-label tuning; clear honest probability and uncertainty reporting.
+- [ ] Browser-based owner M2 research/status interface and reproducible constrained study jobs; no default public prediction writing.
+- [ ] Complete two repository-wide M2 exit audits, exact-main CI/Security/CodeQL/browser, verified production and explicit owner acceptance.
+
+Deferred calibration/Elo/Dixon-Coles selection requires independent validation/cohort; do not tune on the sealed holdout. **M3 is not open.**
 
 ## M3 - Calibration & Evaluation
 Independent calibration validation, Log Loss, Brier, RPS, uncertainty and baseline comparisons.
