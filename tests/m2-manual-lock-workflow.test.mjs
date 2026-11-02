@@ -60,7 +60,9 @@ test('M2 research uses pinned verified source, CA and read-only snapshot transac
   assert.match(wf,/runner --preflight/);
   assert.match(wf,/runner --candidate/);
   assert.match(wf,/M2_PRIVATE_CANDIDATE_JSON=/);
-  assert.match(wf,/preHoldoutLockApproved!==false/);
+  assert.match(wf,/inspectM2StoredCandidate/);
+  assert.match(wf,/receipt\.codeSha!==process\.env\.GITHUB_SHA/);
+  assert.match(wf,/receipt\.sourceSha256!==process\.env\.M2_SOURCE_SHA/);
   assert.match(wf,/M2_PRIVATE_PREFLIGHT_JSON=/);
   assert.match(wf,/externalSourceRechecked!==false/);
   assert.match(wf,/rm -rf "\$work"/);

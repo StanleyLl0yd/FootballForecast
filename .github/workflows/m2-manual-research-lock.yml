@@ -127,25 +127,11 @@ jobs:
           const bytes=readFileSync(process.argv[2]);
           if(!bytes.length||bytes.length>4096)throw Error('Invalid candidate aggregate bytes');
           const v=JSON.parse(bytes.toString('utf8'));
-          const keys=['schemaVersion','kind','codeSha','sourceSha256','snapshotIdentitySha256',
-            'trainRowsSha256','clubMappingSha256','fittedModelSha256',
-            'trainingMatches','trainingClubs','storedTrainOnly','externalSourceRechecked',
-            'modelFitted','preHoldoutLockApproved','holdoutRead',
-            'historicalPrematchVerified','modelAccuracyEvaluated'];
-          const hash=/^[a-f0-9]{64}$/;
-          if(Object.keys(v).length!==keys.length||
-             Object.keys(v).some(key=>!keys.includes(key))||
-             v.schemaVersion!==1||v.kind!=='M2_STORED_TRAIN_CANDIDATE'||
-             !/^[a-f0-9]{40}$/.test(v.codeSha)||
-             !['sourceSha256','snapshotIdentitySha256','trainRowsSha256',
-               'clubMappingSha256','fittedModelSha256'].every(key=>
-                 typeof v[key]==='string'&&hash.test(v[key]))||
-             v.trainingMatches!==240||v.trainingClubs!==16||
-             v.storedTrainOnly!==true||v.externalSourceRechecked!==false||
-             v.modelFitted!==true||v.preHoldoutLockApproved!==false||
-             v.holdoutRead!==false||v.historicalPrematchVerified!==false||
-             v.modelAccuracyEvaluated!==false)
-            throw Error('Untrusted train-only candidate aggregate');
+          import {inspectM2StoredCandidate} from './apps/web/lib/m2-candidate-replay.mjs';
+          const receipt=inspectM2StoredCandidate(v);
+          if(receipt.codeSha!==process.env.GITHUB_SHA||
+             receipt.sourceSha256!==process.env.M2_SOURCE_SHA)
+            throw Error('Candidate identity differs from trusted runner');
           M2_CANDIDATE_CHECK
             echo "M2_PRIVATE_CANDIDATE_JSON=$(cat "$work/candidate.json")"
             echo "M2_PRIVATE_CANDIDATE_SHA256=$(sha256sum "$work/candidate.json" | cut -d ' ' -f1)"
