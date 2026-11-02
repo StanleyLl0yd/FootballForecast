@@ -24,7 +24,7 @@ export async function readM2TrainOnlyRun(
     if(!value||typeof value!=='object'||Array.isArray(value))
       throw Error('Invalid run metadata');
     const body=value as Record<string,unknown>;
-    if(!Number.isSafeInteger(body.total_count)||Number(body.total_count)<0||
+    if(typeof body.total_count!=='number'||!Number.isSafeInteger(body.total_count)||body.total_count<0||
        !Array.isArray(body.workflow_runs)||body.workflow_runs.length>1)
       throw Error('Invalid run metadata shape');
     if(body.total_count===0&&body.workflow_runs.length===0)return {state:'no_runs'};
@@ -35,7 +35,7 @@ export async function readM2TrainOnlyRun(
       throw Error('Missing trusted run metadata');
     const run=candidate as Record<string,unknown>;
     const id=run.id, status=run.status, conclusion=run.conclusion;
-    if(!Number.isSafeInteger(id)||Number(id)<=0||
+    if(typeof id!=='number'||!Number.isSafeInteger(id)||id<=0||
        run.event!=='workflow_dispatch'||run.head_branch!=='main'||
        typeof run.head_sha!=='string'||!shaPattern.test(run.head_sha)||
        typeof status!=='string'||!validStatuses.has(status)||
