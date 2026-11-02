@@ -1,0 +1,102 @@
+name: M2 manual train-only research lock
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type LOCK_TRAIN_ONLY; no holdout labels or forecast publication'
+        required: true
+        type: string
+      source_sha256:
+        description: 'Exact approved Footbolno CSV SHA-256 of immutable private snapshot'
+        required: true
+        type: string
+
+permissions: {contents: read}
+concurrency:
+  group: m2-manual-train-only-lock
+  cancel-in-progress: false
+
+jobs:
+  private-lock:
+    if: github.event_name == 'workflow_dispatch' && github.repository == 'StanleyLl0yd/FootballForecast' && github.ref == 'refs/heads/main' && github.actor == 'StanleyLl0yd' && inputs.confirmation == 'LOCK_TRAIN_ONLY'
+    runs-on: ubuntu-latest
+    environment: m1-source-import
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Install reviewed small research dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e ./ml 'psycopg[binary]==3.3.6'
+      - name: Verify pinned exact-source comparison and fit private train only
+        shell: bash
+        env:
+          PGHOST: ${{ secrets.M1_PGHOST }}
+          PGUSER: ${{ secrets.M1_PGUSER }}
+          PGDATABASE: ${{ secrets.M1_PGDATABASE }}
+          PGPASSWORD: ${{ secrets.M1_PGPASSWORD }}
+          M1_PGROOTCERT_B64: ${{ secrets.M1_PGROOTCERT_B64 }}
+          M2_SOURCE_SHA: ${{ inputs.source_sha256 }}
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONNOUSERSITE: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          [[ "$M2_SOURCE_SHA" =~ ^[a-f0-9]{64}$ ]] || { echo 'FAIL: invalid pinned CSV identity'; exit 2; }
+          [[ -n "$PGHOST" && -n "$PGUSER" && -n "$PGDATABASE" && -n "$PGPASSWORD" ]] || {
+            echo 'FAIL: protected PostgreSQL credentials unavailable'; exit 2;
+          }
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          if [[ -n "$M1_PGROOTCERT_B64" ]]; then
+            printf '%s' "$M1_PGROOTCERT_B64" | base64 --decode > "$work/ca.crt"
+          else
+            cp security/certs/supabase-root-2021-ca.crt "$work/ca.crt"
+          fi
+          fingerprint="$(openssl x509 -in "$work/ca.crt" -outform DER | sha256sum | cut -d ' ' -f1)"
+          [[ "$fingerprint" == '807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa' ]] || {
+            echo 'FAIL: pinned PostgreSQL CA mismatch'; exit 2;
+          }
+          openssl x509 -in "$work/ca.crt" -noout -checkend 86400 >/dev/null
+          export PGSSLROOTCERT="$work/ca.crt"
+          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 45 --max-filesize 2000000 \
+            --output "$work/footbolno.csv" \
+            'https://footbolno.ru/data/league/235-matches.csv'
+          [[ -s "$work/footbolno.csv" ]]
+          [[ "$(wc -c < "$work/footbolno.csv")" -le 2000000 ]]
+          actual_sha="$(sha256sum "$work/footbolno.csv" | cut -d ' ' -f1)"
+          [[ "$actual_sha" == "$M2_SOURCE_SHA" ]] || {
+            echo 'FAIL: downloaded source revision differs from pinned immutable snapshot'; exit 2;
+          }
+          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 45 --max-filesize 200000 \
+            --output "$work/openfootball.txt" \
+            'https://raw.githubusercontent.com/openfootball/europe/63df627f3c87ce71708f016522ea236cf74332c3/russia/2024-25_ru1.txt'
+          [[ -s "$work/openfootball.txt" ]]
+          node scripts/m0-cross-source-fixture-reconcile.mjs \
+            "$work/footbolno.csv" "$work/openfootball.txt" > "$work/comparison.json"
+          node scripts/m1-openfootball-score-gate.mjs "$work/comparison.json" > /dev/null
+          python -m football_forecast.research.runner "$work/comparison.json" > "$work/lock.json"
+          [[ -s "$work/lock.json" ]]
+          {
+            echo '## M2 manual train-only candidate lock (not yet immutable)'
+            echo 'Train-only: holdout role counts checked, no holdout labels/IDs read, zero DB writes.'
+            echo 'CC BY 4.0 Footbolno — https://footbolno.ru/otkrytye-dannye'
+            echo 'Pinned OpenFootball reference — https://github.com/openfootball/europe'
+            echo 'Source agreement does not prove independent original authorship or historical as-of.'
+            echo '~~~json'
+            cat "$work/lock.json"
+            echo
+            echo '~~~'
+            echo "Attestation SHA-256: $(sha256sum "$work/lock.json" | cut -d ' ' -f1)"
+            echo 'DO NOT open sealed 2025/26 holdout before independently reviewing and anchoring this evidence.'
+          } >> "$GITHUB_STEP_SUMMARY"

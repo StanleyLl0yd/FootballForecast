@@ -1,0 +1,120 @@
+"""Protected manual train-only M2 research runner. Never queries the sealed holdout.
+
+This module has no import-time database or network activity. The workflow obtains
+the comparator from a pinned source and enforces an exact CSV byte hash first.
+"""
+import json
+import os
+import sys
+from hashlib import sha256
+from pathlib import Path
+from re import fullmatch
+
+from football_forecast.data.contracts import DataError
+from football_forecast.data.training_input import read_training_input
+from football_forecast.research.locking import (
+    _check_corroboration,
+    prepare_pre_holdout_lock,
+)
+
+_SOURCE_URL = "https://footbolno.ru/data/league/235-matches.csv"
+_LICENSE_URL = "https://footbolno.ru/otkrytye-dannye"
+
+
+def training_only_mapping(source_team_ids: set[str]) -> dict[str, str]:
+    """Stable source-ID-only aliases, never inferred from results or holdout."""
+    if (len(source_team_ids) != 16 or any(not isinstance(t, str)
+            or not t.strip() or len(t) > 100 for t in source_team_ids)):
+        raise DataError("M2 runner: invalid training club identities")
+    mapping = {
+        t: "S_" + sha256(("footbolno-club:" + t).encode("utf-8")).hexdigest()[:20].upper()
+        for t in source_team_ids
+    }
+    if len(set(mapping.values())) != 16:
+        raise DataError("M2 runner: club alias hash collision")
+    return mapping
+
+
+def _read_comparator(path: Path) -> object:
+    raw = path.read_bytes()
+    if not 0 < len(raw) <= 20_000:
+        raise DataError("M2 runner: source proof size invalid")
+    return json.loads(raw.decode("utf-8"))
+
+
+def produce_lock(*, report_path: Path, source_sha256: str, code_sha: str) -> dict:
+    """One read-only snapshot transaction, two train-only reads, no DML."""
+    if (not isinstance(source_sha256, str)
+            or not fullmatch(r"[a-f0-9]{64}", source_sha256)
+            or not isinstance(code_sha, str)
+            or not fullmatch(r"[a-f0-9]{40}", code_sha)):
+        raise DataError("M2 runner: invalid pinned code/source identity")
+    report = _read_comparator(report_path)
+    _check_corroboration(report, source_sha256)
+    if not all(os.environ.get(name) for name in (
+        "PGHOST", "PGUSER", "PGDATABASE", "PGPASSWORD", "PGSSLROOTCERT"
+    )):
+        raise DataError("M2 runner: missing protected database credential")
+    import psycopg
+
+    with psycopg.connect(
+        host=os.environ["PGHOST"],
+        user=os.environ["PGUSER"],
+        password=os.environ["PGPASSWORD"],
+        dbname=os.environ["PGDATABASE"],
+        port=5432,
+        sslmode="verify-full",
+        sslrootcert=os.environ["PGSSLROOTCERT"],
+        connect_timeout=10,
+        options="-c statement_timeout=60000 -c idle_in_transaction_session_timeout=60000",
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("set transaction isolation level repeatable read read only")
+            cursor.execute(
+                "select s.id::text from ff_private.ff_ingest_snapshots s "
+                "join public.ff_sources src on src.id=s.source_id "
+                "where s.source_sha256=%s and s.source_url=%s and s.license_url=%s "
+                "and src.name='Footbolno' and src.license_status='approved' "
+                "and src.license_reference=s.license_url limit 2",
+                (source_sha256, _SOURCE_URL, _LICENSE_URL),
+            )
+            rows = cursor.fetchmany(2)
+            if len(rows) != 1:
+                raise DataError("M2 runner: exact approved source snapshot not unique")
+            snapshot_id = rows[0][0]
+            training = read_training_input(
+                cursor, snapshot_id=snapshot_id, source_sha256=source_sha256
+            )
+            source_teams = {
+                team for fixture in training.fixtures
+                for team in (fixture.home_team_id, fixture.away_team_id)
+            }
+            lock = prepare_pre_holdout_lock(
+                cursor, snapshot_id=snapshot_id, source_sha256=source_sha256,
+                code_sha=code_sha,
+                club_mapping=training_only_mapping(source_teams),
+                corroboration=report,
+            )
+    return lock.as_dict()
+
+
+def main() -> int:
+    if len(sys.argv) != 2:
+        print("FAIL: M2 manual research runner requires one ephemeral comparator", file=sys.stderr)
+        return 2
+    try:
+        result = produce_lock(
+            report_path=Path(sys.argv[1]),
+            source_sha256=os.environ.get("M2_SOURCE_SHA", ""),
+            code_sha=os.environ.get("GITHUB_SHA", ""),
+        )
+        print(json.dumps(result, sort_keys=True, separators=(",", ":"), allow_nan=False))
+        return 0
+    except Exception:
+        # Never emit SQL errors, raw rows, source IDs, secrets or filenames.
+        print("FAIL: protected M2 train-only lock refused; no holdout access", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
