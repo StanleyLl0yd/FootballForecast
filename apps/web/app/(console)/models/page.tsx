@@ -2,6 +2,7 @@ import {EmptyState,PageHeading} from '@/components/empty-state';
 import {ResearchLockViewer} from '@/components/research-lock-viewer';
 import {M2CandidateReplay} from '@/components/m2-candidate-replay';
 import {readM2TrainOnlyRun} from '@/lib/m2-run-status';
+import storedReplayEvidence from '../../../../../docs/M2_STORED_TRAIN_REPLAY_EVIDENCE.json';
 
 export default async function Page(){
   const researchRun=await readM2TrainOnlyRun();
@@ -44,6 +45,29 @@ export default async function Page(){
         <p className="source-lab-note">Сайт не отправляет команды на обучение и не может удостоверить результаты GitHub Actions.</p>
       </section>
     </div>
+    <section className="panel informative">
+      <h2>Закреплённое наблюдение: два независимых train-only запуска</h2>
+      <p>По журналам защищённого GitHub Actions 02.11.2026 два отдельных запуска
+        на одном Git-коммите завершились успешно. В обоих совпали SHA сохранённой
+        обучающей выборки (240 матчей, 16 клубов), карты клубов и временной модели.
+        Это сверенное исследовательское наблюдение, <strong>не утверждённая модель</strong>.
+      </p>
+      <p>SHA-256 временной модели: <code>{storedReplayEvidence.receipt.fittedModelSha256}</code></p>
+      <p>SHA-256 агрегированного отчёта: <code>{storedReplayEvidence.receiptSha256}</code></p>
+      <ul>
+        {storedReplayEvidence.runs.map(run=><li key={run.runId}>
+          <a href={`https://github.com/StanleyLl0yd/FootballForecast/actions/runs/${run.runId}`}
+            target="_blank" rel="noopener noreferrer">GitHub Actions #{run.runId} ↗</a>
+          {' · '}один из двух независимых запусков · статус {run.conclusion}
+        </li>)}
+      </ul>
+      <p className="source-lab-note">Footbolno при этих запусках не запрашивался.
+        Внешняя сверка 240/240 на закреплённом CSV ещё не выполнена; модель
+        не сохранена и не допущена к holdout 2025/26, метрики точности отсутствуют.
+        Полный машиночитаемый отчёт хранится в репозитории без матчей и коэффициентов.</p>
+      <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M2_STORED_TRAIN_REPLAY_EVIDENCE.json"
+        target="_blank" rel="noopener noreferrer">Проверить ограниченное evidence ↗</a>
+    </section>
     <M2CandidateReplay/>
     <ResearchLockViewer/>
     <section className="panel informative">

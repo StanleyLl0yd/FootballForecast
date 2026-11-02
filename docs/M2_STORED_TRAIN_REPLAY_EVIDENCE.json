@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_STORED_TRAIN_REPLAY_EVIDENCE",
+  "researchClassification": "TRAIN_ONLY_UNAPPROVED",
+  "observedAtDate": "2026-11-02",
+  "receiptSha256": "56d7ca8b1e40832718b971dd857bc51bf4a7c3146ec98ebbeb481374b348b36e",
+  "receipt": {
+    "clubMappingSha256": "9650628b4d11b608a7e0d1afefa6fec94b514f4cccb937b20af360c802c68997",
+    "codeSha": "34570293d603d63fadd0f31cda34e88fb4ee9c4f",
+    "externalSourceRechecked": false,
+    "fittedModelSha256": "c4145f27d33eee3c77276ec78a838c491c226b80362588ce6c709869cad0b6f1",
+    "historicalPrematchVerified": false,
+    "holdoutRead": false,
+    "kind": "M2_STORED_TRAIN_CANDIDATE",
+    "modelAccuracyEvaluated": false,
+    "modelFitted": true,
+    "preHoldoutLockApproved": false,
+    "schemaVersion": 1,
+    "snapshotIdentitySha256": "afe82bbf33d6e547403ef1ce9505493a655661e0e0f78dffecaea9e857f5b191",
+    "sourceSha256": "038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f",
+    "storedTrainOnly": true,
+    "trainRowsSha256": "991a97c6535eae244f8e6fa8189e3408d5c883f15da0423d9aa1be663628fe4e",
+    "trainingClubs": 16,
+    "trainingMatches": 240
+  },
+  "runs": [
+    {
+      "runId": 41443294566,
+      "jobId": 125270173806,
+      "headSha": "34570293d603d63fadd0f31cda34e88fb4ee9c4f",
+      "event": "issue_comment",
+      "conclusion": "success"
+    },
+    {
+      "runId": 41443547849,
+      "jobId": 125271011636,
+      "headSha": "34570293d603d63fadd0f31cda34e88fb4ee9c4f",
+      "event": "issue_comment",
+      "conclusion": "success"
+    }
+  ]
+}

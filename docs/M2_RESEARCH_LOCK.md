@@ -175,3 +175,21 @@ not authenticate GitHub Actions, independently verify the original source,
 prove the reports came from two executions or approve a pre-holdout lock. Only
 protected independently reviewed, immutable evidence can establish those
 facts. Existing test-scope restrictions remain unchanged.
+
+## Pinned two-run source-offline evidence (2026-11-02)
+
+The aggregate-only machine evidence is in
+[`M2_STORED_TRAIN_REPLAY_EVIDENCE.json`](M2_STORED_TRAIN_REPLAY_EVIDENCE.json).
+It was derived from the **two separately executed, successful protected GitHub
+Actions job logs**, whose complete `M2_PRIVATE_CANDIDATE_JSON` payloads and logged
+receipt SHA-256 agree. A Node regression test recomputes the exact newline-
+terminated serialized SHA-256, enforces the strict 17-field allowlist and
+distinct run/job identities, and forbids any private raw records or predictions.
+The Models page renders this pinned observation without requiring visitors to
+download and upload copies of the two JSON lines.
+
+This is a reproducibility observation, **not an immutable approved pre-holdout
+lock**: Footbolno was not rechecked, no external fixture comparison was
+performed, no source-verified anchor or protected model coefficients exist,
+and the 2025/26 sealed holdout was never read. Future independent proof must
+be generated from the exact publisher revision before an approved model lock.
