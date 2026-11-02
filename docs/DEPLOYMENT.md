@@ -1,4 +1,6 @@
-# Hosting and deployment — M0/M1 accepted, M2 not authorized
+# Hosting and deployment — M0/M1 accepted; M2 research open
+
+**M2 authorized on 2026-11-02:** the research implementation is initially offline/synthetic-only; no new database migration, privileged production training worker or public forecast publisher has been deployed. Keep M1 production importer, zero-cost protections and browser RLS unchanged. See [M2 #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182).
 
 **M1 was accepted on 2026-11-02** ([closed #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124)) after full internal technical audits and exact-main Frankfurt production verification. The protected importer continues running; this milestone acceptance does not start M2 or enable model training. The deployment and database counts below are dated operational observations.
 
