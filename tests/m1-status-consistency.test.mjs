@@ -10,11 +10,12 @@ const models=read('../apps/web/app/(console)/models/page.tsx');
 const login=read('../apps/web/app/login/page.tsx');
 const setup=read('../apps/web/app/setup/page.tsx');
 
-test('public shell and README acknowledge accepted M0 and open M1 without inventing models',()=>{
-  assert.match(shell,/M1 · Проверенные матчи/);
+test('public shell and README acknowledge accepted M0 and M1 without inventing models',()=>{
+  assert.match(shell,/M1 принят · Проверенные матчи/);
   assert.doesNotMatch(shell,/M0 · Подготовка данных/);
-  assert.match(readme,/M1 OPEN/);
+  assert.match(readme,/M1 ACCEPTED \(02\.11\.2026\)/);
   assert.match(readme,/M0 принят 29\.10\.2026/);
+  assert.match(readme,/M2 \(обучение и честная историческая оценка моделей\) ещё не открыт/);
   assert.match(readme,/4 полных снимка по 720 матчей \(2880 записей\)/);
   assert.match(readme,/616 матчей \(583 завершённых, 33 запланированных\)/);
   assert.match(readme,/104 будущих матча/);
@@ -32,8 +33,8 @@ test('owner admin page does not advertise obsolete M0 or disabled protected inge
 });
 
 test('auth and model screens accurately describe imported M1 source data and disabled training',()=>{
-  assert.match(login,/АДМИНИСТРИРОВАНИЕ \/ M1/);
-  assert.match(setup,/FOOTBALLFORECAST \/ M1/);
+  assert.match(login,/АДМИНИСТРИРОВАНИЕ \/ M1 ПРИНЯТ/);
+  assert.match(setup,/FOOTBALLFORECAST \/ M1 ПРИНЯТ/);
   assert.match(models,/Данные Footbolno уже импортированы в защищённую базу/);
   assert.match(models,/Обучение ещё не запущено/);
   assert.doesNotMatch(models,/отсутствуют лицензированный датасет/);
