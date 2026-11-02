@@ -2,7 +2,7 @@
 
 **M2 OPEN 2026-11-02:** statistical research and synthetic-only model implementation are authorized under [the frozen protocol](M2_BASELINE_PROTOCOL.md) and [issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182). The protected live importer and its private credentials remain M1-only. No experimental M2 job may read the sealed holdout to tune a model, expose private source rows, write forecasts or modify the live database.
 
-**M1 accepted on 2026-11-02; source synchronization remains active:** protected Footbolno import/guarded current-season refresh runs at 06:17 and 18:17 UTC daily, with independent bounded SportScore research at 07:43 UTC. **Forecast publication, Friday/Tuesday report delivery, real model-training jobs, public privileged callbacks and historical corrections remain disabled pending the separate M2 gates.**
+**M1 accepted on 2026-11-02; source synchronization remains active:** protected Footbolno import/guarded current-season refresh runs at 06:17 and 18:17 UTC daily, with independent bounded SportScore research at 07:43 UTC. **Forecast publication, Friday/Tuesday report delivery, approved production models, public privileged callbacks and historical corrections remain disabled pending M2 gates.** Two protected temporary train-only research fits did run successfully on stored source-approved 2024/25 data (without external recheck); they are not approved model locks, evaluation or public predictions.
 
 ## M1 three-season source normalization (bounded daily verification)
 
