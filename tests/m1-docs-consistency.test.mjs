@@ -56,7 +56,7 @@ test('M1 operator instructions do not require an empty public catalog or deny au
 
 test('historical M0 source protocol cannot imply M0 is still open or Footbolno unused',()=>{
   assert.match(m0AccuracyProtocol,/Historical M0 research document/);
-  assert.match(m0AccuracyProtocol,/M0 is now \*\*ACCEPTED\*\*/);
+  assert.match(m0AccuracyProtocol,/M0 and M1 are now \*\*ACCEPTED\*\*/);
   assert.match(m0AccuracyProtocol,/M0 and M1 are now \*\*ACCEPTED\*\*/);
   assert.doesNotMatch(m0AccuracyProtocol,/keep #2 and M0 OPEN/);
   assert.doesNotMatch(m0AccuracyProtocol,/All M0 providers are inactive and remain unapproved/);
