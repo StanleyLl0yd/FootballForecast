@@ -1,5 +1,11 @@
 # Changelog
 
+## M2 owner research console and pre-anchor safety — 2026-11-02
+
+- Protected [#199](https://github.com/StanleyLl0yd/FootballForecast/pull/199) shipped owner-only `/admin/research` as read-only evidence/status and explicit holdout blockers. Exact-head 10/10 PASS and post-merge exact-main 9/9 PASS; Vercel Frankfurt deployment matched the protected merge SHA and primary alias.
+- Protected [#200](https://github.com/StanleyLl0yd/FootballForecast/pull/200) added a **synthetic-only, non-authorizing** request envelope for a future immutable study record: SHA-bound source comparison, training attestation, workflow/run identity, execution dependencies and future private-model artifact. An initial test-helper error was corrected before protected squash; merge had 9/10 exact-head PASS, Safari optional still queued.
+- Two genuine stored-source, train-only ephemeral fits have matching fingerprints, but the publisher revision remains unverified during the Footbolno outage. **Current M2 acceptance: 4/8.** No approved model, durable private coefficients, protected immutable lock, holdout score or public prediction. M3 unauthorized. The older M2 entries below are chronological preparation checkpoints, not the current operational state.
+
 ## M2 live public workflow-status viewer (read-only)
 
 Added bounded 128 KiB, 3-second, five-minute-cache public GitHub Actions GET for the manual protected research workflow, strict run/event/ref/URL/SHA/status checks, honest unavailable/never-run distinctions and test-only mocked responses. Never includes secrets, GitHub job inputs, private training rows, DB writes or dispatch. Completion of a workflow does not certify an immutable study or predictive accuracy.
