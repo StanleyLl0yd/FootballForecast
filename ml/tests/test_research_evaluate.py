@@ -3,16 +3,6 @@ from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 
 import pytest
-
-from football_forecast.data.contracts import DataError
-from football_forecast.data.training_input import read_training_input
-from football_forecast.models.team_strength import fit_independent_poisson
-from football_forecast.research.evaluate import (
-    ResearchHoldoutBatch,
-    ResearchHoldoutFixture,
-    evaluate_fixed_locked_holdout,
-)
-from football_forecast.research.locking import prepare_pre_holdout_lock
 from test_research_lock import (
     COMMIT,
     RETRIEVED,
@@ -23,6 +13,16 @@ from test_research_lock import (
     report,
     rows,
 )
+
+from football_forecast.data.contracts import DataError
+from football_forecast.data.training_input import read_training_input
+from football_forecast.models.team_strength import fit_independent_poisson
+from football_forecast.research.evaluate import (
+    ResearchHoldoutBatch,
+    ResearchHoldoutFixture,
+    evaluate_fixed_locked_holdout,
+)
+from football_forecast.research.locking import prepare_pre_holdout_lock
 
 
 def test_stable_non_strict_scoring_and_train_only_prior():
