@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import {readM2TrainOnlyRun} from '../lib/m2-run-status.ts';
 
 const run=()=>({
-  id:41400000001,event:'workflow_dispatch',head_branch:'main',
+  id:41400000001,event:'workflow_dispatch',actor:{login:'StanleyLl0yd'},head_branch:'main',
   head_sha:'a'.repeat(40),status:'completed',conclusion:'success',
   html_url:'https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41400000001',
   inputs:{secret:'must-never-be-rendered'}
@@ -20,7 +20,7 @@ test('public source status sends only a bounded unauthenticated read and whiteli
     assert.equal(u.origin,'https://api.github.com');
     assert.equal(u.pathname,'/repos/StanleyLl0yd/FootballForecast/actions/workflows/m2-manual-research-lock.yml/runs');
     assert.equal(u.searchParams.get('branch'),'main');
-    assert.equal(u.searchParams.get('per_page'),'1');
+    assert.equal(u.searchParams.get('per_page'),'10');
     assert.equal(init.method,'GET');
     assert.equal(init.body,undefined);
     assert.equal(init.next.revalidate,300);
@@ -36,6 +36,22 @@ test('public source status sends only a bounded unauthenticated read and whiteli
   assert.equal(JSON.stringify(result).includes('secret'),false);
 });
 
+test('owner issue-comment run is shown while unrelated and skipped comment runs are ignored',async()=>{
+  const unrelated={...run(),id:41400000003,event:'issue_comment',actor:{login:'other-user'}};
+  const skipped={...run(),id:41400000002,event:'issue_comment',conclusion:'skipped'};
+  const executed={...run(),event:'issue_comment'};
+  const result=await readM2TrainOnlyRun(async()=>response({
+    total_count:3,workflow_runs:[unrelated,skipped,executed]
+  }));
+  assert.deepEqual(result,{
+    state:'run',id:41400000001,url:run().html_url,
+    status:'completed',conclusion:'success',sha:'a'.repeat(40)
+  });
+  assert.deepEqual(await readM2TrainOnlyRun(async()=>response({
+    total_count:1,workflow_runs:[skipped]
+  })),{state:'unavailable'});
+});
+
 test('a confirmed empty run list is distinct from unavailable GitHub API',async()=>{
   assert.deepEqual(await readM2TrainOnlyRun(async()=>response({
     total_count:0,workflow_runs:[]
@@ -48,7 +64,7 @@ test('a confirmed empty run list is distinct from unavailable GitHub API',async(
 
 test('reject spoofed workflow, wrong ref, URL, SHA, status or inconsistent outcome',async()=>{
   const bad=[
-    {event:'push'},{head_branch:'release'},{head_sha:'oops'},
+    {event:'push'},{actor:{login:'other-user'}},{head_branch:'release'},{head_sha:'oops'},
     {html_url:'https://evil.example.invalid/a'},{id:41400000002},
     {status:'weird'},{status:'in_progress',conclusion:'success'},
     {status:'completed',conclusion:null},{conclusion:'green'}
@@ -64,7 +80,8 @@ test('reject spoofed workflow, wrong ref, URL, SHA, status or inconsistent outco
 test('reject unknown JSON, huge responses and missing run identity',async()=>{
   const bad=[null,[],{}, {total_count:-1,workflow_runs:[]},
     {total_count:1,workflow_runs:[]},{total_count:0,workflow_runs:[run()]},
-    {total_count:1,workflow_runs:[run(),run()]}];
+    {total_count:1,workflow_runs:[run(),run()]},
+    {total_count:11,workflow_runs:Array.from({length:11},run)}];
   for(const payload of bad)
     assert.deepEqual(await readM2TrainOnlyRun(async()=>response(payload)),
       {state:'unavailable'});
