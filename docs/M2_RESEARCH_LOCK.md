@@ -96,8 +96,11 @@ and enforces reviewed Supabase CA / private read-only PostgreSQL transaction.
 The mapping is deterministic from *training-season source club IDs only* using
 SHA256 aliases; its cross-season continuity is not independently certified.
 
-Temporary downloaded inputs are deleted; only aggregate digests and training H/D/A
-counts appear in the GitHub job summary. The job has no write SQL and **no 2025/26 result-label/identity read path**;
+Temporary downloaded inputs are deleted; only allowlisted aggregate digests and
+training H/D/A counts appear in the GitHub job summary and bounded log markers.
+The exact public-safe JSON is validated against the strict browser-viewer schema
+before logging so a privileged row cannot accidentally enter the attestation.
+The markers enable independent digest verification and later protected Git anchoring. The job has no write SQL and **no 2025/26 result-label/identity read path**;
 the pre-existing SQL input contract checks only the sealed role/count envelope. A successful protected run is a reproducible *candidate attestation*,
 not an immutable approved model record; the owner must verify and separately
 anchor its exact result in protected Git history before any holdout evaluation.
