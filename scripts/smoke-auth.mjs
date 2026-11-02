@@ -130,6 +130,10 @@ async function testServer(name, overrides) {
     const admin = await get('/admin');
     assert.ok([303,307,308].includes(admin.status), `${name}: admin is protected`);
     assert.equal(new URL(admin.headers.get('location'),origin).pathname, '/setup');
+    const research = await get('/admin/research');
+    assert.ok([303,307,308].includes(research.status),
+      `${name}: owner research console must redirect before rendering`);
+    assert.equal(new URL(research.headers.get('location'),origin).pathname, '/setup');
     const callback = await get('/auth/callback?code=ci-synthetic');
     assert.equal(callback.status, 503);
     assert.deepEqual(await callback.json(), {error: 'setup_required'});
