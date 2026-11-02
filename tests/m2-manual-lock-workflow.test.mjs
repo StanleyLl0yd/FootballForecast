@@ -47,6 +47,9 @@ test('M2 research uses pinned verified source, CA and read-only snapshot transac
   assert.match(wf,/m0-cross-source-fixture-reconcile\.mjs/);
   assert.match(wf,/m1-openfootball-score-gate\.mjs/);
   assert.match(wf,/psycopg\[binary\]==3\.3\.6/);
+  assert.match(wf,/inspectM2PreHoldoutLock/);
+  assert.match(wf,/M2_LOCK_ATTESTATION_JSON=/);
+  assert.match(wf,/M2_LOCK_ATTESTATION_SHA256=/);
   assert.match(wf,/rm -rf "\$work"/);
   assert.match(runner,/set transaction isolation level repeatable read read only/);
   assert.match(runner,/prepare_pre_holdout_lock/);
