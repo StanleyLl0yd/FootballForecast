@@ -1,11 +1,9 @@
 """Synthetic-only private M2 runner preparation; never requires DB credentials."""
-from dataclasses import replace
-
 import pytest
 
 from football_forecast.data.contracts import DataError
 from football_forecast.research.runner import training_only_mapping
-from test_research_lock import SyntheticCursor, rows
+from test_research_lock import rows
 
 
 def test_training_only_club_mapping_is_stable_and_not_label_dependent():
