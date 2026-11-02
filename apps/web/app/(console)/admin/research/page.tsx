@@ -2,6 +2,7 @@ import {requireOwner} from '@/lib/auth';
 import {PageHeading} from '@/components/empty-state';
 import {M2CandidateReplay} from '@/components/m2-candidate-replay';
 import {ResearchLockViewer} from '@/components/research-lock-viewer';
+import {M2AnchorRequestViewer} from '@/components/m2-anchor-request-viewer';
 import {readM2TrainOnlyRun} from '@/lib/m2-run-status';
 import {summarizeM2OwnerEvidence} from '@/lib/m2-owner-research.mjs';
 import recordedEvidence from '../../../../../../docs/M2_STORED_TRAIN_REPLAY_EVIDENCE.json';
@@ -83,5 +84,6 @@ export default async function Page(){
     </div>
     <M2CandidateReplay/>
     <ResearchLockViewer/>
+    <M2AnchorRequestViewer/>
   </>;
 }
