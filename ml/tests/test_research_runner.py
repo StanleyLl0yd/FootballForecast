@@ -117,7 +117,7 @@ def test_stored_snapshot_preflight_refuses_bad_hash_and_nontraining_row_before_o
 
 
 
-def test_stored_snapshot_candidate_is_deterministic_and_matches_future_corroborated_lock(monkeypatch):
+def test_candidate_matches_future_corroborated_lock(monkeypatch):
     from football_forecast.research import runner
     from football_forecast.research.locking import prepare_pre_holdout_lock
     def private_read():
