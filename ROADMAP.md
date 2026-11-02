@@ -52,7 +52,7 @@ The following M0 material is retained as historical acceptance evidence.
 - [x] Create M0 GitHub issues and activate main ruleset #25266406 (six required checks, no mandatory reviewers).
 - [x] Verify protected PR merges #15 and #16 and exact-head/post-merge CI/Security/CodeQL.
 
-## M1 - Data Foundation (OPEN - authorized source integration work)
+## M1 - Data Foundation (ACCEPTED 2026-11-02 — see exit evidence above)
 Licensed adapters, provenance, normalized seasons and teams, timestamp checks, data center and sync.
 
 ## M2 - Statistical Baselines
