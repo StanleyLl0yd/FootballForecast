@@ -1,4 +1,4 @@
-# Architecture (M0 accepted, M1 data foundation live)
+# Architecture (M0 and M1 accepted; M2 not authorized)
 
 Accepted operating mode: unrestricted viewing without user registration for the initial non-commercial prototype. First audience is Russia, then potentially Europe/US. One real Russian home/wired network without VPN passed health/dashboard/archive checks (3/3 HTTP 200 on 2026-10-22); T-Mobile (primarily T2, St Petersburg) and MegaFon mobile networks failed without VPN. Mobile limitations are owner-accepted, non-gating for M0; no claim of nationwide availability or proven network root cause.
 
@@ -28,7 +28,7 @@ The public browser never receives a service-role key or writes directly to Supab
 
 ## Not yet authorized
 
-No public accounts, user-data profile store, forecasting worker, commercial data subscription, production model claims or paid infrastructure. **M0 was accepted 2026-10-29 and M1 is OPEN**: a protected GitHub Actions worker ingests tightly bounded Footbolno CC BY 4.0 match snapshots into a non-public Supabase schema and runs a separately audited safe current-season refresh. There is **no bulk user-data ingestion**, model training, automatic historical correction or browser mutation endpoint.
+No public accounts, user-data profile store, forecasting worker, commercial data subscription, production model claims or paid infrastructure. **M0 was accepted 2026-10-29 and M1 was accepted 2026-11-02** ([#124](https://github.com/StanleyLl0yd/FootballForecast/issues/124)); **M2 is not authorized**: a protected GitHub Actions worker ingests tightly bounded Footbolno CC BY 4.0 match snapshots into a non-public Supabase schema and runs a separately audited safe current-season refresh. There is **no bulk user-data ingestion**, model training, automatic historical correction or browser mutation endpoint.
 
 Contracts remain under `packages/contracts/`; full archival, feature and evaluation semantics are specified in `docs/` and require tests before activation.
 

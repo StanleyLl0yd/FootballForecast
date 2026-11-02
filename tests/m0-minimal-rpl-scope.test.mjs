@@ -62,7 +62,7 @@ test('scope cannot be mistaken for calibrated or strict retrospective forecastin
   assert.ok(plan.rules.some(s=>s.includes('do not')||s.includes('Do not')));
   const roadmap = readFileSync(new URL('../ROADMAP.md', import.meta.url),'utf8');
   assert.match(roadmap,/M0_MINIMUM_RPL_SCOPE\.json/);
-  assert.match(roadmap,/M1 - Data Foundation \(OPEN/);
+  assert.match(roadmap,/M1 - Data Foundation \(ACCEPTED 2026-11-02/);
   const protocol=readFileSync(new URL('../docs/BACKTESTING.md',import.meta.url),'utf8');
   assert.match(protocol,/2024\/25/);
   assert.match(protocol,/2025\/26/);
