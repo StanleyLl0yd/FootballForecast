@@ -31,6 +31,7 @@ test('M2 owner-created exact issue command is manual, bounded and default-branch
     "github.event.comment.user.login == 'StanleyLl0yd'",
     "github.event.comment.author_association == 'OWNER'",
     "github.event.comment.body == '"+exactCommand+"'",
+    "github.event.comment.body == '/m2-preflight 038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f'",
     "github.actor == 'StanleyLl0yd'",
     "github.ref == 'refs/heads/main'",
     "github.repository == 'StanleyLl0yd/FootballForecast'"
@@ -54,6 +55,10 @@ test('M2 research uses pinned verified source, CA and read-only snapshot transac
   assert.match(wf,/inspectM2PreHoldoutLock/);
   assert.match(wf,/M2_LOCK_ATTESTATION_JSON=/);
   assert.match(wf,/M2_LOCK_ATTESTATION_SHA256=/);
+  assert.match(wf,/M2_PREFLIGHT: /);
+  assert.match(wf,/runner --preflight/);
+  assert.match(wf,/M2_PRIVATE_PREFLIGHT_JSON=/);
+  assert.match(wf,/externalSourceRechecked!==false/);
   assert.match(wf,/rm -rf "\$work"/);
   assert.match(runner,/set transaction isolation level repeatable read read only/);
   assert.match(runner,/prepare_pre_holdout_lock/);
