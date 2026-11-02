@@ -12,7 +12,7 @@ from re import fullmatch
 
 from football_forecast.data.contracts import DataError
 from football_forecast.data.training_input import ReadCursor, read_training_input
-from football_forecast.models.team_strength import fit_independent_poisson
+from football_forecast.models.team_strength import TeamStrengthModel, fit_independent_poisson
 
 PROTOCOL = "m2-independent-poisson-v1"
 REFERENCE_BLOB = "6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc"
@@ -23,6 +23,18 @@ def _digest(value: object) -> str:
         value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
         allow_nan=False,
     ).encode("utf-8")).hexdigest()
+
+
+def _model_fingerprint(model: TeamStrengthModel) -> str:
+    return _digest({
+        "protocol": PROTOCOL, "teams": model.teams,
+        "attack": [x.hex() for x in model.attack],
+        "defence": [x.hex() for x in model.defence],
+        "appearances": model.appearances,
+        "intercept": model.intercept.hex(),
+        "homeAdvantage": model.home_advantage.hex(),
+        "trainingMatches": model.training_matches,
+    })
 
 
 def _check_corroboration(report: object, source_sha256: str) -> None:
@@ -140,15 +152,7 @@ def prepare_pre_holdout_lock(
          f.away_team_id, f.home_goals, f.away_goals]
         for f in data.fixtures
     ]
-    model_bytes = {
-        "protocol": PROTOCOL, "teams": model.teams,
-        "attack": [x.hex() for x in model.attack],
-        "defence": [x.hex() for x in model.defence],
-        "appearances": model.appearances,
-        "intercept": model.intercept.hex(),
-        "homeAdvantage": model.home_advantage.hex(),
-        "trainingMatches": model.training_matches,
-    }
+    model_digest = _model_fingerprint(model)
     return PreHoldoutLock(
         protocol=PROTOCOL,
         code_sha=code_sha,
@@ -157,7 +161,7 @@ def prepare_pre_holdout_lock(
                                          data.retrieved_at.isoformat()]),
         train_rows_sha256=_digest(train_rows),
         club_mapping_sha256=_digest(sorted(club_mapping.items())),
-        fitted_model_sha256=_digest(model_bytes),
+        fitted_model_sha256=model_digest,
         train_outcome_counts=(outcomes[0], outcomes[1], outcomes[2]),
         training_matches=len(data.fixtures),
         training_clubs=len(model.teams),
