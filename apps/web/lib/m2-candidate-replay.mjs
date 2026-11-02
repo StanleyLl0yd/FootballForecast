@@ -30,7 +30,7 @@ export function inspectM2StoredCandidate(payload){
      typeof data.codeSha!=='string'||!sha40.test(data.codeSha)||
      !identities.slice(1).every(key=>typeof data[key]==='string'&&sha64.test(data[key])))
     return invalid();
-  return Object.fromEntries(identities.map(key=>[key,data[key]]));
+  return Object.fromEntries(identities.map(key=>[key,String(data[key])]));
 }
 
 /**
