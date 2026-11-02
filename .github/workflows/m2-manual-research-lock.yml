@@ -10,6 +10,8 @@ on:
         description: 'Exact approved Footbolno CSV SHA-256 of immutable private snapshot'
         required: true
         type: string
+  issue_comment:
+    types: [created]
 
 permissions: {contents: read}
 concurrency:
@@ -18,7 +20,18 @@ concurrency:
 
 jobs:
   private-lock:
-    if: github.event_name == 'workflow_dispatch' && github.repository == 'StanleyLl0yd/FootballForecast' && github.ref == 'refs/heads/main' && github.actor == 'StanleyLl0yd' && inputs.confirmation == 'LOCK_TRAIN_ONLY'
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' && inputs.confirmation == 'LOCK_TRAIN_ONLY') ||
+        (github.event_name == 'issue_comment' && github.event.action == 'created' &&
+         github.event.issue.number == 182 && !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-lock 038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f')
+      )
     runs-on: ubuntu-latest
     environment: m1-source-import
     timeout-minutes: 10
@@ -42,7 +55,7 @@ jobs:
           PGDATABASE: ${{ secrets.M1_PGDATABASE }}
           PGPASSWORD: ${{ secrets.M1_PGPASSWORD }}
           M1_PGROOTCERT_B64: ${{ secrets.M1_PGROOTCERT_B64 }}
-          M2_SOURCE_SHA: ${{ inputs.source_sha256 }}
+          M2_SOURCE_SHA: ${{ github.event_name == 'issue_comment' && '038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f' || inputs.source_sha256 }}
           PYTHONDONTWRITEBYTECODE: '1'
           PYTHONNOUSERSITE: '1'
         run: |
