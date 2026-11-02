@@ -193,3 +193,31 @@ lock**: Footbolno was not rechecked, no external fixture comparison was
 performed, no source-verified anchor or protected model coefficients exist,
 and the 2025/26 sealed holdout was never read. Future independent proof must
 be generated from the exact publisher revision before an approved model lock.
+
+
+## Synthetic-only anchor-request envelope (not an accepted lock)
+
+\`football_forecast.research.anchor.build_study_anchor_request\` creates an
+aggregate-only **PENDING_INDEPENDENT_REVIEW** record from a source-corroborated
+\`PreHoldoutLock\` structure and explicitly pinned execution evidence. It hashes
+the canonical JSON attestation and comparison report, binds the workflow run/job
+and code SHA, and requires hashes of the runner image, dependency manifest and
+**separately secured private fitted-model artifact**. The function does not
+download bytes, verify GitHub identities, review source independence, write an
+artifact or store a reconstructible model. It has no holdout read path.
+
+This is a **schema-preparation primitive, not an approval mechanism**: a
+caller-supplied source comparison, environment hash or job ID is not inherently
+trustworthy. All output forces \`reviewState=PENDING_INDEPENDENT_REVIEW\` and
+\`holdoutAccessAuthorized=false\`; no evaluator consumes these requests. The
+current offline train-only candidate is ineligible: its source was not rechecked,
+and no private model coefficient artifact is durably escrowed.
+
+Before any future one-time evaluation, a separately reviewed protected process
+must prove the exact publisher bytes and match-by-match corroboration, verify the
+job/code/environment/dependency attestations against trusted origins, securely
+persist the private fixed model with independent hash/read controls, commit a
+reviewed immutable study record to protected history, independently verify that
+commit ancestry and record identity **before any holdout identity/label query**,
+and enforce single-use. None of those external attestations, approvals or
+holdout operations is implemented or authorized by this preparatory change.
