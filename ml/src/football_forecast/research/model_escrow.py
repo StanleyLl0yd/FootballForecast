@@ -124,6 +124,8 @@ def load_private_model(
         if (serialize_private_model(model) != payload
                 or _model_fingerprint(model) != fitted_model_sha256):
             raise DataError("M2 private model: model digest or encoding mismatch")
+    except DataError:
+        raise
     except (TypeError, KeyError, ValueError) as exc:
         raise DataError("M2 private model: invalid coefficient data") from exc
     return model
