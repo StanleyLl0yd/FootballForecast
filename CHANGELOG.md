@@ -1,6 +1,10 @@
 # Changelog
 
 
+## Guarded private train-only research runner (M2, prepared)
+
+Prepared owner-only manual GitHub Action with exact source SHA, pinned OpenFootball score/date evidence, verified CA, isolated read-only database transaction, training-club-ID-only mapping and digest-only summary. Not dispatched; no real training, holdout read, verified immutable lock or publication. Elo/Dixon–Coles and calibration remain deferred pending independent validation cohort.
+
 ## Fixed-model aggregate scorer (M2, synthetic-only)
 
 Added a pure no-I/O future evaluation gate verifying exact prior lock/model/snapshot, holdout role and fixture integrity, training-only H/D/A frequency baseline, aggregate Log Loss/Brier/RPS and unseen-club abstention. Synthetic labels only; no real holdout read, measured accuracy, calibration or publication. Deferred uncertainty remains INCONCLUSIVE.

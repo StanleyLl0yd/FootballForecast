@@ -43,8 +43,8 @@ a verified comparison to the *exact* source revision exist, no holdout read.
 
 ## Restrictions and remaining integration
 
-No new SQL privilege, production training, evaluation, model publication, GitHub
-Actions dispatch, new paid service or browser write ability is introduced.
+No new SQL privilege, production evaluation, model publication, paid service or
+browser write ability is introduced.
 Automated CI is synthetic-only. The prior M1 OpenFootball gate offers
 match-by-match **publisher consistency**, not verified independent *original*
 authorship, official scores, or historical pre-kickoff as-of snapshots.
@@ -74,3 +74,26 @@ only. A caller must verify/anchor the lock **before retrieving any real holdout
 label**. No legitimate original historical publisher snapshot or round cluster
 proof exists; uncertainty is explicitly `INCONCLUSIVE` and any future result
 is non-strict descriptive research, not authenticated pre-match accuracy.
+
+## Guarded train-only runner (prepared, not dispatched)
+
+A **manual-only** protected GitHub Action `.github/workflows/m2-manual-research-lock.yml`
+prepares one candidate lock from the same private role-gated train cohort. Only
+the repository owner may dispatch `LOCK_TRAIN_ONLY` from protected `main` with
+the **exact approved immutable Footbolno CSV SHA-256**. It refuses any mismatch
+between the downloaded current CSV and pinned private source version; if the
+publisher has changed, no fit is attempted. It independently retrieves the
+pinned OpenFootball text, checks exact 240/240 score and UTC-date agreement,
+and enforces reviewed Supabase CA / private read-only PostgreSQL transaction.
+The mapping is deterministic from *training-season source club IDs only* using
+SHA256 aliases; its cross-season continuity is not independently certified.
+
+Temporary downloaded inputs are deleted; only aggregate digests and training H/D/A
+counts appear in the GitHub job summary. The job has no write SQL and **no 2025/26
+read path**. A successful protected run is a reproducible *candidate attestation*,
+not an immutable approved model record; the owner must verify and separately
+anchor its exact result in protected Git history before any holdout evaluation.
+The workflow is not triggered on push, PR or schedule. No run/real fit has been
+performed as part of preparing this workflow. The lack of independent third
+validation cohort defers Elo/Dixon–Coles selection and calibration; training
+these candidates for holdout selection is prohibited.
