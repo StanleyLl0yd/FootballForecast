@@ -5,8 +5,8 @@ the comparator from a pinned source and enforces an exact CSV byte hash first.
 """
 import json
 import os
-from dataclasses import replace
 import sys
+from dataclasses import replace
 from hashlib import sha256
 from pathlib import Path
 from re import fullmatch
