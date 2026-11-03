@@ -259,3 +259,23 @@ GitHub workflow activation or holdout reader**. Tests use synthetic training
 fixtures exclusively. It does not establish a saved real model, secure
 private escrow, independently verified digest, approved model lock or
 permission to evaluate the sealed season. Those gates remain open.
+
+## Independent OpenFootball reference during Footbolno outage — 2026-11-03
+
+The existing pinned CC0 OpenFootball RPL 2024/25 revision now has a separate
+read-only local-file reference adapter:
+`scripts/m2-openfootball-reference.mjs`. It verifies the *exact* Git blob
+SHA-1 on bounded raw bytes, then checks 240 ordinary played fixtures,
+16 clubs, unique directed fixtures, 30 rounds, each club once per round,
+and original source calendar dates. Its local CLI prints only aggregate
+diagnostics and SHA-256. It does **not** invent UTC kickoff times, fetch any
+sealed result or return an approved training input.
+
+The source is a **second published reference**, potentially sharing an
+unverified original upstream with Footbolno. It cannot satisfy the frozen
+study's mandatory Footbolno CSV SHA re-fetch or the trusted 240/240
+corroboration of that exact revision. No alternative source, team mapping,
+alias improvement or retroactive new dataset may be substituted into the
+existing pending lock while the 2025/26 holdout remains sealed. A different
+training-source experiment would require separate prospective preregistration,
+license/provenance review, and a truly independent evaluation sample.

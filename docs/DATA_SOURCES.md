@@ -2,6 +2,37 @@
 
 Updated 2026-11-02. **M0 and M1 accepted; M2 research OPEN 2026-11-02.** The owner has authorized use of all 20 catalogued free sources for their documented permissible purposes, without per-provider letters, repeated owner approvals or speculative upstream-license-chain investigations. Historical Footbolno CC BY 4.0 is the primary model-data candidate; OpenFootball CC0 and other eligible free sources are corroboration; SportScore's free attributed API supplies permitted current-match data/analytics. This decision does not waive explicit extraction bans, attribution, API quotas or the need for real model-data quality and temporal checks. [Final owner decision](M0_EXIT_AUDIT_AND_SOURCE_DECISION.md).
 
+### M2 source-outage independent reference path (2026-11-03)
+
+The new `scripts/m2-openfootball-reference.mjs` reads **only a caller-supplied
+local file** from the existing pin
+`openfootball/europe@63df627f3c87ce71708f016522ea236cf74332c3`,
+`russia/2024-25_ru1.txt`, Git blob
+`6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc`.
+The immutable Git blob is verified **on the original bytes before parsing**.
+The reusable existing fixture/season auditors reject missing, duplicate,
+awarded, unanchored, implausible or incompletely mapped fixtures and repeated
+teams within a round; the 240/16/30 contract is enforced. Research callers
+may examine rows **only in private memory**. The CLI emits *aggregate-only*
+counts, file SHA-256, score totals, provenance, and explicit negative
+authorization flags; it never prints fixture identities, clubs or source rows.
+
+This is a genuine **independent published reference** available during the
+Footbolno outage, **not** independent original-upstream proof, verified official
+match protocols, a pre-match publication archive, an authorized replacement for
+the pre-registered Footbolno training snapshot, or a model approval.
+OpenFootball's match *calendar dates* are not proof of UTC kickoff instants;
+the adapter represents these as `kickoffAtUtc: null`. Existing training,
+private Supabase migrations and sealed 2025/26 holdout remain untouched.
+SportScore remains bounded free current-season corroboration only: no automatic
+bulk ETL, model training or provider-majority-score fallback is enabled.
+
+The source-selection policy remains fail-closed: a provider outage must
+never cause silent replacement of a frozen historical study's source,
+identity map, labels, timing or rights. A separate pre-registered study would
+be required for any genuinely different training dataset **before** reading
+sealed results, rather than calling a reference-only adapter trainable.
+
 The strictly local, fail-closed [multi-source empirical accuracy protocol](M0_SOURCE_ACCURACY_PROTOCOL.md) implements field-specific matched official-reference comparisons, Wilson uncertainty and independent-upstream warnings. It was a historical M0 research-only protocol; it did not activate ingestion, whereas the protected M1 source pipeline is now operational.
 
 ### Accepted M1 operations (last source snapshot verified 2026-11-01)
