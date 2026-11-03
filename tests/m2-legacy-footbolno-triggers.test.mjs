@@ -57,7 +57,7 @@ test('any workflow with an automatic Footbolno URL requires an explicit network-
     Object.keys(workflows).sort(), 'new workflows must be explicitly reviewed');
   for(const name of Object.keys(workflows)){
     const source=get(name);
-    const accessesSource=source.includes('https://footbolno.ru/')||
+    const accessesSource=source.includes('235-matches.csv')||
       source.includes('footbolno.csv')||
       source.includes('m0-footbolno-metadata.mjs');
     if(!accessesSource)continue;
