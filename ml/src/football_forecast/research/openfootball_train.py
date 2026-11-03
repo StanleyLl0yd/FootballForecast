@@ -3,13 +3,15 @@ import json
 import os
 import sys
 from collections import Counter
-from hashlib import sha256
 from pathlib import Path
 from re import fullmatch
 
 from football_forecast.data.contracts import DataError
 from football_forecast.data.openfootball_training import (
-    PROTOCOL, REFERENCE_BLOB, REFERENCE_COMMIT, read_openfootball_calendar_training,
+    PROTOCOL,
+    REFERENCE_BLOB,
+    REFERENCE_COMMIT,
+    read_openfootball_calendar_training,
 )
 from football_forecast.models.team_strength import fit_independent_poisson
 from football_forecast.research.locking import _digest

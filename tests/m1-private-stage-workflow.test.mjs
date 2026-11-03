@@ -1,72 +1,34 @@
 import assert from 'node:assert/strict';
 import {X509Certificate} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {join,posix} from 'node:path';
-import {fileURLToPath} from 'node:url';
 import {test} from 'node:test';
 
 const workflow=readFileSync(new URL('../.github/workflows/m1-private-stage-import.yml',import.meta.url),'utf8');
 const current=readFileSync(new URL('../.github/workflows/m1-footbolno-dataset.yml',import.meta.url),'utf8');
 
-test('only main gets scheduled and source-controlled protected import; manual dispatch requires confirmation',()=>{
-  assert.match(workflow,/^on:\n  schedule:/m);
-  assert.match(workflow,/cron: '17 6,18 \* \* \*'/);
-  assert.match(workflow,/^  push:\n    branches: \[main\]/m);
-  const paths=workflow.match(/^    paths:\n((?:      - '[^']+'\n)+)/m)?.[1];
-  assert.ok(paths, 'protected push paths must be explicit');
-  assert.deepEqual(paths.trimEnd().split('\n').map(line=>{
-    const item=line.match(/^      - '([^']+)'$/);
-    assert.ok(item, 'a source-trigger path must be an exact quoted file');
-    return item[1];
-  }),[
-    '.github/workflows/m1-private-stage-import.yml',
-    'apps/web/lib/source-preview-core.mjs',
-    'scripts/m0-cross-source-fixture-reconcile.mjs',
-    'scripts/m0-fixture-reconcile.mjs',
-    'scripts/m0-fixture-structure.mjs',
-    'scripts/m0-source-quality.mjs',
-    'scripts/m1-autonomous-refresh.mjs',
-    'scripts/m1-footbolno-normalize.mjs',
-    'scripts/m1-openfootball-score-gate.mjs',
-    'scripts/m1-revision-report.mjs',
-    'scripts/m1-source-quality-diagnostic.mjs',
-    'scripts/m1-stage-import.mjs',
-  ]);
+test('legacy private M1 source importer is manual-only and requires explicit main confirmation',()=>{
+  assert.match(workflow,/^on:\n  # Legacy ingest retained/);
   assert.match(workflow,/^  workflow_dispatch:/m);
-  assert.doesNotMatch(workflow,/^  (?:pull_request|workflow_run):/m);
-  assert.match(workflow,/if: github\.ref == 'refs\/heads\/main' && \(github\.event_name == 'schedule'/);
-  assert.match(workflow,/github\.event_name == 'push'/);
-  assert.match(workflow,/github\.event_name == 'workflow_dispatch' && inputs\.confirmation == 'STAGE_FOOTBOLNO_PRIVATE'/);
+  assert.doesNotMatch(workflow,/^  (?:push|schedule|pull_request|workflow_run):/m);
+  assert.match(workflow,/if: github\.ref == 'refs\/heads\/main' && github\.event_name == 'workflow_dispatch'/);
+  assert.match(workflow,/inputs\.confirmation == 'STAGE_FOOTBOLNO_PRIVATE'/);
   assert.match(workflow,/environment: m1-source-import/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.match(workflow,/permissions:\n  contents: read/);
 });
 
-test('protected push paths cover direct and transitive source modules',()=>{
-  const root=fileURLToPath(new URL('../',import.meta.url));
-  const paths=workflow.match(/^    paths:\n((?:      - '[^']+'\n)+)/m)?.[1];
-  assert.ok(paths);
-  const allowed=new Set([...paths.matchAll(/^      - '([^']+)'$/gm)].map(match=>match[1]));
-  assert.equal(allowed.size,12);
-  const direct=new Set([...workflow.matchAll(/^\s*node (scripts\/[-\w]+\.mjs)(?=\s|$)/gm)]
-    .map(match=>match[1]));
-  assert.ok(direct.has('scripts/m0-cross-source-fixture-reconcile.mjs'));
-  assert.ok(direct.has('scripts/m1-stage-import.mjs'));
-  const visited=new Set();
-  const visit=file=>{
-    assert.match(file,/^(?:scripts|apps\/web\/lib)\/[-\w./]+\.mjs$/);
-    assert.ok(!file.includes('..'), 'source dependency must remain inside audited directories');
-    if(visited.has(file))return;
-    visited.add(file);
-    const source=readFileSync(join(root,file),'utf8');
-    assert.doesNotMatch(source,/\bimport\s*\(/, 'dynamic source imports need a separately audited trigger');
-    for(const match of source.matchAll(/\bfrom\s*['"](\.{1,2}\/[^'"]+\.mjs)['"]/g)){
-      visit(posix.normalize(posix.join(posix.dirname(file),match[1])));
-    }
-  };
-  for(const file of direct)visit(file);
-  assert.deepEqual([...allowed].sort(),
-    ['.github/workflows/m1-private-stage-import.yml',...visited].sort());
+test('manual importer retains expected pinned source dependencies but never auto-triggers',()=>{
+  const scripts=[
+    'scripts/m0-cross-source-fixture-reconcile.mjs',
+    'scripts/m1-stage-import.mjs',
+    'scripts/m1-footbolno-normalize.mjs',
+    'scripts/m1-openfootball-score-gate.mjs',
+    'scripts/m1-revision-report.mjs',
+    'scripts/m1-autonomous-refresh.mjs'
+  ];
+  for(const script of scripts)assert.ok(workflow.includes(script),script);
+  assert.doesNotMatch(workflow,/^    paths:/m);
+  assert.doesNotMatch(workflow,/github\.event_name == '(?:push|schedule)'/);
 });
 
 test('privileged database credentials are restricted to the write step',()=>{
@@ -164,11 +126,10 @@ test('only reviewed safe current fixtures can trigger a private write, after sta
   assert.doesNotMatch(workflow,/upload-artifact/);
 });
 
-test('daily SportScore research is bounded and has no protected DB credentials or provider-row persistence',()=>{
-  assert.match(current,/^on:\n  schedule:/m);
-  assert.match(current,/cron: '43 7 \* \* \*'/);
+test('manual SportScore research is bounded and does not persist protected provider rows',()=>{
+  assert.doesNotMatch(current,/^  schedule:/m);
   assert.match(current,/^  push:\n    branches: \[main\]/m);
-  assert.match(current,/if: github\.event_name != 'pull_request'/);
+  assert.match(current,/if: github\.event_name == 'workflow_dispatch'/);
   assert.match(current,/permissions:\n  contents: read/);
   assert.match(current,/--max-filesize 2000000/);
   assert.match(current,/--max-filesize 1000000/);
@@ -182,7 +143,7 @@ test('daily SportScore research is bounded and has no protected DB credentials o
 });
 
 // External source failures must be understandable without echoing source contents.
-test('both autonomous source workflows emit safe and explicit missing/oversized input diagnostics',()=>{
+test('legacy source workflows retain safe and explicit missing/oversized input diagnostics',()=>{
   for(const content of [workflow,current]){
     assert.ok(content.includes('if [[ ! -s "$work/footbolno.csv" ]]; then'));
     assert.ok(content.includes('M1_SOURCE_EMPTY'));

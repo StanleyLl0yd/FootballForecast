@@ -9,8 +9,8 @@ from dataclasses import dataclass
 from math import exp, isfinite, log
 
 from football_forecast.data.contracts import DataError, FinishedMatch
-from football_forecast.data.training_input import TrainingFixture
 from football_forecast.data.openfootball_training import CalendarTrainingFixture
+from football_forecast.data.training_input import TrainingFixture
 from football_forecast.models.poisson import ScoreDistribution, poisson_score_distribution
 
 _RIDGE = 2.0

@@ -1,12 +1,14 @@
-from copy import deepcopy
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from hashlib import sha256
 
 import pytest
 
 from football_forecast.data.contracts import DataError, FinishedMatch
 from football_forecast.data.openfootball_training import (
-    REFERENCE_BLOB, REFERENCE_COMMIT, PROTOCOL, read_openfootball_calendar_training,
+    PROTOCOL,
+    REFERENCE_BLOB,
+    REFERENCE_COMMIT,
+    read_openfootball_calendar_training,
 )
 from football_forecast.models.team_strength import fit_independent_poisson
 from football_forecast.research.openfootball_train import produce_openfootball_train_candidate
@@ -62,7 +64,6 @@ def test_calendar_train_only_candidate_determinism_without_fake_kickoffs():
 
 
 def fixture_from_timestamp():
-    from datetime import datetime, UTC, timedelta
     now = datetime(2024, 7, 20, tzinfo=UTC)
     return FinishedMatch("synthetic-timestamp", now, now + timedelta(hours=2),
                          "S_" + "A" * 20, "S_" + "B" * 20, 1, 0)
