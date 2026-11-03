@@ -448,7 +448,7 @@ and restricts cursor continuation to **paid Developer**. No cursor can be
 followed by FootballForecast, even when a response offers one.
 
 The separately gated `openfoot_rounds=AUDIT_OPENFOOT_ROUNDS` input in the
-*existing* owner-only manual `m2-public-sources-observe.yml` can issue **at
+*existing* owner-only manual `m2-public-sources-observe.yml` (or exact owner-only issue #182 comment `/m2-openfoot-rounds`) can issue **at
 most 30** authenticated Starter requests, one per **documented** `round=1..30`
 filter within the free quota. It refuses non-Starter access after request 1,
 does not paginate, and stops on HTTP/schema/rights-metadata ambiguity. It
