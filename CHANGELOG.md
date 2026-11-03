@@ -1,3 +1,6 @@
+## M2 verified seven seasons, private historical schema prepared — 2026-11-03
+- Protected #41662712300: 1,680/1,680 finished RPL 2018/19–2024/25 fixtures, source goal pairs and UTC kickoffs cross-confirmed; one provider only, no independent rights or historical publication proof. Added pinned aggregate evidence, isolated append-only private PostgreSQL snapshot schema, forced RLS, synthetic DB test and updated README/ROADMAP/coverage plan. No real history persisted yet, no model training or holdout access.
+
 ## M2 historical nested final-score schema confirmed — 2026-11-03
 - Owner protected #41652739590 verified 50/50 numeric score pairs under `score.home`/`score.away`, 0 under old top-level keys. Rewired bounded 7-year audit to use the observed nested source contract, including independent consistency of both club views; added regressions rejecting top-level score fabrication and inconsistent nested results. Full 1,680-score re-audit pending, no model, holdout or public data mutation.
 

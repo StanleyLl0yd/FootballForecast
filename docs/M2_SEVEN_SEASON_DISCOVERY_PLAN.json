@@ -50,7 +50,7 @@
       "season": "2018/19",
       "expectedScheduledFixtures": 240,
       "openfootFirstPageObserved": 50,
-      "openfootFullSeasonVerified": false,
+      "openfootFullSeasonVerified": true,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
       "lineups": "UNVERIFIED",
@@ -62,13 +62,14 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_50_SAMPLE_VERIFIED"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_FULL_SEASON_VERIFIED",
+      "openfootValidatedFinalScores": 240
     },
     {
       "season": "2019/20",
       "expectedScheduledFixtures": 240,
       "openfootFirstPageObserved": 50,
-      "openfootFullSeasonVerified": false,
+      "openfootFullSeasonVerified": true,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
       "lineups": "UNVERIFIED",
@@ -80,13 +81,14 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_FULL_SEASON_VERIFIED",
+      "openfootValidatedFinalScores": 240
     },
     {
       "season": "2020/21",
       "expectedScheduledFixtures": 240,
       "openfootFirstPageObserved": 50,
-      "openfootFullSeasonVerified": false,
+      "openfootFullSeasonVerified": true,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
       "lineups": "UNVERIFIED",
@@ -98,13 +100,14 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_FULL_SEASON_VERIFIED",
+      "openfootValidatedFinalScores": 240
     },
     {
       "season": "2021/22",
       "expectedScheduledFixtures": 240,
       "openfootFirstPageObserved": 50,
-      "openfootFullSeasonVerified": false,
+      "openfootFullSeasonVerified": true,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
       "lineups": "UNVERIFIED",
@@ -116,13 +119,14 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_FULL_SEASON_VERIFIED",
+      "openfootValidatedFinalScores": 240
     },
     {
       "season": "2022/23",
       "expectedScheduledFixtures": 240,
       "openfootFirstPageObserved": 50,
-      "openfootFullSeasonVerified": false,
+      "openfootFullSeasonVerified": true,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
       "lineups": "UNVERIFIED",
@@ -134,13 +138,14 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_FULL_SEASON_VERIFIED",
+      "openfootValidatedFinalScores": 240
     },
     {
       "season": "2023/24",
       "expectedScheduledFixtures": 240,
       "openfootFirstPageObserved": 50,
-      "openfootFullSeasonVerified": false,
+      "openfootFullSeasonVerified": true,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
       "lineups": "UNVERIFIED",
@@ -152,13 +157,14 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_FULL_SEASON_VERIFIED",
+      "openfootValidatedFinalScores": 240
     },
     {
       "season": "2024/25",
       "expectedScheduledFixtures": 240,
       "openfootFirstPageObserved": 50,
-      "openfootFullSeasonVerified": false,
+      "openfootFullSeasonVerified": true,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
       "lineups": "UNVERIFIED",
@@ -170,7 +176,8 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_FULL_SEASON_VERIFIED",
+      "openfootValidatedFinalScores": 240
     }
   ],
   "separateExistingM2": {
@@ -215,5 +222,14 @@
     "topLevelGoalPairs": 0,
     "responseSha256": "3fdcf7ad1ca0cb0bfe2fae50eb44b5589425b833afd652269676ffe8c2251574",
     "completeSevenSeasonScoreValidation": "NOT_YET_REPLAYED"
+  },
+  "sevenSeasonFinalScoreEvidence": {
+    "runId": 41662712300,
+    "observedAtUtc": "2026-11-03T15:19:44Z",
+    "sourceResponsesSha256": "7d1d0e290dda652aad68489b388e0c6a0aac16062a2346e5e3a9fd9bfa8d0e85",
+    "seasonsWithValidScores": 7,
+    "totalValidFinalScores": 1680,
+    "retrospective": true,
+    "sourceIndependentOfficialVerification": false
   }
 }
