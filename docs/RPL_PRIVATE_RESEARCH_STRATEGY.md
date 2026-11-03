@@ -41,6 +41,10 @@ The existing manually triggered M2 public-source observation workflow gains a se
 
 Follow-up after observed discovery: choose only available seasons for a separately reviewed full directed-fixture audit (240 unique pairs, 16 clubs, 30 rounds), field-specific coverage and event-time quality. Any inability to get all 240 matches on the free tier remains INCONCLUSIVE, not a fake complete season. Never read sealed 2025/26 records to optimize the catalog, mapping or model.
 
+## Initial real source evidence — 2026-11-03
+
+Owner-protected GitHub Actions run #41648185988 sampled all seven development seasons on free Starter: each returned exactly 50 finished records and 16 teams, with source metadata and UTC fields, for 350 sampled rows total. Every page advertised pagination; **none** is a verified full season. The guarded SHA-only record is in [the seven-season sample evidence](M2_SEVEN_SEASON_SAMPLE_EVIDENCE.json). A separate owner-only seven-season team-filter experiment can now examine 16 club views per season (112 plus seven seed GETs). Full structural coverage is still not licence approval, independent historical as-of proof, or model training permission.
+
 ## Exit conditions for future multi-season experiment
 
 Before fitting: each development dataset has pinned bytes, legal access scope, verified identities, score/status accuracy and non-overlapping temporal role; freeze model-family menu, features, regularization, temporal folds and market comparator availability. Before the one-time independent test: explicit immutable model lock and owner approval. Report unavailable features as coverage gaps and use ablations; a complex model is promoted only when it beats simpler baselines in development validation.

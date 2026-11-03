@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_RPL_SEVEN_SEASON_STARTER_DISCOVERY",
+  "jobRunId": 41648185988,
+  "source": "OpenFoot Starter",
+  "observedAtUtc": "2026-11-03T13:52:07Z",
+  "engineSha": "58bfde262f8bad0824632f520115287b890413e3",
+  "responseHashesSha256": "eae11933b02d17895297c98ef47a0d11bc395572a4257508b091956cbd10c5c5",
+  "seasons": [
+    {
+      "season": "2018/19",
+      "firstPageRecords": 50,
+      "teamsObserved": 16,
+      "finishedObserved": 50,
+      "utcKickoffs": 50,
+      "paginationRestricted": true,
+      "fullSeasonVerified": false
+    },
+    {
+      "season": "2019/20",
+      "firstPageRecords": 50,
+      "teamsObserved": 16,
+      "finishedObserved": 50,
+      "utcKickoffs": 50,
+      "paginationRestricted": true,
+      "fullSeasonVerified": false
+    },
+    {
+      "season": "2020/21",
+      "firstPageRecords": 50,
+      "teamsObserved": 16,
+      "finishedObserved": 50,
+      "utcKickoffs": 50,
+      "paginationRestricted": true,
+      "fullSeasonVerified": false
+    },
+    {
+      "season": "2021/22",
+      "firstPageRecords": 50,
+      "teamsObserved": 16,
+      "finishedObserved": 50,
+      "utcKickoffs": 50,
+      "paginationRestricted": true,
+      "fullSeasonVerified": false
+    },
+    {
+      "season": "2022/23",
+      "firstPageRecords": 50,
+      "teamsObserved": 16,
+      "finishedObserved": 50,
+      "utcKickoffs": 50,
+      "paginationRestricted": true,
+      "fullSeasonVerified": false
+    },
+    {
+      "season": "2023/24",
+      "firstPageRecords": 50,
+      "teamsObserved": 16,
+      "finishedObserved": 50,
+      "utcKickoffs": 50,
+      "paginationRestricted": true,
+      "fullSeasonVerified": false
+    },
+    {
+      "season": "2024/25",
+      "firstPageRecords": 50,
+      "teamsObserved": 16,
+      "finishedObserved": 50,
+      "utcKickoffs": 50,
+      "paginationRestricted": true,
+      "fullSeasonVerified": false
+    }
+  ],
+  "requests": 7,
+  "observedMatchesInSamples": 350,
+  "sealedHoldoutRead": false,
+  "trainableDatasetQualified": false,
+  "privateRowsPersisted": false
+}
