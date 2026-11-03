@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {examineSstatsCatalog,examineSstatsGames,describeSstatsCatalogEnvelope} from
+import {examineSstatsCatalog,examineSstatsGames,describeSstatsCatalogEnvelope,describeSstatsCatalogPayload} from
   '../scripts/m2-sstats-free-source-catalog.mjs';
 import {inspectPreviousDayWeather} from
   '../scripts/m2-weather-previous-runs-probe.mjs';
@@ -49,6 +49,22 @@ test('unrecognized API envelope yields safe shape-only evidence, not a guessed l
   assert.doesNotMatch(JSON.stringify(result),/SECRET|PRIVATE|12345|user@example/);
 });
 
+test('safe invalid JSON catalog diagnostic never exposes response text',()=>{
+  for(const [raw,expected] of [
+    ['<!doctype html><html>SECRET PRIVATE ID 54321</html>','HTML_LIKE'],
+    ['{"secret":"PRIVATE TOKEN 54321"','JSON_PREFIX_INVALID'],
+    ['blocked: PRIVATE 54321','OTHER_NON_JSON'],
+  ]){
+    const report=describeSstatsCatalogPayload(Buffer.from(raw),OBSERVED);
+    assert.equal(report.payloadClass,expected);
+    assert.equal(report.jsonParseStatus,'INVALID_JSON');
+    assert.equal(report.responseBytes,Buffer.byteLength(raw));
+    assert.match(report.responseSha256,/^[a-f0-9]{64}$/);
+    assert.equal(report.sealedHoldoutRead,false);
+    assert.doesNotMatch(JSON.stringify(report),/SECRET|PRIVATE|54321|TOKEN/);
+  }
+  assert.throws(()=>describeSstatsCatalogPayload(Buffer.alloc(1),OBSERVED),/INCONCLUSIVE/);
+});
 test('ambiguous, absent or malformed league catalog cannot pick an ID',()=>{
   const ambiguous={data:[LEAGUES.data[0],{id:236,name:'Russian Premier',country:'Russia'}]};
   assert.equal(examineSstatsCatalog(ambiguous,OBSERVED)._internalLeagueId,null);

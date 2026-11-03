@@ -58,7 +58,8 @@
       "rights": "CC_BY_4_WITH_ATTRIBUTION_NONCOMMERCIAL_FREE_LIMITS",
       "temporalPolicy": "PREVIOUS_DAY1_FIXED_LEAD_CHECK_ISSUE_TIME_AND_VENUE_BEFORE_MATCH_USE",
       "observedSampleCoverage": "24_24_TEMPERATURE_VALUES_ON_2024_08_01",
-      "discoveryResult": "REFERENCE_ONLY_NO_VENUE_OR_MODEL_RUN_ATTESTATION"
+      "discoveryResult": "REFERENCE_ONLY_NO_VENUE_OR_MODEL_RUN_ATTESTATION",
+      "sevenYearReferenceCoverage": "7_7_YEARS_168_168_HOURS_NOT_VENUE_VERIFIED"
     },
     {
       "id": "open_meteo_reanalysis",
@@ -220,11 +221,14 @@
   "sourceDiscoveryActions": [
     {
       "id": "sstats_catalog",
-      "status": "REAL_RUN_INCONCLUSIVE_SCHEMA_DIAGNOSTIC_NEXT",
+      "status": "REPEAT_INCONCLUSIVE_SCHEMA_FORMAT_DIAGNOSTIC_NEXT",
       "maxGetRequests": 2,
       "expectedPublicLog": "AGGREGATES_AND_SHA256_ONLY",
       "seasonProbe": 2022,
-      "runId": 41690706216
+      "runId": 41690706216,
+      "latestRunId": 41695180516,
+      "historicalGamesFetched": false,
+      "apiRplCoverageVerified": false
     },
     {
       "id": "weather_previous_day",
@@ -237,7 +241,7 @@
     },
     {
       "id": "weather_seven_years",
-      "status": "IMPLEMENTED_PENDING_OWNER_RUN",
+      "status": "REAL_REFERENCE_7_OF_7_YEARS_168_OF_168_HOURS",
       "maxGetRequests": 7,
       "provider": "open_meteo_previous_runs",
       "model": "jma_gsm",
@@ -253,7 +257,12 @@
       "leadHours": 24,
       "referencePointOnly": true,
       "sourceValuesRetained": false,
-      "fullRplMatchForecastCoverageVerified": false
+      "fullRplMatchForecastCoverageVerified": false,
+      "ownerRunId": 41695184408,
+      "successfulReferenceYears": 7,
+      "totalNonNullHours": 168,
+      "totalMissingHours": 0,
+      "pageHashesSha256": "d9249af9e0bfe8a7870615a7c6a5e4fa4ff0d329a4ed95820a55e977ce3bb284"
     }
   ],
   "sourceDiscoveryEvidence": "M2_FREE_SOURCE_ENRICHMENT_OBSERVATION_EVIDENCE.json"

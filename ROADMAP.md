@@ -1,6 +1,10 @@
+## M2 real seven-year JMA GSM city-reference receipt — 2026-11-03
+
+Protected owner [run #41695184408](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41695184408): 7/7 full fixed reference dates, 168/168 non-null hourly temperature fields (August 1, 2018–2024; Saint Petersburg city, not stadium). No historical model-run issuance time, real RPL match joining or weather training permission. Protected repeat [SStats #41695180516](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41695180516) remained INCONCLUSIVE_SCHEMA; follow up by classifying non-JSON payloads using only size/type/SHA, no raw provider content. Holdout 2025/26 sealed; M2 4/8 OPEN; M3 prohibited. [Aggregate receipt](docs/M2_FREE_SOURCE_ENRICHMENT_OBSERVATION_EVIDENCE.json).
+
 ## M2 JMA GSM historical weather-year reference discovery — prepared 2026-11-03
 
-Documentation confirms JMA GSM/MSM previous-run archive began in 2018. Add seven-owner-only fixed-reference-date GETs from 2018–2024 with a strict 24-hour-lead temp count-only validator and explicit per-year HTTP/shape statuses. Real full-season match venue coverage **not proven**; do not attach city reference temperatures to stadium matches, infer historical forecast issuance or train real weather models. After exact-head green, guarded squash, run `/m2-weather-seven-years` in issue #182; pin only bounded aggregate evidence. No sealed holdout, M3, paid API or public match data.
+Documentation confirms JMA GSM/MSM previous-run archive began in 2018. Add seven-owner-only fixed-reference-date GETs from 2018–2024 with a strict 24-hour-lead temp count-only validator and explicit per-year HTTP/shape statuses. Real full-season match venue coverage **not proven**; do not attach city reference temperatures to stadium matches, infer historical forecast issuance or train real weather models. Protected owner `/m2-weather-seven-years` completed; only bounded aggregate evidence is pinned. No sealed holdout, M3, paid API or public match data.
 
 ## M2 first actual external enrichment discovery results — 2026-11-03
 

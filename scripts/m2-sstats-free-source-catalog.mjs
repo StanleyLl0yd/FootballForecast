@@ -83,6 +83,24 @@ export function describeSstatsCatalogEnvelope(doc,observedAtUtc){
   });
 }
 
+/** Invalid-JSON format diagnostic: provider text and unknown keys never logged. */
+export function describeSstatsCatalogPayload(raw,observedAtUtc){
+  if(!time(observedAtUtc)||!Buffer.isBuffer(raw)||raw.length<2||
+     raw.length>1500000)error();
+  const first=raw.toString('utf8').trimStart();
+  const payloadClass=/^<(?:!doctype\s+html|html\b)/i.test(first)?
+    'HTML_LIKE':first.startsWith('{')||first.startsWith('[')?
+    'JSON_PREFIX_INVALID':'OTHER_NON_JSON';
+  return Object.freeze({
+    schemaVersion:1,kind:'M2_SSTATS_PUBLIC_CATALOG_PAYLOAD_DIAGNOSTIC',
+    observedAtUtc,jsonParseStatus:'INVALID_JSON',
+    payloadClass,responseBytes:raw.length,responseSha256:hash(raw),
+    rawResponseBodyLogged:false,sourceIdentifiersLogged:false,
+    providerMessagesLogged:false,modelTrainingApproved:false,
+    sealedHoldoutRead:false,
+  });
+}
+
 export function examineSstatsCatalog(doc,observedAtUtc){
   if(!time(observedAtUtc))error();
   const rows=records(doc);
@@ -140,7 +158,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     const mode=process.argv[2];
     if(mode==='catalog'&&process.argv.length===6){
       const raw=readSafe(process.argv[3]);
-      const doc=JSON.parse(raw.toString('utf8'));
+      let doc;
+      try{doc=JSON.parse(raw.toString('utf8'));}
+      catch{
+        console.log(JSON.stringify(describeSstatsCatalogPayload(raw,process.argv[4])));
+        process.exit(0);
+      }
       let x;
       try{
         x=examineSstatsCatalog(doc,process.argv[4]);

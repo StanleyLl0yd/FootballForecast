@@ -15,6 +15,9 @@ Applies to the entire repository, including Python ML, Next.js/TypeScript, SQL, 
 
 ## FootballForecast invariants
 
+- **Real 2018–2024 JMA GSM reference #41695184408:** 7/7 days, 168/168 non-null hours, without verified stadium, match as-of or historical forecast issuance. **SStats repeat #41695180516:** INCONCLUSIVE_SCHEMA, no games fetched. Future catalog probes may classify raw response only by allowlisted format/length/SHA, never output body, headers, provider messages, IDs, match rows or odds. Keep sealed 2025/26 untouched and research-only.
+
+
 - **Historical fixed-lead weather research 2018–2024:** JMA GSM previous-runs anonymous owner probe may inspect only seven fixed August-1 city-reference date series and produce hour counts/digests. Do not read sealed 2025/26, infer match stadium coordinates or attach synthetic city-reference weather as a real match feature. Missing model coverage for one reference date does not prove other provider models or RPL venues are unavailable. All new data stays research-only.
 
 - **External data probes #41690706216 and #41690713868 (2026-11-03):** SStats official catalog HTTP 200 was parser-inconclusive, not proof of absent RPL. A later diagnostic may output only allowlisted envelope types/counts and SHA, NEVER raw provider error text, league identifiers or match records. Open-Meteo Previous Runs yielded 24/24 reference-city previous-day temperature hours, not real stadium weather or a documented unique historical issuance time. Do not train weather or odds features until match/venue/quote times and source rights are independently qualified.
