@@ -115,3 +115,27 @@ or inspected here. Any later changed rights decision would still require
 pinned bytes, independent score/status quality checks and a separately
 reviewed training-only club mapping before evaluation. It cannot provide
 the discontinued 2026/27 league feed.
+
+### Explicit owner-only OpenFoot free Starter coverage audit (2026-11-03)
+
+The existing manual `m2-public-sources-observe.yml` now accepts the optional exact
+`openfoot_starter=AUDIT_OPENFOOT_FREE` confirmation. This adds **one** owner-only
+authenticated RPL 2026/27 request on protected `main`. The free Starter
+API key must be stored as the GitHub repository Actions secret
+`OPENFOOT_API_KEY` (never a workflow input, issue comment, commit or browser
+setting). Without it the job emits `INCONCLUSIVE_NO_FREE_KEY` and does not
+contact OpenFoot. No paid plan, trial, credit card or automatic upgrade is used.
+
+The audit enforces authenticated `starter` plan metadata, a single bounded
+response, unique match identities and directed club pairs, 240 fixtures / 16
+clubs / 30 per club for structural completeness, UTC kickoff instants,
+non-windowed scope and a provider source-license-metadata presence flag.
+Only aggregate counters and the provider-response SHA-256 are printed; no
+source rows, club IDs, credentials, historical holdout or forecasts are
+retained. Even a structurally complete observation stays
+`STRUCTURALLY_COMPLETE_UNAPPROVED`: source-level terms, real quality checks,
+freshness and historical pre-match provenance must be reviewed separately.
+It does not unlock 2025/26 evaluation or production ingestion. The provider's
+[free pricing](https://openfootapi.com/pricing) advertises 5000 monthly requests;
+its [terms](https://openfootapi.com/terms) permit internal research on lawfully
+received data but do not license redistribution of upstream feeds.
