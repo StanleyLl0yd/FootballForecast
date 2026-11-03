@@ -84,6 +84,7 @@ test('private import workflow cannot run without owner, protected env and exact 
     "github.event.comment.author_association == 'OWNER'",
     "github.event.comment.body == '/m2-private-rpl-history'",
     'environment: m1-source-import',
+    "python -m pip install -e 'ml[test]' 'psycopg[binary]==3.3.6'",
     'OPENFOOT_API_KEY: $'+'{{ secrets.OPENFOOT_API_KEY }}',
     '2018/19 2019/20 2020/21 2021/22 2022/23 2023/24 2024/25',
     'sleep 1.2','PGSSLMODE: verify-full','persist-credentials: false',

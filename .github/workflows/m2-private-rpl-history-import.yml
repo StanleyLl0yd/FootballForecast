@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install -e ./ml 'psycopg[binary]==3.3.6'
+          python -m pip install -e 'ml[test]' 'psycopg[binary]==3.3.6'
           node --check scripts/m2-private-rpl-history-normalize.mjs
           node --check scripts/m2-private-rpl-history-receipt.mjs
           bash -n scripts/m2-private-rpl-history-run.sh
