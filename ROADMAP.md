@@ -1,3 +1,4 @@
+M2 private free Starter API check (2026-11-03): owner-only manual one-shot authenticated RPL 2026/27 observation added to existing research workflow; requires private GitHub free-tier API key and exact confirmation, otherwise no request. A 240/16 result would still require independent quality/rights/temporal approval. No holdout access, model publication or production writes. M2 4/8 OPEN; M3 forbidden.
 # Roadmap
 
 Updated 2026-11-03. Milestone acceptance requires verification, not code presence.

@@ -1,3 +1,6 @@
+## M2 owner-only free Starter API quality gate — 2026-11-03
+- Added optional exact-confirmation, one-request OpenFoot free Starter diagnostic in existing protected manual source-observation workflow, using only GitHub Actions private secret. Structured 240/16/scope/UTC/attribution checks and paid/public-tier refusal; safe numeric/SHA-only output, no records or secrets. No API request if key absent. Synthetic negative tests; current RPL source, model and sealed 2025/26 still unapproved.
+
 # Changelog
 
 ## M2 OpenFootball protocol-bound private escrow readiness — 2026-11-03

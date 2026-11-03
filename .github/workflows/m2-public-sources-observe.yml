@@ -1,6 +1,11 @@
 name: M2 bounded public-source observations
 on:
   workflow_dispatch:
+    inputs:
+      openfoot_starter:
+        description: 'Optional exact AUDIT_OPENFOOT_FREE to check own $0 Starter key; never import'
+        required: false
+        type: string
   issue_comment:
     types: [created]
 
@@ -219,4 +224,77 @@ jobs:
             echo
             echo '~~~'
             echo 'Only a provider-observed aggregate. A demo response is not certified full-season coverage, verified upstream rights or production source approval.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  bounded-openfoot-free-starter:
+    # Explicit owner workflow_dispatch only; no issue-comment secret access.
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      github.event_name == 'workflow_dispatch' &&
+      inputs.openfoot_starter == 'AUDIT_OPENFOOT_FREE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Audit one authenticated free Starter RPL season response without retaining rows
+        shell: bash
+        env:
+          OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          {
+            echo '## OpenFoot API owner-authenticated $0 Starter — one-off RPL coverage audit'
+            echo 'https://openfootapi.com/terms — internal research permitted, upstream rights separate.'
+            echo 'No automatic ingestion, secret disclosure, holdout access or public forecasts.'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ -z "${OPENFOOT_API_KEY:-}" ]]; then
+            echo 'M2_OPENFOOT_FREE_OBSERVATION=INCONCLUSIVE_NO_FREE_KEY'
+            echo 'No repository secret OPENFOOT_API_KEY configured; request not sent.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [[ ! "$OPENFOOT_API_KEY" =~ ^of_live_[A-Za-z0-9_-]{8,256}$ ]]; then
+            echo 'M2_OPENFOOT_FREE_OBSERVATION=INCONCLUSIVE_KEY_FORMAT'
+            echo 'Refused non-Starter-key format; no request sent.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          # Write token only to a private temporary curl config; no stdout or runner trace.
+          printf 'header = "Authorization: Bearer %s"\n' "$OPENFOOT_API_KEY" > "$work/key.conf"
+          unset OPENFOOT_API_KEY
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          status="$(curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 25 --max-filesize 1200000 \
+            -H 'Accept: application/json' --config "$work/key.conf" \
+            -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+            --output "$work/day.json" --write-out '%{http_code}' \
+            'https://openfootapi.com/v1/matches?competition=comp_premier_league_rus&season=2026%2F27' \
+            2>/dev/null || true)"
+          rm -f "$work/key.conf"
+          if [[ "$status" != 200 || ! -s "$work/day.json" ]]; then
+            echo 'M2_OPENFOOT_FREE_OBSERVATION=INCONCLUSIVE_HTTP'
+            echo 'No valid free-provider HTTP response; no claim of missing fixtures.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if ! node scripts/m2-openfoot-rpl-diagnostic.mjs \
+            "$work/day.json" "$observed" starter > "$work/aggregate.json"; then
+            echo 'M2_OPENFOOT_FREE_OBSERVATION=INCONCLUSIVE_SCHEMA'
+            echo 'Untrusted response failed bounded checks; no provider rows retained.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "M2_OPENFOOT_FREE_OBSERVATION=$(cat "$work/aggregate.json")"
+          {
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+            echo 'Even 240/16 and free Starter do not authorize ingestion, model selection or forecasts.'
           } >> "$GITHUB_STEP_SUMMARY"

@@ -2,6 +2,31 @@
 
 Updated 2026-11-03. **M0 and M1 accepted; M2 research OPEN 2026-11-02.** The owner has authorized use of all 20 catalogued free sources for their documented permissible purposes, without per-provider letters, repeated owner approvals or speculative upstream-license-chain investigations. Since the 2026-11-03 owner decision, **OpenFootball CC0 is the first independent new train-only source**, with a [separate frozen calendar-only protocol](M2_OPENFOOTBALL_PROTOCOL.md); Footbolno is legacy source material and is not a required future dependency; SportScore's free attributed API supplies permitted current-match data/analytics. This decision does not waive explicit extraction bans, attribution, API quotas or the need for real model-data quality and temporal checks. [Final owner decision](M0_EXIT_AUDIT_AND_SOURCE_DECISION.md).
 
+
+### Explicit owner-only OpenFoot free Starter coverage audit (2026-11-03)
+
+The existing manual `m2-public-sources-observe.yml` now accepts the optional exact
+`openfoot_starter=AUDIT_OPENFOOT_FREE` confirmation. This adds **one** owner-only
+authenticated RPL 2026/27 request on protected `main`. The free Starter
+API key must be stored as the GitHub repository Actions secret
+`OPENFOOT_API_KEY` (never a workflow input, issue comment, commit or browser
+setting). Without it the job emits `INCONCLUSIVE_NO_FREE_KEY` and does not
+contact OpenFoot. No paid plan, trial, credit card or automatic upgrade is used.
+
+The audit enforces authenticated `starter` plan metadata, a single bounded
+response, unique match identities and directed club pairs, 240 fixtures / 16
+clubs / 30 per club for structural completeness, UTC kickoff instants,
+non-windowed scope and a provider source-license-metadata presence flag.
+Only aggregate counters and the provider-response SHA-256 are printed; no
+source rows, club IDs, credentials, historical holdout or forecasts are
+retained. Even a structurally complete observation stays
+`STRUCTURALLY_COMPLETE_UNAPPROVED`: source-level terms, real quality checks,
+freshness and historical pre-match provenance must be reviewed separately.
+It does not unlock 2025/26 evaluation or production ingestion. The provider's
+[free pricing](https://openfootapi.com/pricing) advertises 5000 monthly requests;
+its [terms](https://openfootapi.com/terms) permit internal research on lawfully
+received data but do not license redistribution of upstream feeds.
+
 ### Observed source scope and rights triage — 2026-11-03
 
 Protected [M2 source job #41613346756](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41613346756), SHA `5d99fa3bbda4b79384c54f847ab5e610da42e7df`: independent pinned OpenFootball historical `2024/25` text verified **240 fixtures/16 clubs**, still calendar-only; public OpenFoot demo RPL `2026/27` response contained **5 finished records/10 clubs**, response SHA-256 `e04de45affbc43aa00528780a9f47d284924198f09f0964c6314ac6e9ccbd9a1`, **PARTIAL_UNAPPROVED**; SportScore for **2026-11-03 UTC** returned **zero** RPL day records, response SHA-256 `672483e2478d1a0ff41c4c76169066c7848c1a809bc13fa1fc33cbe66bdf9a3e`, which does NOT establish no football matches or full-season coverage. Only safe aggregates are pinned in [M2_PUBLIC_SOURCE_OBSERVATION_EVIDENCE.json](M2_PUBLIC_SOURCE_OBSERVATION_EVIDENCE.json). HTTP 200 and successful Actions jobs do not certify provider completeness, rights or pre-match history.
