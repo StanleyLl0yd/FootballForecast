@@ -1,3 +1,6 @@
+## M2 source-only RPL team-identity continuity probe — 2026-11-03
+- Added a guarded seven-GET, free Starter club-name/ID consistency observer to the existing manual source workflow, aggregate-only SHA results, synthetic tampering tests and CI. Compared intended source scope with private DB evidence: 26 distinct IDs, 19 across multiple seasons, 8 in all seven and adjacent overlap 14/14/14/13/14/13. Sample does not approve cross-season aliases, model fits, sealed holdout reads or forecasts; real source observer execution still pending.
+
 ## M2 seven-season development folds and bookmaker benchmark foundation — 2026-11-03
 - Prepared five immutable expanding development splits over the privately stored 2018/19–2024/25 RPL source seasons, plus a bounded and timestamp-gated pure bookmaker H/D/A no-vig paired scoring contract. Added synthetic tests for season leakage, postponed 2019/20 overlap, duplicate fixtures, missing historical odds, late/closing market snapshots and overround anomalies; updated independent research protocol and docs. Real source labels, private model weights and sealed 2025/26 holdout are not read by new modules. No multi-season model trained or bookmaker-superiority claim.
 

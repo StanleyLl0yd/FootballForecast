@@ -1,3 +1,7 @@
+## M2 owner-only historical club identity consistency discovery — 2026-11-03
+
+Prepare a bounded seven-GET Starter-only private club-ID/name continuity audit; compare with previously verified private SQL aggregates (26 unique IDs, 19 multi-season, 8 in all seven; adjacent overlaps 14/14/14/13/14/13). No public team identifiers/names, no automatic aliases or extra data source and no holdout access. Even a perfect source-name match is not independent club identity evidence; remain unapproved until a cross-provider corroboration policy is reviewed.
+
 ## M2 seven-season development-fold and market-benchmark foundation — 2026-11-03
 
 New pure synthetic-tested [five expanding development folds and paired H/D/A bookmaker comparator](docs/RPL_SEVEN_SEASON_DEVELOPMENT_PROTOCOL.md). Fixed validation seasons 2020/21–2024/25 (five × 240). No real new-model fitting, calibration, historical odds sourcing, holdout evaluation or production predictions authorized. Actual private adjacent-year source-team-ID overlap counts are 14/14/14/13/14/13 of 16: require independently reviewed identity continuity before cross-season training. Bookmaker outperformance is **not** established; compare only matched timestamp-authenticated, vig-adjusted quotes with Log Loss/Brier/RPS. M2 remains 4/8 OPEN and M3 forbidden.

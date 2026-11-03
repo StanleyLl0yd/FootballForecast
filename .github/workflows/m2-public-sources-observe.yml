@@ -22,6 +22,10 @@ on:
         description: 'Optional AUDIT_RPL_FULL_HISTORY for 7x16 Starter team-filter research'
         required: false
         type: string
+      openfoot_identity:
+        description: 'AUDIT_RPL_TEAM_IDENTITY, 7 first pages, aggregate-only names/ID QC'
+        required: false
+        type: string
       openfoot_history:
         description: 'Optional AUDIT_RPL_HISTORY for seven sample-only pre-holdout RPL seasons'
         required: false
@@ -868,6 +872,83 @@ jobs:
           {
             echo '## OpenFoot historical score field mapping — one page, no raw scores'
             echo 'Candidate field names and numeric-pair counts only; no model, holdout or import authorization.'
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  bounded-openfoot-team-identity:
+    # First-page 7x16 club-name/ID continuity sample; no holdout, raw values or mapping output.
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.openfoot_identity == 'AUDIT_RPL_TEAM_IDENTITY') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-openfoot-team-identity')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Observe source-only RPL club names and ID continuity without publishing identifiers
+        shell: bash
+        env:
+          OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          if [[ ! "$OPENFOOT_API_KEY" =~ ^of_live_[A-Za-z0-9_-]{8,256}$ ]]; then
+            echo 'M2_TEAM_IDENTITY=INCONCLUSIVE_NO_FREE_STARTER_KEY'
+            exit 0
+          fi
+          printf 'header = "Authorization: Bearer %s"\n' "$OPENFOOT_API_KEY" > "$work/key.conf"
+          unset OPENFOOT_API_KEY
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          n=0
+          for season in 2018/19 2019/20 2020/21 2021/22 2022/23 2023/24 2024/25; do
+            n=$((n+1))
+            encoded="$(printf '%s' "$season" | sed 's@/@%2F@')"
+            file="$work/$(printf '%02d' "$n").json"
+            status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+              --connect-timeout 8 --max-time 20 --max-filesize 200000 \
+              --config "$work/key.conf" -H 'Accept: application/json' \
+              -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+              --output "$file" --write-out '%{http_code}' \
+              "https://openfootapi.com/v1/matches?competition=comp_premier_league_rus&season=$encoded" \
+              2>/dev/null || true)"
+            if [[ "$status" != 200 || ! -s "$file" ]]; then
+              echo "M2_TEAM_IDENTITY=INCONCLUSIVE_HTTP_INDEX_$n"
+              exit 0
+            fi
+            sleep 1.2
+          done
+          rm -f "$work/key.conf"
+          if ! node scripts/m2-rpl-team-identity-sample.mjs "$work" "$observed" \
+            > "$work/aggregate.json"; then
+            echo 'M2_TEAM_IDENTITY=INCONCLUSIVE_SCHEMA'
+            exit 0
+          fi
+          echo "M2_TEAM_IDENTITY_OBSERVATION=$(cat "$work/aggregate.json")"
+          {
+            echo '## M2 seven-season RPL team identity sampling (not identity acceptance)'
+            echo 'Only cross-season counts and hashes. Source names and IDs discarded.'
+            echo 'No club mapping, model fit, sealed holdout or public forecast.'
             echo '~~~json'
             cat "$work/aggregate.json"
             echo
