@@ -6,6 +6,8 @@ create schema if not exists extensions;
 create extension if not exists pgcrypto with schema extensions;
 create role anon nologin;
 create role authenticated nologin;
+-- Supabase service_role bypasses RLS but still needs table grants; mimic live role.
+create role service_role nologin bypassrls;
 create schema auth;
 create table auth.users (id uuid primary key);
 create function auth.uid() returns uuid language sql stable as $$
