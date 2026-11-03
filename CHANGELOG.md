@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 OpenFootball protocol-bound private escrow readiness — 2026-11-03
+
+- Extended the existing in-memory private model codec to accept the separately frozen OpenFootball calendar-only protocol explicitly, preserving legacy defaults. Its SHA-256 must match the already published train-only candidate receipt, and cross-protocol loads or changed coefficients fail closed. Synthetic-only regression tests; no real model bytes saved, approved, evaluated or published. Football-Data.co.uk's final Russia 2025/26 archive remains a restricted-reference-only source under the existing rights registry, not an evaluation input; no holdout labels accessed. M2 remains 4/8 OPEN; M3 not authorized.
+
 ## M2 empirical source observations and owner research evidence — 2026-11-03
 
 - Pin a single real protected owner-run public-source observation as closed-schema aggregate and response SHA evidence: 2024/25 OpenFootball 240/16; 2026/27 OpenFoot public demo only 5 observed match records/10 clubs; SportScore 0 observed RPL fixtures on 2026-11-03 UTC (not proof of missing games). Surface verified historical summary in authenticated read-only M2 research UI; reject tampering or extra fields in synthetic tests. No provider raw match data, no model training, no 2025/26 holdout read or production forecasts.

@@ -1,6 +1,8 @@
 # Roadmap
 
-Updated 2026-11-02. Milestone acceptance requires verification, not code presence.
+Updated 2026-11-03. Milestone acceptance requires verification, not code presence.
+
+M2 OpenFootball model-lock preparation (2026-11-03): the canonical private in-memory coefficient codec now supports protocol-explicit OpenFootball calendar-only model fingerprints, rejecting legacy/calendar substitution. Synthetic tests only; no persisted model or immutable approved lock. Football-Data.co.uk advertises archived 2025/26 Russia CSV but remains **restricted-reference only** under the existing source registry, not an approved evaluation input (no holdout labels accessed). 2026/27 source still missing, M2 4/8 OPEN, M3 prohibited.
 
 ## M1 — RPL data foundation (ACCEPTED 2026-11-02)
 
