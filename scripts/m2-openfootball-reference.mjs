@@ -41,7 +41,7 @@ export function parseOpenFootball2024Reference(source){
   const sourceRecords=extractFootballTxtRows(source);
   if(sourceRecords.dateErrors.length!==0||sourceRecords.rows.length!==240)
     refused('unanchored or impossible match dates');
-  const seen=new Set(),clubs=new Map(),rounds=new Map();
+  const seen=new Set(),clubs=new Map(),rounds=new Map(),roundTeams=new Map();
   const fixtures=[];
   for(const row of sourceRecords.rows){
     const key=pair(row.home,row.away);
@@ -50,6 +50,11 @@ export function parseOpenFootball2024Reference(source){
        !Number.isSafeInteger(row.homeGoals)||!Number.isSafeInteger(row.awayGoals)||
        row.homeGoals<0||row.awayGoals<0||row.homeGoals>20||row.awayGoals>20)
       refused('duplicate, awarded, unanchored or unsupported fixture');
+    const clubsInRound=roundTeams.get(row.round)??new Set();
+    if(clubsInRound.has(row.home)||clubsInRound.has(row.away))
+      refused('club appears twice in one matchday');
+    clubsInRound.add(row.home);clubsInRound.add(row.away);
+    roundTeams.set(row.round,clubsInRound);
     seen.add(key);
     clubs.set(row.home,(clubs.get(row.home)??0)+1);
     clubs.set(row.away,(clubs.get(row.away)??0)+1);
@@ -64,6 +69,7 @@ export function parseOpenFootball2024Reference(source){
   }
   if(clubs.size!==16||[...clubs.values()].some(count=>count!==30)||
      rounds.size!==30||[...rounds.values()].some(count=>count!==8)||
+     [...roundTeams.values()].some(clubsInRound=>clubsInRound.size!==16)||
      seen.size!==240)
     refused('incomplete team or round coverage');
   return Object.freeze(fixtures);
