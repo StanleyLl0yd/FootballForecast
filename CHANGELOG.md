@@ -1,3 +1,9 @@
+## M2 seven-year historical fixed-lead weather reference probe — 2026-11-03
+- Added a seven-request zero-cost Previous Runs JMA GSM research job for exactly August 1 of 2018–2024 at Saint Petersburg reference coordinates, with safe per-year 24h temperature coverage counts, unavailable/error classification and SHA only. Synthetic tests guard strict dates, 2025/26 exclusion and raw-value leakage. This cannot prove venue-specific weather at real RPL kickoffs. Execution pending exact-head CI and protected squash.
+
+## M2 actual SStats and prior-day Open-Meteo reference results — 2026-11-03
+- Protected SStats run #41690706216 returned HTTP 200 but catalog schema inconclusive; no games/odds fetched. Added metadata-only envelope diagnostics with unknown/unverified status, no source messages/names/IDs. Protected Open-Meteo #41690713868 returned 24/24 hourly previous-day temperature candidates for a city reference, zero missing; no stadium linkage, model-run issuance proof or actual forecast training. Pinned counts and SHA-only receipt, updated README/ROADMAP/AGENTS/source plan and regression tests. M2 unchanged at 4/8 OPEN, M3 prohibited and 2025/26 sealed.
+
 ## M2 source-qualified public RPL enrichment probes — 2026-11-03
 - Reviewed SStats.net's documented anonymous API and public Russian Premier League 2022/23 archive and Open-Meteo free CC BY 4.0, Previous Runs versus stitched Historical Forecast timing. Added owner-only bounded SStats league/one-season-sample and 24h-ahead reference-city weather probes, synthetic fail-closed tests, SHA-only evidence handling, CI gate and updated README/ROADMAP/source registry plan. No actual new-model training or raw data storage; 2025/26 sealed, M2 4/8 OPEN, M3 forbidden.
 

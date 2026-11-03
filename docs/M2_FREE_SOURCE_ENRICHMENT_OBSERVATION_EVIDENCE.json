@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_ZERO_COST_EXTERNAL_ENRICHMENT_DISCOVERY",
+  "date": "2026-11-03",
+  "project": "FootballForecast",
+  "sstats": {
+    "provider": "SStats.net documented public API",
+    "ownerRunId": 41690706216,
+    "httpStatus": 200,
+    "endpoint": "GET /Leagues",
+    "catalogState": "INCONCLUSIVE_UNRECOGNIZED_JSON_ENVELOPE",
+    "historicalGamesRequestMade": false,
+    "actualRplApiCoverageVerified": false,
+    "rawResponseDigestAvailable": false,
+    "trainingRightsVerified": false,
+    "privateDataPersisted": false
+  },
+  "weather": {
+    "provider": "Open-Meteo Previous Runs",
+    "ownerRunId": 41690713868,
+    "observedAtUtc": "2026-11-03T18:07:37Z",
+    "responseSha256": "b643c506400d8647e9f6b98d391d3a813e78cfd12c25c84f17e5bb4879e0ceb2",
+    "date": "2024-08-01",
+    "leadTimeHours": 24,
+    "hourlyValuesExpected": 24,
+    "nonNullTemperatureHours": 24,
+    "missingHours": 0,
+    "location": "SAINT_PETERSBURG_CITY_REFERENCE_NOT_VERIFIED_STADIUM",
+    "explicitHistoricalModelRunVerified": false,
+    "matchedRplKickoffVerified": false,
+    "strictHistoricalMatchFeatureApproved": false
+  },
+  "global": {
+    "sourceRowsOrValuesCommitted": false,
+    "realTrainingApproved": false,
+    "historicalBookmakerBenchmarkCompleted": false,
+    "sealedHoldout2025_26Read": false,
+    "monthlyExtraCostUSD": 0
+  }
+}

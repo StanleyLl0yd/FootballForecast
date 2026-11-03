@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {examineSstatsCatalog,examineSstatsGames} from
+import {examineSstatsCatalog,examineSstatsGames,describeSstatsCatalogEnvelope} from
   '../scripts/m2-sstats-free-source-catalog.mjs';
 import {inspectPreviousDayWeather} from
   '../scripts/m2-weather-previous-runs-probe.mjs';
@@ -29,6 +29,26 @@ test('league candidate stays private to runner; no league IDs in aggregate logs'
   assert.equal(aggregate.rplHistoricalMatchCoverageVerified,false);
   assert.equal(aggregate.rightsForTrainingVerified,false);
 });
+test('unrecognized API envelope yields safe shape-only evidence, not a guessed league',()=>{
+  const response={
+    status:'error',
+    message:'SECRET MESSAGE user@example.test PRIVATE API RESPONSE',
+    data:{events:[{id:12345,name:'SECRET CLUB'}],PageSize:1},
+    TotalCount:1,
+  };
+  assert.throws(()=>examineSstatsCatalog(response,OBSERVED),/INCONCLUSIVE/);
+  const result=describeSstatsCatalogEnvelope(response,OBSERVED);
+  assert.equal(result.kind,'M2_SSTATS_PUBLIC_CATALOG_ENVELOPE_DIAGNOSTIC');
+  assert.equal(result.rootType,'object');
+  assert.equal(result.dataType,'object');
+  assert.equal(result.nestedArraysCount,1);
+  assert.deepEqual(result.nestedArrayLengths,[1]);
+  assert.equal(result.recognizedKeyPresence.message,true);
+  assert.equal(result.statusClass,'error');
+  assert.equal(result.sourceIdentifiersLogged,false);
+  assert.doesNotMatch(JSON.stringify(result),/SECRET|PRIVATE|12345|user@example/);
+});
+
 test('ambiguous, absent or malformed league catalog cannot pick an ID',()=>{
   const ambiguous={data:[LEAGUES.data[0],{id:236,name:'Russian Premier',country:'Russia'}]};
   assert.equal(examineSstatsCatalog(ambiguous,OBSERVED)._internalLeagueId,null);
