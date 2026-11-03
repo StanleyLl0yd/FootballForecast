@@ -88,7 +88,7 @@ export function summarizeSportScoreCurrentDay(search,body,utcDate,observedUtc){
     outOfDayRecords:invalidDates,duplicateDirectedFixtures:duplicates,
     providerPageAtCap:rows.length===200,
     interpretation:rows.length===200||duplicates>0||invalidDates>0||
-      unknownDates>0||unknownTeams>0?'INCONCLUSIVE':
+      unknownDates>0||unknownTeams>0||(rows.length>0&&labeled===0)?'INCONCLUSIVE':
       dated>0?'PARTIAL_RESEARCH_OBSERVATION':'NO_VERIFIED_CURRENT_DAY_RPL_OBSERVATIONS',
     originalResultAuthorityVerified:false,completeDayCoverageVerified:false,
     completeSeasonCoverageVerified:false,independentUpstreamVerified:false,
