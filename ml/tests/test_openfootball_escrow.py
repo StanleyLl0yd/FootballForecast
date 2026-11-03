@@ -4,16 +4,17 @@ from dataclasses import replace
 from hashlib import sha256
 
 import pytest
-
 from test_openfootball_training import fixture_doc
+
 from football_forecast.data.contracts import DataError
 from football_forecast.data.openfootball_training import PROTOCOL as CALENDAR_PROTOCOL
 from football_forecast.data.openfootball_training import read_openfootball_calendar_training
 from football_forecast.models.team_strength import fit_independent_poisson
-from football_forecast.research.openfootball_train import produce_openfootball_train_candidate
 from football_forecast.research.model_escrow import (
-    load_private_model, serialize_private_model,
+    load_private_model,
+    serialize_private_model,
 )
+from football_forecast.research.openfootball_train import produce_openfootball_train_candidate
 
 
 @pytest.fixture(scope="module")
