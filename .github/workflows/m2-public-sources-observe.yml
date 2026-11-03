@@ -14,6 +14,10 @@ on:
         description: 'Optional exact AUDIT_OPENFOOT_TEAMS; at most 17 free Starter filtered GETs'
         required: false
         type: string
+      openfoot_full_history:
+        description: 'Optional AUDIT_RPL_FULL_HISTORY for 7x16 Starter team-filter research'
+        required: false
+        type: string
       openfoot_history:
         description: 'Optional AUDIT_RPL_HISTORY for seven sample-only pre-holdout RPL seasons'
         required: false
@@ -677,6 +681,117 @@ jobs:
             echo '## M2: seven historical RPL season samples (private research discovery only)'
             echo 'Only first free-tier response per season; no 240/240 completeness assertion.'
             echo 'No sealed-holdout access, raw rows, match IDs, credentials, model fit or database writes.'
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  bounded-openfoot-full-history:
+    # 7 development seasons, 16 team-filter pages each; no sealed year access.
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.openfoot_full_history == 'AUDIT_RPL_FULL_HISTORY') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-openfoot-full-history')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Independently cross-confirm seven seasons via free club filters
+        shell: bash
+        env:
+          OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          if [[ -z "$OPENFOOT_API_KEY" ]]; then
+            echo 'M2_FULL_HISTORY=INCONCLUSIVE_NO_FREE_KEY'
+            exit 0
+          fi
+          if [[ ! "$OPENFOOT_API_KEY" =~ ^of_live_[A-Za-z0-9_-]{8,256}$ ]]; then
+            echo 'M2_FULL_HISTORY=INCONCLUSIVE_KEY_FORMAT'
+            exit 0
+          fi
+          printf 'header = "Authorization: Bearer %s"\n' "$OPENFOOT_API_KEY" > "$work/key.conf"
+          unset OPENFOOT_API_KEY
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          index=0
+          for season in 2018/19 2019/20 2020/21 2021/22 2022/23 2023/24 2024/25; do
+            index=$((index+1))
+            dir="$work/$(printf '%02d' "$index")"
+            mkdir "$dir"
+            encoded="$(printf '%s' "$season" | sed 's@/@%2F@')"
+            status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+              --connect-timeout 8 --max-time 15 --max-filesize 200000 \
+              --config "$work/key.conf" -H 'Accept: application/json' \
+              -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+              --output "$dir/seed.json" --write-out '%{http_code}' \
+              "https://openfootapi.com/v1/matches?competition=comp_premier_league_rus&season=$encoded" \
+              2>/dev/null || true)"
+            if [[ "$status" != 200 || ! -s "$dir/seed.json" ]]; then
+              echo "M2_FULL_HISTORY=INCONCLUSIVE_SEED_HTTP_INDEX_$index"
+              exit 0
+            fi
+            if ! node scripts/m2-openfoot-seven-season-full-audit.mjs \
+              discover "$dir/seed.json" "$season" "$dir/ids.txt"; then
+              echo "M2_FULL_HISTORY=INCONCLUSIVE_SEED_SCHEMA_INDEX_$index"
+              exit 0
+            fi
+            sleep 1.2 # Starter limit: 60 requests/minute
+            page=0
+            while IFS= read -r team_id; do
+              [[ "$team_id" =~ ^[A-Za-z0-9_-]{2,160}$ ]]
+              page=$((page+1))
+              file="$dir/$(printf '%02d' "$page").json"
+              status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+                --connect-timeout 8 --max-time 15 --max-filesize 200000 \
+                --config "$work/key.conf" -H 'Accept: application/json' \
+                -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+                --output "$file" --write-out '%{http_code}' \
+                "https://openfootapi.com/v1/matches?competition=comp_premier_league_rus&season=$encoded&team=$team_id" \
+                2>/dev/null || true)"
+              if [[ "$status" != 200 || ! -s "$file" ]]; then
+                echo "M2_FULL_HISTORY=INCONCLUSIVE_TEAM_HTTP_YEAR_$index"
+                exit 0
+              fi
+              if ! node scripts/m2-openfoot-seven-season-full-audit.mjs \
+                check "$file" "$season" "$team_id"; then
+                echo "M2_FULL_HISTORY=INCONCLUSIVE_TEAM_SCHEMA_YEAR_$index"
+                exit 0
+              fi
+              sleep 1.2 # Stay below free Starter per-minute limit
+            done < "$dir/ids.txt"
+            [[ "$page" == 16 ]]
+          done
+          rm -f "$work/key.conf"
+          if ! node scripts/m2-openfoot-seven-season-full-audit.mjs \
+            aggregate "$work" "$observed" > "$work/aggregate.json"; then
+            echo 'M2_FULL_HISTORY=INCONCLUSIVE_CROSS_CHECK'
+            exit 0
+          fi
+          echo "M2_FULL_HISTORY_OBSERVATION=$(cat "$work/aggregate.json")"
+          {
+            echo '## RPL historical structural cross-confirmation — 7 seasons'
+            echo 'Private temporary source pages discarded. Only counts and digest recorded.'
+            echo 'No source import, model fit, immutable study lock or evaluation authorized.'
             echo '~~~json'
             cat "$work/aggregate.json"
             echo

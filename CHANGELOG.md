@@ -1,3 +1,6 @@
+## M2 seven-season historical Starter samples and full-team audit preparation — 2026-11-03
+- Protected owner run #41648185988 observed 50 finished matches and 16 clubs per 2018/19–2024/25 sample (350 source rows, 7/7 seasons, each paginated). Pinned no-raw SHA evidence. Added a separate guarded seven-season, 16-club-per-season source cross-check runner and synthetic validation; no current model, sealed holdout, production importer or forecast changes. Complete historical season coverage remains unproven until real run.
+
 ## M2 owner-only seven-season RPL discovery foundation — 2026-11-03
 - Added a separate private noncommercial research strategy, machine-readable seven-season coverage plan, bounded seven-request free Starter sample observer and synthetic safety tests. No bulk history, model training, sealed 2025/26 labels or published forecasts. M2 acceptance remains 4/8 OPEN; M3 forbidden.
 

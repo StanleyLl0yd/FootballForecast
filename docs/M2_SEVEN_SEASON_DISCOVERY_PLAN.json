@@ -49,7 +49,7 @@
     {
       "season": "2018/19",
       "expectedScheduledFixtures": 240,
-      "openfootFirstPageObserved": null,
+      "openfootFirstPageObserved": 50,
       "openfootFullSeasonVerified": false,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
@@ -58,12 +58,13 @@
       "venue": "UNVERIFIED",
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
-      "trained": false
+      "trained": false,
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
     },
     {
       "season": "2019/20",
       "expectedScheduledFixtures": 240,
-      "openfootFirstPageObserved": null,
+      "openfootFirstPageObserved": 50,
       "openfootFullSeasonVerified": false,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
@@ -72,12 +73,13 @@
       "venue": "UNVERIFIED",
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
-      "trained": false
+      "trained": false,
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
     },
     {
       "season": "2020/21",
       "expectedScheduledFixtures": 240,
-      "openfootFirstPageObserved": null,
+      "openfootFirstPageObserved": 50,
       "openfootFullSeasonVerified": false,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
@@ -86,12 +88,13 @@
       "venue": "UNVERIFIED",
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
-      "trained": false
+      "trained": false,
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
     },
     {
       "season": "2021/22",
       "expectedScheduledFixtures": 240,
-      "openfootFirstPageObserved": null,
+      "openfootFirstPageObserved": 50,
       "openfootFullSeasonVerified": false,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
@@ -100,12 +103,13 @@
       "venue": "UNVERIFIED",
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
-      "trained": false
+      "trained": false,
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
     },
     {
       "season": "2022/23",
       "expectedScheduledFixtures": 240,
-      "openfootFirstPageObserved": null,
+      "openfootFirstPageObserved": 50,
       "openfootFullSeasonVerified": false,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
@@ -114,12 +118,13 @@
       "venue": "UNVERIFIED",
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
-      "trained": false
+      "trained": false,
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
     },
     {
       "season": "2023/24",
       "expectedScheduledFixtures": 240,
-      "openfootFirstPageObserved": null,
+      "openfootFirstPageObserved": 50,
       "openfootFullSeasonVerified": false,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
@@ -128,12 +133,13 @@
       "venue": "UNVERIFIED",
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
-      "trained": false
+      "trained": false,
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
     },
     {
       "season": "2024/25",
       "expectedScheduledFixtures": 240,
-      "openfootFirstPageObserved": null,
+      "openfootFirstPageObserved": 50,
       "openfootFullSeasonVerified": false,
       "results": "UNVERIFIED",
       "historicalMarketOdds": "UNVERIFIED",
@@ -142,7 +148,8 @@
       "venue": "UNVERIFIED",
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
-      "trained": false
+      "trained": false,
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
     }
   ],
   "separateExistingM2": {
@@ -156,5 +163,14 @@
     "noRawProviderDataInGit": true,
     "noPublicTrainingResults": true,
     "allNewFeatureFamiliesRequireSeparatePreregistration": true
+  },
+  "sevenSeasonStarterSampleEvidence": {
+    "runId": 41648185988,
+    "at": "2026-11-03T13:52:07Z",
+    "samples": 350,
+    "sourceResponseHashesSha256": "eae11933b02d17895297c98ef47a0d11bc395572a4257508b091956cbd10c5c5",
+    "matchedSeasons": 7,
+    "firstPageBound": 50,
+    "eachSeasonFullCoverageVerified": false
   }
 }
