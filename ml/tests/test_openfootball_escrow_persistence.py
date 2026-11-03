@@ -2,6 +2,7 @@
 from hashlib import sha256
 
 import pytest
+from test_openfootball_training import fixture_doc
 
 from football_forecast.data.contracts import DataError
 from football_forecast.data.openfootball_training import PROTOCOL
