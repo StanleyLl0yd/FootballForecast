@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 pinned independent OpenFootball reference — 2026-11-03
+
+- Added bounded offline OpenFootball 2024/25 read-only reference adapter with exact immutable Git blob verification, 240 directed fixtures, 16 clubs, 30 matchdays, no awarded games, no invented kickoff times, and aggregate-only CLI. Reused existing quality/date parser and added synthetic-only failures for source substitution and malformed season/fixture data. Frozen Footbolno study, sealed holdout, model approval, Supabase and production publishing unchanged; M2 4/8 OPEN.
+
 ## M2 private model escrow encoding preparation — 2026-11-02
 
 - Added synthetic-only, no-I/O canonical private fitted-model codec with strict 10-field schema, 8 KiB limit, finite float-hex checks and independent bytes/model SHA-256 verification. The coefficients remain unpersisted and private; no trusted storage, model approval, historical benchmark, production publication or holdout access was introduced. M2 remains 4/8 OPEN, M3 unauthorized.
