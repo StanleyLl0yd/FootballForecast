@@ -74,3 +74,14 @@ test('catalog probe requires owner issue command and private Starter key without
   assert.doesNotMatch(job,/echo[^\n]*\$\{?OPENFOOT_API_KEY/);
   assert.doesNotMatch(workflow,/^  (?:push|schedule|workflow_run):/m);
 });
+
+test('real catalog licence claim Unlicensed-Beta is fail-closed for production',()=>{
+  const d=doc();
+  d.data[1].source.license='Unlicensed-Beta (owner-approved factual data)';
+  const report=inspectOpenFootRplCatalog(d,AT);
+  assert.equal(report.researchInterpretation,
+    'UNLICENSED_UPSTREAM_NOT_APPROVED_FOR_PRODUCTION');
+  assert.equal(report.upstreamProductionReuseQualified,false);
+  assert.equal(report.productionIngestionApproved,false);
+  assert.equal(report.holdoutRead,false);
+});

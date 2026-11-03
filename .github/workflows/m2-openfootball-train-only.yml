@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: 'Exact OPENFOOTBALL_TRAIN_ONLY; no holdout or publication'
+        description: 'OPENFOOTBALL_TRAIN_ONLY or OPENFOOTBALL_ESCROW_TRAIN_ONLY; never evaluate holdout'
         required: true
         type: string
   issue_comment:
@@ -106,3 +106,42 @@ jobs:
             echo
             echo '~~~'
           } >> "$GITHUB_STEP_SUMMARY"
+
+
+  calendar-escrow:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.confirmation == 'OPENFOOTBALL_ESCROW_TRAIN_ONLY') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-openfootball-escrow')
+      )
+    runs-on: ubuntu-latest
+    environment: m1-source-import
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Install pinned private DB adapter
+        run: python -m pip install -e ./ml 'psycopg[binary]==3.3.6'
+      - name: Fit and privately persist unapproved CC0 2024/25 model
+        shell: bash
+        env:
+          PGHOST: ${{ secrets.M1_PGHOST }}
+          PGUSER: ${{ secrets.M1_PGUSER }}
+          PGDATABASE: ${{ secrets.M1_PGDATABASE }}
+          PGPASSWORD: ${{ secrets.M1_PGPASSWORD }}
+          M1_PGROOTCERT_B64: ${{ secrets.M1_PGROOTCERT_B64 }}
+        run: bash scripts/m2-openfootball-escrow-run.sh

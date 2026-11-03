@@ -521,3 +521,41 @@ and the independent actual-score/kickoff/freshness audit remains pending.
 M2 **4/8 OPEN**, M3 not authorized.
 
 Observed first catalog research [#41634009571](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41634009571) returned `INCONCLUSIVE_HTTP` without a key, **not** an upstream-rights decision. The manual owner-only catalog probe now uses the existing protected free Starter credential, no paid plan and no raw match retention; the authenticated result is not asserted until a real run succeeds.
+
+### FotMob upstream rights and private train-only model escrow — 2026-11-03
+
+Authenticated OpenFoot [catalog research #41635173009](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41635173009),
+performed on exact protected main, identified the source of RPL 2026/27
+as **FotMob**, claimed licence `Unlicensed-Beta (owner-approved factual data)`,
+source `https://www.fotmob.com/`, catalog SHA-256
+`5005b1690452aee8538b8a77e530b877368381f164c6b1ceb425a01ae342b42d`.
+The provider's declaration of source access is **not** written authorization
+from FotMob. [FotMob's own site](https://www.fotmob.com/) disallows systematic
+automated use; its [reported explicit removal request](https://github.com/probberechts/soccerdata/issues/918)
+also describes unauthorized API retrieval as prohibited. [OpenFoot's terms](https://openfootapi.com/terms)
+permit internal research on lawfully obtained records but expressly defer
+third-party source reuse obligations. Consequently the app must **not**
+automatically ingest, redistribute or promote this OpenFoot/FotMob feed to
+production without actual upstream authorization. The verified 240/240
+structural RPL result remains useful as *research coverage evidence only*.
+This determination does not imply that the observed scores/kickoff times
+have been checked against independent authoritative results.
+
+Separately, a new owner-only `OPENFOOTBALL_ESCROW_TRAIN_ONLY` / exact issue
+#182 `/m2-openfootball-escrow` research job uses **only** the exact pinned
+CC0 OpenFootball 2024/25 240/16 train cohort. It independently refits the
+existing fixed independent-Poisson protocol, verifies the canonical 8-KiB
+private model format and the prior two protected-run training/model digests,
+then inserts at most one immutable copy of private coefficients into
+`ff_private.ff_m2_training_model_escrow` on Frankfurt Supabase. PostgreSQL
+verifies the byte SHA-256 itself; non-privileged roles and service_role
+cannot read or insert, and UPDATE/DELETE/TRUNCATE are rejected. The job uses
+the existing protected private research environment, pinned server CA,
+no public artifact, no provider rows or model coefficients in logs.
+
+This is **not a holdout-unsealing study lock**. Even successful private
+storage and a protected hash receipt leave the 2025/26 sealed labels
+untouched and the study `TRAIN_ONLY_UNAPPROVED` until independent source
+qualification, approval of an immutable Git-anchored pre-holdout identity,
+one-time permitted retrospective evaluation, owner UI acceptance, and
+two repository-wide exit audits. M2 remains **4/8 OPEN**, M3 unauthorized.
