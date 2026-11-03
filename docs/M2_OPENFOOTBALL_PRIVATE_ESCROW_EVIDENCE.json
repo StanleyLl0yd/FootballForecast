@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_OPENFOOTBALL_PROTECTED_PRIVATE_ESCROW_EVIDENCE",
+  "researchClassification": "TRAIN_ONLY_UNAPPROVED",
+  "observedAtDate": "2026-11-03",
+  "run": {
+    "runId": 41639171388,
+    "jobId": 125927962778,
+    "headSha": "a89c82ed02b1157ca935c573f25c93544ba299f1",
+    "event": "issue_comment",
+    "conclusion": "success"
+  },
+  "receiptSha256": "2d5a9a9f1d6f682f8bfc7b7c388eb184887b944288beac33080aeb8097d69bc9",
+  "receipt": {
+    "clubMappingSha256": "3f10e2bd77f348b570036efc8827f0571a26cae55c7dcb4ad93b5a39710e631b",
+    "codeSha": "a89c82ed02b1157ca935c573f25c93544ba299f1",
+    "databaseDigestVerified": true,
+    "fittedModelSha256": "987caad53cf77e4977482b4e9750b2c779912b47d0bc884cfb3807e8151ad95d",
+    "footbolnoRequired": false,
+    "githubRunId": 41639171388,
+    "holdoutEvaluationPermitted": false,
+    "holdoutRead": false,
+    "immutableStudyLockApproved": false,
+    "insertedByThisRun": true,
+    "kind": "M2_OPENFOOTBALL_PRIVATE_TRAIN_ONLY_ESCROW",
+    "modelApproved": false,
+    "modelArtifactSha256": "5d1893ac2d3e632f979b1ec67ed751edfa38733b9faf6371fc3f5e24b97fa28d",
+    "privateModelStored": true,
+    "productionForecastsWritten": 0,
+    "protocol": "m2-openfootball-calendar-v1",
+    "researchState": "TRAIN_ONLY_UNAPPROVED",
+    "schemaVersion": 1,
+    "sourceBytesSha256": "f315f67d49e5f2ed26bb5b2504244f36d37be958b5ccadd1755fb6b71b015dcb",
+    "sourceCommit": "63df627f3c87ce71708f016522ea236cf74332c3",
+    "sourceGitBlobSha1": "6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc",
+    "storedRunId": 41639171388,
+    "trainRowsSha256": "fe00ba5cec8a9762a8564f1e76700233bf770ca766e020a0b44616c7d2aecc38",
+    "trainingClubs": 16,
+    "trainingMatches": 240
+  },
+  "databaseVerification": {
+    "region": "eu-central-1",
+    "relation": "ff_private.ff_m2_training_model_escrow",
+    "privateModelCount": 1,
+    "modelBytes": 1447,
+    "byteDigestVerified": true,
+    "anonSelectDenied": true,
+    "authenticatedSelectDenied": true,
+    "serviceRoleSelectDenied": true,
+    "serviceRoleInsertDenied": true,
+    "forceRls": true,
+    "appendOnlyMutationTriggers": 2,
+    "allModelsTrainOnlyUnapproved": true
+  },
+  "gate": {
+    "holdoutRead": false,
+    "modelApproved": false,
+    "immutableStudyLockApproved": false,
+    "holdoutEvaluationPermitted": false,
+    "productionIngestionApproved": false,
+    "productionForecastsWritten": 0
+  }
+}

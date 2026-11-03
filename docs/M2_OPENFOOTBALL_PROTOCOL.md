@@ -263,3 +263,34 @@ untouched and the study `TRAIN_ONLY_UNAPPROVED` until independent source
 qualification, approval of an immutable Git-anchored pre-holdout identity,
 one-time permitted retrospective evaluation, owner UI acceptance, and
 two repository-wide exit audits. M2 remains **4/8 OPEN**, M3 unauthorized.
+
+### Verified real private training-only model escrow (2026-11-03)
+
+Protected [PR #220](https://github.com/StanleyLl0yd/FootballForecast/pull/220)
+was merged by guarded squash at main
+`a89c82ed02b1157ca935c573f25c93544ba299f1` (exact-head 10/10 PASS,
+post-merge exact-main 10/10 PASS, production Frankfurt READY).
+
+Supabase Frankfurt migration `20261103125026_m2_private_openfootball_model_escrow`
+is applied. Protected owner [training/escrow run #41639171388](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41639171388)
+job `125927962778` **successfully saved one real canonical private model**:
+240 scored OpenFootball CC0 2024/25 fixtures/16 clubs,
+source SHA-256 `f315f67d49e5f2ed26bb5b2504244f36d37be958b5ccadd1755fb6b71b015dcb`,
+fitted-model SHA-256
+`987caad53cf77e4977482b4e9750b2c779912b47d0bc884cfb3807e8151ad95d`,
+1447 private bytes with byte-artifact SHA-256
+`5d1893ac2d3e632f979b1ec67ed751edfa38733b9faf6371fc3f5e24b97fa28d`.
+The fitted/source/team/rows digests exactly match two earlier independent
+train-only runs #41601074078 and #41601164752. Aggregate receipt SHA-256 is
+`2d5a9a9f1d6f682f8bfc7b7c388eb184887b944288beac33080aeb8097d69bc9`.
+
+A separate privileged **read-only** live PostgreSQL query verified 1 private
+model, correct SHA-256 of stored bytes, `TRAIN_ONLY_UNAPPROVED`, no holdout
+read or model approval. Table has FORCE RLS, denies
+`anon/authenticated/service_role` reads/writes and has both immutable
+mutation triggers. Only the aggregate/digest evidence, **not coefficients or
+match rows**, is anchored in Git by the protected review of
+`M2_OPENFOOTBALL_PRIVATE_ESCROW_EVIDENCE.json`. This is a provenance record,
+**not** independently approved pre-holdout study lock. Sealed 2025/26
+evaluation and forecast publication remain forbidden. M2 stays **4/8 OPEN**;
+M3 unauthorized.

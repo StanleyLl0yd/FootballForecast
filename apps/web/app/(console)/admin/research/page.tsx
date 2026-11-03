@@ -6,9 +6,11 @@ import {M2AnchorRequestViewer} from '@/components/m2-anchor-request-viewer';
 import {readM2TrainOnlyRun,readM2PublicSourcesRun,readM2OpenFootballTrainRun} from '@/lib/m2-run-status';
 import {summarizeM2OwnerEvidence} from '@/lib/m2-owner-research.mjs';
 import {inspectM2OpenFootballReplay} from '@/lib/m2-openfootball-evidence.mjs';
+import {inspectM2ProtectedPrivateEscrow} from '@/lib/m2-private-escrow-evidence.mjs';
 import {inspectM2PublicSourceObservations} from '@/lib/m2-public-source-evidence.mjs';
 import recordedEvidence from '../../../../../../docs/M2_STORED_TRAIN_REPLAY_EVIDENCE.json';
 import openFootballEvidence from '../../../../../../docs/M2_OPENFOOTBALL_TRAIN_REPLAY_EVIDENCE.json';
+import privateEscrowEvidence from '../../../../../../docs/M2_OPENFOOTBALL_PRIVATE_ESCROW_EVIDENCE.json';
 import publicSourceEvidence from '../../../../../../docs/M2_PUBLIC_SOURCE_OBSERVATION_EVIDENCE.json';
 
 export const dynamic='force-dynamic';
@@ -18,6 +20,7 @@ export default async function Page(){
   await requireOwner();
   const evidence=summarizeM2OwnerEvidence(recordedEvidence);
   const openFootballReplay=inspectM2OpenFootballReplay(openFootballEvidence);
+  const privateEscrow=inspectM2ProtectedPrivateEscrow(privateEscrowEvidence,openFootballEvidence);
   const sourceObservation=inspectM2PublicSourceObservations(publicSourceEvidence);
   const [latest,publicSources,openFootball]=await Promise.all([
     readM2TrainOnlyRun(),readM2PublicSourcesRun(),readM2OpenFootballTrainRun()
@@ -31,6 +34,9 @@ export default async function Page(){
       <div className="stat"><span>Архивные train-only запуски v1</span>
         <strong>{evidence.state==='recorded'?'2/2':'—'}</strong>
         <small>Записанное наблюдение, не утверждённая модель</small></div>
+      <div className="stat"><span>Коэффициенты OpenFootball · закрытый escrow</span>
+        <strong>{privateEscrow.state==='recorded'?'1/1':'—'}</strong>
+        <small>Реальное хранение TRAIN_ONLY_UNAPPROVED, не model lock.</small></div>
       <div className="stat"><span>Старый протокол Footbolno v1</span><strong>архив</strong>
         <small>Не блокирует новый независимый путь OpenFootball.</small></div>
       <div className="stat"><span>Оценка holdout</span><strong>0</strong>
@@ -57,6 +63,27 @@ export default async function Page(){
       </table></div>
       <p className="source-lab-warning">Нельзя трактовать успешный GitHub Actions как approval модели. Историческая as-of доступность не подтверждена;
         будущая оценка, если разрешена, будет только non-strict retrospective.</p>
+    </section>
+    <section className="panel informative">
+      <h2>Закрытое хранение настоящей модели · 2024/25</h2>
+      {privateEscrow.state==='recorded'?<div>
+        <p>Подтверждена <strong>одна сохранённая модель Poisson</strong> на OpenFootball CC0:
+          {' '}{privateEscrow.trainingMatches} матчей, {privateEscrow.trainingClubs} клубов.
+          Канонические коэффициенты размером {privateEscrow.modelBytes} байт
+          находятся только в закрытой append-only таблице Supabase Frankfurt с RLS.</p>
+        <p>SHA-256 приватного артефакта: <code>{privateEscrow.artifactSha256}</code>.
+          {' '}Отпечаток fitted-модели: <code>{privateEscrow.fittedModelSha256}</code>.</p>
+        <p>Подтверждающий защищённый запуск:
+          {' '}<a className="sources-method"
+            href={`https://github.com/StanleyLl0yd/FootballForecast/actions/runs/${privateEscrow.runId}`}
+            target="_blank" rel="noopener noreferrer">#{privateEscrow.runId} ↗</a>;
+          {' '}Git SHA: <code>{privateEscrow.codeSha}</code>.</p>
+        <p className="source-lab-warning">Хранение проверено, но immutable study lock
+          ещё не утверждён. TRAIN_ONLY_UNAPPROVED; holdout 2025/26 не прочитан,
+          результат модели не оценён, публичные прогнозы запрещены.</p>
+      </div>:<p role="alert" className="source-lab-error">
+        Закреплённое evidence закрытого escrow не прошло проверку.
+        Нельзя утверждать наличие верифицированной модели.</p>}
     </section>
     <div className="panel-grid secondary-panels">
       <section className="panel informative">
@@ -114,11 +141,23 @@ export default async function Page(){
         <p><a className="sources-method"
           href="https://github.com/StanleyLl0yd/FootballForecast/actions/workflows/m2-openfootball-train-only.yml"
           target="_blank" rel="noopener noreferrer">OpenFootball train-only · CC0 ↗</a></p>
-        <p className="source-lab-note">Новый протокол «m2-openfootball-calendar-v1» не зависит от Footbolno,
-          не получает доступ к БД или 2025/26 и не публикует модель. Успех задания — лишь
-          воспроизводимый обучающий кандидат; текущие матчи, holdout и публикация заблокированы.</p>
+        <p className="source-lab-note">Новый протокол «m2-openfootball-calendar-v1» не зависит от Footbolno:
+          исходный train-only запуск без БД проверяет воспроизводимость, а отдельный owner-only
+          escrow сохраняет реальные коэффициенты в защищённой таблице.
+          Ни один из них не читает 2025/26 и не публикует модель или прогнозы.</p>
         <h3>Независимые публичные источники</h3>
-        <h3>Закреплённые реальные наблюдения · 03.11.2026</h3>
+        <p>Позднее независимое структурное наблюдение OpenFoot Starter:
+          <strong> 240/240 матчей, 16 клубов</strong> (104 завершены, 136 запланированы),
+          240 полей UTC. {' '}<a className="sources-method"
+            href="https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41632612945"
+            target="_blank" rel="noopener noreferrer">Защищённый запуск #41632612945 ↗</a>.
+          Каталог поставщика <a className="sources-method"
+            href="https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41635173009"
+            target="_blank" rel="noopener noreferrer">#41635173009 ↗</a> назвал
+          первоисточником FotMob с заявленной лицензией «Unlicensed-Beta».
+          <strong> Автоматический производственный импорт не разрешён.</strong>
+          Полнота структуры не удостоверяет право повторного использования или точность фактов.</p>
+        <h3>Первое публичное демо · историческое наблюдение 03.11.2026</h3>
         {sourceObservation.state==='recorded'?<div>
           <p>Первичный журнал:
             {' '}<a className="sources-method"
@@ -135,7 +174,7 @@ export default async function Page(){
                 <td>Закреплённый исторический набор; время начала матчей не проверено.</td></tr>
               <tr><th scope="row">OpenFoot · 2026/27</th>
                 <td>{sourceObservation.openFoot.matches} матчей, {sourceObservation.openFoot.clubs} клубов</td>
-                <td>Демонстрационный ответ PARTIAL_UNAPPROVED. Полное покрытие не подтверждено.</td></tr>
+                <td>Первое демо: PARTIAL_UNAPPROVED (5 матчей). Более поздняя отдельная проверка дала 240/240, но права FotMob не утверждены.</td></tr>
               <tr><th scope="row">SportScore · 03.11.2026</th>
                 <td>{sourceObservation.sportScore.matches} подтверждённых наблюдений</td>
                 <td>Один UTC-день, не доказательство отсутствия матчей или полного календаря.</td></tr>
