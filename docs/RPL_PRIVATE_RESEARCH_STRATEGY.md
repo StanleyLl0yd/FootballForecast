@@ -43,7 +43,7 @@ Follow-up after observed discovery: choose only available seasons for a separate
 
 ## Initial real source evidence — 2026-11-03
 
-Owner-protected GitHub Actions run #41648185988 sampled all seven development seasons on free Starter: each returned exactly 50 finished records and 16 teams, with source metadata and UTC fields, for 350 sampled rows total. Every page advertised pagination; **none** is a verified full season. The guarded SHA-only record is in [the seven-season sample evidence](M2_SEVEN_SEASON_SAMPLE_EVIDENCE.json). A separate owner-only seven-season team-filter experiment can now examine 16 club views per season (112 plus seven seed GETs). Full structural coverage is still not licence approval, independent historical as-of proof, or model training permission.
+Owner-protected GitHub Actions run #41648185988 sampled all seven development seasons on free Starter: each returned exactly 50 finished records and 16 teams, with source metadata and UTC fields, for 350 sampled rows total. Every page advertised pagination; **none** is a verified full season. The guarded SHA-only record is in [the seven-season sample evidence](M2_SEVEN_SEASON_SAMPLE_EVIDENCE.json). A separate owner-only seven-season team-filter experiment can now examine 16 club views per season (112 plus seven seed GETs), paced below the free Starter 60-requests/minute ceiling. Full structural coverage is still not licence approval, independent historical as-of proof, or model training permission.
 
 ## Exit conditions for future multi-season experiment
 

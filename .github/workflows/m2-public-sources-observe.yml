@@ -755,6 +755,7 @@ jobs:
               echo "M2_FULL_HISTORY=INCONCLUSIVE_SEED_SCHEMA_INDEX_$index"
               exit 0
             fi
+            sleep 1.2 # Starter limit: 60 requests/minute
             page=0
             while IFS= read -r team_id; do
               [[ "$team_id" =~ ^[A-Za-z0-9_-]{2,160}$ ]]
@@ -776,6 +777,7 @@ jobs:
                 echo "M2_FULL_HISTORY=INCONCLUSIVE_TEAM_SCHEMA_YEAR_$index"
                 exit 0
               fi
+              sleep 1.2 # Stay below free Starter per-minute limit
             done < "$dir/ids.txt"
             [[ "$page" == 16 ]]
           done

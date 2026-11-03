@@ -81,5 +81,6 @@ test('full archive source job is manual, owner-only, bounded and excludes sealed
     'm2-openfoot-seven-season-full-audit.mjs',
     '--max-redirs 0','--max-filesize 200000','persist-credentials: false'
   ])assert.ok(job.includes(s),s);
+  assert.ok((job.match(/sleep 1\.2/g)||[]).length===2,'two bounded request pacing points');
   assert.doesNotMatch(job,/2025\/26|2025%2F26|upload-artifact|git push|set -x|DATABASE_URL|[?&]cursor=/);
 });
