@@ -1,3 +1,6 @@
+## M2 seven-season development folds and bookmaker benchmark foundation — 2026-11-03
+- Prepared five immutable expanding development splits over the privately stored 2018/19–2024/25 RPL source seasons, plus a bounded and timestamp-gated pure bookmaker H/D/A no-vig paired scoring contract. Added synthetic tests for season leakage, postponed 2019/20 overlap, duplicate fixtures, missing historical odds, late/closing market snapshots and overround anomalies; updated independent research protocol and docs. Real source labels, private model weights and sealed 2025/26 holdout are not read by new modules. No multi-season model trained or bookmaker-superiority claim.
+
 ## M2 seven historical RPL seasons privately stored; leakage-safe feature foundation — 2026-11-03
 - Protected source import #41668066639 succeeded after protected #230 test-env repair, recording seven immutable Supabase Frankfurt snapshots, 1,680/1,680 validated final-score fixtures. Independent read-only SQL confirmed 7×240 rows, 16 clubs each, force RLS and service/client denial, existing one train-only Poisson escrow, zero forecasts and no sealed holdout use. Only aggregate receipt/hash in Git. Added separate pure synthetic-tested, prior-day-only 7-season team/form/rest feature engine; no model fit, evaluation or production forecast.
 

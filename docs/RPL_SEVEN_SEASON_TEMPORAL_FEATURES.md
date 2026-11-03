@@ -19,3 +19,7 @@ The pure Python module football_forecast.research.rpl_temporal_features does no 
 ## Further research
 
 Next: independent source-club identity mapping and as-of evidence for staff, roster, venue, weather and odds; separately preregister development-only 2020/21–2024/25 expanding-window model validation. No historical bookmaker superiority claims until independently matched vig-adjusted market odds are available; holdout 2025/26 remains sealed and M3 unauthorized.
+
+## Next fixed fold and market research boundary
+
+Five fixed expanding training/validation splits and a synthetic-only bookmaker no-vig metric contract are now separately preregistered in [RPL seven-season development protocol](RPL_SEVEN_SEASON_DEVELOPMENT_PROTOCOL.md). Neither the fold constructor nor the benchmark fetches private match rows, fits a real model, queries 2025/26, reads historical bookmaker odds or makes accuracy claims.
