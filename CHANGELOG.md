@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 public source aggregate observability — 2026-11-03
+
+- Expose only existing allowlisted aggregate JSON and explicit inconclusive status from owner-triggered OpenFootball, SportScore and OpenFoot source observations in GitHub job logs. Makes empirical provider result evidence auditable via job logs without raw rows, match IDs, source data files, uploads, secrets or production access. Added fail-closed regression assertions.
+
 ## M2 public OpenFoot API one-shot research — 2026-11-03
 
 - Added bounded aggregate-only research adapter for public OpenFoot API demo and a third guarded owner-only manually invoked job in the existing M2 source observation workflow. Explicit Russian Premier League 2026/27 season query, strict fixture/UTC time/duplicate/schema validation, source response SHA-256, no provider row leakage. Fail-closed statuses are not an approved current-season provider, feed, historical as-of snapshot, or permission to publish. Added synthetic adversarial tests, source documentation and owner research link.
