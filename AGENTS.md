@@ -536,3 +536,7 @@ The owner expressly approves usage of genuinely free FootballForecast data sourc
 ## M2 rights and private model escrow (2026-11-03)
 
 The authenticated OpenFoot RPL 2026/27 catalog identifies **FotMob** and `Unlicensed-Beta`; do **not** automatically ingest/redistribute or approve production source rights based on owner-approved factual-data wording. Use OpenFoot only for bounded, non-promoting research until upstream authority is demonstrable. The separate protected OpenFootball 2024/25 CC0 model escrow is **train-only**, writes canonical coefficients only to private append-only Supabase, emits digest-only GitHub evidence, and must never read 2025/26 labels, publish forecasts, or assert approved study locks. M2 stays OPEN 4/8; M3 forbidden.
+
+### Live protected escrow receipt (2026-11-03)
+
+Main `a89c82ed02b1157ca935c573f25c93544ba299f1` and protected owner run #41639171388 have independently verified a **real** private, immutable OpenFootball CC0 2024/25 Poisson coefficient artifact in Frankfurt Supabase (`TRAIN_ONLY_UNAPPROVED`, 1447 bytes, SHA-256 `5d1893ac2d3e632f979b1ec67ed751edfa38733b9faf6371fc3f5e24b97fa28d`). Keep actual bytes strictly in `ff_private.ff_m2_training_model_escrow`; only aggregate SHA receipt may be committed to Git / displayed after owner auth. This does not unlock 2025/26, prove historical prematch availability or authorize production forecasts. M2 4/8 OPEN, M3 forbidden.

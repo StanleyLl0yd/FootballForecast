@@ -1,3 +1,6 @@
+## M2 real private CC0 Poisson model persisted, research proof anchored — 2026-11-03
+- Protected PR #220 guarded squash (10/10 HEAD, 10/10 main); migration applied in Frankfurt. Owner protected job #41639171388 inserted and independently verified 1 real 1447-byte coefficient artifact, exact fitted-model digest equal to two earlier OpenFootball 2024/25 CC0 training replays. `anon`/`authenticated`/`service_role` denied; force RLS and append-only triggers verified. Only closed-schema SHA evidence and source status added to owner `/admin/research`; OpenFoot/FotMob 2026/27 remains research-only, production ingestion prohibited without upstream rights. Never read 2025/26, no public forecasts; M2 4/8 OPEN, no study lock approval.
+
 ## M2 source-rights decision and private OpenFootball model escrow — 2026-11-03
 - Authenticated protected source catalog #41635173009 identified FotMob as RPL upstream with `Unlicensed-Beta` claim; source cannot be promoted to automated production import without independent upstream permission. Added fail-closed classification test. Prepared closed-schema private model escrow migration and protected train-only writer for CC0 2024/25, verifying digest/immutability/RLS and reproducing earlier model hashes; no model/holdout/forecast approval implied. M2 4/8 OPEN.
 
