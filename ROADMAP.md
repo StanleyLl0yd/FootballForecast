@@ -1,3 +1,7 @@
+## M2 guarded private historical source importer (prepared, not yet run)
+
+Added owner-only manual GitHub Actions seven-season historical import with 119 throttled free Starter requests, cross-team checking, canonical SHA receipts, a second Python validation layer and an atomic append-only Supabase transaction. No old Poisson model refit or sealed 2025/26 access. Await exact-head CI, protected squash, then execute one real import and independently verify seven private snapshots and 1,680 stored matches. See [private history contract](docs/M2_PRIVATE_RPL_HISTORY.md).
+
 ## M2 seven-season full historical score verification — 2026-11-03
 
 Owner run [#41662712300](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41662712300) cross-confirmed 1,680/1,680 finished RPL development matches and nested final goals across 7 seasons (7×240), using 119 bounded free Starter requests. No sealed 2025/26 label was fetched. A private, append-only candidate history store with no model approval is introduced; never change the fixed M2 baseline or read held-out results before independent study lock. See [private history plan](docs/M2_PRIVATE_RPL_HISTORY.md).

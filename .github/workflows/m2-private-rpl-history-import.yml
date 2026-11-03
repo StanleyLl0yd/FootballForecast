@@ -1,0 +1,64 @@
+name: M2 owner-only private seven-season historical RPL source store
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Exact STORE_RPL_SEVEN_SEASONS_PRIVATE; no sealed evaluation'
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+permissions: {contents: read}
+concurrency:
+  group: m2-private-rpl-history-import
+  cancel-in-progress: false
+jobs:
+  protected-seven-season-store:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.confirmation == 'STORE_RPL_SEVEN_SEASONS_PRIVATE') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-private-rpl-history')
+      )
+    runs-on: ubuntu-latest
+    environment: m1-source-import
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Prepare pinned DB adapter and run synthetic-only preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e ./ml 'psycopg[binary]==3.3.6'
+          node --check scripts/m2-private-rpl-history-normalize.mjs
+          node --check scripts/m2-private-rpl-history-receipt.mjs
+          bash -n scripts/m2-private-rpl-history-run.sh
+          node --test tests/m2-private-rpl-history.test.mjs tests/m2-private-rpl-history-receipt.test.mjs
+          python -m pytest ml/tests/test_private_rpl_history.py -q
+      - name: Validate seven seasons and insert private immutable research rows
+        shell: bash
+        env:
+          OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
+          PGHOST: ${{ secrets.M1_PGHOST }}
+          PGUSER: ${{ secrets.M1_PGUSER }}
+          PGDATABASE: ${{ secrets.M1_PGDATABASE }}
+          PGPASSWORD: ${{ secrets.M1_PGPASSWORD }}
+          M1_PGROOTCERT_B64: ${{ secrets.M1_PGROOTCERT_B64 }}
+          PGPORT: '5432'
+          PGSSLMODE: verify-full
+          FF_M2_PRIVATE_IMPORT_ENABLED: '1'
+        run: bash scripts/m2-private-rpl-history-run.sh
