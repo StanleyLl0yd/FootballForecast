@@ -1,3 +1,6 @@
+## M2 2019/20 pandemic date-boundary research fix — 2026-11-03
+- Protected full-history observation #41650108616 stopped on historical season index 2 (2019/20) with a fail-closed schema result. Verified the delayed 2019/20 RPL campaign ended 22 July 2020. Added a narrowly scoped through-July-2020 allowed cutoff and synthetic refusal tests; no 2025/26 access, model fitting or source-row publication. Re-run required; no complete seven-season coverage inferred.
+
 ## M2 seven-season historical Starter samples and full-team audit preparation — 2026-11-03
 - Protected owner run #41648185988 observed 50 finished matches and 16 clubs per 2018/19–2024/25 sample (350 source rows, 7/7 seasons, each paginated). Pinned no-raw SHA evidence. Added a separate guarded seven-season, 16-club-per-season source cross-check runner and synthetic validation; no current model, sealed holdout, production importer or forecast changes. Complete historical season coverage remains unproven until real run.
 

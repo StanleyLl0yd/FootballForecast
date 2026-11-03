@@ -15,6 +15,8 @@ function page(doc,season,team=null){
     doc.meta.count!==doc.data.length||!obj(doc.meta.access)||
     doc.meta.access.authenticated!==true||doc.meta.access.plan!=='starter')fail();
   const ids=new Set(),year=Number(season.slice(0,4));
+  // The pandemic-delayed 2019/20 RPL season completed on 22 July 2020.
+  const latestExclusive=season==='2019/20'?'2020-08-01':String(year+1)+'-07-01';
   for(const r of doc.data){
     if(!obj(r)||!ID.test(r.id)||ids.has(r.id)||r.competitionId!==COMP||
       r.season!==season||!obj(r.homeTeam)||!obj(r.awayTeam)||
@@ -26,8 +28,9 @@ function page(doc,season,team=null){
       if(typeof r.kickoffAt!=='string'||
          !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/.test(r.kickoffAt)||
          Number.isNaN(Date.parse(r.kickoffAt))||
+         new Date(r.kickoffAt).toISOString().slice(0,10)!==r.kickoffAt.slice(0,10)||
          r.kickoffAt<String(year)+'-07-01'||
-         r.kickoffAt>=String(year+1)+'-07-01')fail();
+         r.kickoffAt>=latestExclusive)fail();
     }
     ids.add(r.id);
   }
