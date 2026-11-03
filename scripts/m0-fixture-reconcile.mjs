@@ -18,7 +18,7 @@ function validISO(value){
   const d=new Date(value+'T00:00:00Z');
   return !Number.isNaN(d.getTime())&&d.toISOString().slice(0,10)===value;
 }
-function sourceRows(source){
+export function extractFootballTxtRows(source){
   let year=null,date=null,round=null;
   const rows=[],dateErrors=[];
   source.split(/\r?\n/).forEach((line,index)=>{
@@ -51,7 +51,7 @@ export function reconcileFootballTxt(source,referenceJsonl,options={}){
   if(typeof source!=='string'||typeof referenceJsonl!=='string')
     throw new TypeError('Both sources must be UTF-8 text');
   const quality=auditFootballTxtQuality(source,options);
-  const primary=sourceRows(source);
+  const primary=extractFootballTxtRows(source);
   const reference=[],referenceErrors=[],seen=new Set();
   referenceJsonl.split(/\r?\n/).forEach((line,index)=>{
     if(!line.trim())return;
