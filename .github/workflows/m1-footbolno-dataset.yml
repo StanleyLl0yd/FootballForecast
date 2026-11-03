@@ -1,8 +1,5 @@
 name: M1 Footbolno private three-season dataset
 on:
-  schedule:
-    # One bounded current-day provenance comparison, never a season crawler.
-    - cron: '43 7 * * *'
   pull_request:
     paths:
       - 'scripts/m1-footbolno-normalize.mjs'
@@ -44,7 +41,7 @@ jobs:
           node --check scripts/m1-openfootball-score-gate.mjs
           node --test tests/m1-footbolno-normalize.test.mjs tests/m1-source-quality-diagnostic.test.mjs tests/m1-sportscore-current.test.mjs tests/m1-openfootball-score-gate.test.mjs
   private-source-snapshot:
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'workflow_dispatch'
     needs: [normalize-unit]
     runs-on: ubuntu-latest
     timeout-minutes: 5

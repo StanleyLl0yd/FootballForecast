@@ -1,5 +1,7 @@
 # M2 baseline protocol — pre-registered before real training
 
+**Historical v1 only — not a live source mandate.** On 2026-11-03 the owner authorized a separate [OpenFootball calendar-only study](M2_OPENFOOTBALL_PROTOCOL.md) rather than waiting for Footbolno. The frozen v1 proof, source identity and holdout rules remain historical and cannot be silently rewritten; M2 remains 4/8 and holdout sealed.
+
 **Status:** M2 OPEN, owner-authorized 2026-11-02 ([#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182)). **Protocol version: `m2-independent-poisson-v1`**, frozen before observing any sealed 2025/26 holdout score or model metric. The document is part of the code-reviewed project; changing a decision after inspecting holdout labels requires a new, explicitly non-comparable study and a separate validation sample. **M3 remains closed.**
 
 ## Data partition and research integrity

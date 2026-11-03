@@ -44,21 +44,23 @@ test('opened M2 preserves sealed-holdout and preregistration boundaries',()=>{
   assert.match(operations,/M2 OPEN 2026-11-02/);
 });
 
-test('automated sources and absence of trained model/deliveries are consistently disclosed',()=>{
-  assert.match(operations,/06:17 and 18:17 UTC/);
+test('retired automatic Footbolno fetches and absence of production models are disclosed',()=>{
+  assert.match(operations,/formerly automatic import\/guarded refresh at 06:17 and 18:17 UTC|formerly automatic.*06:17 and 18:17 UTC|historically ran.*06:17 and 18:17 UTC/);
+  assert.match(operations,/disabled as scheduled source operations/);
   assert.match(operations,/specifically allowlisted source pipeline dependency/);
   assert.match(tls,/M1 was \*\*ACCEPTED on 2026-11-02\*\*/);
   assert.match(operations,/07:43 UTC/);
+  assert.match(operations,/only explicit confirmed manual dispatch is enabled/);
   assert.match(operations,/Forecast publication.*approved production models.*remain disabled/);
   assert.match(readme,/Утверждённых и опубликованных моделей, прогнозов и подтверждённой точности пока нет/);
   assert.match(limitations,/production model training, approved model locking and live predictions remain disabled/);
 });
 
-test('M1 operator instructions do not require an empty public catalog or deny autonomous import',()=>{
+test('M1 operator instructions keep historical data and preserve manual-only recovery',()=>{
   assert.match(operations,/616 rows as of/);
   assert.match(operations,/unchanged by staging itself/);
   assert.doesNotMatch(operations,/unchanged empty public/);
-  assert.match(tls,/scheduled with optional manual dispatch/);
+  assert.match(tls,/historically scheduled with optional manual dispatch, now manual-only since 2026-11-03/);
   assert.doesNotMatch(tls,/manual-only FootballForecast M1 importer/);
   assert.match(sourceRegister,/current registry contains 20/);
   assert.doesNotMatch(sourceRegister,/M0 #2 remains open/);

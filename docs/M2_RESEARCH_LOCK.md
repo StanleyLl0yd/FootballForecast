@@ -1,5 +1,7 @@
 # M2 pre-holdout lock — bounded research design
 
+**Historical Footbolno-specific v1 only.** The 2026-11-03 [OpenFootball-first study](M2_OPENFOOTBALL_PROTOCOL.md) is a separate protocol with no approved real model lock; do not apply this old snapshot/CSV gate to the new study or alter the sealed holdout.
+
 **Status (2026-11-02): bounded implementation and synthetic tests plus two real, reproducible, ephemeral source-offline train-only fits.** These are NOT an approved pre-holdout lock, retrospective benchmark or independent proof of publisher authority.
 M2 #182 remains **4/8 complete** (the conditional Elo/Dixon–Coles deferral is accepted); a permitted one-time study still must satisfy its
 acceptance checks. The 2025/26 sealed cohort must not be opened by this step.

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {readM2TrainOnlyRun,readM2PublicSourcesRun} from '../lib/m2-run-status.ts';
+import {readM2TrainOnlyRun,readM2PublicSourcesRun,readM2OpenFootballTrainRun} from '../lib/m2-run-status.ts';
 
 const run=()=>({
   id:41400000001,event:'workflow_dispatch',actor:{login:'StanleyLl0yd'},head_branch:'main',
@@ -114,4 +114,21 @@ test('public-source workflow lookup is bounded, read-only and treats a success a
   assert.deepEqual(await readM2PublicSourcesRun(async()=>response({
     total_count:1,workflow_runs:[{...run(),actor:{login:'other-user'}}]
   })),{state:'unavailable'});
+});
+
+test('owner OpenFootball-only train metadata is read via a separate static workflow allowlist',async()=>{
+  const result=await readM2OpenFootballTrainRun(async(input,init)=>{
+    const url=new URL(input);
+    assert.equal(url.pathname,'/repos/StanleyLl0yd/FootballForecast/actions/workflows/m2-openfootball-train-only.yml/runs');
+    assert.equal(url.searchParams.get('branch'),'main');
+    assert.equal(init.method,'GET');
+    assert.equal(init.body,undefined);
+    assert.equal(init.headers.Authorization,undefined);
+    return response({total_count:1,workflow_runs:[run()]});
+  });
+  assert.deepEqual(result,{state:'run',id:41400000001,url:run().html_url,
+    status:'completed',conclusion:'success',sha:'a'.repeat(40)});
+  assert.equal(Object.hasOwn(result,'modelApproved'),false);
+  assert.deepEqual(await readM2OpenFootballTrainRun(async()=>{throw Error('offline');}),
+    {state:'unavailable'});
 });

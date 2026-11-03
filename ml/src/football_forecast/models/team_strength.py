@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from math import exp, isfinite, log
 
 from football_forecast.data.contracts import DataError, FinishedMatch
+from football_forecast.data.openfootball_training import CalendarTrainingFixture
 from football_forecast.data.training_input import TrainingFixture
 from football_forecast.models.poisson import ScoreDistribution, poisson_score_distribution
 
@@ -51,14 +52,20 @@ class TeamStrengthModel:
 
 
 def fit_independent_poisson(
-    matches: Sequence[FinishedMatch | TrainingFixture],
+    matches: Sequence[FinishedMatch | TrainingFixture | CalendarTrainingFixture],
 ) -> TeamStrengthModel:
     """Fit fixed-v1 ridge Poisson strengths, without data fetching or evaluating labels.
 
     Any TrainingFixture must originate from the protected role/provenance-gated
     reader. Its source has no authenticated finish timestamp; none is invented.
     """
-    records = sorted(matches, key=lambda m: (m.kickoff_at, m.match_id))
+    calendar = [isinstance(m, CalendarTrainingFixture) for m in matches]
+    if any(calendar):
+        if not all(calendar):
+            raise DataError("cannot mix calendar-only and timestamped training cohorts")
+        records = sorted(matches, key=lambda m: (m.source_calendar_date, m.match_id))
+    else:
+        records = sorted(matches, key=lambda m: (m.kickoff_at, m.match_id))
     if not records:
         raise InsufficientTrainingData("no train-season matches")
     match_ids = [match.match_id for match in records]

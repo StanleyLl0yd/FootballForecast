@@ -1,6 +1,6 @@
 # M1 verified Supabase PostgreSQL TLS
 
-The protected FootballForecast M1 importer (scheduled with optional manual dispatch) connects to the Frankfurt Supabase
+The protected FootballForecast M1 importer (historically scheduled with optional manual dispatch, now manual-only since 2026-11-03) connects to the Frankfurt Supabase
 Session pooler using `PGSSLMODE=verify-full` and the exact pooler host. The pooler
 certificate chains to the **private Supabase Root 2021 CA**, which is not included
 in Ubuntu's public operating-system trust store. Consequently

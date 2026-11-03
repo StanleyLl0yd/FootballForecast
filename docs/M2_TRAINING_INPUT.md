@@ -1,5 +1,7 @@
 # M2 private training input — research-only read contract
 
+**Legacy v1 contract only:** since 2026-11-03 the active independent training experiment is [OpenFootball calendar-only](M2_OPENFOOTBALL_PROTOCOL.md), with no Supabase role or Footbolno dependency. Retain this SQL read surface for historical compatibility; do not use it to train/score the new study.
+
 **Scope:** a pinned, privileged, read-only candidate for exactly 240 played RPL 2024/25 `train_baseline` fixtures. It is not a real training run, a 2025/26 benchmark, production deployment, or proof of historical pre-match accuracy. Follow the unchanged [pre-registered M2 protocol](M2_BASELINE_PROTOCOL.md).
 
 ## Trust and execution boundary

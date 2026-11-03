@@ -11,7 +11,7 @@ export type M2RunStatus=
 
 /** Server-only read-only public GitHub status. No token, no workflow dispatch. */
 async function readM2Run(
-  workflowFile:'m2-manual-research-lock.yml'|'m2-public-sources-observe.yml',
+  workflowFile:'m2-manual-research-lock.yml'|'m2-public-sources-observe.yml'|'m2-openfootball-train-only.yml',
   fetchImpl:typeof fetch
 ):Promise<M2RunStatus>{
   const githubRunsURL=`${githubWorkflowBase}${workflowFile}/runs?branch=main&per_page=10`;
@@ -70,4 +70,9 @@ export function readM2TrainOnlyRun(fetchImpl:typeof fetch=fetch):Promise<M2RunSt
 
 export function readM2PublicSourcesRun(fetchImpl:typeof fetch=fetch):Promise<M2RunStatus>{
   return readM2Run('m2-public-sources-observe.yml',fetchImpl);
+}
+
+/** Independent OpenFootball calendar-only train receipts are still unapproved metadata. */
+export function readM2OpenFootballTrainRun(fetchImpl:typeof fetch=fetch):Promise<M2RunStatus>{
+  return readM2Run('m2-openfootball-train-only.yml',fetchImpl);
 }
