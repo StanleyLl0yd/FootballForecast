@@ -1,3 +1,6 @@
+## M2 source-rights decision and private OpenFootball model escrow — 2026-11-03
+- Authenticated protected source catalog #41635173009 identified FotMob as RPL upstream with `Unlicensed-Beta` claim; source cannot be promoted to automated production import without independent upstream permission. Added fail-closed classification test. Prepared closed-schema private model escrow migration and protected train-only writer for CC0 2024/25, verifying digest/immutability/RLS and reproducing earlier model hashes; no model/holdout/forecast approval implied. M2 4/8 OPEN.
+
 ## M2 current RPL 2026/27 complete structural coverage and source-rights probe — 2026-11-03
 - Recorded protected owner run #41632612945, 240 RPL fixtures/16 teams from 16 free Starter team filters, 480 pairwise matched views, 104 finished/136 scheduled, 240 UTC fields, no paid cursor. Added a strictly bounded, owner-only authenticated free Starter competition-catalog diagnostic to read only RPL source name/licence/HTTPS attribution/season; synthetic fail-closed tests. Data remains **unapproved** for live production, no sealed holdout/model or forecast writes; M2 4/8 OPEN.
 

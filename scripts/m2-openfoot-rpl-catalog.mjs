@@ -45,7 +45,10 @@ export function inspectOpenFootRplCatalog(value,observedAtUtc){
     catalogFixturesFlag:item.coverage?.fixtures===true,
     researchInterpretation:s.mode==='unavailable'?
       'SOURCE_CATALOG_INCONSISTENT_WITH_OBSERVED_FIXTURES':
-      'CATALOG_METADATA_REVIEW_REQUIRED',
+      /unlicensed/i.test(s.license)?
+        'UNLICENSED_UPSTREAM_NOT_APPROVED_FOR_PRODUCTION':
+        'CATALOG_METADATA_REVIEW_REQUIRED',
+    upstreamProductionReuseQualified:false,
     publisherPermissionIndependentlyVerified:false,
     originalUpstreamRightsIndependentlyVerified:false,
     matchResultsCrossChecked:false,
