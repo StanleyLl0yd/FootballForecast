@@ -185,7 +185,7 @@ jobs:
             echo
           } >> "$GITHUB_STEP_SUMMARY"
           # Documentation-published public demo value; no private key, no log output.
-          printf 'header = "Authorization: Bearer %s%s"\\n' \
+          printf 'header = "Authorization: Bearer %s%s"\n' \
             'of_demo_' 'openfootapi_docs' > "$work/demo-curl.conf"
           status="$(curl --fail --silent --show-error \
             --proto '=https' --max-redirs 0 \
