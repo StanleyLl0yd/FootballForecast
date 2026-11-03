@@ -6,8 +6,10 @@ import {M2AnchorRequestViewer} from '@/components/m2-anchor-request-viewer';
 import {readM2TrainOnlyRun,readM2PublicSourcesRun,readM2OpenFootballTrainRun} from '@/lib/m2-run-status';
 import {summarizeM2OwnerEvidence} from '@/lib/m2-owner-research.mjs';
 import {inspectM2OpenFootballReplay} from '@/lib/m2-openfootball-evidence.mjs';
+import {inspectM2PublicSourceObservations} from '@/lib/m2-public-source-evidence.mjs';
 import recordedEvidence from '../../../../../../docs/M2_STORED_TRAIN_REPLAY_EVIDENCE.json';
 import openFootballEvidence from '../../../../../../docs/M2_OPENFOOTBALL_TRAIN_REPLAY_EVIDENCE.json';
+import publicSourceEvidence from '../../../../../../docs/M2_PUBLIC_SOURCE_OBSERVATION_EVIDENCE.json';
 
 export const dynamic='force-dynamic';
 
@@ -16,6 +18,7 @@ export default async function Page(){
   await requireOwner();
   const evidence=summarizeM2OwnerEvidence(recordedEvidence);
   const openFootballReplay=inspectM2OpenFootballReplay(openFootballEvidence);
+  const sourceObservation=inspectM2PublicSourceObservations(publicSourceEvidence);
   const [latest,publicSources,openFootball]=await Promise.all([
     readM2TrainOnlyRun(),readM2PublicSourcesRun(),readM2OpenFootballTrainRun()
   ]);
@@ -115,6 +118,37 @@ export default async function Page(){
           не получает доступ к БД или 2025/26 и не публикует модель. Успех задания — лишь
           воспроизводимый обучающий кандидат; текущие матчи, holdout и публикация заблокированы.</p>
         <h3>Независимые публичные источники</h3>
+        <h3>Закреплённые реальные наблюдения · 03.11.2026</h3>
+        {sourceObservation.state==='recorded'?<div>
+          <p>Первичный журнал:
+            {' '}<a className="sources-method"
+              href={`https://github.com/StanleyLl0yd/FootballForecast/actions/runs/${sourceObservation.runId}`}
+              target="_blank" rel="noopener noreferrer">запуск #{sourceObservation.runId} ↗</a>.
+            Результаты источников не означают допуск к обучению или публикации.</p>
+          <div className="source-lab-table-wrapper"><table className="source-lab-table">
+            <caption className="source-lab-note">Только агрегаты одного защищённого наблюдения, не данные матчей и не утверждённые источники</caption>
+            <thead><tr><th scope="col">Источник</th><th scope="col">Наблюдение</th>
+              <th scope="col">Ограничение</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">OpenFootball · 2024/25</th>
+                <td>{sourceObservation.openFootball.matches} матчей, {sourceObservation.openFootball.clubs} клубов</td>
+                <td>Закреплённый исторический набор; время начала матчей не проверено.</td></tr>
+              <tr><th scope="row">OpenFoot · 2026/27</th>
+                <td>{sourceObservation.openFoot.matches} матчей, {sourceObservation.openFoot.clubs} клубов</td>
+                <td>Демонстрационный ответ PARTIAL_UNAPPROVED. Полное покрытие не подтверждено.</td></tr>
+              <tr><th scope="row">SportScore · 03.11.2026</th>
+                <td>{sourceObservation.sportScore.matches} подтверждённых наблюдений</td>
+                <td>Один UTC-день, не доказательство отсутствия матчей или полного календаря.</td></tr>
+            </tbody>
+          </table></div>
+          <p className="source-lab-note">Контроль ответов:
+            OpenFoot <code>{sourceObservation.openFoot.responseSha256}</code>;
+            SportScore <code>{sourceObservation.sportScore.responseSha256}</code>.
+            Исходные строки и приватные данные не сохраняются на этой странице.</p>
+        </div>:<p role="alert" className="source-lab-error">
+          Историческое наблюдение источников не прошло закрытую проверку;
+          не используйте его для приёмки.</p>}
+
         {publicSources.state==='run'?<p>Последний диагностический запуск:
           {' '}<strong>{publicSources.status}</strong>
           {publicSources.conclusion?` · ${publicSources.conclusion}`:''}.
