@@ -11,7 +11,6 @@ from football_forecast.research.openfootball_escrow import (
     persist_private_training_escrow,
     prepare_private_training_escrow,
 )
-from test_openfootball_training import fixture_doc
 
 CODE = "b" * 40
 
