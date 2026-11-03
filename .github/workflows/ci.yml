@@ -189,6 +189,11 @@ jobs:
         run: node --check scripts/m1-openfootball-score-gate.mjs && node --test tests/m1-openfootball-score-gate.test.mjs
       - name: Verify M2 pinned OpenFootball reference adapter and source isolation
         run: node --check scripts/m2-openfootball-reference.mjs && node --test tests/m2-openfootball-reference.test.mjs
+      - name: Validate private historical importer source and protected worker
+        run: |
+          node --check scripts/m2-openfoot-private-history-validate.mjs
+          bash -n scripts/m2-openfoot-private-history-run.sh
+          node --test tests/m2-openfoot-private-history.test.mjs
       - name: Validate private historical score shape sample without leaking match results
         run: node --check scripts/m2-openfoot-score-shape.mjs && node --test tests/m2-openfoot-score-shape.test.mjs
       - name: Validate seven full RPL season structural audits without holdout or raw match artifacts

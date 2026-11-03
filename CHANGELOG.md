@@ -1,3 +1,6 @@
+## M2 owner-only seven-season RPL private archive importer — 2026-11-03
+- Added a guarded free Starter historical acquisition runner and independent Node/Python checks for 1,680 matches, real 240-fixture/season provenance hashes, immutable deduplicated inserts into the existing PR #227 private season-level schema, transactional readback, strict TLS and zero source-row logging. Synthetic-only tests and CI gates added. Import not yet invoked; no training, holdout or publication; M2 4/8 OPEN.
+
 ## M2 verified seven seasons, private historical schema prepared — 2026-11-03
 - Protected #41662712300: 1,680/1,680 finished RPL 2018/19–2024/25 fixtures, source goal pairs and UTC kickoffs cross-confirmed; one provider only, no independent rights or historical publication proof. Added pinned aggregate evidence, isolated append-only private PostgreSQL snapshot schema, forced RLS, synthetic DB test and updated README/ROADMAP/coverage plan. No real history persisted yet, no model training or holdout access.
 

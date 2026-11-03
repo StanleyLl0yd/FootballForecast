@@ -149,3 +149,7 @@ M0 exit evidence: two full-repository audit passes and fixes, successful protect
 ### 2026-10-29 M0 exit audit / owner source-use decision
 
 The repository-wide security/correctness and independent complexity sweeps, the PR #122 regression fixes and residual risks are documented in [M0 exit evidence](docs/M0_EXIT_AUDIT_AND_SOURCE_DECISION.md). The owner explicitly directed use of all 20 recorded free sources within the corresponding published terms, without further routine requests for upstream permissions or vendor letters. Existing licensed data may be used for M1 ingestion and training where the provider's terms cover that operation. Never misrepresent prohibited extraction, raw redistribution, missing chronological evidence or measured model accuracy. **M0 accepted 2026-10-29; M1 was OPEN at that checkpoint, and was subsequently ACCEPTED 2026-11-02.**
+
+### Owner-only seven-season archival step (2026-11-03)
+
+Source coverage and nested final scores: 1,680/1,680 verified within OpenFoot Starter (owner run #41662712300). Private append-only database schema from PR #227 exists in Frankfurt; protected source importer is staged under `m2-openfoot-private-history.yml`, with two-view replay, per-season hashes, bounded requests, readback and no public rows. **Storage execution is pending** until CI and protected main verification. Existing M2 Poisson study and sealed holdout are unchanged.
