@@ -14,6 +14,10 @@ on:
         description: 'Optional exact AUDIT_OPENFOOT_TEAMS; at most 17 free Starter filtered GETs'
         required: false
         type: string
+      openfoot_catalog:
+        description: 'Optional exact AUDIT_OPENFOOT_CATALOG; public-source metadata only'
+        required: false
+        type: string
   issue_comment:
     types: [created]
 
@@ -518,4 +522,66 @@ jobs:
             echo
             echo '~~~'
             echo 'Research only; no approved current feed, private model or unsealed holdout.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  bounded-openfoot-source-catalog:
+    # Public provenance metadata only, no API key, fixtures, or model state.
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.openfoot_catalog == 'AUDIT_OPENFOOT_CATALOG') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-openfoot-catalog')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Retrieve explicit Russian league source/licence metadata only
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          status="$(curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 25 --max-filesize 1250000 \
+            -H 'Accept: application/json' \
+            -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+            --output "$work/catalog.json" --write-out '%{http_code}' \
+            'https://openfootapi.com/v1/competitions' 2>/dev/null || true)"
+          if [[ "$status" != 200 || ! -s "$work/catalog.json" ]]; then
+            echo 'M2_OPENFOOT_CATALOG_OBSERVATION=INCONCLUSIVE_HTTP'
+            echo 'Public catalog unavailable; cannot infer source rights.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if ! node scripts/m2-openfoot-rpl-catalog.mjs \
+            "$work/catalog.json" "$observed" > "$work/summary.json"; then
+            echo 'M2_OPENFOOT_CATALOG_OBSERVATION=INCONCLUSIVE_SCHEMA'
+            echo 'Catalog data failed bounded RPL licence/source validation.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "M2_OPENFOOT_CATALOG_OBSERVATION=$(cat "$work/summary.json")"
+          {
+            echo '## OpenFoot RPL upstream licence and attribution claim — review required'
+            echo 'Source: https://openfootapi.com/terms and /v1/competitions'
+            echo 'A catalog claim is not independent proof of an upstream grant.'
+            echo '~~~json'
+            cat "$work/summary.json"
+            echo
+            echo '~~~'
           } >> "$GITHUB_STEP_SUMMARY"

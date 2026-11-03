@@ -197,3 +197,29 @@ This is **pending real execution**, not confirmation of 240 accessible
 matches. Source and upstream licence, attribution, temporal provenance,
 and independently checked current fixture quality still require
 review. M2 stays OPEN 4/8; M3 not authorized.
+
+### Confirmed 2026/27 free feed coverage — source-rights follow-up (2026-11-03)
+
+Owner-protected [run #41632612945](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41632612945)
+at `main=9dbdfb5b30936e24af7cb65b064e1e18350d64c4` succeeded:
+16 free authenticated Starter club-filter GETs retrieved 480 club views with
+240 uniquely cross-confirmed directed Russian Premier League fixtures,
+16 teams, 104 finished and 136 scheduled at 12:04:50 UTC, no missing
+UTC kickoff fields or limited response windows. License-source metadata
+was **present** in all 16 responses but neither its values nor original
+upstream redistribution rights were independently reviewed. The only
+qualified state is `STRUCTURALLY_COMPLETE_UNAPPROVED`; the source is
+**not** an approved production importer and does not unblock a model or
+the sealed 2025/26 holdout.
+
+The existing source-observation workflow now offers an independent bounded,
+owner-only public `GET /v1/competitions` probe, triggered by
+`openfoot_catalog=AUDIT_OPENFOOT_CATALOG` or exact owner-authored issue
+#182 comment `/m2-openfoot-catalog`. It logs only the Russian league's
+closed-schema source name, claimed licence, HTTPS attribution URL, current
+season, source mode and catalog-availability flag; no match rows, club IDs,
+API keys or source contents are committed. Unavailable or ambiguous
+metadata returns `INCONCLUSIVE`. A catalog attribution/rights claim
+must still be checked against upstream terms before any public reuse,
+and the independent actual-score/kickoff/freshness audit remains pending.
+M2 **4/8 OPEN**, M3 not authorized.
