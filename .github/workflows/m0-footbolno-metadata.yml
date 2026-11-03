@@ -1,17 +1,17 @@
-name: M0 Free RPL Publisher Metadata Probe
+name: M0 Free RPL Publisher Metadata Probe (manual archive only)
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/m0-footbolno-metadata.mjs'
-      - '.github/workflows/m0-footbolno-metadata.yml'
 permissions: {contents: read}
 concurrency:
   group: m0-footbolno-metadata-observation
   cancel-in-progress: false
 jobs:
   observe-public-metadata:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'workflow_dispatch' &&
+      github.actor == 'StanleyLl0yd'
     # One-time upon installing/changing this tool on main, thereafter manual.
     # Does NOT imply permission to ingest or train on the provider's data.
     runs-on: ubuntu-latest

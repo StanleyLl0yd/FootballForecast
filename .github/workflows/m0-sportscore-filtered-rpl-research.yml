@@ -1,18 +1,17 @@
-name: M0 SportScore RPL Filtered Six-Day Research
+name: M0 SportScore RPL Filtered Six-Day Research (manual archive only)
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/m0-sportscore-filtered-rpl-research.mjs'
-      - 'tests/m0-sportscore-filtered-rpl-research.test.mjs'
-      - '.github/workflows/m0-sportscore-filtered-rpl-research.yml'
 permissions: {contents: read}
 concurrency:
   group: m0-sportscore-filtered-research
   cancel-in-progress: false
 jobs:
   ephemeral-filtered-discovery:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'workflow_dispatch' &&
+      github.actor == 'StanleyLl0yd'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
