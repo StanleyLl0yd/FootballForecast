@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_RPL_SEVEN_SEASON_TEAM_IDENTITY_SAMPLE",
+  "source": "OpenFoot Starter",
+  "ownerRunId": 41674569785,
+  "exactMainSha": "6cbdf1c4599708e83d809f1ed7ad787db4b23f2f",
+  "observedAtUtc": "2026-11-03T16:28:39Z",
+  "requests": 7,
+  "sourcePagesSha256": "56c8c79b7837a1767085e83068fcf470f09886a8ea5c4f06e726b86e38426ee5",
+  "identityContinuitySha256": "c288b580bda5eb5efb52dfaad1c01ff36ccef9749c018dcb7d0bd54e9b055dc9",
+  "sampleRows": 350,
+  "observedUniqueClubIds": 26,
+  "privateArchiveExpectedUniqueClubIds": 26,
+  "matchesPriorArchiveIdCount": true,
+  "perSeason": [
+    {
+      "season": "2018/19",
+      "firstPageRows": 50,
+      "clubIds": 16,
+      "missingNames": 0,
+      "withinSeasonConflictingNames": 0,
+      "nameCollisions": 0,
+      "presentCandidateFieldRowCounts": {
+        "venue": 0,
+        "city": 0,
+        "pitchSurface": 0,
+        "weather": 0,
+        "coaches": 0,
+        "lineups": 0,
+        "players": 0,
+        "xg": 0,
+        "shots": 0,
+        "bookmakerOdds": 0
+      }
+    },
+    {
+      "season": "2019/20",
+      "firstPageRows": 50,
+      "clubIds": 16,
+      "missingNames": 0,
+      "withinSeasonConflictingNames": 0,
+      "nameCollisions": 0,
+      "presentCandidateFieldRowCounts": {
+        "venue": 0,
+        "city": 0,
+        "pitchSurface": 0,
+        "weather": 0,
+        "coaches": 0,
+        "lineups": 0,
+        "players": 0,
+        "xg": 0,
+        "shots": 0,
+        "bookmakerOdds": 0
+      }
+    },
+    {
+      "season": "2020/21",
+      "firstPageRows": 50,
+      "clubIds": 16,
+      "missingNames": 0,
+      "withinSeasonConflictingNames": 0,
+      "nameCollisions": 0,
+      "presentCandidateFieldRowCounts": {
+        "venue": 0,
+        "city": 0,
+        "pitchSurface": 0,
+        "weather": 0,
+        "coaches": 0,
+        "lineups": 0,
+        "players": 0,
+        "xg": 0,
+        "shots": 0,
+        "bookmakerOdds": 0
+      }
+    },
+    {
+      "season": "2021/22",
+      "firstPageRows": 50,
+      "clubIds": 16,
+      "missingNames": 0,
+      "withinSeasonConflictingNames": 0,
+      "nameCollisions": 0,
+      "presentCandidateFieldRowCounts": {
+        "venue": 0,
+        "city": 0,
+        "pitchSurface": 0,
+        "weather": 0,
+        "coaches": 0,
+        "lineups": 0,
+        "players": 0,
+        "xg": 0,
+        "shots": 0,
+        "bookmakerOdds": 0
+      }
+    },
+    {
+      "season": "2022/23",
+      "firstPageRows": 50,
+      "clubIds": 16,
+      "missingNames": 0,
+      "withinSeasonConflictingNames": 0,
+      "nameCollisions": 0,
+      "presentCandidateFieldRowCounts": {
+        "venue": 0,
+        "city": 0,
+        "pitchSurface": 0,
+        "weather": 0,
+        "coaches": 0,
+        "lineups": 0,
+        "players": 0,
+        "xg": 0,
+        "shots": 0,
+        "bookmakerOdds": 0
+      }
+    },
+    {
+      "season": "2023/24",
+      "firstPageRows": 50,
+      "clubIds": 16,
+      "missingNames": 0,
+      "withinSeasonConflictingNames": 0,
+      "nameCollisions": 0,
+      "presentCandidateFieldRowCounts": {
+        "venue": 0,
+        "city": 0,
+        "pitchSurface": 0,
+        "weather": 0,
+        "coaches": 0,
+        "lineups": 0,
+        "players": 0,
+        "xg": 0,
+        "shots": 0,
+        "bookmakerOdds": 0
+      }
+    },
+    {
+      "season": "2024/25",
+      "firstPageRows": 50,
+      "clubIds": 16,
+      "missingNames": 0,
+      "withinSeasonConflictingNames": 0,
+      "nameCollisions": 0,
+      "presentCandidateFieldRowCounts": {
+        "venue": 0,
+        "city": 0,
+        "pitchSurface": 0,
+        "weather": 0,
+        "coaches": 0,
+        "lineups": 0,
+        "players": 0,
+        "xg": 0,
+        "shots": 0,
+        "bookmakerOdds": 0
+      }
+    }
+  ],
+  "consecutiveOverlaps": [
+    {
+      "earlierSeason": "2018/19",
+      "laterSeason": "2019/20",
+      "sharedIds": 14,
+      "sameNormalizedDisplayName": 14,
+      "differentNormalizedDisplayName": 0,
+      "missingOrAmbiguousNames": 0,
+      "pinnedPrivateOverlapMatches": true
+    },
+    {
+      "earlierSeason": "2019/20",
+      "laterSeason": "2020/21",
+      "sharedIds": 14,
+      "sameNormalizedDisplayName": 14,
+      "differentNormalizedDisplayName": 0,
+      "missingOrAmbiguousNames": 0,
+      "pinnedPrivateOverlapMatches": true
+    },
+    {
+      "earlierSeason": "2020/21",
+      "laterSeason": "2021/22",
+      "sharedIds": 14,
+      "sameNormalizedDisplayName": 14,
+      "differentNormalizedDisplayName": 0,
+      "missingOrAmbiguousNames": 0,
+      "pinnedPrivateOverlapMatches": true
+    },
+    {
+      "earlierSeason": "2021/22",
+      "laterSeason": "2022/23",
+      "sharedIds": 13,
+      "sameNormalizedDisplayName": 13,
+      "differentNormalizedDisplayName": 0,
+      "missingOrAmbiguousNames": 0,
+      "pinnedPrivateOverlapMatches": true
+    },
+    {
+      "earlierSeason": "2022/23",
+      "laterSeason": "2023/24",
+      "sharedIds": 14,
+      "sameNormalizedDisplayName": 14,
+      "differentNormalizedDisplayName": 0,
+      "missingOrAmbiguousNames": 0,
+      "pinnedPrivateOverlapMatches": true
+    },
+    {
+      "earlierSeason": "2023/24",
+      "laterSeason": "2024/25",
+      "sharedIds": 13,
+      "sameNormalizedDisplayName": 13,
+      "differentNormalizedDisplayName": 0,
+      "missingOrAmbiguousNames": 0,
+      "pinnedPrivateOverlapMatches": true
+    }
+  ],
+  "totalSharedAdjacentClubIdInstances": 82,
+  "totalUnchangedDisplayNameInstances": 82,
+  "featurePresenceCountAcrossAllFirstPages": {
+    "venue": 0,
+    "city": 0,
+    "pitchSurface": 0,
+    "weather": 0,
+    "coaches": 0,
+    "lineups": 0,
+    "players": 0,
+    "xg": 0,
+    "shots": 0,
+    "bookmakerOdds": 0
+  },
+  "limitations": {
+    "sampleOnly": true,
+    "sourceSchemaCandidateKeysOnly": true,
+    "fullSeasonFeatureAbsenceProven": false,
+    "undocumentedNestedFieldsExcluded": true,
+    "independentClubIdentityMappingAccepted": false,
+    "sourceIndependentResultsVerified": false,
+    "historicalPreMatchPublicationVerified": false,
+    "newModelTrainingApproved": false,
+    "holdoutRead": false,
+    "rawNamesOrIdsPersisted": false,
+    "providerRowsLogged": 0
+  }
+}

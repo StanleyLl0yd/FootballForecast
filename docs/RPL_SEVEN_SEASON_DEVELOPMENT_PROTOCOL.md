@@ -44,3 +44,7 @@ Live SQL aggregate over the 7 immutable RPL archive snapshots: 26 unique provide
 4. **Strictly unchanged:** the existing M2 Poisson 2024/25 private escrow, immutability and M2 study-lock requirements; **2025/26 remains sealed** until a separately independently approved lock and single-use evaluation; no M3, publicly published forecasts or unverified superiority statements.
 
 This protocol alone does not approve a read of the private real match rows for a multi-season fit; future owner-only execution needs protected verified data permissions and a distinct model study anchor. Never include raw match IDs, raw odds, player data, private coefficients or private team aliases in public GitHub artifacts.
+
+## Post-registration source richness observation (does not amend the folds)
+
+Protected first-page observation #41674569785 found 26 provider IDs, 82 stable normalized adjacent-season ID/name matches, and 0/350 observed candidate fields for stadium/city/surface/weather/coaches/lineups/players/xG/shots/odds in documented free Starter historical samples. The first-page key presence limitation is explicit. [Source enrichment plan](RPL_SEVEN_SEASON_ENRICHMENT_SOURCES.md) qualifies other $0 providers without changing five fold boundaries, accepting cross-season aliases or training any new model.
