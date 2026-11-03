@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {summarizeOpenFootRpl,OPENFOOT_RPL} from '../scripts/m2-openfoot-rpl-diagnostic.mjs';
 const now='2026-11-03T09:00:00Z';
 const fixture=(h='team_h',a='team_a')=>({
