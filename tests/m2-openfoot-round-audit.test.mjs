@@ -103,6 +103,7 @@ test('owner round probe cannot use paid cursor or upload/log raw rows',()=>{
     secretVar,'m2-openfoot-round-audit.mjs','--max-redirs 0',
     'season=2026%2F27&round=$round',
     'INCONCLUSIVE_NO_FREE_KEY','INCONCLUSIVE_HTTP_ROUND_',
+    'result.matchesObserved>8','result.scopeWindowLimited!==false',
     'persist-credentials: false','timeout-minutes: 8'
   ])assert.ok(job.includes(needle),needle);
   assert.doesNotMatch(job,/[?&]cursor=|--location|curl -L|upload-artifact|git push|DATABASE_URL|set -x|psql /);
