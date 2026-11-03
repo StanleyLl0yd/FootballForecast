@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {readM2TrainOnlyRun} from '../lib/m2-run-status.ts';
+import {readM2TrainOnlyRun,readM2PublicSourcesRun} from '../lib/m2-run-status.ts';
 
 const run=()=>({
   id:41400000001,event:'workflow_dispatch',actor:{login:'StanleyLl0yd'},head_branch:'main',
@@ -88,4 +88,30 @@ test('reject unknown JSON, huge responses and missing run identity',async()=>{
   const huge='x'.repeat(129*1024);
   assert.deepEqual(await readM2TrainOnlyRun(async()=>new Response(huge,{status:200})),
     {state:'unavailable'});
+});
+
+test('public-source workflow lookup is bounded, read-only and treats a success as metadata only',async()=>{
+  let calls=0;
+  const status=await readM2PublicSourcesRun(async(input,init)=>{
+    calls++;
+    const url=new URL(input);
+    assert.equal(url.origin,'https://api.github.com');
+    assert.equal(url.pathname,'/repos/StanleyLl0yd/FootballForecast/actions/workflows/m2-public-sources-observe.yml/runs');
+    assert.equal(url.searchParams.get('branch'),'main');
+    assert.equal(url.searchParams.get('per_page'),'10');
+    assert.equal(init.method,'GET');
+    assert.equal(init.body,undefined);
+    assert.equal(init.headers.Authorization,undefined);
+    assert.equal(init.next.revalidate,300);
+    return response({total_count:1,workflow_runs:[run()]});
+  });
+  assert.equal(calls,1);
+  assert.deepEqual(status,{state:'run',id:41400000001,url:run().html_url,
+    status:'completed',conclusion:'success',sha:'a'.repeat(40)});
+  assert.equal(Object.hasOwn(status,'sourceVerified'),false);
+  assert.deepEqual(await readM2PublicSourcesRun(async()=>new Response('rate limited',{status:429})),
+    {state:'unavailable'});
+  assert.deepEqual(await readM2PublicSourcesRun(async()=>response({
+    total_count:1,workflow_runs:[{...run(),actor:{login:'other-user'}}]
+  })),{state:'unavailable'});
 });
