@@ -72,6 +72,14 @@ jobs:
         run: |
           docker exec -i "${{ job.services.postgres.id }}" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres \
             < database/tests/0021_m2_private_model_escrow.sql
+      - name: Exercise seven-season private importer against disposable PostgreSQL 17
+        shell: bash
+        env:
+          PGPASSWORD: ci-only-postgres-password
+          PYTHONPATH: ml/src
+        run: |
+          python -m pip install 'psycopg[binary]==3.3.6'
+          python tests/m2-private-rpl-pg17-roundtrip.py
       - name: Promote synthetic M1 fixtures with stable links and no invented kickoffs
         shell: bash
         run: |
