@@ -2,11 +2,11 @@
 
 **M2 OPEN 2026-11-02:** statistical research and synthetic-only model implementation are authorized under [the frozen protocol](M2_BASELINE_PROTOCOL.md) and [issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182). The protected live importer and its private credentials remain M1-only. No experimental M2 job may read the sealed holdout to tune a model, expose private source rows, write forecasts or modify the live database.
 
-**M1 accepted on 2026-11-02; source synchronization remains active:** protected Footbolno import/guarded current-season refresh runs at 06:17 and 18:17 UTC daily, with independent bounded SportScore research at 07:43 UTC. **Forecast publication, Friday/Tuesday report delivery, approved production models, public privileged callbacks and historical corrections remain disabled pending M2 gates.** Two protected temporary train-only research fits did run successfully on stored source-approved 2024/25 data (without external recheck); they are not approved model locks, evaluation or public predictions.
+**Owner migration 2026-11-03:** Footbolno is no longer a required upstream. Its formerly automatic import/guarded refresh at 06:17 and 18:17 UTC and research at 07:43 UTC are now **disabled as scheduled source operations**; the existing protected importer and source snapshots remain available for manual emergency replay. A new [OpenFootball CC0 calendar-only train study](M2_OPENFOOTBALL_PROTOCOL.md) runs only by owner manual action on protected main, with no database/holdout access. **Forecast publication, Friday/Tuesday report delivery, approved production models, public privileged callbacks and historical corrections remain disabled pending M2 gates.** Two protected temporary train-only research fits did run successfully on stored source-approved 2024/25 data (without external recheck); they are not approved model locks, evaluation or public predictions.
 
 ## M1 three-season source normalization (bounded daily verification)
 
-The [M1 Footbolno workflow](../.github/workflows/m1-footbolno-dataset.yml) tests offline parsing on PRs and, on its daily schedule, an eligible merged change to `main`, or explicit manual `workflow_dispatch`, downloads the publisher's fixed free RPL CSV URL (max 2 MB), records UTC retrieval time and SHA-256, validates 2024/25, 2025/26 and 2026/27, and compares 2024/25 against the pinned OpenFootball CC0 source. The private normalized JSONL files are created with `0600` permissions inside an ephemeral `0700` runner directory, never uploaded, logged, committed, or imported into Supabase. Only aggregate QC, hashes and attribution appear in the job summary.
+The [legacy M1 Footbolno workflow](../.github/workflows/m1-footbolno-dataset.yml) still tests offline parsing on PRs, but only an explicit manual `workflow_dispatch` downloads the publisher's fixed free RPL CSV URL (max 2 MB), records UTC retrieval time and SHA-256, validates 2024/25, 2025/26 and 2026/27, and compares 2024/25 against the pinned OpenFootball CC0 source. The private normalized JSONL files are created with `0600` permissions inside an ephemeral `0700` runner directory, never uploaded, logged, committed, or imported into Supabase. Only aggregate QC, hashes and attribution appear in the job summary.
 
 The current data contract keeps 2024/25 as `train_baseline`, 2025/26 as `sealed_holdout`, and 2026/27 as `current`. Each season requires 16 teams, 240 unique directed fixtures and valid IDs. Finished games require legal integer scores; cancelled, postponed, awarded, live, invalid or stale fixtures are quarantined. Unconfirmed kickoff times remain null, not fabricated midnight. Historical records have `publishedAtUtc: null`; downloading them today does not establish historical pre-match availability. Any QC failure fails the real-source job and blocks data promotion. Neither an ML model nor public forecasts are produced by this workflow.
 
@@ -94,7 +94,7 @@ table grants, RLS, private record count, and confirm that public
 `ff_matches` is unchanged by staging itself (it has **616 rows as of
 2026-11-01**, not zero).
 
-## Protected autonomous real-source import (M1; optional manual fallback)
+## Legacy protected real-source importer (M1; manual recovery only since 2026-11-03)
 
 Live Supabase Free `eu-central-1` migration `20261029162351_m1_private_source_staging`
 has already been applied. The two private tables have RLS without any
@@ -102,7 +102,7 @@ browser-access policy by design; the four append-only triggers and anonymous
 grant denial were verified live. At the moment this initial migration was deployed, no real matches had been imported. By 2026-10-30 the live private database contained **two immutable 720-row snapshots**, and the verified canonical catalog had **616 public matches**. An intentional Supabase Security Advisor `INFO` about two
 RLS-enabled/no-policy private tables is **not** an exposed-data vulnerability.
 
-The workflow `M1 protected free Footbolno ingest and safe RPL refresh` runs automatically from **protected `main`** at 06:17 and 18:17 UTC and on changes to its YAML or a specifically allowlisted source pipeline dependency on `main` (PR #176). Its already-configured GitHub Actions environment `m1-source-import` contains the four required secrets. Optional manual dispatch still requires exact input `STAGE_FOOTBOLNO_PRIVATE`; no Mac, PowerShell, local database password or owner action is needed for scheduled operation.
+The former workflow `M1 protected free Footbolno ingest and safe RPL refresh` historically ran from **protected `main`** at 06:17 and 18:17 UTC and on changes to its YAML or a specifically allowlisted source pipeline dependency on `main` (PR #176). **As of 2026-11-03 both automatic triggers are removed; only explicit confirmed manual dispatch is enabled.** Its already-configured GitHub Actions environment `m1-source-import` contains the four required secrets. Optional manual dispatch still requires exact input `STAGE_FOOTBOLNO_PRIVATE`; no Mac, PowerShell, local database password or owner action is needed for scheduled operation.
 Its deployment branch rule must allow **only protected `main`**; require an
 environment reviewer if supported. Do not put these secrets in repository-wide
 Actions variables or the public web environment.
