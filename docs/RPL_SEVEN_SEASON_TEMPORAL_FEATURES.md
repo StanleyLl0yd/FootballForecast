@@ -1,0 +1,21 @@
+# RPL seven-season temporal feature contract — development-only
+
+Pre-registered on 2026-11-03. This is a separate pure feature-engineering foundation, not an amendment to the frozen M2 2024/25 Poisson study, not an approved future model, and not authorization to read 2025/26.
+
+## Source boundary
+
+- Only finished matches from 2018/19–2024/25 may be input. A 2025/26 record is rejected regardless of whether it has already been fetched elsewhere.
+- Exact source IDs, played scores, UTC kickoffs, unique directed pairs and date bounds are checked. The COVID-delayed 2019/20 season includes the documented July 2020 extension.
+- Pre-game features for UTC calendar day D may use only outcomes with kickoff dates strictly before D. Same-day matches share the unchanged earlier state, regardless of the order of their starts.
+- The information cutoff is midnight UTC of match day; the builder never claims the retrospectively obtained records were actually published at that time. Classification remains NON_STRICT_RETROSPECTIVE.
+- Clubs are season-isolated: raw provider IDs are not yet independently proven stable across all seven seasons. Longitudinal continuity needs an explicitly reviewed identity map.
+
+## Fixed first candidate feature group
+
+Previous appearances, home/away appearances, last-five-match goals scored/conceded, days since last earlier match, and flags for unseen teams. No future scores, no same-day labels, no post-match xG of the target, no final lineup before publication, and no inferred historical weather forecasts.
+
+The pure Python module football_forecast.research.rpl_temporal_features does no database access, model fitting, scoring or publication. Synthetic CI tests verify shuffle invariance, chronological cutoff isolation, same-day source leakage refusal, cold starts, score changes and sealed season refusal.
+
+## Further research
+
+Next: independent source-club identity mapping and as-of evidence for staff, roster, venue, weather and odds; separately preregister development-only 2020/21–2024/25 expanding-window model validation. No historical bookmaker superiority claims until independently matched vig-adjusted market odds are available; holdout 2025/26 remains sealed and M3 unauthorized.

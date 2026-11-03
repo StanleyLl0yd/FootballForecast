@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_PRIVATE_RPL_HISTORY_IMPORT_VERIFIED",
+  "source": "OpenFoot Starter",
+  "observedAtUtc": "2026-11-03T15:51:03Z",
+  "run": {
+    "id": 41668066639,
+    "conclusion": "success",
+    "headSha": "bb7f5d4a8aeae536cd3e49a8b76d87d3270a34ae",
+    "importReceipt": {
+      "schemaVersion": 1,
+      "kind": "M2_PRIVATE_RPL_HISTORY_COMMIT",
+      "source": "OpenFoot Starter",
+      "sourceOnly": true,
+      "storedSeasons": 7,
+      "storedMatchesVerified": 1680,
+      "insertedNewSnapshots": 7,
+      "existingSnapshotsVerified": 0,
+      "historicalPrematchVerified": false,
+      "modelTrainingApproved": false,
+      "holdoutRead": false,
+      "publicRecordsWritten": 0
+    }
+  },
+  "databaseVerification": {
+    "projectRegion": "eu-central-1",
+    "schema": "ff_private",
+    "snapshotCount": 7,
+    "matchCount": 1680,
+    "seasons": [
+      "2018/19",
+      "2019/20",
+      "2020/21",
+      "2021/22",
+      "2022/23",
+      "2023/24",
+      "2024/25"
+    ],
+    "matchesPerSeason": 240,
+    "validFinalScores": 1680,
+    "directedPairs": 1680,
+    "sevenSeasonRowsDigestSha256": "1b7ff73fd573d379c1991099f4ea766b113aa862864b88731968a53b4a576e11",
+    "role": "development_source_only",
+    "forceRls": true,
+    "anonSelectDenied": true,
+    "authenticatedSelectDenied": true,
+    "serviceRoleSelectDenied": true,
+    "sealedHoldoutRead": false,
+    "existingTrainOnlyModelCount": 1,
+    "publicForecastCount": 0
+  },
+  "limitations": {
+    "originalPublisherHistoricalAsOfVerified": false,
+    "originalSourceIndependentOfficialScoreVerified": false,
+    "modelTrainingApproved": false,
+    "bookmakerSuperiorityMeasured": false
+  }
+}

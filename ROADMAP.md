@@ -1,3 +1,7 @@
+## M2 seven-season private source archive VERIFIED — 2026-11-03
+
+Protected owner [import #41668066639](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41668066639) completed **7 immutable private snapshots / 1,680 scored matches** in Supabase Frankfurt (2018/19–2024/25). Independent SQL readback confirms 240 finished matches and 16 clubs per season, source-only roles, FORCE RLS and denied anon/authenticated/service_role access, original 1 train-only M2 model unchanged and 0 public forecasts. The actual normalized archive fingerprint is pinned in [M2 private history evidence](docs/M2_PRIVATE_RPL_HISTORY_EVIDENCE.json); no raw provider rows in Git. Development-only [temporal feature protocol](docs/RPL_SEVEN_SEASON_TEMPORAL_FEATURES.md) now uses prior-day match history and excludes the sealed 2025/26 cohort. Do not treat retrospective data as authenticated historical as-of evidence. Existing M2 4/8 OPEN and M3 prohibition remain unchanged.
+
 ## M2 guarded private historical source importer (prepared, not yet run)
 
 Added owner-only manual GitHub Actions seven-season historical import with 119 throttled free Starter requests, cross-team checking, canonical SHA receipts, a second Python validation layer and an atomic append-only Supabase transaction. No old Poisson model refit or sealed 2025/26 access. Await exact-head CI, protected squash, then execute one real import and independently verify seven private snapshots and 1,680 stored matches. See [private history contract](docs/M2_PRIVATE_RPL_HISTORY.md).
