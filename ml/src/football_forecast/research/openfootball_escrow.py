@@ -89,6 +89,23 @@ def prepare_private_training_escrow(
     return public_receipt, private_bytes
 
 
+
+def verify_reference_training_evidence(receipt: dict, provenance: object) -> None:
+    """Refuse to persist a model not independently reproduced before this run."""
+    if (type(provenance) is not dict
+            or provenance.get("kind") != "M2_OPENFOOTBALL_TRAIN_REPLAY_EVIDENCE"
+            or provenance.get("researchClassification") != "TRAIN_ONLY_UNAPPROVED"
+            or type(provenance.get("receipt")) is not dict
+            or provenance["receipt"].get("kind") != "M2_OPENFOOTBALL_EPHEMERAL_TRAIN_CANDIDATE"):
+        raise DataError("M2 private escrow: missing independent train replay")
+    pinned = provenance["receipt"]
+    for field in (
+        "sourceBytesSha256", "trainRowsSha256",
+        "clubMappingSha256", "fittedModelSha256",
+    ):
+        if receipt.get(field) != pinned.get(field):
+            raise DataError("M2 private escrow: deviated from pinned independent replay")
+
 def persist_private_training_escrow(connection, receipt: dict, private_bytes: bytes) -> dict:
     """Use one privileged transaction; never query a source/holdout table."""
     actual = sha256(private_bytes).hexdigest()
@@ -171,6 +188,12 @@ def main() -> None:
         receipt, private_bytes = prepare_private_training_escrow(
             document, code_sha=code_sha, github_run_id=int(run),
         )
+        evidence_file = Path("docs/M2_OPENFOOTBALL_TRAIN_REPLAY_EVIDENCE.json")
+        if (evidence_file.is_symlink() or not evidence_file.is_file()
+                or not 0 < evidence_file.stat().st_size <= 10_000):
+            raise DataError("M2 private escrow: independent evidence file invalid")
+        evidence = json.loads(evidence_file.read_text(encoding="utf-8"))
+        verify_reference_training_evidence(receipt, evidence)
         with _private_connection() as connection:
             result = persist_private_training_escrow(connection, receipt, private_bytes)
         print(json.dumps(result, sort_keys=True, separators=(",", ":"), allow_nan=False))
