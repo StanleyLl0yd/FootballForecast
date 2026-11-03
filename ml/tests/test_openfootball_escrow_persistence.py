@@ -10,6 +10,7 @@ from football_forecast.research.model_escrow import load_private_model
 from football_forecast.research.openfootball_escrow import (
     persist_private_training_escrow,
     prepare_private_training_escrow,
+    verify_reference_training_evidence,
 )
 
 CODE = "b" * 40
@@ -115,3 +116,25 @@ def test_tampering_is_denied_before_any_database_command():
 def test_invalid_run_identity_denied_without_db_access(run):
     with pytest.raises(DataError, match="run ID"):
         prepare_private_training_escrow(fixture_doc(), code_sha=CODE, github_run_id=run)
+
+
+def test_pinned_independent_train_replay_must_precede_any_private_write():
+    receipt, _ = sample()
+    evidence = {
+        "kind": "M2_OPENFOOTBALL_TRAIN_REPLAY_EVIDENCE",
+        "researchClassification": "TRAIN_ONLY_UNAPPROVED",
+        "receipt": {
+            "kind": "M2_OPENFOOTBALL_EPHEMERAL_TRAIN_CANDIDATE",
+            **{key: receipt[key] for key in (
+                "sourceBytesSha256", "trainRowsSha256",
+                "clubMappingSha256", "fittedModelSha256",
+            )},
+        },
+    }
+    verify_reference_training_evidence(receipt, evidence)
+    evidence["receipt"]["fittedModelSha256"] = "0" * 64
+    with pytest.raises(DataError, match="deviated"):
+        verify_reference_training_evidence(receipt, evidence)
+    evidence["kind"] = "UNTRUSTED"
+    with pytest.raises(DataError, match="missing independent"):
+        verify_reference_training_evidence(receipt, evidence)
