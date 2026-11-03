@@ -71,6 +71,9 @@ test('manual-only workflow verifies owner identity, no credentials and hard-code
   assert.match(workflow,/https:\/\/raw\.githubusercontent\.com\/openfootball\/europe\//);
   assert.match(workflow,/https:\/\/sportscore\.com\/api\/v1\/search/);
   assert.match(workflow,/node scripts\/m2-sportscore-observe\.mjs/);
-  assert.doesNotMatch(workflow,/secrets\.|persist-credentials: true|DATABASE_URL|SUPABASE_SERVICE_ROLE|psql |cron:|schedule:|pull_request:/);
+  // The original public-source jobs stay secret-free; the separate owner-only
+  // Starter job is explicitly gated and tested in m2-openfoot-rpl-diagnostic.
+  const publicJobs=workflow.split('  bounded-openfoot-free-starter:')[0];
+  assert.doesNotMatch(publicJobs,/secrets\\.|persist-credentials: true|DATABASE_URL|SUPABASE_SERVICE_ROLE|psql |cron:|schedule:|pull_request:/);
   assert.doesNotMatch(workflow,/footbolno\.ru|curl -L|--location|npm install/i);
 });
