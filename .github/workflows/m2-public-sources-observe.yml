@@ -14,6 +14,10 @@ on:
         description: 'Optional exact AUDIT_OPENFOOT_TEAMS; at most 17 free Starter filtered GETs'
         required: false
         type: string
+      openfoot_score_shape:
+        description: 'Optional AUDIT_RPL_SCORE_SHAPE to sample score-field presence without records'
+        required: false
+        type: string
       openfoot_full_history:
         description: 'Optional AUDIT_RPL_FULL_HISTORY for 7x16 Starter team-filter research'
         required: false
@@ -792,6 +796,78 @@ jobs:
             echo '## RPL historical structural cross-confirmation — 7 seasons'
             echo 'Private temporary source pages discarded. Only counts and digest recorded.'
             echo 'No source import, model fit, immutable study lock or evaluation authorized.'
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  bounded-openfoot-score-shape:
+    # One private free Starter request; report field-presence counts only.
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.openfoot_score_shape == 'AUDIT_RPL_SCORE_SHAPE') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-openfoot-score-shape')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Inspect numeric final-score schema on one free historical first page
+        shell: bash
+        env:
+          OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          if [[ -z "$OPENFOOT_API_KEY" ]]; then
+            echo 'M2_SCORE_SCHEMA=INCONCLUSIVE_NO_FREE_KEY'
+            exit 0
+          fi
+          if [[ ! "$OPENFOOT_API_KEY" =~ ^of_live_[A-Za-z0-9_-]{8,256}$ ]]; then
+            echo 'M2_SCORE_SCHEMA=INCONCLUSIVE_KEY_FORMAT'
+            exit 0
+          fi
+          printf 'header = "Authorization: Bearer %s"\n' "$OPENFOOT_API_KEY" > "$work/key.conf"
+          unset OPENFOOT_API_KEY
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+            --connect-timeout 8 --max-time 25 --max-filesize 200000 \
+            --config "$work/key.conf" -H 'Accept: application/json' \
+            -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+            --output "$work/sample.json" --write-out '%{http_code}' \
+            'https://openfootapi.com/v1/matches?competition=comp_premier_league_rus&season=2018%2F19' \
+            2>/dev/null || true)"
+          rm -f "$work/key.conf"
+          if [[ "$status" != 200 || ! -s "$work/sample.json" ]]; then
+            echo 'M2_SCORE_SCHEMA=INCONCLUSIVE_SAMPLE_HTTP'
+            exit 0
+          fi
+          if ! node scripts/m2-openfoot-score-shape.mjs "$work/sample.json" "$observed" > "$work/aggregate.json"; then
+            echo 'M2_SCORE_SCHEMA=INCONCLUSIVE_SAMPLE_SCHEMA'
+            exit 0
+          fi
+          echo "M2_SCORE_SCHEMA_OBSERVATION=$(cat "$work/aggregate.json")"
+          {
+            echo '## OpenFoot historical score field mapping — one page, no raw scores'
+            echo 'Candidate field names and numeric-pair counts only; no model, holdout or import authorization.'
             echo '~~~json'
             cat "$work/aggregate.json"
             echo
