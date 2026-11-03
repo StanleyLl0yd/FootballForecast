@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          for file in "$GITHUB_WORKSPACE"/results/*.sarif; do
+          for file in "$GITHUB_WORKSPACE"/../results/*.sarif; do
             echo "=== SARIF result IDs and source locations (max 60) ==="
             jq -r '.runs[]? | .results[]? |
               [.ruleId // "unknown", .level // "unknown",
