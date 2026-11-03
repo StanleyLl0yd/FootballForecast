@@ -435,3 +435,31 @@ At the **2026-10-17 terms review**, no provider registration, data import or pay
 ## Archived M0 next decision (superseded by M1)
 
 For the public read-only RPL/Zenit prototype, **first evaluate Footbolno's no-cost structured RPL feed and independently verify its upstream rights, exact free data coverage and pre-match publication history**. Continue the offline CC0 OpenFootball provenance/error checks in parallel; separately assess SportScore's attribution-required live widgets and API-Football's current-season free access/rights. TheSportsDB remains blocked on complete $0 production feed evidence. All providers remain candidates only until their rights and season availability are demonstrated. Do not treat Football-Data.co.uk free research files as training rights, select any paid plan or import data on assumptions.
+
+### Real $0 Starter observation and exact round audit (2026-11-03)
+
+[Owner-run #41628766870](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41628766870)
+confirmed free authenticated OpenFoot Starter access, but returned only 50 finished
+RPL 2026/27 fixtures, 16 clubs, 50/50 reported UTC kickoffs, 0 future fixtures
+in a **single default-page query** (`PARTIAL_UNAPPROVED`).
+Public demo returned five; the run neither proves only 50 games exist nor
+approves completeness. Provider OpenAPI 3.1 specifies `limit=50` by default
+and restricts cursor continuation to **paid Developer**. No cursor can be
+followed by FootballForecast, even when a response offers one.
+
+The separately gated `openfoot_rounds=AUDIT_OPENFOOT_ROUNDS` input in the
+*existing* owner-only manual `m2-public-sources-observe.yml` can issue **at
+most 30** authenticated Starter requests, one per **documented** `round=1..30`
+filter within the free quota. It refuses non-Starter access after request 1,
+does not paginate, and stops on HTTP/schema/rights-metadata ambiguity. It
+requires the private GitHub Actions secret `OPENFOOT_API_KEY` and emits only
+aggregate coverage/status counts and a combined 30-response fingerprint;
+provider match identities/rows and credentials are never logged or uploaded.
+No key means zero requests. Tests are synthetic-only; this is not a verified
+live observation until an owner dispatch actually succeeds.
+
+Even 240 structurally valid directed fixtures across 30 rounds remain
+`STRUCTURALLY_COMPLETE_UNAPPROVED`, pending independent score, kickoff,
+current freshness, original upstream source licence/attribution and rights
+checks. The 2025/26 sealed holdout is untouched; no train/predict writes;
+M2 remains 4/8 OPEN; M3 remains unauthorized.

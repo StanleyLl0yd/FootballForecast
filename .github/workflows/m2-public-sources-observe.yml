@@ -6,6 +6,10 @@ on:
         description: 'Optional exact AUDIT_OPENFOOT_FREE to check own $0 Starter key; never import'
         required: false
         type: string
+      openfoot_rounds:
+        description: 'Optional exact AUDIT_OPENFOOT_ROUNDS: at most 30 free round-filter requests; no import'
+        required: false
+        type: string
   issue_comment:
     types: [created]
 
@@ -297,4 +301,95 @@ jobs:
             echo
             echo '~~~'
             echo 'Even 240/16 and free Starter do not authorize ingestion, model selection or forecasts.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  bounded-openfoot-free-rounds:
+    # One authenticated research GET per documented RPL matchday, never use paid cursor.
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      github.event_name == 'workflow_dispatch' &&
+      inputs.openfoot_rounds == 'AUDIT_OPENFOOT_ROUNDS'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Audit explicit RPL 2026/27 matchdays within free Starter quota
+        shell: bash
+        env:
+          OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          mkdir "$work/rounds"
+          {
+            echo '## OpenFoot $0 Starter — explicitly filtered 30-round RPL 2026/27 research'
+            echo '30 documented matchday filters; no Developer cursor, paid plan or quota bypass.'
+            echo 'No provider records, credentials or club identities logged, uploaded or persisted.'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ -z "${OPENFOOT_API_KEY:-}" ]]; then
+            echo 'M2_OPENFOOT_ROUNDS_OBSERVATION=INCONCLUSIVE_NO_FREE_KEY'
+            echo 'Missing private API key: zero requests.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [[ ! "$OPENFOOT_API_KEY" =~ ^of_live_[A-Za-z0-9_-]{8,256}$ ]]; then
+            echo 'M2_OPENFOOT_ROUNDS_OBSERVATION=INCONCLUSIVE_KEY_FORMAT'
+            echo 'Unexpected key format; no request sent.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          printf 'header = "Authorization: Bearer %s"\n' "$OPENFOOT_API_KEY" > "$work/key.conf"
+          unset OPENFOOT_API_KEY
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          for round in $(seq 1 30); do
+            file="$work/rounds/$(printf '%02d' "$round").json"
+            status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+              --connect-timeout 8 --max-time 20 --max-filesize 180000 \
+              --config "$work/key.conf" -H 'Accept: application/json' \
+              -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+              --output "$file" --write-out '%{http_code}' \
+              "https://openfootapi.com/v1/matches?competition=comp_premier_league_rus&season=2026%2F27&round=$round" \
+              2>/dev/null || true)"
+            if [[ "$status" != 200 || ! -s "$file" ]]; then
+              echo "M2_OPENFOOT_ROUNDS_OBSERVATION=INCONCLUSIVE_HTTP_ROUND_$round"
+              echo 'Source refused a bounded round query; stop without retaining incomplete rows.' >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            if [[ "$round" == 1 ]]; then
+              if ! node scripts/m2-openfoot-rpl-diagnostic.mjs "$file" "$observed" starter > "$work/tier.json"; then
+                echo 'M2_OPENFOOT_ROUNDS_OBSERVATION=INCONCLUSIVE_FIRST_RESPONSE_SCHEMA'
+                exit 0
+              fi
+              if ! node --input-type=module - "$work/tier.json" <<'FREE_TIER'
+          import {readFileSync} from 'node:fs';
+          const result=JSON.parse(readFileSync(process.argv[2],'utf8'));
+          if(result.starterTierVerified!==true)process.exit(2);
+          FREE_TIER
+              then
+                echo 'M2_OPENFOOT_ROUNDS_OBSERVATION=INCONCLUSIVE_NOT_FREE_STARTER'
+                echo 'Further requests refused: authenticated free Starter only.' >> "$GITHUB_STEP_SUMMARY"
+                exit 0
+              fi
+            fi
+          done
+          rm -f "$work/key.conf"
+          if ! node scripts/m2-openfoot-round-audit.mjs "$work/rounds" "$observed" > "$work/aggregate.json"; then
+            echo 'M2_OPENFOOT_ROUNDS_OBSERVATION=INCONCLUSIVE_SCHEMA'
+            echo 'Bounded provider response invalid or inconsistent; no records retained.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "M2_OPENFOOT_ROUNDS_OBSERVATION=$(cat "$work/aggregate.json")"
+          {
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+            echo 'Coverage research only; no source, holdout or forecast authorization.'
           } >> "$GITHUB_STEP_SUMMARY"
