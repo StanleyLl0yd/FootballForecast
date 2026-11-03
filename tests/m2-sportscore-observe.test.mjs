@@ -43,6 +43,8 @@ test('duplicate, partial, out-of-day or unrecognized records never imply full co
   assert.equal(capped.providerPageAtCap,true);
   assert.equal(capped.interpretation,'INCONCLUSIVE');
   assert.equal(inspect([]).interpretation,'NO_VERIFIED_CURRENT_DAY_RPL_OBSERVATIONS');
+  assert.equal(inspect([{competition:'Some Other League',date:DATE}]).interpretation,
+    'INCONCLUSIVE');
 });
 test('invalid day, stale or future research, arbitrary response and ambiguous league denied',()=>{
   for(const [rows,search,day,observed] of [
