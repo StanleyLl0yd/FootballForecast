@@ -1,0 +1,108 @@
+name: M2 OpenFootball CC0 calendar-only train-only candidate
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Exact OPENFOOTBALL_TRAIN_ONLY; no holdout or publication'
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+
+permissions: {contents: read}
+concurrency:
+  group: m2-openfootball-train-only
+  cancel-in-progress: false
+
+jobs:
+  calendar-train:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.confirmation == 'OPENFOOTBALL_TRAIN_ONLY') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-openfootball-train-only')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with: {python-version: '3.13'}
+      - name: Verify immutable public CC0 bytes and fit ephemeral calendar-only Poisson
+        shell: bash
+        env:
+          PYTHONPATH: ml/src
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONNOUSERSITE: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 25 --max-filesize 200000 \
+            --output "$work/openfootball.txt" \
+            'https://raw.githubusercontent.com/openfootball/europe/63df627f3c87ce71708f016522ea236cf74332c3/russia/2024-25_ru1.txt'
+          test -s "$work/openfootball.txt"
+          node scripts/m2-openfootball-training.mjs \
+            "$work/openfootball.txt" "$work/train-private.json"
+          python -m football_forecast.research.openfootball_train \
+            "$work/train-private.json" > "$work/receipt.json"
+          node --input-type=module - "$work/receipt.json" <<'M2_RECEIPT'
+          import {readFileSync} from 'node:fs';
+          const bytes=readFileSync(process.argv[2]);
+          if(!bytes.length||bytes.length>4096)throw Error('Untrusted train-only receipt size');
+          const v=JSON.parse(bytes.toString('utf8'));
+          const fields=['schemaVersion','kind','protocol','researchClassification','source',
+            'sourceLicense','sourceCommit','sourceGitBlobSha1','sourceBytesSha256',
+            'codeSha','trainRowsSha256','clubMappingSha256','fittedModelSha256',
+            'trainingMatches','trainingClubs','trainOutcomeCountsHDA','kickoffInstantsVerified',
+            'historicalPrematchVerified','holdoutRead','modelApproved',
+            'privateModelPersisted','productionForecastsWritten','footbolnoRequired'];
+          const sha=/^[a-f0-9]{64}$/;
+          if(Object.keys(v).length!==fields.length||Object.keys(v).some(k=>!fields.includes(k))||
+             v.schemaVersion!==1||v.kind!=='M2_OPENFOOTBALL_EPHEMERAL_TRAIN_CANDIDATE'||
+             v.protocol!=='m2-openfootball-calendar-v1'||
+             v.researchClassification!=='TRAIN_ONLY_UNAPPROVED'||
+             v.source!=='OpenFootball'||v.sourceLicense!=='CC0-1.0'||
+             v.sourceCommit!=='63df627f3c87ce71708f016522ea236cf74332c3'||
+             v.sourceGitBlobSha1!=='6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc'||
+             !['sourceBytesSha256','trainRowsSha256','clubMappingSha256',
+               'fittedModelSha256'].every(k=>sha.test(v[k]))||
+             v.codeSha!==process.env.GITHUB_SHA||v.trainingMatches!==240||
+             v.trainingClubs!==16||!Array.isArray(v.trainOutcomeCountsHDA)||
+             v.trainOutcomeCountsHDA.length!==3||
+             v.trainOutcomeCountsHDA.some(n=>!Number.isSafeInteger(n)||n<0||n>240)||
+             v.trainOutcomeCountsHDA.reduce((a,b)=>a+b,0)!==240||
+             v.kickoffInstantsVerified!==0||v.historicalPrematchVerified!==false||
+             v.holdoutRead!==false||v.modelApproved!==false||
+             v.privateModelPersisted!==false||v.productionForecastsWritten!==0||
+             v.footbolnoRequired!==false)
+            throw Error('Refused OpenFootball train-only evidence');
+          M2_RECEIPT
+          echo "M2_OPENFOOTBALL_TRAIN_JSON=$(cat "$work/receipt.json")"
+          echo "M2_OPENFOOTBALL_TRAIN_SHA256=$(sha256sum "$work/receipt.json" | cut -d ' ' -f1)"
+          {
+            echo '## M2 OpenFootball CC0 calendar-only ephemeral fit — NOT approved'
+            echo 'Exact pinned public CC0 revision; no Footbolno, Supabase, holdout or current results.'
+            echo 'Calendar dates only: zero verified kickoff instants, no strict-as-of claim.'
+            echo 'Source: https://github.com/openfootball/europe (CC0-1.0)'
+            echo '~~~json'
+            cat "$work/receipt.json"
+            echo
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"

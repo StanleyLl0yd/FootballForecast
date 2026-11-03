@@ -1,25 +1,6 @@
-name: M1 protected free Footbolno ingest and safe RPL refresh
+name: M1 legacy Footbolno ingest (manual only; no required live dependency)
 on:
-  schedule:
-    # Twice daily, off the hour. GitHub schedules run from protected default main.
-    - cron: '17 6,18 * * *'
-  push:
-    branches: [main]
-    # Rerun the protected import after changes to the verified source pipeline.
-    # Only protected main may inject the database credentials; never PR code.
-    paths:
-      - '.github/workflows/m1-private-stage-import.yml'
-      - 'apps/web/lib/source-preview-core.mjs'
-      - 'scripts/m0-cross-source-fixture-reconcile.mjs'
-      - 'scripts/m0-fixture-reconcile.mjs'
-      - 'scripts/m0-fixture-structure.mjs'
-      - 'scripts/m0-source-quality.mjs'
-      - 'scripts/m1-autonomous-refresh.mjs'
-      - 'scripts/m1-footbolno-normalize.mjs'
-      - 'scripts/m1-openfootball-score-gate.mjs'
-      - 'scripts/m1-revision-report.mjs'
-      - 'scripts/m1-source-quality-diagnostic.mjs'
-      - 'scripts/m1-stage-import.mjs'
+  # Legacy ingest retained for explicit emergency replay; no scheduled or push fetch.
   workflow_dispatch:
     inputs:
       confirmation:
@@ -33,7 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   protected-import:
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.confirmation == 'STAGE_FOOTBOLNO_PRIVATE'))
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.confirmation == 'STAGE_FOOTBOLNO_PRIVATE'
     runs-on: ubuntu-latest
     environment: m1-source-import
     timeout-minutes: 10
