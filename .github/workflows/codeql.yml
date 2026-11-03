@@ -26,3 +26,17 @@ jobs:
         with:
           languages: ${{ matrix.language }}
       - uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
+      - name: Inspect CodeQL SARIF rule IDs on PR 209 (temporary diagnostics)
+        if: github.event_name == 'pull_request' && github.event.pull_request.number == 209
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for file in "$GITHUB_WORKSPACE"/results/*.sarif; do
+            echo "=== SARIF result IDs and source locations (max 60) ==="
+            jq -r '.runs[]? | .results[]? |
+              [.ruleId // "unknown", .level // "unknown",
+               .locations[0].physicalLocation.artifactLocation.uri // "unknown",
+               (.locations[0].physicalLocation.region.startLine // 0 | tostring)]
+              | @tsv' "$file" | head -60 || true
+          done
