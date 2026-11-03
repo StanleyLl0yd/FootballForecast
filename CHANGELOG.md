@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 public OpenFoot API one-shot research — 2026-11-03
+
+- Added bounded aggregate-only research adapter for public OpenFoot API demo and a third guarded owner-only manually invoked job in the existing M2 source observation workflow. Explicit Russian Premier League 2026/27 season query, strict fixture/UTC time/duplicate/schema validation, source response SHA-256, no provider row leakage. Fail-closed statuses are not an approved current-season provider, feed, historical as-of snapshot, or permission to publish. Added synthetic adversarial tests, source documentation and owner research link.
+
 ## M2 legacy Footbolno trigger quarantine — 2026-11-03
 
 - Retired push-triggered network probes from four historical M0 publisher/SportScore-vs-Footbolno workflows; kept owner-only main-branch manual diagnostics, old evidence, and archived workflows. Added regression tests to ensure no automatic workflow can fetch Footbolno outside the explicitly manual-only M1 snapshot job. No database/schema/training/holdout or production prediction changes.

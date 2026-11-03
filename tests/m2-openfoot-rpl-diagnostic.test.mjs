@@ -56,3 +56,28 @@ test('synthetic 240/16 season structure still cannot approve a source',()=>{
   },now);
   assert.equal(narrowed.coverageState,'PARTIAL_UNAPPROVED');
 });
+
+test('free OpenFoot demo job is owner/main-only and cannot authorize ingestion',()=>{
+  const workflow=readFileSync(new URL(
+    '../.github/workflows/m2-public-sources-observe.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('  bounded-openfoot-rpl-demo:');
+  assert.ok(start>0);
+  const job=workflow.slice(start);
+  for(const constraint of [
+    "github.repository == 'StanleyLl0yd/FootballForecast'",
+    "github.ref == 'refs/heads/main'",
+    "github.actor == 'StanleyLl0yd'",
+    "github.event.issue.number == 182",
+    "github.event.comment.author_association == 'OWNER'",
+    "github.event.comment.body == '/m2-public-sources'",
+    'persist-credentials: false',
+    'timeout-minutes: 5',
+    'Authorization: Bearer of_demo_openfootapi_docs',
+    'competition=comp_premier_league_rus&season=2026%2F27',
+    'node scripts/m2-openfoot-rpl-diagnostic.mjs',
+    "status" // only checked as literal sentinel
+  ])assert.ok(job.includes(constraint),constraint);
+  assert.doesNotMatch(job,/secrets\.|psql |SUPABASE|DATABASE_URL|upload-artifact|git push|--location|curl -L|npm install|FF_M1_DB_WRITE_ENABLED/);
+  assert.match(workflow,/^on:\n  workflow_dispatch:\n  issue_comment:/m);
+  assert.doesNotMatch(workflow,/^  (?:push|schedule|workflow_run):/m);
+});
