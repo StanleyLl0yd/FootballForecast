@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_OPENFOOTBALL_TRAIN_REPLAY_EVIDENCE",
+  "researchClassification": "TRAIN_ONLY_UNAPPROVED",
+  "observedAtDate": "2026-11-03",
+  "receiptSha256": "381159c8928283c6f3d9a2b75bda4ee53d1b9a41f31184d5cd9a14ec267306b6",
+  "receipt": {
+    "clubMappingSha256": "3f10e2bd77f348b570036efc8827f0571a26cae55c7dcb4ad93b5a39710e631b",
+    "codeSha": "b7812c531a7284a4db58c34ed77af8adeecf8d1f",
+    "fittedModelSha256": "987caad53cf77e4977482b4e9750b2c779912b47d0bc884cfb3807e8151ad95d",
+    "footbolnoRequired": false,
+    "historicalPrematchVerified": false,
+    "holdoutRead": false,
+    "kickoffInstantsVerified": 0,
+    "kind": "M2_OPENFOOTBALL_EPHEMERAL_TRAIN_CANDIDATE",
+    "modelApproved": false,
+    "privateModelPersisted": false,
+    "productionForecastsWritten": 0,
+    "protocol": "m2-openfootball-calendar-v1",
+    "researchClassification": "TRAIN_ONLY_UNAPPROVED",
+    "schemaVersion": 1,
+    "source": "OpenFootball",
+    "sourceBytesSha256": "f315f67d49e5f2ed26bb5b2504244f36d37be958b5ccadd1755fb6b71b015dcb",
+    "sourceCommit": "63df627f3c87ce71708f016522ea236cf74332c3",
+    "sourceGitBlobSha1": "6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc",
+    "sourceLicense": "CC0-1.0",
+    "trainOutcomeCountsHDA": [
+      103,
+      65,
+      72
+    ],
+    "trainRowsSha256": "fe00ba5cec8a9762a8564f1e76700233bf770ca766e020a0b44616c7d2aecc38",
+    "trainingClubs": 16,
+    "trainingMatches": 240
+  },
+  "runs": [
+    {
+      "runId": 41601074078,
+      "jobId": 125799666983,
+      "headSha": "b7812c531a7284a4db58c34ed77af8adeecf8d1f",
+      "event": "issue_comment",
+      "conclusion": "success"
+    },
+    {
+      "runId": 41601164752,
+      "jobId": 125799964125,
+      "headSha": "b7812c531a7284a4db58c34ed77af8adeecf8d1f",
+      "event": "issue_comment",
+      "conclusion": "success"
+    }
+  ]
+}

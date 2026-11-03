@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 OpenFootball train-only reproducibility evidence — 2026-11-03
+
+- Stored digest-only evidence from two independently successful owner-protected real OpenFootball CC0 2024/25 fixed-Poisson train-only runs on exact main, same 240/16 cohort/coefficients fingerprints and raw public-source SHA. Closed-schema validation and negative tests; authenticated owner research page shows unapproved recorded replay with original run links. No private rows/weights, persistent model, retrospective evaluation, current publication, holdout read or automatic Footbolno dependency. M2 4/8 OPEN.
+
 ## M2 OpenFootball-first train-only source migration — 2026-11-03
 
 - Owner-directed no-Footbolno path: preregistered separate pinned CC0 OpenFootball 2024/25 calendar-only research protocol, isolated normalized 240/16 dataset, deterministic Poisson train-only candidate with source/input/model SHA metadata and synthetic negative tests. No fabricated UTC kickoff, holdout access, saved model or public forecast. Manual no-secret owner workflow only; disabled legacy scheduled/push Footbolno imports without deleting historical snapshots. Owner research console displays new workflow metadata and blocker states, README/ROADMAP/AGENTS updated. M2 still 4/8, M3 forbidden.

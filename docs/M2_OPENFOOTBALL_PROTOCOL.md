@@ -50,6 +50,10 @@ M3 and production prediction publication remain unauthorized.
   immutable study lock or true upstream source independence. Record all
   receipts as `TRAIN_ONLY_UNAPPROVED`.
 
+## Verified temporary train replay — 2026-11-03
+
+Two owner-authored protected-main independent research runs [#41601074078](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41601074078) and [#41601164752](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41601164752) both succeeded at exact code SHA `b7812c531a7284a4db58c34ed77af8adeecf8d1f`. Receipt SHA-256 `381159c8928283c6f3d9a2b75bda4ee53d1b9a41f31184d5cd9a14ec267306b6` matched; 240/16 fixtures, H/D/A 103/65/72, identical source/training/club/model digests. The [aggregate-only recorded evidence](M2_OPENFOOTBALL_TRAIN_REPLAY_EVIDENCE.json) links both job IDs; it does not include source records or trained coefficients. Neither run authenticates historical pre-match availability or grants a model lock. The owner page validates its closed schema and SHA locally on the server **after** `requireOwner()`.
+
 ## Sealed holdout and live current-season policy
 
 - **2025/26 remains sealed**. The old Footbolno-derived holdout cannot become a
