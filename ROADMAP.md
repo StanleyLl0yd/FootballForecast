@@ -1,3 +1,7 @@
+## M2 JMA GSM historical weather-year reference discovery — prepared 2026-11-03
+
+Documentation confirms JMA GSM/MSM previous-run archive began in 2018. Add seven-owner-only fixed-reference-date GETs from 2018–2024 with a strict 24-hour-lead temp count-only validator and explicit per-year HTTP/shape statuses. Real full-season match venue coverage **not proven**; do not attach city reference temperatures to stadium matches, infer historical forecast issuance or train real weather models. After exact-head green, guarded squash, run `/m2-weather-seven-years` in issue #182; pin only bounded aggregate evidence. No sealed holdout, M3, paid API or public match data.
+
 ## M2 first actual external enrichment discovery results — 2026-11-03
 
 Exact-main protected source jobs: SStats public official catalog #41690706216 **HTTP200 / INCONCLUSIVE_SCHEMA** (no historical games requested, no historical RPL API coverage claim), Open-Meteo Previous Runs #41690713868 **24/24 non-null fixed-lead hourly temperature values** for a Saint Petersburg reference location on 2024-08-01 (no match venue attestation, historical run ID or model inclusion). SHA-only evidence in [docs/M2_FREE_SOURCE_ENRICHMENT_OBSERVATION_EVIDENCE.json](docs/M2_FREE_SOURCE_ENRICHMENT_OBSERVATION_EVIDENCE.json). New safe JSON envelope diagnostic for SStats prepares one bounded retry. Still no new multi-season model training, historical bookmaker quote validation or holdout access.

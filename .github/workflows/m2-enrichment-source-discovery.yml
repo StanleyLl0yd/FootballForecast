@@ -6,6 +6,10 @@ on:
         description: 'Exact AUDIT_SSTATS_RPL_CATALOG for up to two documented free GETs'
         required: false
         type: string
+      weather_years:
+        description: 'AUDIT_WEATHER_2018_2024, seven fixed JMA GSM lead-time samples'
+        required: false
+        type: string
       weather:
         description: 'Exact AUDIT_WEATHER_PREVIOUS_DAY for one historical fixed-lead GET'
         required: false
@@ -152,6 +156,67 @@ jobs:
           {
             echo '## Open-Meteo prior-day reference sample (not an actual RPL venue)'
             echo 'One free historical fixed-lead weather request; no raw temperatures, match data or outcomes.'
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  weather-seven-year-coverage:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.weather_years == 'AUDIT_WEATHER_2018_2024') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-weather-seven-years')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Bound seven reference-city historical weather lead-time samples
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          n=0
+          for year in 2018 2019 2020 2021 2022 2023 2024; do
+            n=$((n+1))
+            file="$work/$(printf '%02d' "$n").json"
+            status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+              --connect-timeout 8 --max-time 20 --max-filesize 60000 \
+              -H 'Accept: application/json' \
+              -H 'User-Agent: FootballForecast-M2-Source-Research/1.0' \
+              --output "$file" --write-out '%{http_code}' \
+              "https://previous-runs-api.open-meteo.com/v1/forecast?latitude=59.93&longitude=30.31&start_date=$year-08-01&end_date=$year-08-01&hourly=temperature_2m_previous_day1&models=jma_gsm&timezone=GMT" \
+              2>/dev/null || true)"
+            if [[ "$status" != 200 || ! -s "$file" ]]; then
+              rm -f "$file"
+            fi
+            sleep 1.2
+          done
+          node scripts/m2-weather-seven-year-reference.mjs "$work" "$observed" \
+            > "$work/aggregate.json"
+          echo "M2_WEATHER_SEVEN_YEAR_OBSERVATION=$(cat "$work/aggregate.json")"
+          {
+            echo '## Historical JMA GSM 24h-lead sample, seven city reference dates'
+            echo 'Seven bounded free GETs; response values discarded; not matched to stadiums.'
             echo '~~~json'
             cat "$work/aggregate.json"
             echo

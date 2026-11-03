@@ -234,6 +234,26 @@
       "testDate": "2024-08-01",
       "locationCategory": "SAINT_PETERSBURG_REFERENCE_NOT_VERIFIED_STADIUM",
       "runId": 41690713868
+    },
+    {
+      "id": "weather_seven_years",
+      "status": "IMPLEMENTED_PENDING_OWNER_RUN",
+      "maxGetRequests": 7,
+      "provider": "open_meteo_previous_runs",
+      "model": "jma_gsm",
+      "fixedReferenceDates": [
+        "2018-08-01",
+        "2019-08-01",
+        "2020-08-01",
+        "2021-08-01",
+        "2022-08-01",
+        "2023-08-01",
+        "2024-08-01"
+      ],
+      "leadHours": 24,
+      "referencePointOnly": true,
+      "sourceValuesRetained": false,
+      "fullRplMatchForecastCoverageVerified": false
     }
   ],
   "sourceDiscoveryEvidence": "M2_FREE_SOURCE_ENRICHMENT_OBSERVATION_EVIDENCE.json"

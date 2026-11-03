@@ -203,6 +203,10 @@ jobs:
           node --check scripts/m2-private-rpl-history-receipt.mjs
           bash -n scripts/m2-private-rpl-history-run.sh
           node --test tests/m2-private-rpl-history.test.mjs tests/m2-private-rpl-history-receipt.test.mjs
+      - name: Guard 2018–2024 fixed-lead weather reference-year coverage
+        run: |
+          node --check scripts/m2-weather-seven-year-reference.mjs
+          node --test tests/m2-weather-seven-year-reference.test.mjs
       - name: Verify bounded external RPL enrichment source probes and temporal caveats
         run: |
           node --check scripts/m2-sstats-free-source-catalog.mjs
