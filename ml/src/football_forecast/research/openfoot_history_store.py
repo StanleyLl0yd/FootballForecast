@@ -170,7 +170,7 @@ select source_match_id, home_team_id, away_team_id,
  home_goals, away_goals
 from ff_private.ff_rpl_history_matches
 where snapshot_id=%s
-order by source_match_id
+order by source_match_id collate "C"
 """
 
 
