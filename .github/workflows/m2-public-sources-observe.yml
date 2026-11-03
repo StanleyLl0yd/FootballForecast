@@ -140,3 +140,75 @@ jobs:
             echo '~~~'
             echo 'Only provider-observed aggregate counts; not independent official score truth or verified full-day coverage.'
           } >> "$GITHUB_STEP_SUMMARY"
+
+  bounded-openfoot-rpl-demo:
+    # One documentation-published free demo GET; NEVER a production integration.
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        (
+          github.event_name == 'issue_comment' &&
+          github.event.action == 'created' &&
+          github.event.issue.number == 182 &&
+          !github.event.issue.pull_request &&
+          github.event.comment.user.login == 'StanleyLl0yd' &&
+          github.event.comment.author_association == 'OWNER' &&
+          github.event.comment.body == '/m2-public-sources'
+        )
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Observe one explicit RPL season from published free OpenFoot demo
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          {
+            echo '## OpenFoot API free public documentation demo — RPL 2026/27'
+            echo 'Provider: https://openfootapi.com/docs'
+            echo 'Terms and upstream-provider constraints: https://openfootapi.com/terms'
+            echo 'Public documentation demo key; one explicit competition/season GET, no account, costs, secrets, storage or bulk queries.'
+            echo 'No training, model approval, automatic feeds, current-season writes, historical holdout access or publication.'
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+          # Documentation-published public demo value; no private key, no log output.
+          printf 'header = "Authorization: Bearer %s%s"\n' \
+            'of_demo_' 'openfootapi_docs' > "$work/demo-curl.conf"
+          status="$(curl --fail --silent --show-error \
+            --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 20 --max-filesize 1200000 \
+            -H 'Accept: application/json' \
+            --config "$work/demo-curl.conf" \
+            -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+            --output "$work/day.json" --write-out '%{http_code}' \
+            'https://openfootapi.com/v1/matches?competition=comp_premier_league_rus&season=2026%2F27' \
+            2>/dev/null || true)"
+          if [[ "$status" != '200' || ! -s "$work/day.json" ]]; then
+            echo 'OpenFoot demo HTTP source unavailable: INCONCLUSIVE, not zero RPL fixtures.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if ! node scripts/m2-openfoot-rpl-diagnostic.mjs \
+            "$work/day.json" "$observed" > "$work/aggregate.json"; then
+            echo 'OpenFoot demo response did not pass bounded RPL schema: INCONCLUSIVE, no provider rows retained.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          {
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+            echo 'Only a provider-observed aggregate. A demo response is not certified full-season coverage, verified upstream rights or production source approval.'
+          } >> "$GITHUB_STEP_SUMMARY"

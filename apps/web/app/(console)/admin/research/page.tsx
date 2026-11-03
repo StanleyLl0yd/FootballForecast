@@ -124,7 +124,7 @@ export default async function Page(){
             'Метаданные диагностического workflow недоступны.'}</p>}
         <p><a className="sources-method"
           href="https://github.com/StanleyLl0yd/FootballForecast/actions/workflows/m2-public-sources-observe.yml"
-          target="_blank" rel="noopener noreferrer">Проверить OpenFootball / SportScore ↗</a></p>
+          target="_blank" rel="noopener noreferrer">Проверить OpenFootball / SportScore / OpenFoot demo ↗</a></p>
         <p className="source-lab-note">Успех workflow подтверждает выполнение заданий, но не доступность,
           полноту или достоверность данных обоих источников. Реальные ответы проверяются отдельно в summary.
           Ни одна диагностика не утверждает model lock и не открывает holdout.</p>
