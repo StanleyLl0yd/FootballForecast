@@ -38,7 +38,8 @@ def validate_archive(manifest: object, data: bytes) -> list[dict]:
     expected = {"schemaVersion", "kind", "sourceId", "sourceTermsUrl",
                 "researchState", "codeSha", "githubRunId", "retrievedAtUtc",
                 "sourceResponsesSha256", "normalizedSha256", "seasons", "matches",
-                "developmentSeasons", "seasonSnapshots", "rightsState", "strictPrematchProvenanceVerified",
+                "developmentSeasons", "seasonSnapshots", "rightsState",
+                "strictPrematchProvenanceVerified",
                 "modelTrainingApproved", "holdoutRead", "publicRowsWritten"}
     if (set(manifest) != expected or manifest["schemaVersion"] != 1
             or manifest["kind"] != KIND or manifest["sourceId"] != "openfoot_starter"
@@ -92,7 +93,10 @@ def validate_archive(manifest: object, data: bytes) -> list[dict]:
             raise ArchiveError("invalid historical kickoff")
         kickoff = datetime.fromisoformat(row["kickoff_at"].replace("Z", "+00:00"))
         y = int(s[:4])
-        end = datetime(2020, 8, 1, tzinfo=UTC) if s == "2019/20" else datetime(y+1, 7, 1, tzinfo=UTC)
+        end = (
+            datetime(2020, 8, 1, tzinfo=UTC)
+            if s == "2019/20" else datetime(y + 1, 7, 1, tzinfo=UTC)
+        )
         if not datetime(y, 7, 1, tzinfo=UTC) <= kickoff < end or kickoff >= retrieved:
             raise ArchiveError("out-of-season or future history")
         if any(type(row[field]) is not int or not 0 <= row[field] <= 20

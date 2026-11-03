@@ -5,8 +5,8 @@ from hashlib import sha256
 import pytest
 
 from football_forecast.research.openfoot_history_store import (
-    ArchiveError,
     SEASONS,
+    ArchiveError,
     canonical_json,
     validate_archive,
 )
