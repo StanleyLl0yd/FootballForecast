@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-03",
+  "kind": "RPL_PRIVATE_SEVEN_SEASON_DISCOVERY_PLAN",
+  "project": "FootballForecast",
+  "ownerOnly": true,
+  "monthlySpendCapUSD": 0,
+  "trainingAndValidationAuthorized": false,
+  "holdoutReadAuthorized": false,
+  "scope": {
+    "competition": "Russian Premier League",
+    "developmentStart": "2018/19",
+    "developmentEnd": "2024/25",
+    "historicalMaximumMatches": 1680,
+    "sealedHoldout": "2025/26",
+    "prospective": "2026/27"
+  },
+  "sourceCandidates": [
+    {
+      "id": "openfoot",
+      "role": "primary_private_research",
+      "historicalFullCoverage": "UNVERIFIED",
+      "access": "free_starter_sample_only",
+      "permissionStatus": "PRIVATE_RESEARCH_OWNER_ACCEPTED_WITH_UNRESOLVED_UPSTREAM_TERMS"
+    },
+    {
+      "id": "openfootball",
+      "role": "crosscheck",
+      "historicalFullCoverage": "PARTIAL_PUBLISHED_CATALOG",
+      "access": "cc0",
+      "permissionStatus": "PUBLISHER_CC0"
+    },
+    {
+      "id": "football-data-uk",
+      "role": "historical_odds_reference",
+      "historicalFullCoverage": "UNVERIFIED",
+      "access": "personal_research_with_specific_ml_limits",
+      "permissionStatus": "TRAINING_SCOPE_NOT_CONFIRMED"
+    },
+    {
+      "id": "open-meteo",
+      "role": "historical_weather_reanalysis_and_forecasts",
+      "historicalFullCoverage": "UNVERIFIED_FOR_MATCH_VENUES",
+      "access": "free_noncommercial",
+      "permissionStatus": "ATTRIBUTION_REQUIRED"
+    }
+  ],
+  "developmentSeasons": [
+    {
+      "season": "2018/19",
+      "expectedScheduledFixtures": 240,
+      "openfootFirstPageObserved": null,
+      "openfootFullSeasonVerified": false,
+      "results": "UNVERIFIED",
+      "historicalMarketOdds": "UNVERIFIED",
+      "lineups": "UNVERIFIED",
+      "coaches": "UNVERIFIED",
+      "venue": "UNVERIFIED",
+      "weatherAsOf": "UNVERIFIED",
+      "xg": "UNVERIFIED",
+      "trained": false
+    },
+    {
+      "season": "2019/20",
+      "expectedScheduledFixtures": 240,
+      "openfootFirstPageObserved": null,
+      "openfootFullSeasonVerified": false,
+      "results": "UNVERIFIED",
+      "historicalMarketOdds": "UNVERIFIED",
+      "lineups": "UNVERIFIED",
+      "coaches": "UNVERIFIED",
+      "venue": "UNVERIFIED",
+      "weatherAsOf": "UNVERIFIED",
+      "xg": "UNVERIFIED",
+      "trained": false
+    },
+    {
+      "season": "2020/21",
+      "expectedScheduledFixtures": 240,
+      "openfootFirstPageObserved": null,
+      "openfootFullSeasonVerified": false,
+      "results": "UNVERIFIED",
+      "historicalMarketOdds": "UNVERIFIED",
+      "lineups": "UNVERIFIED",
+      "coaches": "UNVERIFIED",
+      "venue": "UNVERIFIED",
+      "weatherAsOf": "UNVERIFIED",
+      "xg": "UNVERIFIED",
+      "trained": false
+    },
+    {
+      "season": "2021/22",
+      "expectedScheduledFixtures": 240,
+      "openfootFirstPageObserved": null,
+      "openfootFullSeasonVerified": false,
+      "results": "UNVERIFIED",
+      "historicalMarketOdds": "UNVERIFIED",
+      "lineups": "UNVERIFIED",
+      "coaches": "UNVERIFIED",
+      "venue": "UNVERIFIED",
+      "weatherAsOf": "UNVERIFIED",
+      "xg": "UNVERIFIED",
+      "trained": false
+    },
+    {
+      "season": "2022/23",
+      "expectedScheduledFixtures": 240,
+      "openfootFirstPageObserved": null,
+      "openfootFullSeasonVerified": false,
+      "results": "UNVERIFIED",
+      "historicalMarketOdds": "UNVERIFIED",
+      "lineups": "UNVERIFIED",
+      "coaches": "UNVERIFIED",
+      "venue": "UNVERIFIED",
+      "weatherAsOf": "UNVERIFIED",
+      "xg": "UNVERIFIED",
+      "trained": false
+    },
+    {
+      "season": "2023/24",
+      "expectedScheduledFixtures": 240,
+      "openfootFirstPageObserved": null,
+      "openfootFullSeasonVerified": false,
+      "results": "UNVERIFIED",
+      "historicalMarketOdds": "UNVERIFIED",
+      "lineups": "UNVERIFIED",
+      "coaches": "UNVERIFIED",
+      "venue": "UNVERIFIED",
+      "weatherAsOf": "UNVERIFIED",
+      "xg": "UNVERIFIED",
+      "trained": false
+    },
+    {
+      "season": "2024/25",
+      "expectedScheduledFixtures": 240,
+      "openfootFirstPageObserved": null,
+      "openfootFullSeasonVerified": false,
+      "results": "UNVERIFIED",
+      "historicalMarketOdds": "UNVERIFIED",
+      "lineups": "UNVERIFIED",
+      "coaches": "UNVERIFIED",
+      "venue": "UNVERIFIED",
+      "weatherAsOf": "UNVERIFIED",
+      "xg": "UNVERIFIED",
+      "trained": false
+    }
+  ],
+  "separateExistingM2": {
+    "train": "2024/25",
+    "sealedHoldout": "2025/26",
+    "trainOnlyModelEscrowAlreadyPresent": true,
+    "approvedStudyLock": false
+  },
+  "safety": {
+    "noSealedHoldoutRequests": true,
+    "noRawProviderDataInGit": true,
+    "noPublicTrainingResults": true,
+    "allNewFeatureFamiliesRequireSeparatePreregistration": true
+  }
+}

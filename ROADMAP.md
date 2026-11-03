@@ -6,6 +6,11 @@ M2 free-source coverage paging gate (2026-11-03): owner protected run #416287668
 M2 private free Starter API check (2026-11-03): owner-only manual one-shot authenticated RPL 2026/27 observation added to existing research workflow; requires private GitHub free-tier API key and exact confirmation, otherwise no request. A 240/16 result would still require independent quality/rights/temporal approval. No holdout access, model publication or production writes. M2 4/8 OPEN; M3 forbidden.
 # Roadmap
 
+## Personal forecasting research direction (owner, 2026-11-03)
+
+The owner prioritizes a private, noncommercial RPL research laboratory over a public forecasting product. Research candidate horizon: 2018/19–2024/25 (up to 1,680 scheduled matches); 2025/26 remains sealed; 2026/27 is prospective only. Develop leakage-safe chronological team, coach, player, venue, weather and market-odds features, compare probabilistic forecasts against contemporaneous vig-adjusted bookmaker baselines with Log Loss/RPS/Brier and honest uncertainty. First executable deliverable is a manual, owner-only seven-season **sample** discovery against free OpenFoot Starter with no row retention or holdout access. See [research strategy](docs/RPL_PRIVATE_RESEARCH_STRATEGY.md) and [machine-readable discovery plan](docs/M2_SEVEN_SEASON_DISCOVERY_PLAN.json). No new fitted model or feature set is approved by this change; existing M2 4/8 and M3 ban are preserved.
+
+
 Updated 2026-11-03. Milestone acceptance requires verification, not code presence.
 
 M2 OpenFootball model-lock preparation (2026-11-03): the canonical private in-memory coefficient codec now supports protocol-explicit OpenFootball calendar-only model fingerprints, rejecting legacy/calendar substitution. Synthetic tests only; no persisted model or immutable approved lock. Football-Data.co.uk advertises archived 2025/26 Russia CSV but remains **restricted-reference only** under the existing source registry, not an approved evaluation input (no holdout labels accessed). 2026/27 source still missing, M2 4/8 OPEN, M3 prohibited.
