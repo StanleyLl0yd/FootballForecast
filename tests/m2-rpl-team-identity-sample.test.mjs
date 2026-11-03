@@ -39,6 +39,27 @@ test('continuity returns only aggregate, even with real-looking private labels',
   assert.doesNotMatch(text,/RPL team|club_|synthetic_20|Synthetic test source/);
   assert.match(v.identityContinuitySha256,/^[a-f0-9]{64}$/);
 });
+test('candidate feature field shapes are counted but values never enter reports',()=>{
+  const pages=sample();
+  pages[0].data[0].venue={name:'PRIVATE STADIUM VALUE'};
+  pages[0].data[0].weather={temperature:12};
+  pages[0].data[0].coaches={home:'PRIVATE COACH'};
+  pages[0].data[0].lineups=[{player:'PRIVATE PLAYER'}];
+  pages[0].data[0].xg={home:1.0,away:0.5};
+  pages[0].data[0].odds={home:2.3};
+  const result=auditSevenSeasonIdentity(pages,AT);
+  const counts=result.seasons[0].firstPageCandidateFieldCounts;
+  assert.equal(counts.venue,1);
+  assert.equal(counts.weather,1);
+  assert.equal(counts.coaches,1);
+  assert.equal(counts.lineups,1);
+  assert.equal(counts.xg,1);
+  assert.equal(counts.bookmakerOdds,1);
+  assert.equal(result.candidateFieldsAreNotVerifiedFullSeasonCoverage,true);
+  assert.equal(result.featureValuesRetained,false);
+  assert.doesNotMatch(JSON.stringify(result),/PRIVATE STADIUM|PRIVATE COACH|PRIVATE PLAYER/);
+});
+
 test('name drift, ambiguous alias and missing name are counted, never approved',()=>{
   const pages=sample();
   for(const r of pages[1].data){

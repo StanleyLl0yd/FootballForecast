@@ -6,6 +6,24 @@ import {pathToFileURL} from 'node:url';
 import {auditSevenSeasonSamples,HISTORICAL_SEASONS} from './m2-openfoot-history-audit.mjs';
 
 const PINNED_OVERLAPS=Object.freeze([14,14,14,13,14,13]);
+const FIELD_GROUPS=Object.freeze({
+  venue:r=>[r.venue,r.stadium],
+  city:r=>[r.city,r.venue?.city,r.stadium?.city,r.location?.city],
+  pitchSurface:r=>[r.surface,r.pitch?.surface,r.venue?.surface,r.stadium?.surface],
+  weather:r=>[r.weather,r.conditions?.weather],
+  coaches:r=>[r.coaches,r.homeCoach,r.awayCoach,r.homeTeam?.coach,r.awayTeam?.coach],
+  lineups:r=>[r.lineups,r.lineup,r.homeLineup,r.awayLineup],
+  players:r=>[r.players,r.playerStats,r.playerStatistics,r.statistics?.players],
+  xg:r=>[r.xg,r.expectedGoals,r.homeXg,r.awayXg,r.stats?.xg,r.statistics?.xg],
+  shots:r=>[r.shots,r.stats?.shots,r.statistics?.shots],
+  bookmakerOdds:r=>[r.odds,r.markets,r.bookmakerOdds,r.betting]
+});
+const meaningful=x=>x!==null&&x!==undefined&&
+  (Array.isArray(x)?x.length>0:
+    typeof x==='object'?Object.keys(x).length>0:
+    typeof x==='string'?x.trim().length>0:
+    typeof x==='number'?Number.isFinite(x):false);
+
 const refuse=()=>{throw Error('RPL identity research inconclusive: refused source shape');};
 const id=x=>typeof x==='string'&&/^[A-Za-z0-9_-]{2,160}$/.test(x);
 const digest=x=>createHash('sha256').update(x).digest('hex');
@@ -31,7 +49,11 @@ export function auditSevenSeasonIdentity(pages,observedAtUtc){
   for(let i=0;i<7;i++){
     const season=HISTORICAL_SEASONS[i],map=new Map(),reverseNames=new Map();
     const doc=pages[i];
+    const fields=Object.fromEntries(Object.keys(FIELD_GROUPS).map(k=>[k,0]));
     for(const row of doc.data){
+      for(const [group,select] of Object.entries(FIELD_GROUPS)){
+        if(select(row).some(meaningful))fields[group]++;
+      }
       for(const team of [row.homeTeam,row.awayTeam]){
         if(!id(team.id))refuse();
         const name=normalizeName(team.name);
@@ -55,6 +77,7 @@ export function auditSevenSeasonIdentity(pages,observedAtUtc){
     collections.push(map);
     perSeason.push(Object.freeze({
       season,sourceMatchSample:doc.data.length,observedClubs:map.size,
+      firstPageCandidateFieldCounts:fields,
       missingNameIDs,conflictingNameIDs,nameCollisionCount,
       identityNamesComplete:missingNameIDs===0&&conflictingNameIDs===0&&
         nameCollisionCount===0
@@ -91,6 +114,8 @@ export function auditSevenSeasonIdentity(pages,observedAtUtc){
     sourceInternalNamesFullyConsistent:perSeason.every(x=>x.identityNamesComplete)&&
       adjacent.every(x=>x.changedDisplayNames===0&&x.missingOrAmbiguousNames===0),
     independentlyCorroboratedClubMapping:false,
+    candidateFieldsAreNotVerifiedFullSeasonCoverage:true,
+    featureValuesRetained:false,
     modelTrainingApproved:false,holdoutRead:false,
     providerRowsPersisted:false,providerNamesLogged:0,providerIDsLogged:0
   });
