@@ -31,7 +31,7 @@ cross join generate_series(1,16) home
 cross join generate_series(1,16) away
 where home<>away and s.season='2018/19' and s.normalized_rows_sha256=repeat('b',64);
 -- Force the deferred 240-row/16-club validation while rows still exist.
-set constraints ff_rpl_history_snapshot_complete immediate;
+set constraints ff_private.ff_rpl_history_snapshot_complete immediate;
 select 1 / case when (
   select count(*) from ff_private.ff_rpl_history_matches
 )=240 and (
