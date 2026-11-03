@@ -1,0 +1,142 @@
+name: M2 bounded public-source observations
+on:
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+permissions: {contents: read}
+concurrency:
+  group: m2-public-sources-observation
+  cancel-in-progress: false
+
+jobs:
+  pinned-openfootball:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        (
+          github.event_name == 'issue_comment' &&
+          github.event.action == 'created' &&
+          github.event.issue.number == 182 &&
+          !github.event.issue.pull_request &&
+          github.event.comment.user.login == 'StanleyLl0yd' &&
+          github.event.comment.author_association == 'OWNER' &&
+          github.event.comment.body == '/m2-public-sources'
+        )
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Verify exact pinned public historical reference without row retention
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 25 --max-filesize 200000 \
+            --output "$work/openfootball.txt" \
+            'https://raw.githubusercontent.com/openfootball/europe/63df627f3c87ce71708f016522ea236cf74332c3/russia/2024-25_ru1.txt'
+          test -s "$work/openfootball.txt"
+          node scripts/m2-openfootball-reference.mjs "$work/openfootball.txt" > "$work/aggregate.json"
+          {
+            echo '## OpenFootball 2024/25: exact pinned public reference'
+            echo 'Independent published-reference structure only; NOT source independence, approved M2 model input or holdout access.'
+            echo 'OpenFootball CC0: https://github.com/openfootball/europe'
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  bounded-sportscore-current:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        (
+          github.event_name == 'issue_comment' &&
+          github.event.action == 'created' &&
+          github.event.issue.number == 182 &&
+          !github.event.issue.pull_request &&
+          github.event.comment.user.login == 'StanleyLl0yd' &&
+          github.event.comment.author_association == 'OWNER' &&
+          github.event.comment.body == '/m2-public-sources'
+        )
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Observe one UTC day from free attributed RPL API without Footbolno
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          day="$(date -u +%F)"
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          {
+            echo '## SportScore: independent, on-demand, single-UTC-day research'
+            echo 'Attribution: <a href="https://sportscore.com/" rel="dofollow">Powered by SportScore</a>'
+            echo 'Free API terms: https://sportscore.com/developers/terms/'
+            echo 'No scheduled polling, bulk ingestion, historical training, source switching, live score overwrite or holdout access.'
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+          search_status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 20 --max-filesize 200000 \
+            -H 'Accept: application/json' \
+            -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+            --output "$work/search.json" --write-out '%{http_code}' \
+            'https://sportscore.com/api/v1/search/?q=Russian%20Premier%20League&sport=football&limit=10' \
+            2>/dev/null || true)"
+          if [[ "$search_status" != 200 ]]; then
+            echo 'SportScore search unavailable: INCONCLUSIVE (not zero fixtures).' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node scripts/m0-sportscore-filtered-rpl-research.mjs \
+            discover "$work/search.json" "$work/slug.txt" > "$work/search-summary.json"
+          if [[ ! -s "$work/slug.txt" ]]; then
+            echo 'No unique validated competition: INCONCLUSIVE.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          slug="$(cat "$work/slug.txt")"
+          [[ "$slug" =~ ^[a-z0-9][a-z0-9-]{2,79}$ ]]
+          daily_status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+            --connect-timeout 10 --max-time 20 --max-filesize 1000000 \
+            -H 'Accept: application/json' \
+            -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+            --output "$work/day.json" --write-out '%{http_code}' \
+            "https://sportscore.com/api/v1/fixtures/?sport=football&date=$day&competition=$slug&limit=200" \
+            2>/dev/null || true)"
+          if [[ "$daily_status" != 200 ]]; then
+            echo 'SportScore day response unavailable: INCONCLUSIVE (not zero fixtures).' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node scripts/m2-sportscore-observe.mjs \
+            "$work/search.json" "$work/day.json" "$day" "$observed" > "$work/aggregate.json"
+          {
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+            echo 'Only provider-observed aggregate counts; not independent official score truth or verified full-day coverage.'
+          } >> "$GITHUB_STEP_SUMMARY"
