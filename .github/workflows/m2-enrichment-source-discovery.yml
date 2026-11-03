@@ -1,0 +1,159 @@
+name: M2 bounded independent enrichment source discovery
+on:
+  workflow_dispatch:
+    inputs:
+      sstats:
+        description: 'Exact AUDIT_SSTATS_RPL_CATALOG for up to two documented free GETs'
+        required: false
+        type: string
+      weather:
+        description: 'Exact AUDIT_WEATHER_PREVIOUS_DAY for one historical fixed-lead GET'
+        required: false
+        type: string
+  issue_comment:
+    types: [created]
+permissions: {contents: read}
+concurrency:
+  group: m2-free-enrichment-source-discovery
+  cancel-in-progress: false
+jobs:
+  sstats-rpl-catalog:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.sstats == 'AUDIT_SSTATS_RPL_CATALOG') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-sstats-catalog')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Read at most two public documented API endpoints without raw record logging
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+            --connect-timeout 8 --max-time 25 --max-filesize 1500000 \
+            -H 'Accept: application/json' \
+            -H 'User-Agent: FootballForecast-M2-Source-Research/1.0' \
+            --output "$work/leagues.json" --write-out '%{http_code}' \
+            'https://api.sstats.net/Leagues' 2>/dev/null || true)"
+          if [[ "$status" != 200 || ! -s "$work/leagues.json" ]]; then
+            echo "M2_SSTATS_CATALOG=INCONCLUSIVE_HTTP"
+            exit 0
+          fi
+          if ! node scripts/m2-sstats-free-source-catalog.mjs catalog \
+            "$work/leagues.json" "$observed" "$work/id.txt" > "$work/catalog.json"; then
+            echo 'M2_SSTATS_CATALOG=INCONCLUSIVE_SCHEMA'
+            exit 0
+          fi
+          echo "M2_SSTATS_CATALOG_OBSERVATION=$(cat "$work/catalog.json")"
+          if [[ ! -s "$work/id.txt" ]]; then
+            echo 'M2_SSTATS_GAMES=INCONCLUSIVE_LEAGUE_NOT_UNAMBIGUOUS'
+            exit 0
+          fi
+          IFS= read -r league_id < "$work/id.txt"
+          [[ "$league_id" =~ ^[0-9]{1,8}$ ]]
+          sleep 2.5 # Anonymous source documented limit: 30/min per IP.
+          status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+            --connect-timeout 8 --max-time 25 --max-filesize 1500000 \
+            -H 'Accept: application/json' \
+            -H 'User-Agent: FootballForecast-M2-Source-Research/1.0' \
+            --output "$work/games.json" --write-out '%{http_code}' \
+            "https://api.sstats.net/Games/list?LeagueId=$league_id&Year=2022" \
+            2>/dev/null || true)"
+          if [[ "$status" != 200 || ! -s "$work/games.json" ]]; then
+            echo 'M2_SSTATS_GAMES=INCONCLUSIVE_HTTP'
+            exit 0
+          fi
+          if ! node scripts/m2-sstats-free-source-catalog.mjs games \
+            "$work/games.json" "$observed" > "$work/games-counts.json"; then
+            echo 'M2_SSTATS_GAMES=INCONCLUSIVE_SCHEMA'
+            exit 0
+          fi
+          echo "M2_SSTATS_GAMES_OBSERVATION=$(cat "$work/games-counts.json")"
+          {
+            echo '## SStats documented public API: research discovery, not licensed model input'
+            echo 'At most two free GETs; no team or match IDs, source rows, historical odds values or tokens.'
+            echo '~~~json'
+            cat "$work/catalog.json" "$work/games-counts.json"
+            echo
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  weather-previous-day-reference:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.weather == 'AUDIT_WEATHER_PREVIOUS_DAY') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-weather-previous-day')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Sample one archived 24h-lead weather field, without stadium or match linkage
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+            --connect-timeout 8 --max-time 25 --max-filesize 50000 \
+            -H 'Accept: application/json' \
+            -H 'User-Agent: FootballForecast-M2-Source-Research/1.0' \
+            --output "$work/weather.json" --write-out '%{http_code}' \
+            'https://previous-runs-api.open-meteo.com/v1/forecast?latitude=59.93&longitude=30.31&start_date=2024-08-01&end_date=2024-08-01&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=GMT' \
+            2>/dev/null || true)"
+          if [[ "$status" != 200 || ! -s "$work/weather.json" ]]; then
+            echo 'M2_WEATHER_PREVIOUS_DAY=INCONCLUSIVE_HTTP'
+            exit 0
+          fi
+          if ! node scripts/m2-weather-previous-runs-probe.mjs \
+            "$work/weather.json" "$observed" > "$work/aggregate.json"; then
+            echo 'M2_WEATHER_PREVIOUS_DAY=INCONCLUSIVE_SCHEMA'
+            exit 0
+          fi
+          echo "M2_WEATHER_PREVIOUS_DAY_OBSERVATION=$(cat "$work/aggregate.json")"
+          {
+            echo '## Open-Meteo prior-day reference sample (not an actual RPL venue)'
+            echo 'One free historical fixed-lead weather request; no raw temperatures, match data or outcomes.'
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"

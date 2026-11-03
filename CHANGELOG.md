@@ -1,3 +1,6 @@
+## M2 source-qualified public RPL enrichment probes — 2026-11-03
+- Reviewed SStats.net's documented anonymous API and public Russian Premier League 2022/23 archive and Open-Meteo free CC BY 4.0, Previous Runs versus stitched Historical Forecast timing. Added owner-only bounded SStats league/one-season-sample and 24h-ahead reference-city weather probes, synthetic fail-closed tests, SHA-only evidence handling, CI gate and updated README/ROADMAP/source registry plan. No actual new-model training or raw data storage; 2025/26 sealed, M2 4/8 OPEN, M3 forbidden.
+
 ## M2 historical RPL field richness evidence and multi-source research plan — 2026-11-03
 - Owner-protected run #41674569785: all seven historical first pages (350 matches) returned 16 clubs; 26 unique IDs, adjacent shared IDs 14/14/14/13/14/13, **82** unchanged normalized names and no name conflicts. None of the ten probed candidate rich-field groups was present in these first-page samples (0/350, not whole API). Pinned source/data digests without team labels, generated a zero-cost phased enrichment plan for SStats.net, Wikidata, TheSportsDB, Open-Meteo and reference odds, added integrity tests. No private raw data, real multi-season model training, holdout read or bookmaker advantage claim.
 
