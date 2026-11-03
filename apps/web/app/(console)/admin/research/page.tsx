@@ -5,7 +5,9 @@ import {ResearchLockViewer} from '@/components/research-lock-viewer';
 import {M2AnchorRequestViewer} from '@/components/m2-anchor-request-viewer';
 import {readM2TrainOnlyRun,readM2PublicSourcesRun,readM2OpenFootballTrainRun} from '@/lib/m2-run-status';
 import {summarizeM2OwnerEvidence} from '@/lib/m2-owner-research.mjs';
+import {inspectM2OpenFootballReplay} from '@/lib/m2-openfootball-evidence.mjs';
 import recordedEvidence from '../../../../../../docs/M2_STORED_TRAIN_REPLAY_EVIDENCE.json';
+import openFootballEvidence from '../../../../../../docs/M2_OPENFOOTBALL_TRAIN_REPLAY_EVIDENCE.json';
 
 export const dynamic='force-dynamic';
 
@@ -13,6 +15,7 @@ export default async function Page(){
   // Authorize before inspecting any further state; redirect is fail-closed.
   await requireOwner();
   const evidence=summarizeM2OwnerEvidence(recordedEvidence);
+  const openFootballReplay=inspectM2OpenFootballReplay(openFootballEvidence);
   const [latest,publicSources,openFootball]=await Promise.all([
     readM2TrainOnlyRun(),readM2PublicSourcesRun(),readM2OpenFootballTrainRun()
   ]);
@@ -83,6 +86,21 @@ export default async function Page(){
           href="https://github.com/StanleyLl0yd/FootballForecast/issues/182"
           target="_blank" rel="noopener noreferrer">Условия приёмки #182 ↗</a></p>
         <h3>Новый OpenFootball-only train-only</h3>
+        {openFootballReplay.state==='recorded'?<p>Два защищённых независимых
+          train-only запуска: <strong>2/2 воспроизводимы</strong>. Контроль:
+          <strong> {openFootballReplay.receipt.trainingMatches} матчей,
+          {' '}{openFootballReplay.receipt.trainingClubs} клубов</strong>;
+          {' '}исходы {openFootballReplay.receipt.homeWins}/
+          {openFootballReplay.receipt.draws}/{openFootballReplay.receipt.awayWins}.
+          <span className="source-lab-note"> Модель:
+            <code>{openFootballReplay.receipt.fittedModelSha256}</code>.
+            {' '}Источник: <code>{openFootballReplay.receipt.sourceSha256}</code>.
+            {' '}Только TRAIN_ONLY_UNAPPROVED, не утверждённая модель.</span>
+          {openFootballReplay.runs.map(id=><a className="sources-method" key={id}
+            href={`https://github.com/StanleyLl0yd/FootballForecast/actions/runs/${id}`}
+            target="_blank" rel="noopener noreferrer">Исходный запуск #{id} ↗ </a>)}
+        </p>:<p role="alert">Закреплённые данные OpenFootball train-only не прошли проверку
+          SHA: результат не одобрен.</p>}
         {openFootball.state==='run'?<p>Исследовательский запуск:
           {' '}<strong>{openFootball.status}</strong>
           {openFootball.conclusion?` · ${openFootball.conclusion}`:''}.
