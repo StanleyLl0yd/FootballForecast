@@ -103,11 +103,15 @@ label is read. No automatic training or publication has been enabled.
 
 ### Separate source eligibility observation (metadata only)
 
-[Football-Data.co.uk Russia](https://football-data.co.uk/russia.php) states its
-**2025/26** Russia data is the **final** season offered and provides an
-archival CSV link. This makes it a possible **independent evaluation-source
-candidate**, not a confirmed complete, independently sourced, model-use-
-permitted or verified 240-match holdout. The CSV's match rows and labels were
-**not fetched or inspected** for this note; rights, pinned revision, full
-coverage, score/status accuracy and non-tuned training-only cross-season club
-mapping all remain unresolved. It cannot supply the 2026/27 live season.
+[Football-Data.co.uk Russia](https://football-data.co.uk/russia.php)
+advertises a historical CSV and says **2025/26 is its final Russian season**.
+However, the project's existing
+[source registry](M0_FREE_SOURCE_REGISTRY.json) explicitly classifies
+`football-data-uk` as **restricted-reference**: private personal/academic
+reference only, no permitted automated project ingestion or ML training.
+**It is NOT a qualified 2025/26 evaluation source or a ready-to-use
+substitute for the sealed holdout.** No CSV match rows or labels were fetched
+or inspected here. Any later changed rights decision would still require
+pinned bytes, independent score/status quality checks and a separately
+reviewed training-only club mapping before evaluation. It cannot provide
+the discontinued 2026/27 league feed.

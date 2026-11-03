@@ -2,7 +2,7 @@
 
 ## M2 OpenFootball protocol-bound private escrow readiness — 2026-11-03
 
-- Extended the existing in-memory private model codec to accept the separately frozen OpenFootball calendar-only protocol explicitly, preserving legacy defaults. Its SHA-256 must match the already published train-only candidate receipt, and cross-protocol loads or changed coefficients fail closed. Synthetic-only regression tests; no real model bytes saved, approved, evaluated or published. Metadata-only qualification candidate: Football-Data.co.uk's final Russia 2025/26 CSV, without accessing holdout labels. M2 remains 4/8 OPEN; M3 not authorized.
+- Extended the existing in-memory private model codec to accept the separately frozen OpenFootball calendar-only protocol explicitly, preserving legacy defaults. Its SHA-256 must match the already published train-only candidate receipt, and cross-protocol loads or changed coefficients fail closed. Synthetic-only regression tests; no real model bytes saved, approved, evaluated or published. Football-Data.co.uk's final Russia 2025/26 archive remains a restricted-reference-only source under the existing rights registry, not an evaluation input; no holdout labels accessed. M2 remains 4/8 OPEN; M3 not authorized.
 
 ## M2 empirical source observations and owner research evidence — 2026-11-03
 
