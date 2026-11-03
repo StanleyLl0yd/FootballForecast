@@ -26,6 +26,8 @@ test('calendar-only train bridge isolates club names, exact frozen source and ne
   assert.equal(new Set(a.fixtures.map(x=>x.matchId)).size,240);
   assert.equal(new Set(a.fixtures.flatMap(x=>[x.homeTeamId,x.awayTeamId])).size,16);
   assert.equal(a.historicalPrematchVerified,false);
+  assert.equal(a.fixtures[0].sourceCalendarDate,'2024-07-20');
+  assert.equal(JSON.stringify(a).includes('calendarDateUtc'),false);
   assert.equal(JSON.stringify(a).includes('Synthetic RPL'),false);
   assert.equal(JSON.stringify(a).includes('kickoffAtUtc'),false);
   assert.equal(JSON.stringify(a).includes('Footbolno'),false);

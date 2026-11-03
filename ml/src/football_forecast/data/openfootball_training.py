@@ -17,7 +17,7 @@ _MATCH = r"OF_[A-F0-9]{24}"
 @dataclass(frozen=True, slots=True)
 class CalendarTrainingFixture:
     match_id: str
-    calendar_date_utc: date
+    source_calendar_date: date
     round: int
     home_team_id: str
     away_team_id: str
@@ -61,7 +61,7 @@ def read_openfootball_calendar_training(value: object) -> tuple[
     seen_pairs: set[tuple[str, str]] = set()
     for row in rows:
         if type(row) is not dict or set(row) != {
-            "matchId", "calendarDateUtc", "round", "homeTeamId",
+            "matchId", "sourceCalendarDate", "round", "homeTeamId",
             "awayTeamId", "homeGoals", "awayGoals", "resultType",
         }:
             raise DataError("M2 OpenFootball: unknown or missing match field")
@@ -71,7 +71,7 @@ def read_openfootball_calendar_training(value: object) -> tuple[
                 or not isinstance(away, str) or not fullmatch(_ALIAS, away)
                 or home == away or match_id in seen_ids or (home, away) in seen_pairs):
             raise DataError("M2 OpenFootball: duplicate or invalid team/fixture")
-        day_text = row["calendarDateUtc"]
+        day_text = row["sourceCalendarDate"]
         if type(day_text) is not str or not fullmatch(r"202[45]-\d{2}-\d{2}", day_text):
             raise DataError("M2 OpenFootball: missing calendar date")
         try:
@@ -102,6 +102,6 @@ def read_openfootball_calendar_training(value: object) -> tuple[
             or set(per_round) != set(range(1, 31))
             or any(len(teams) != 16 for teams in per_round.values())):
         raise DataError("M2 OpenFootball: incomplete 16-team round robin")
-    if records != sorted(records, key=lambda f: (f.calendar_date_utc, f.match_id)):
+    if records != sorted(records, key=lambda f: (f.source_calendar_date, f.match_id)):
         raise DataError("M2 OpenFootball: noncanonical fixture ordering")
     return tuple(records), source_sha

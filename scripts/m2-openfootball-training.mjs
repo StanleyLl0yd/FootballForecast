@@ -26,11 +26,11 @@ export function buildOpenFootballCalendarInput(verified){
        f.resultType!=='played')
       fail('invalid calendar-only match identity');
     return {
-      matchId:id(f.homeName,f.awayName),calendarDateUtc:f.calendarDateUtc,
+      matchId:id(f.homeName,f.awayName),sourceCalendarDate:f.calendarDateUtc,
       round:f.round,homeTeamId:team(f.homeName),awayTeamId:team(f.awayName),
       homeGoals:f.homeGoals,awayGoals:f.awayGoals,resultType:'played'
     };
-  }).sort((a,b)=>a.calendarDateUtc.localeCompare(b.calendarDateUtc)||
+  }).sort((a,b)=>a.sourceCalendarDate.localeCompare(b.sourceCalendarDate)||
     a.matchId.localeCompare(b.matchId));
   const aliases=new Set(fixtures.flatMap(f=>[f.homeTeamId,f.awayTeamId]));
   if(aliases.size!==16||new Set(fixtures.map(f=>f.matchId)).size!==240)

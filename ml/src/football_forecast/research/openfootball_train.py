@@ -29,7 +29,7 @@ def produce_openfootball_train_candidate(document: object, *, code_sha: str) -> 
         1 if f.home_goals == f.away_goals else 2 for f in fixtures
     )
     rows_digest = _digest([
-        [f.match_id, f.calendar_date_utc.isoformat(), f.round,
+        [f.match_id, f.source_calendar_date.isoformat(), f.round,
          f.home_team_id, f.away_team_id, f.home_goals, f.away_goals]
         for f in fixtures
     ])

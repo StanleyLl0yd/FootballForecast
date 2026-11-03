@@ -35,9 +35,9 @@ M3 and production prediction publication remain unauthorized.
   solver: L2 per-team `2.0`, home-advantage L2 `2.0`, zero-mean effects,
   deterministic optimizer, independent Poisson goal rates, no Elo, Dixon–Coles,
   tuning, calibration or other candidate selection.
-- Calendar fixtures are a distinct type with `calendar_date_utc: date`,
-  **not** `kickoff_at: datetime`. Mixing types fails closed. Sort solely by
-  calendar date + deterministic match identity for reproducibility; never
+- Calendar fixtures are a distinct type with `source_calendar_date: date`,
+  **not** `kickoff_at: datetime`. The source calendar day has **no authenticated timezone**, so it is not labeled UTC. Mixing types fails closed. Sort solely by
+  original source calendar date + deterministic match identity for reproducibility; never
   fabricate or store a kickoff timestamp.
 - A *manual owner-only* protected-main workflow fetches this exact public file,
   checks its raw Git blob, validates the round-robin and fits the model in

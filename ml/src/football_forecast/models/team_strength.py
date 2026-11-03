@@ -63,7 +63,7 @@ def fit_independent_poisson(
     if any(calendar):
         if not all(calendar):
             raise DataError("cannot mix calendar-only and timestamped training cohorts")
-        records = sorted(matches, key=lambda m: (m.calendar_date_utc, m.match_id))
+        records = sorted(matches, key=lambda m: (m.source_calendar_date, m.match_id))
     else:
         records = sorted(matches, key=lambda m: (m.kickoff_at, m.match_id))
     if not records:

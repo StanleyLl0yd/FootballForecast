@@ -29,12 +29,12 @@ def fixture_doc():
         for h, a in games:
             mid = "OF_" + sha256(f"synthetic:{h}:{a}".encode()).hexdigest()[:24].upper()
             rows.append({
-                "matchId": mid, "calendarDateUtc": day, "round": round_no,
+                "matchId": mid, "sourceCalendarDate": day, "round": round_no,
                 "homeTeamId": clubs[h], "awayTeamId": clubs[a],
                 "homeGoals": 2 if h < 8 else 1,
                 "awayGoals": 1 if a < 8 else 0, "resultType": "played",
             })
-    rows.sort(key=lambda r: (r["calendarDateUtc"], r["matchId"]))
+    rows.sort(key=lambda r: (r["sourceCalendarDate"], r["matchId"]))
     return {
         "schemaVersion": 1, "kind": "M2_OPENFOOTBALL_CALENDAR_TRAIN_INPUT",
         "protocol": PROTOCOL, "season": "2024/2025", "role": "train_baseline",
