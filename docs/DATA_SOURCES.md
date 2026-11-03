@@ -27,6 +27,20 @@ private Supabase migrations and sealed 2025/26 holdout remain untouched.
 SportScore remains bounded free current-season corroboration only: no automatic
 bulk ETL, model training or provider-majority-score fallback is enabled.
 
+A separate **manual-only**, owner-gated public-source research workflow,
+`.github/workflows/m2-public-sources-observe.yml`, may be started from
+Actions on protected `main` or with the exact owner-authored M2 issue #182
+comment `/m2-public-sources`. It runs two independent, five-minute,
+no-secret jobs: one fetches the exact pinned OpenFootball 2024/25 reference
+and validates its Git blob/aggregate; the other requests **at most one**
+anonymous, competition-filtered SportScore REST v1 current UTC day after a
+single exact RPL competition discovery. Both process provider bytes in a
+temporary directory and publish **only aggregate diagnostics**. SportScore
+is attributed with its required source link. If SportScore cannot be read,
+the result is **INCONCLUSIVE, not zero fixtures**; this job does not replace,
+update or create production matches or models. The archived historical
+six-day study and its older Footbolno-dependent workflow are not rewritten.
+
 The source-selection policy remains fail-closed: a provider outage must
 never cause silent replacement of a frozen historical study's source,
 identity map, labels, timing or rights. A separate pre-registered study would
