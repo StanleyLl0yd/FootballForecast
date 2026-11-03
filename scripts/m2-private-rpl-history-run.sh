@@ -91,7 +91,7 @@ echo "M2_PRIVATE_RPL_HISTORY_OBSERVATION=$(cat "$work/private/safe-summary.json"
 {
   echo '## RPL private historical source: seven complete development seasons'
   echo 'Only aggregate counts; no provider records, credentials or source rows exported.'
-  echo 'No 2025/26 holdout, model training or public forecast writes.'
+  echo 'No sealed holdout, model training or public forecast writes.'
   echo '~~~json'
   cat "$work/private/safe-summary.json"
   echo
