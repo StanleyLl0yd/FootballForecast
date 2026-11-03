@@ -186,6 +186,8 @@ jobs:
         run: node --check scripts/m1-openfootball-score-gate.mjs && node --test tests/m1-openfootball-score-gate.test.mjs
       - name: Verify M2 pinned OpenFootball reference adapter and source isolation
         run: node --check scripts/m2-openfootball-reference.mjs && node --test tests/m2-openfootball-reference.test.mjs
+      - name: Guard seven-season RPL discovery, free API limits and sealed holdout
+        run: node --check scripts/m2-openfoot-history-audit.mjs && node --test tests/m2-openfoot-history-audit.test.mjs
       - name: Verify M2 independent source observations and free RPL round-scope safety
         run: |
           node --check scripts/m2-sportscore-observe.mjs
