@@ -1,3 +1,6 @@
+## M2 private-history protected-run test environment fix — 2026-11-03
+- Owner run #41667471761 stopped at synthetic-only preflight before any source download or database write: `pytest` missing in runner venv. Protected workflow now installs existing `ml[test]` extras alongside pinned psycopg, and static CI prevents repeating the omission. Source/data privileges unchanged; a new protected run is required.
+
 ## M2 private seven-season source importer prepared — 2026-11-03
 - Added protected manual-only research workflow and bounded 119-request Starter ingestion, in-memory two-view/source SHA normalization, Python second-pass checks, atomic idempotent seven-season private PostgreSQL storage, closed numeric-only receipt, and adversarial tests. No live import or model training yet; exact-head CI and protected merge required.
 
