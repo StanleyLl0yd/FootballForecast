@@ -62,7 +62,7 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_50_SAMPLE_VERIFIED"
     },
     {
       "season": "2019/20",
@@ -80,7 +80,7 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
     },
     {
       "season": "2020/21",
@@ -98,7 +98,7 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
     },
     {
       "season": "2021/22",
@@ -116,7 +116,7 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
     },
     {
       "season": "2022/23",
@@ -134,7 +134,7 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
     },
     {
       "season": "2023/24",
@@ -152,7 +152,7 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
     },
     {
       "season": "2024/25",
@@ -170,7 +170,7 @@
       "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
       "openfootFullFixtureStructureVerified": true,
       "openfootCrossConfirmedMatches": 240,
-      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
+      "openfootScoreSchema": "NESTED_SCORE_HOME_AWAY_EXPECTED_UNVERIFIED_FULL_YEAR"
     }
   ],
   "separateExistingM2": {
@@ -204,5 +204,16 @@
     "finalScoresExpectedFieldPairVerified": 0,
     "actualScoreSchema": "UNVERIFIED",
     "sourceResponsesSha256": "4e7537ebad9550d5282449f3d652eb538ab08f085ff9cb9d0a0bb81a6dad1dbf"
+  },
+  "sevenSeasonScoreShapeEvidence": {
+    "runId": 41652739590,
+    "observedAtUtc": "2026-11-03T14:20:44Z",
+    "season": "2018/19",
+    "firstPageSampleRows": 50,
+    "scoreObjectRows": 50,
+    "nestedHomeAwayNumericScorePairs": 50,
+    "topLevelGoalPairs": 0,
+    "responseSha256": "3fdcf7ad1ca0cb0bfe2fae50eb44b5589425b833afd652269676ffe8c2251574",
+    "completeSevenSeasonScoreValidation": "NOT_YET_REPLAYED"
   }
 }

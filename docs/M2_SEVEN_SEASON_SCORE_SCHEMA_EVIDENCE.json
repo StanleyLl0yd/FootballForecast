@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_OPENFOOT_RPL_SCORE_SCHEMA_SAMPLE",
+  "runId": 41652739590,
+  "source": "OpenFoot Starter",
+  "observedAtUtc": "2026-11-03T14:20:44Z",
+  "season": "2018/19",
+  "firstPageRows": 50,
+  "finished": 50,
+  "scoreObjectRows": 50,
+  "scoreNullRows": 0,
+  "numericGoalPairCandidates": {
+    "topLevelGoals": 0,
+    "scoreHomeAway": 50,
+    "scoreHomeGoalsAwayGoals": 0,
+    "scoreHomeScoreAwayScore": 0,
+    "scoreFullTimeHomeAway": 0,
+    "scoreFullTimeHomeGoalsAwayGoals": 0,
+    "scoreFullTimeHomeTeamAwayTeam": 0,
+    "fullTimeHomeAway": 0,
+    "resultHomeAway": 0
+  },
+  "responseSha256": "3fdcf7ad1ca0cb0bfe2fae50eb44b5589425b833afd652269676ffe8c2251574",
+  "completeSevenSeasonScoreSchemaVerified": false,
+  "trainableCohortApproved": false,
+  "holdoutRead": false,
+  "providerRowsPersisted": false
+}

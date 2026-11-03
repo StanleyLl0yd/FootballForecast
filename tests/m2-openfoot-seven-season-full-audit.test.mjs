@@ -16,7 +16,7 @@ function seasonData(season){
     id:'private_match_'+i,competitionId:'comp_premier_league_rus',
     season,status:'finished',kickoffAt:season.slice(0,4)+'-09-15T16:00:00Z',
     homeTeam:{id:'club_'+a},awayTeam:{id:'club_'+b},
-    homeGoals:i%4,awayGoals:i%3
+    score:{home:i%4,away:i%3}
   }));
   const wrap=rows=>({data:rows,meta:{count:rows.length,
     access:{authenticated:true,plan:'starter'},
@@ -59,13 +59,27 @@ test('tampered scores, season, identity and access tier fail closed',()=>{
   bad(x=>{x.pages[0].meta.access.plan='developer';});
   bad(x=>{x.pages[0].data[1].id=x.pages[0].data[0].id;});
   bad(x=>{x.pages[0].data[0].homeTeam.id='foreign';});
-  bad(x=>{x.pages[0].data[0]={...x.pages[0].data[0],homeGoals:99};});
+  bad(x=>{x.pages[0].data[0]={...x.pages[0].data[0],score:{home:99,away:0}};});
   bad(x=>{x.pages[0].data[0].kickoffAt='2026-11-03T00:00:00Z';});
   const incomplete=seasonData('2023/24');
-  incomplete.pages[0].data[0].homeGoals=null;
+  incomplete.pages[0].data[0].score={home:null,away:0};
   assert.equal(auditSeasonTeamPages(incomplete.ids,incomplete.pages,'2023/24').coverageState,
     'PARTIAL_UNAPPROVED');
   assert.throws(()=>discoverSeasonTeams(seasonData('2023/24').seed,'2025/26'),/refused/);
+});
+test('only authenticated nested final-goal pairs count, not fabricated top-level goals',()=>{
+  const season='2024/25',x=seasonData(season);
+  for(const view of x.pages)for(const row of view.data){
+    row.homeGoals=5;row.awayGoals=0;
+    row.score=null;
+  }
+  const result=auditSeasonTeamPages(x.ids,x.pages,season);
+  assert.equal(result.validFinalScores,0);
+  assert.equal(result.coverageState,'PARTIAL_UNAPPROVED');
+  const conflicting=seasonData(season);
+  const original=conflicting.pages[0].data[0];
+  conflicting.pages[0].data[0]={...original,score:{home:0,away:20}};
+  assert.throws(()=>auditSeasonTeamPages(conflicting.ids,conflicting.pages,season),/refused/);
 });
 test('full archive source job is manual, owner-only, bounded and excludes sealed year',()=>{
   const yaml=readFileSync(new URL('../.github/workflows/m2-public-sources-observe.yml',import.meta.url),'utf8');
