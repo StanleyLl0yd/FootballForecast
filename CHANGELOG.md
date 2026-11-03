@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 empirical source observations and owner research evidence — 2026-11-03
+
+- Pin a single real protected owner-run public-source observation as closed-schema aggregate and response SHA evidence: 2024/25 OpenFootball 240/16; 2026/27 OpenFoot public demo only 5 observed match records/10 clubs; SportScore 0 observed RPL fixtures on 2026-11-03 UTC (not proof of missing games). Surface verified historical summary in authenticated read-only M2 research UI; reject tampering or extra fields in synthetic tests. No provider raw match data, no model training, no 2025/26 holdout read or production forecasts.
+
 ## M2 public source aggregate observability — 2026-11-03
 
 - Expose only existing allowlisted aggregate JSON and explicit inconclusive status from owner-triggered OpenFootball, SportScore and OpenFoot source observations in GitHub job logs. Makes empirical provider result evidence auditable via job logs without raw rows, match IDs, source data files, uploads, secrets or production access. Added fail-closed regression assertions.
