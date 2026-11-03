@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_PROTECTED_PUBLIC_SOURCE_OBSERVATION_EVIDENCE",
+  "classification": "SOURCE_OBSERVATION_ONLY_UNAPPROVED",
+  "observedAtDate": "2026-11-03",
+  "run": {
+    "runId": 41613346756,
+    "headSha": "5d99fa3bbda4b79384c54f847ab5e610da42e7df",
+    "event": "issue_comment",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "bounded-openfoot-rpl-demo",
+        "id": 125840531829,
+        "conclusion": "success"
+      },
+      {
+        "name": "pinned-openfootball",
+        "id": 125840532161,
+        "conclusion": "success"
+      },
+      {
+        "name": "bounded-sportscore-current",
+        "id": 125840532282,
+        "conclusion": "success"
+      }
+    ]
+  },
+  "observations": {
+    "openFootball": {
+      "season": "2024/2025",
+      "fixtures": 240,
+      "clubs": 16,
+      "rounds": 30,
+      "awarded": 0,
+      "verifiedKickoffInstants": 0,
+      "gitCommit": "63df627f3c87ce71708f016522ea236cf74332c3",
+      "gitBlobSha1": "6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc",
+      "sourceBytesSha256": "f315f67d49e5f2ed26bb5b2504244f36d37be958b5ccadd1755fb6b71b015dcb",
+      "exactSourceVersionVerified": true,
+      "independentUpstreamVerified": false,
+      "trainingReplayApproved": false
+    },
+    "openFoot": {
+      "season": "2026/27",
+      "competition": "comp_premier_league_rus",
+      "observedAtUtc": "2026-11-03T09:43:40Z",
+      "matchesObserved": 5,
+      "distinctClubsObserved": 10,
+      "finishedObserved": 5,
+      "scheduledObserved": 0,
+      "withUtcKickoff": 5,
+      "coverageState": "PARTIAL_UNAPPROVED",
+      "sourceResponseSha256": "e04de45affbc43aa00528780a9f47d284924198f09f0964c6314ac6e9ccbd9a1",
+      "completeSeasonVerified": false,
+      "redistributionRightsVerified": false
+    },
+    "sportScore": {
+      "observedAtUtc": "2026-11-03T09:43:55Z",
+      "dateUtc": "2026-11-03",
+      "providerRowsReturned": 0,
+      "recognisedRplMatches": 0,
+      "coverageState": "NO_VERIFIED_CURRENT_DAY_RPL_OBSERVATIONS",
+      "responseSha256": "672483e2478d1a0ff41c4c76169066c7848c1a809bc13fa1fc33cbe66bdf9a3e",
+      "completeSeasonVerified": false,
+      "completeDayVerified": false
+    }
+  },
+  "gate": {
+    "holdoutRead": false,
+    "modelApproved": false,
+    "liveSourceApproved": false,
+    "productionWrites": 0,
+    "publishedForecasts": 0
+  }
+}
