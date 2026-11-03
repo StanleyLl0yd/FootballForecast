@@ -10,6 +10,10 @@ on:
         description: 'Optional exact AUDIT_OPENFOOT_ROUNDS: at most 30 free round-filter requests; no import'
         required: false
         type: string
+      openfoot_teams:
+        description: 'Optional exact AUDIT_OPENFOOT_TEAMS; at most 17 free Starter filtered GETs'
+        required: false
+        type: string
   issue_comment:
     types: [created]
 
@@ -379,12 +383,18 @@ jobs:
               if ! node --input-type=module - "$work/tier.json" <<'FREE_TIER'
           import {readFileSync} from 'node:fs';
           const result=JSON.parse(readFileSync(process.argv[2],'utf8'));
+          console.log('M2_OPENFOOT_ROUND_ONE_PRECHECK='+JSON.stringify({
+            starterTierVerified:result.starterTierVerified,
+            matchesObserved:result.matchesObserved,
+            scopeWindowLimited:result.scopeWindowLimited,
+            unavailableFlagPresent:result.unavailableFlagPresent
+          }));
           if(result.starterTierVerified!==true||result.matchesObserved>8||
              result.scopeWindowLimited!==false||
              result.unavailableFlagPresent!==false)process.exit(2);
           FREE_TIER
               then
-                echo 'M2_OPENFOOT_ROUNDS_OBSERVATION=INCONCLUSIVE_NOT_FREE_STARTER'
+                echo 'M2_OPENFOOT_ROUNDS_OBSERVATION=INCONCLUSIVE_ROUND_ONE_SCOPE_OR_TIER'
                 echo 'Further requests refused: authenticated free Starter only.' >> "$GITHUB_STEP_SUMMARY"
                 exit 0
               fi
@@ -403,4 +413,109 @@ jobs:
             echo
             echo '~~~'
             echo 'Coverage research only; no source, holdout or forecast authorization.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  bounded-openfoot-free-teams:
+    # Up to 17 documented free Starter GETs; never follow a paid Developer cursor.
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.openfoot_teams == 'AUDIT_OPENFOOT_TEAMS') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 182 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m2-openfoot-teams')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Bounded free RPL 2026/27 season filter with 16 explicit team requests
+        shell: bash
+        env:
+          OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          mkdir "$work/pages"
+          {
+            echo '## $0 OpenFoot Starter — initial RPL season page and at most 16 club-filter requests'
+            echo 'Documented free filters only. No paid cursor, overrides, persistence or model write.'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ -z "${OPENFOOT_API_KEY:-}" ]]; then
+            echo 'M2_OPENFOOT_TEAMS_OBSERVATION=INCONCLUSIVE_NO_FREE_KEY'
+            exit 0
+          fi
+          if [[ ! "$OPENFOOT_API_KEY" =~ ^of_live_[A-Za-z0-9_-]{8,256}$ ]]; then
+            echo 'M2_OPENFOOT_TEAMS_OBSERVATION=INCONCLUSIVE_KEY_FORMAT'
+            exit 0
+          fi
+          printf 'header = "Authorization: Bearer %s"\n' "$OPENFOOT_API_KEY" > "$work/key.conf"
+          unset OPENFOOT_API_KEY
+          observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+            --connect-timeout 8 --max-time 20 --max-filesize 200000 \
+            --config "$work/key.conf" -H 'Accept: application/json' \
+            -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+            --output "$work/seed.json" --write-out '%{http_code}' \
+            'https://openfootapi.com/v1/matches?competition=comp_premier_league_rus&season=2026%2F27' \
+            2>/dev/null || true)"
+          if [[ "$status" != 200 || ! -s "$work/seed.json" ]]; then
+            echo 'M2_OPENFOOT_TEAMS_OBSERVATION=INCONCLUSIVE_SEED_HTTP'
+            exit 0
+          fi
+          if ! node scripts/m2-openfoot-team-audit.mjs discover \
+            "$work/seed.json" "$observed" "$work/ids"; then
+            echo 'M2_OPENFOOT_TEAMS_OBSERVATION=INCONCLUSIVE_SEED_SCOPE'
+            exit 0
+          fi
+          [[ "$(wc -l < "$work/ids")" == 16 ]]
+          index=0
+          while IFS= read -r team_id; do
+            [[ "$team_id" =~ ^[A-Za-z0-9_-]{3,96}$ ]]
+            index=$((index+1))
+            file="$work/pages/$(printf '%02d' "$index").json"
+            status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+              --connect-timeout 8 --max-time 20 --max-filesize 200000 \
+              --config "$work/key.conf" -H 'Accept: application/json' \
+              -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
+              --output "$file" --write-out '%{http_code}' \
+              "https://openfootapi.com/v1/matches?competition=comp_premier_league_rus&season=2026%2F27&team=$team_id" \
+              2>/dev/null || true)"
+            if [[ "$status" != 200 || ! -s "$file" ]]; then
+              echo "M2_OPENFOOT_TEAMS_OBSERVATION=INCONCLUSIVE_HTTP_FILTER_$index"
+              exit 0
+            fi
+            if ! node scripts/m2-openfoot-team-audit.mjs check "$file" "$team_id"; then
+              echo "M2_OPENFOOT_TEAMS_OBSERVATION=INCONCLUSIVE_TEAM_FILTER_$index"
+              exit 0
+            fi
+          done < "$work/ids"
+          [[ "$index" == 16 ]]
+          rm -f "$work/key.conf"
+          if ! node scripts/m2-openfoot-team-audit.mjs aggregate \
+            "$work/ids" "$work/pages" "$observed" > "$work/aggregate.json"; then
+            echo 'M2_OPENFOOT_TEAMS_OBSERVATION=INCONCLUSIVE_CROSS_TEAM_SCHEMA'
+            exit 0
+          fi
+          echo "M2_OPENFOOT_TEAMS_OBSERVATION=$(cat "$work/aggregate.json")"
+          {
+            echo '~~~json'
+            cat "$work/aggregate.json"
+            echo
+            echo '~~~'
+            echo 'Research only; no approved current feed, private model or unsealed holdout.'
           } >> "$GITHUB_STEP_SUMMARY"
