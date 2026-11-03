@@ -1,3 +1,6 @@
+## M2 safe curl transfer-status enforcement — 2026-11-03
+- Protected SStats #41697495298 returned JSON-prefixed invalid data at exactly the 1,500,000-byte configured body cap; body completeness not verified because curl nonzero exits were ignored. Hardened all four bounded source GETs so transfer failures, including body-size limits, fail closed without treating HTTP 200 as a complete response. Added static regression checks, no enlarged request cap and no raw data logging. Pinned only safe partial-capture digest and evidence; no match/odds import, training or holdout access.
+
 ## M2 seven-year JMA GSM real receipt and SStats non-JSON safety gate — 2026-11-03
 - Protected owner #41695184408: 7/7 reference years, 168/168 non-null hours; never actual stadium/fixture weather. SStats #41695180516: INCONCLUSIVE_SCHEMA, no games or odds read. Added metadata-only invalid-JSON response format/size/SHA diagnostic and negative tests, updated evidence, source plan, README, ROADMAP and AGENTS. No new model fitting or holdout reads; M2 4/8 OPEN.
 
