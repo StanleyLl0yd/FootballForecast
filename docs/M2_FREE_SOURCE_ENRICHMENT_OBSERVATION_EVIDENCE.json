@@ -13,7 +13,10 @@
     "actualRplApiCoverageVerified": false,
     "rawResponseDigestAvailable": false,
     "trainingRightsVerified": false,
-    "privateDataPersisted": false
+    "privateDataPersisted": false,
+    "followupOwnerRunId": 41695180516,
+    "followupState": "INCONCLUSIVE_SCHEMA_NO_SAFE_FORMAT_RECEIPT",
+    "followupGamesFetched": false
   },
   "weather": {
     "provider": "Open-Meteo Previous Runs",
@@ -36,5 +39,68 @@
     "historicalBookmakerBenchmarkCompleted": false,
     "sealedHoldout2025_26Read": false,
     "monthlyExtraCostUSD": 0
+  },
+  "weatherSevenYears": {
+    "provider": "Open-Meteo Previous Runs",
+    "ownerRunId": 41695184408,
+    "observedAtUtc": "2026-11-03T18:36:13Z",
+    "modelRequested": "jma_gsm",
+    "leadTimeHours": 24,
+    "referenceDayMonth": "08-01",
+    "location": "SAINT_PETERSBURG_CITY_REFERENCE_NOT_STADIUM",
+    "years": [
+      {
+        "year": 2018,
+        "nonNullHours": 24,
+        "missingHours": 0,
+        "status": "FULL_24_OF_24"
+      },
+      {
+        "year": 2019,
+        "nonNullHours": 24,
+        "missingHours": 0,
+        "status": "FULL_24_OF_24"
+      },
+      {
+        "year": 2020,
+        "nonNullHours": 24,
+        "missingHours": 0,
+        "status": "FULL_24_OF_24"
+      },
+      {
+        "year": 2021,
+        "nonNullHours": 24,
+        "missingHours": 0,
+        "status": "FULL_24_OF_24"
+      },
+      {
+        "year": 2022,
+        "nonNullHours": 24,
+        "missingHours": 0,
+        "status": "FULL_24_OF_24"
+      },
+      {
+        "year": 2023,
+        "nonNullHours": 24,
+        "missingHours": 0,
+        "status": "FULL_24_OF_24"
+      },
+      {
+        "year": 2024,
+        "nonNullHours": 24,
+        "missingHours": 0,
+        "status": "FULL_24_OF_24"
+      }
+    ],
+    "requests": 7,
+    "yearsComplete": 7,
+    "totalNonNullHours": 168,
+    "totalMissingHours": 0,
+    "pageHashesSha256": "d9249af9e0bfe8a7870615a7c6a5e4fa4ff0d329a4ed95820a55e977ce3bb284",
+    "sourceTemperaturesPublished": false,
+    "stadiumVerified": false,
+    "individualModelRunIssuedAtVerified": false,
+    "matchWeatherEligible": false,
+    "sealedHoldout2025_26Read": false
   }
 }
