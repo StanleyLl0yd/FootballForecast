@@ -49,6 +49,7 @@ jobs:
             'https://raw.githubusercontent.com/openfootball/europe/63df627f3c87ce71708f016522ea236cf74332c3/russia/2024-25_ru1.txt'
           test -s "$work/openfootball.txt"
           node scripts/m2-openfootball-reference.mjs "$work/openfootball.txt" > "$work/aggregate.json"
+          echo "M2_OPENFOOTBALL_OBSERVATION=$(cat "$work/aggregate.json")"
           {
             echo '## OpenFootball 2024/25: exact pinned public reference'
             echo 'Independent published-reference structure only; NOT source independence, approved M2 model input or holdout access.'
@@ -110,12 +111,14 @@ jobs:
             2>/dev/null || true)"
           if [[ "$search_status" != 200 ]]; then
             echo 'SportScore search unavailable: INCONCLUSIVE (not zero fixtures).' >> "$GITHUB_STEP_SUMMARY"
+            echo 'M2_SPORTSCORE_OBSERVATION=INCONCLUSIVE_SEARCH'
             exit 0
           fi
           node scripts/m0-sportscore-filtered-rpl-research.mjs \
             discover "$work/search.json" "$work/slug.txt" > "$work/search-summary.json"
           if [[ ! -s "$work/slug.txt" ]]; then
             echo 'No unique validated competition: INCONCLUSIVE.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'M2_SPORTSCORE_OBSERVATION=INCONCLUSIVE_COMPETITION'
             exit 0
           fi
           slug="$(cat "$work/slug.txt")"
@@ -129,10 +132,12 @@ jobs:
             2>/dev/null || true)"
           if [[ "$daily_status" != 200 ]]; then
             echo 'SportScore day response unavailable: INCONCLUSIVE (not zero fixtures).' >> "$GITHUB_STEP_SUMMARY"
+            echo 'M2_SPORTSCORE_OBSERVATION=INCONCLUSIVE_DAY'
             exit 0
           fi
           node scripts/m2-sportscore-observe.mjs \
             "$work/search.json" "$work/day.json" "$day" "$observed" > "$work/aggregate.json"
+          echo "M2_SPORTSCORE_OBSERVATION=$(cat "$work/aggregate.json")"
           {
             echo '~~~json'
             cat "$work/aggregate.json"
@@ -198,13 +203,16 @@ jobs:
             2>/dev/null || true)"
           if [[ "$status" != '200' || ! -s "$work/day.json" ]]; then
             echo 'OpenFoot demo HTTP source unavailable: INCONCLUSIVE, not zero RPL fixtures.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'M2_OPENFOOT_OBSERVATION=INCONCLUSIVE_HTTP'
             exit 0
           fi
           if ! node scripts/m2-openfoot-rpl-diagnostic.mjs \
             "$work/day.json" "$observed" > "$work/aggregate.json"; then
             echo 'OpenFoot demo response did not pass bounded RPL schema: INCONCLUSIVE, no provider rows retained.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'M2_OPENFOOT_OBSERVATION=INCONCLUSIVE_SCHEMA'
             exit 0
           fi
+          echo "M2_OPENFOOT_OBSERVATION=$(cat "$work/aggregate.json")"
           {
             echo '~~~json'
             cat "$work/aggregate.json"

@@ -83,3 +83,20 @@ test('free OpenFoot demo job is owner/main-only and cannot authorize ingestion',
   assert.match(workflow,/^on:\n  workflow_dispatch:\n  issue_comment:/m);
   assert.doesNotMatch(workflow,/^  (?:push|schedule|workflow_run):/m);
 });
+
+test('manual source workflow outputs only the existing safe aggregates to job logs',()=>{
+  const workflow=readFileSync(new URL(
+    '../.github/workflows/m2-public-sources-observe.yml',import.meta.url),'utf8');
+  for(const marker of [
+    'M2_OPENFOOTBALL_OBSERVATION=',
+    'M2_SPORTSCORE_OBSERVATION=INCONCLUSIVE_SEARCH',
+    'M2_SPORTSCORE_OBSERVATION=INCONCLUSIVE_DAY',
+    'M2_SPORTSCORE_OBSERVATION=INCONCLUSIVE_COMPETITION',
+    'M2_SPORTSCORE_OBSERVATION=$(cat',
+    'M2_OPENFOOT_OBSERVATION=INCONCLUSIVE_HTTP',
+    'M2_OPENFOOT_OBSERVATION=INCONCLUSIVE_SCHEMA',
+    'M2_OPENFOOT_OBSERVATION=$(cat'
+  ])assert.ok(workflow.includes(marker),marker);
+  assert.doesNotMatch(workflow,/cat "\$work\/(?:day|search|openfootball)\.(?:json|txt)"/);
+  assert.doesNotMatch(workflow,/upload-artifact|FF_M1_DB_WRITE_ENABLED|psql |secrets\./);
+});
