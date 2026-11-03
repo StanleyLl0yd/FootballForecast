@@ -88,3 +88,20 @@ test('full archive source job is manual, owner-only, bounded and excludes sealed
   assert.ok((job.match(/sleep 1\.2/g)||[]).length===2,'two bounded request pacing points');
   assert.doesNotMatch(job,/2025\/26|2025%2F26|upload-artifact|git push|set -x|DATABASE_URL|[?&]cursor=/);
 });
+
+test('2019/20 pandemic resumption through 22 July is valid, later or other-season overflow fails',()=>{
+  const season='2019/20',make=()=>seasonData(season);
+  const mutate=(set,date)=>{
+    for(const view of set.pages)for(const row of view.data){
+      if(row.id==='private_match_0')row.kickoffAt=date;
+    }
+  };
+  const allowed=make();mutate(allowed,'2020-07-22T15:00:00Z');
+  assert.equal(auditSeasonTeamPages(allowed.ids,allowed.pages,season).coverageState,
+    'STRUCTURALLY_COMPLETE_UNAPPROVED');
+  const tooLate=make();mutate(tooLate,'2020-08-08T15:00:00Z');
+  assert.throws(()=>auditSeasonTeamPages(tooLate.ids,tooLate.pages,season),/refused/);
+  const normal=seasonData('2018/19');
+  mutate(normal,'2020-07-22T15:00:00Z');
+  assert.throws(()=>auditSeasonTeamPages(normal.ids,normal.pages,'2018/19'),/refused/);
+});
