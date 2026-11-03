@@ -1,18 +1,17 @@
-name: M0 SportScore Six-Day Anonymous Coverage Research
+name: M0 SportScore Six-Day Anonymous Coverage Research (manual archive only)
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/m0-sportscore-day-research.mjs'
-      - 'tests/m0-sportscore-day-research.test.mjs'
-      - '.github/workflows/m0-sportscore-day-research.yml'
 permissions: {contents: read}
 concurrency:
   group: m0-sportscore-anonymous-six-day-study
   cancel-in-progress: false
 jobs:
   ephemeral-discovery:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'workflow_dispatch' &&
+      github.actor == 'StanleyLl0yd'
     # One deliberately bounded coverage research, never a season crawler.
     runs-on: ubuntu-latest
     timeout-minutes: 5

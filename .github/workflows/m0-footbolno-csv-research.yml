@@ -1,23 +1,17 @@
-name: M0 Free RPL CSV Ephemeral Coverage Research
+name: M0 Free RPL CSV Ephemeral Coverage Research (manual archive only)
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/m0-footbolno-csv-aggregate.mjs'
-      - 'scripts/m0-scoreline-histogram-crosscheck.mjs'
-      - 'scripts/m0-cross-source-fixture-reconcile.mjs'
-      - 'scripts/m0_wikipedia_rpl_holdout_matrix.py'
-      - 'scripts/m0-fixture-reconcile.mjs'
-      - 'tests/test_m0_wikipedia_rpl_holdout_matrix.py'
-      - 'scripts/m0-fixture-structure.mjs'
-      - '.github/workflows/m0-footbolno-csv-research.yml'
 permissions: {contents: read}
 concurrency:
   group: m0-footbolno-csv-research
   cancel-in-progress: false
 jobs:
   private-aggregate-only:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'workflow_dispatch' &&
+      github.actor == 'StanleyLl0yd'
     # Exactly one research request after installation/updates, or on manual request.
     # User has approved only zero-cost PUBLIC publisher endpoints, never source
     # retention, scraping restricted sites, model training or redistribution.

@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 legacy Footbolno trigger quarantine — 2026-11-03
+
+- Retired push-triggered network probes from four historical M0 publisher/SportScore-vs-Footbolno workflows; kept owner-only main-branch manual diagnostics, old evidence, and archived workflows. Added regression tests to ensure no automatic workflow can fetch Footbolno outside the explicitly manual-only M1 snapshot job. No database/schema/training/holdout or production prediction changes.
+
 ## M2 OpenFootball train-only reproducibility evidence — 2026-11-03
 
 - Stored digest-only evidence from two independently successful owner-protected real OpenFootball CC0 2024/25 fixed-Poisson train-only runs on exact main, same 240/16 cohort/coefficients fingerprints and raw public-source SHA. Closed-schema validation and negative tests; authenticated owner research page shows unapproved recorded replay with original run links. No private rows/weights, persistent model, retrospective evaluation, current publication, holdout read or automatic Footbolno dependency. M2 4/8 OPEN.
