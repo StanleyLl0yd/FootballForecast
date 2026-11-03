@@ -85,7 +85,9 @@ test('full archive source job is manual, owner-only, bounded and excludes sealed
   const yaml=readFileSync(new URL('../.github/workflows/m2-public-sources-observe.yml',import.meta.url),'utf8');
   const start=yaml.indexOf('  bounded-openfoot-full-history:');
   assert.ok(start>0);
-  const job=yaml.slice(start);
+  // Scope pacing assertions to the specific job, not later independent jobs.
+  const remainder=yaml.slice(start);
+  const job=remainder.split(/\n  [a-z][a-z0-9-]*:\n/)[0];
   for(const s of [
     "github.repository == 'StanleyLl0yd/FootballForecast'",
     "github.ref == 'refs/heads/main'",

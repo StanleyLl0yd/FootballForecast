@@ -203,6 +203,8 @@ jobs:
           node --check scripts/m2-private-rpl-history-receipt.mjs
           bash -n scripts/m2-private-rpl-history-run.sh
           node --test tests/m2-private-rpl-history.test.mjs tests/m2-private-rpl-history-receipt.test.mjs
+      - name: Guard seven-season private RPL team-identity observation
+        run: node --check scripts/m2-rpl-team-identity-sample.mjs && node --test tests/m2-rpl-team-identity-sample.test.mjs
       - name: Validate private historical score shape sample without leaking match results
         run: node --check scripts/m2-openfoot-score-shape.mjs && node --test tests/m2-openfoot-score-shape.test.mjs
       - name: Validate seven full RPL season structural audits without holdout or raw match artifacts
