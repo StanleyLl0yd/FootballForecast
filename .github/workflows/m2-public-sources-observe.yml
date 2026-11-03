@@ -525,7 +525,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
   bounded-openfoot-source-catalog:
-    # Public provenance metadata only, no API key, fixtures, or model state.
+    # Owner-only private key; response is public source metadata, never fixtures or model state.
     if: >-
       github.repository == 'StanleyLl0yd/FootballForecast' &&
       github.ref == 'refs/heads/main' &&
@@ -550,6 +550,8 @@ jobs:
         with: {node-version: '22'}
       - name: Retrieve explicit Russian league source/licence metadata only
         shell: bash
+        env:
+          OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
         run: |
           set -euo pipefail
           umask 077
@@ -557,16 +559,27 @@ jobs:
           [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
           work="$(mktemp -d)"
           trap 'rm -rf "$work"' EXIT
+          if [[ -z "${OPENFOOT_API_KEY:-}" ]]; then
+            echo 'M2_OPENFOOT_CATALOG_OBSERVATION=INCONCLUSIVE_NO_FREE_KEY'
+            exit 0
+          fi
+          if [[ ! "$OPENFOOT_API_KEY" =~ ^of_live_[A-Za-z0-9_-]{8,256}$ ]]; then
+            echo 'M2_OPENFOOT_CATALOG_OBSERVATION=INCONCLUSIVE_KEY_FORMAT'
+            exit 0
+          fi
+          printf 'header = "Authorization: Bearer %s"\n' "$OPENFOOT_API_KEY" > "$work/key.conf"
+          unset OPENFOOT_API_KEY
           observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           status="$(curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
             --connect-timeout 10 --max-time 25 --max-filesize 1250000 \
-            -H 'Accept: application/json' \
+            -H 'Accept: application/json' --config "$work/key.conf" \
             -H 'User-Agent: FootballForecastM2Research/1.0 (https://github.com/StanleyLl0yd/FootballForecast)' \
             --output "$work/catalog.json" --write-out '%{http_code}' \
             'https://openfootapi.com/v1/competitions' 2>/dev/null || true)"
+          rm -f "$work/key.conf"
           if [[ "$status" != 200 || ! -s "$work/catalog.json" ]]; then
-            echo 'M2_OPENFOOT_CATALOG_OBSERVATION=INCONCLUSIVE_HTTP'
-            echo 'Public catalog unavailable; cannot infer source rights.' >> "$GITHUB_STEP_SUMMARY"
+            echo "M2_OPENFOOT_CATALOG_OBSERVATION=INCONCLUSIVE_HTTP_${status:-000}"
+            echo 'Authenticated Starter catalog unavailable; cannot infer source rights.' >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           if ! node scripts/m2-openfoot-rpl-catalog.mjs \
