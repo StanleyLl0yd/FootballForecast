@@ -7,7 +7,7 @@ const workflow=readFileSync(new URL('../.github/workflows/m1-private-stage-impor
 const current=readFileSync(new URL('../.github/workflows/m1-footbolno-dataset.yml',import.meta.url),'utf8');
 
 test('legacy private M1 source importer is manual-only and requires explicit main confirmation',()=>{
-  assert.match(workflow,/^on:\n  # Legacy ingest retained/);
+  assert.match(workflow,/^on:\n  # Legacy ingest retained/m);
   assert.match(workflow,/^  workflow_dispatch:/m);
   assert.doesNotMatch(workflow,/^  (?:push|schedule|pull_request|workflow_run):/m);
   assert.match(workflow,/if: github\.ref == 'refs\/heads\/main' && github\.event_name == 'workflow_dispatch'/);
