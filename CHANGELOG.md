@@ -1,3 +1,6 @@
+## M2 private seven-season source importer prepared — 2026-11-03
+- Added protected manual-only research workflow and bounded 119-request Starter ingestion, in-memory two-view/source SHA normalization, Python second-pass checks, atomic idempotent seven-season private PostgreSQL storage, closed numeric-only receipt, and adversarial tests. No live import or model training yet; exact-head CI and protected merge required.
+
 ## M2 verified seven seasons, private historical schema prepared — 2026-11-03
 - Protected #41662712300: 1,680/1,680 finished RPL 2018/19–2024/25 fixtures, source goal pairs and UTC kickoffs cross-confirmed; one provider only, no independent rights or historical publication proof. Added pinned aggregate evidence, isolated append-only private PostgreSQL snapshot schema, forced RLS, synthetic DB test and updated README/ROADMAP/coverage plan. No real history persisted yet, no model training or holdout access.
 
