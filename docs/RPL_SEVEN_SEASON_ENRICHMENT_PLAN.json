@@ -40,10 +40,24 @@
       "roles": [
         "weatherForecast"
       ],
-      "status": "DOCUMENTED_ARCHIVED_FORECASTS_2022_PLUS",
+      "status": "HISTORICAL_FORECAST_STITCHED_NOT_STRICT_FIXED_LEAD",
       "historicalRplCoverage": "UNVERIFIED",
       "rights": "FREE_NONCOMMERCIAL_WITH_TERMS",
-      "temporalPolicy": "ARCHIVED_FORECAST_RUN_ISSUED_BEFORE_CUTOFF_ONLY"
+      "temporalPolicy": "NOT_STRICT_ASOF_USE_PREVIOUS_RUNS_OR_INDIVIDUAL_RUNS",
+      "officialTerms": "https://open-meteo.com/en/terms"
+    },
+    {
+      "id": "open_meteo_previous_runs",
+      "officialDocs": "https://open-meteo.com/en/docs/previous-runs-api",
+      "officialTerms": "https://open-meteo.com/en/terms",
+      "roles": [
+        "weatherHistoricalFixedLead24Hours"
+      ],
+      "status": "PUBLIC_API_DOCUMENTED_FREE_REFERENCE_SAMPLE_PENDING",
+      "historicalRplCoverage": "UNVERIFIED_AT_REAL_VENUES_AND_DATES",
+      "rights": "CC_BY_4_WITH_ATTRIBUTION_NONCOMMERCIAL_FREE_LIMITS",
+      "temporalPolicy": "PREVIOUS_DAY1_FIXED_LEAD_CHECK_ISSUE_TIME_AND_VENUE_BEFORE_MATCH_USE",
+      "observedSampleCoverage": "NOT_YET_EXECUTED"
     },
     {
       "id": "open_meteo_reanalysis",
@@ -66,10 +80,15 @@
         "bookmakerOdds",
         "matchEvents"
       ],
-      "status": "FREE_API_ADVERTISED",
+      "status": "PUBLIC_SITE_RPL_HISTORY_PRESENT_API_CATALOG_PENDING",
       "historicalRplCoverage": "UNVERIFIED",
-      "rights": "PRIVATE_TRAINING_RIGHTS_AND_TIMESTAMPS_UNVERIFIED",
-      "temporalPolicy": "QUOTE_ASOF_AND_STAT_PUBLISH_TIME_REQUIRED"
+      "rights": "FREE_METADATA_RESEARCH_ONLY_PRIVATE_ML_TERMS_UNVERIFIED",
+      "temporalPolicy": "QUOTE_ASOF_AND_STAT_PUBLISH_TIME_REQUIRED",
+      "websiteEvidence": "https://sstats.net/t/235/2022",
+      "officialApiEvidence": "https://sstats.net/api",
+      "anonymousLimitPerMinutePerIP": 30,
+      "discoveryScope": "OWNER_ONLY_2_DOCUMENTED_FREE_GETS_NO_KEY",
+      "automatedPrivateModelFitAuthorized": false
     },
     {
       "id": "thesportsdb",
@@ -190,6 +209,26 @@
     "noClaimsOfFullSeasonFieldAbsence": true,
     "noNewModelTrainingApproval": true,
     "noPretendHistoricalAsOf": true,
-    "noBookmakerSuperiorityClaim": true
-  }
+    "noBookmakerSuperiorityClaim": true,
+    "noRealHistoricOddsAssumed": true,
+    "noWeatherReanalysisAsPriorForecast": true,
+    "noCrossProviderClubAliasAutoApproval": true
+  },
+  "sourceDiscoveryActions": [
+    {
+      "id": "sstats_catalog",
+      "status": "IMPLEMENTED_PENDING_OWNER_RUN",
+      "maxGetRequests": 2,
+      "expectedPublicLog": "AGGREGATES_AND_SHA256_ONLY",
+      "seasonProbe": 2022
+    },
+    {
+      "id": "weather_previous_day",
+      "status": "IMPLEMENTED_PENDING_OWNER_RUN",
+      "maxGetRequests": 1,
+      "expectedPublicLog": "AGGREGATES_AND_SHA256_ONLY",
+      "testDate": "2024-08-01",
+      "locationCategory": "SAINT_PETERSBURG_REFERENCE_NOT_VERIFIED_STADIUM"
+    }
+  ]
 }

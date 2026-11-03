@@ -203,6 +203,11 @@ jobs:
           node --check scripts/m2-private-rpl-history-receipt.mjs
           bash -n scripts/m2-private-rpl-history-run.sh
           node --test tests/m2-private-rpl-history.test.mjs tests/m2-private-rpl-history-receipt.test.mjs
+      - name: Verify bounded external RPL enrichment source probes and temporal caveats
+        run: |
+          node --check scripts/m2-sstats-free-source-catalog.mjs
+          node --check scripts/m2-weather-previous-runs-probe.mjs
+          node --test tests/m2-enrichment-source-discovery.test.mjs
       - name: Verify pinned private club identity evidence and zero-cost enrichment plan
         run: node --test tests/m2-rpl-enrichment-plan.test.mjs
       - name: Guard seven-season private RPL team-identity observation
