@@ -1,3 +1,6 @@
+## M2 free Starter 30-round coverage diagnostic — 2026-11-03
+- Recorded real owner-triggered Starter 50/16 partial result (#41628766870) and discovered documented 50-result default page plus paid Developer-only cursor. Added separately explicit, owner-only, zero-cost 30-round filter audit (also dispatchable by strict owner-only issue #182 command `/m2-openfoot-rounds`) to existing workflow with per-response free-tier/scope/duplicate checks, stop-on-error, bounded temporary files, only numeric/SHA output and synthetic negative tests. Neither current-season ingestion nor holdout evaluation approved; no paid cursor used. M2 remains 4/8 OPEN.
+
 ## M2 owner-only free Starter API quality gate — 2026-11-03
 - Added optional exact-confirmation, one-request OpenFoot free Starter diagnostic in existing protected manual source-observation workflow, using only GitHub Actions private secret. Structured 240/16/scope/UTC/attribution checks and paid/public-tier refusal; safe numeric/SHA-only output, no records or secrets. No API request if key absent. Synthetic negative tests; current RPL source, model and sealed 2025/26 still unapproved.
 

@@ -181,8 +181,11 @@ jobs:
         run: node --check scripts/m1-openfootball-score-gate.mjs && node --test tests/m1-openfootball-score-gate.test.mjs
       - name: Verify M2 pinned OpenFootball reference adapter and source isolation
         run: node --check scripts/m2-openfootball-reference.mjs && node --test tests/m2-openfootball-reference.test.mjs
-      - name: Verify M2 independent one-day source observation and owner-only workflow
-        run: node --check scripts/m2-sportscore-observe.mjs && node --test tests/m2-sportscore-observe.test.mjs
+      - name: Verify M2 independent source observations and free RPL round-scope safety
+        run: |
+          node --check scripts/m2-sportscore-observe.mjs
+          node --check scripts/m2-openfoot-round-audit.mjs
+          node --test tests/m2-sportscore-observe.test.mjs tests/m2-openfoot-rpl-diagnostic.test.mjs tests/m2-openfoot-round-audit.test.mjs
       - name: Verify protected automated and manual M1 source import with conservative refresh controls
         run: |
           node --check scripts/m1-revision-report.mjs

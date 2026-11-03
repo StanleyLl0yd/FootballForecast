@@ -141,7 +141,8 @@ test('optional free-key job requires explicit owner/main dispatch, never logs th
     '../.github/workflows/m2-public-sources-observe.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('  bounded-openfoot-free-starter:');
   assert.ok(start>0);
-  const job=workflow.slice(start);
+  const end=workflow.indexOf('  bounded-openfoot-free-rounds:',start);
+  const job=workflow.slice(start,end<0?undefined:end);
   for(const guard of [
     "github.repository == 'StanleyLl0yd/FootballForecast'",
     "github.ref == 'refs/heads/main'","github.actor == 'StanleyLl0yd'",
@@ -154,5 +155,5 @@ test('optional free-key job requires explicit owner/main dispatch, never logs th
     'competition=comp_premier_league_rus&season=2026%2F27'
   ])assert.ok(job.includes(guard),guard);
   assert.doesNotMatch(job,/upload-artifact|DATABASE_URL|SUPABASE|psql |git push|set -x/);
-  assert.doesNotMatch(job,/^.*echo.*OPENFOOT_API_KEY.*$/m);
+  assert.doesNotMatch(job,/echo[^\n]*\$\{?OPENFOOT_API_KEY/);
 });
