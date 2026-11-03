@@ -59,8 +59,12 @@ test('tampered scores, season, identity and access tier fail closed',()=>{
   bad(x=>{x.pages[0].meta.access.plan='developer';});
   bad(x=>{x.pages[0].data[1].id=x.pages[0].data[0].id;});
   bad(x=>{x.pages[0].data[0].homeTeam.id='foreign';});
-  bad(x=>{x.pages[0].data[0].homeGoals=null;});
+  bad(x=>{x.pages[0].data[0]={...x.pages[0].data[0],homeGoals:99};});
   bad(x=>{x.pages[0].data[0].kickoffAt='2026-11-03T00:00:00Z';});
+  const incomplete=seasonData('2023/24');
+  incomplete.pages[0].data[0].homeGoals=null;
+  assert.equal(auditSeasonTeamPages(incomplete.ids,incomplete.pages,'2023/24').coverageState,
+    'PARTIAL_UNAPPROVED');
   assert.throws(()=>discoverSeasonTeams(seasonData('2023/24').seed,'2025/26'),/refused/);
 });
 test('full archive source job is manual, owner-only, bounded and excludes sealed year',()=>{
