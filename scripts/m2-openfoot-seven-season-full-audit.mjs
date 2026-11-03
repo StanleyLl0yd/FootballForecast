@@ -65,7 +65,7 @@ export function auditSeasonTeamPages(ids,pages,season){
     for(const r of p.rows){
       raw++;
       const identity=JSON.stringify([r.id,r.homeTeam.id,r.awayTeam.id,r.status,
-        r.kickoffAt??null,r.homeGoals??null,r.awayGoals??null]);
+        r.kickoffAt??null,r.score?.home??null,r.score?.away??null]);
       const old=matches.get(r.id);
       if(old){
         if(old.identity!==identity||old.visits.has(ids[i]))fail();
@@ -86,8 +86,9 @@ export function auditSeasonTeamPages(ids,pages,season){
       appearances.set(id,(appearances.get(id)??0)+1);
     if(r.status==='finished')finished++;
     if(r.kickoffAt!=null)utc++;
-    if(Number.isSafeInteger(r.homeGoals)&&Number.isSafeInteger(r.awayGoals)&&
-      r.homeGoals>=0&&r.homeGoals<=20&&r.awayGoals>=0&&r.awayGoals<=20)score++;
+    // The actual Starter contract uses nested score.home / score.away.
+    if(Number.isSafeInteger(r.score?.home)&&Number.isSafeInteger(r.score?.away)&&
+      r.score.home>=0&&r.score.home<=20&&r.score.away>=0&&r.score.away<=20)score++;
   }
   const complete=raw===480&&matches.size===240&&confirmed===240&&
     appearances.size===16&&[...appearances.values()].every(n=>n===30)&&

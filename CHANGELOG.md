@@ -1,3 +1,6 @@
+## M2 historical nested final-score schema confirmed — 2026-11-03
+- Owner protected #41652739590 verified 50/50 numeric score pairs under `score.home`/`score.away`, 0 under old top-level keys. Rewired bounded 7-year audit to use the observed nested source contract, including independent consistency of both club views; added regressions rejecting top-level score fabrication and inconsistent nested results. Full 1,680-score re-audit pending, no model, holdout or public data mutation.
+
 ## M2 real 7×240 match cross-confirmation and bounded score-schema diagnosis — 2026-11-03
 - Protected run #41651058492 returned 1,680 distinct RPL historical fixtures (240 in each development year) with 16 clubs per season, validated via both team-filter views; 0/1,680 numeric goal pairs existed at the expected top-level field names. Anchored aggregate-only SHA evidence; added owner-only single-GET historical score-shape probe and synthetic negative tests. No raw provider data, trained model, sealed 2025/26 labels or publication.
 
