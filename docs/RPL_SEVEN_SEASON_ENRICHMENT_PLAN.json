@@ -53,11 +53,12 @@
       "roles": [
         "weatherHistoricalFixedLead24Hours"
       ],
-      "status": "PUBLIC_API_DOCUMENTED_FREE_REFERENCE_SAMPLE_PENDING",
+      "status": "REAL_REFERENCE_2024_24_OF_24_HOURLY_FIXED_LEAD_TEMPERATURE",
       "historicalRplCoverage": "UNVERIFIED_AT_REAL_VENUES_AND_DATES",
       "rights": "CC_BY_4_WITH_ATTRIBUTION_NONCOMMERCIAL_FREE_LIMITS",
       "temporalPolicy": "PREVIOUS_DAY1_FIXED_LEAD_CHECK_ISSUE_TIME_AND_VENUE_BEFORE_MATCH_USE",
-      "observedSampleCoverage": "NOT_YET_EXECUTED"
+      "observedSampleCoverage": "24_24_TEMPERATURE_VALUES_ON_2024_08_01",
+      "discoveryResult": "REFERENCE_ONLY_NO_VENUE_OR_MODEL_RUN_ATTESTATION"
     },
     {
       "id": "open_meteo_reanalysis",
@@ -80,7 +81,7 @@
         "bookmakerOdds",
         "matchEvents"
       ],
-      "status": "PUBLIC_SITE_RPL_HISTORY_PRESENT_API_CATALOG_PENDING",
+      "status": "PUBLIC_OFFICIAL_CATALOG_HTTP_200_UNRECOGNIZED_JSON_ENVELOPE",
       "historicalRplCoverage": "UNVERIFIED",
       "rights": "FREE_METADATA_RESEARCH_ONLY_PRIVATE_ML_TERMS_UNVERIFIED",
       "temporalPolicy": "QUOTE_ASOF_AND_STAT_PUBLISH_TIME_REQUIRED",
@@ -88,7 +89,9 @@
       "officialApiEvidence": "https://sstats.net/api",
       "anonymousLimitPerMinutePerIP": 30,
       "discoveryScope": "OWNER_ONLY_2_DOCUMENTED_FREE_GETS_NO_KEY",
-      "automatedPrivateModelFitAuthorized": false
+      "automatedPrivateModelFitAuthorized": false,
+      "discoveryResult": "INCONCLUSIVE_SCHEMA_RUN_41690706216",
+      "actualApiRplSeasonConfirmed": false
     },
     {
       "id": "thesportsdb",
@@ -217,18 +220,21 @@
   "sourceDiscoveryActions": [
     {
       "id": "sstats_catalog",
-      "status": "IMPLEMENTED_PENDING_OWNER_RUN",
+      "status": "REAL_RUN_INCONCLUSIVE_SCHEMA_DIAGNOSTIC_NEXT",
       "maxGetRequests": 2,
       "expectedPublicLog": "AGGREGATES_AND_SHA256_ONLY",
-      "seasonProbe": 2022
+      "seasonProbe": 2022,
+      "runId": 41690706216
     },
     {
       "id": "weather_previous_day",
-      "status": "IMPLEMENTED_PENDING_OWNER_RUN",
+      "status": "REAL_REFERENCE_SAMPLE_24_OF_24_NOT_MATCH_ELIGIBLE",
       "maxGetRequests": 1,
       "expectedPublicLog": "AGGREGATES_AND_SHA256_ONLY",
       "testDate": "2024-08-01",
-      "locationCategory": "SAINT_PETERSBURG_REFERENCE_NOT_VERIFIED_STADIUM"
+      "locationCategory": "SAINT_PETERSBURG_REFERENCE_NOT_VERIFIED_STADIUM",
+      "runId": 41690713868
     }
-  ]
+  ],
+  "sourceDiscoveryEvidence": "M2_FREE_SOURCE_ENRICHMENT_OBSERVATION_EVIDENCE.json"
 }

@@ -49,6 +49,40 @@ function time(value){
   return typeof value==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(value)&&
     !Number.isNaN(Date.parse(value));
 }
+/** Diagnostics intentionally disclose only structural types/booleans and a digest.
+ * Provider messages, names, record values and keys outside an allowlist stay private.
+ */
+export function describeSstatsCatalogEnvelope(doc,observedAtUtc){
+  if(!time(observedAtUtc))error();
+  const type=x=>Array.isArray(x)?'array':x===null?'null':typeof x;
+  const keys=['data','leagues','items','results','status','count','TotalCount',
+    'message','error','success','response','payload'];
+  const present=Object.fromEntries(keys.map(k=>[k,object(doc)&&
+    Object.prototype.hasOwnProperty.call(doc,k)]));
+  const data=object(doc)?doc.data:undefined;
+  const nestedArrayLengths=object(data)?Object.values(data)
+    .filter(Array.isArray).map(a=>a.length).slice(0,8):[];
+  const statusValue=object(doc)?text(doc.status):'';
+  return Object.freeze({
+    schemaVersion:1,kind:'M2_SSTATS_PUBLIC_CATALOG_ENVELOPE_DIAGNOSTIC',
+    observedAtUtc,
+    rootType:type(doc),
+    rootKeyCount:object(doc)?Object.keys(doc).length:null,
+    recognizedKeyPresence:present,
+    dataType:type(data),
+    nestedArraysCount:object(data)?Object.values(data).filter(Array.isArray).length:0,
+    nestedArrayLengths,
+    statusClass:['ok','success','error','fail','failed'].includes(statusValue)?
+      statusValue:'UNCLASSIFIED',
+    actualProviderMessageLogged:false,
+    sourceIdentifiersLogged:false,
+    metadataOnly:true,
+    leagueSelectionApproved:false,
+    modelTrainingApproved:false,
+    sealedHoldoutRead:false,
+  });
+}
+
 export function examineSstatsCatalog(doc,observedAtUtc){
   if(!time(observedAtUtc))error();
   const rows=records(doc);
@@ -106,7 +140,18 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     const mode=process.argv[2];
     if(mode==='catalog'&&process.argv.length===6){
       const raw=readSafe(process.argv[3]);
-      const x=examineSstatsCatalog(JSON.parse(raw.toString('utf8')),process.argv[4]);
+      const doc=JSON.parse(raw.toString('utf8'));
+      let x;
+      try{
+        x=examineSstatsCatalog(doc,process.argv[4]);
+      }catch{
+        console.log(JSON.stringify({
+          ...describeSstatsCatalogEnvelope(doc,process.argv[4]),
+          catalogSchemaStatus:'INCONCLUSIVE_UNRECOGNIZED_JSON_ENVELOPE',
+          responseSha256:hash(raw),
+        }));
+        process.exit(0);
+      }
       if(x._internalLeagueId!==null){
         writeFileSync(process.argv[5],String(x._internalLeagueId)+'\n',{mode:0o600,flag:'wx'});
       }

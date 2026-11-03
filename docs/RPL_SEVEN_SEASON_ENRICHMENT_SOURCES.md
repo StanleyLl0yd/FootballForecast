@@ -28,6 +28,12 @@ Official source documentation states SStats.net has a free API with statistics, 
 
 **Executable observations:** one protected [workflow](../.github/workflows/m2-enrichment-source-discovery.yml) adds two manual owner-only commands to issue #182: `/m2-sstats-catalog` (at most **two** documented anonymous GETs: league catalog, then one 2022/23 season page only if a **unique** Russian Premier League ID is established from that catalog), and `/m2-weather-previous-day` (one fixed-lead weather hour-series at **reference city coordinates**, not a football venue). Both emit counts and SHA-256 only; they do not retain raw provider data, access 2025/26, approve ML training or attach weather to a match. Failed/ambiguous source responses are **INCONCLUSIVE**, never evidence of absence.
 
+## Actual bounded source runs — 2026-11-03
+
+- [SStats catalog run #41690706216](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41690706216): public documented `GET /Leagues` returned HTTP 200 but did not match our strict league-list parser. Result: `INCONCLUSIVE_SCHEMA`; no match-list request was made, no API league ID was inferred, no data ingested. The follow-up parser now safely records **only whitelisted JSON envelope presence/types, counts and SHA-256**, with no response messages, league names/IDs or matches. A distinct rerun is required before anything can be claimed about actual RPL API coverage.
+- [Open-Meteo fixed-lead run #41690713868](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41690713868): 24 valid hourly `temperature_2m_previous_day1` values on **2024-08-01** (zero missing) for non-stadium reference coordinates in Saint Petersburg, response SHA-256 `b643c506400d8647e9f6b98d391d3a813e78cfd12c25c84f17e5bb4879e0ceb2`. This verifies a free historical lead-time API path, **not** match venue validity, fixed model issuance timestamp or 24-hour lead for the real RPL fixture kickoffs.
+- [Machine-readable aggregate-only evidence](M2_FREE_SOURCE_ENRICHMENT_OBSERVATION_EVIDENCE.json). This is source qualification, not model release.
+
 ## Next concrete evidence steps
 
 1. **SStats.net**: bounded zero-cost documented API metadata read to identify RPL league/season catalog, then first *one or two* historical match summaries with presence-only reporting. No unauthorized scraping, no bulk dump or API-key publication. Verify official terms for private ML training separately.
