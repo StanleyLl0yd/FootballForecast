@@ -185,7 +185,8 @@ jobs:
         run: |
           node --check scripts/m2-sportscore-observe.mjs
           node --check scripts/m2-openfoot-round-audit.mjs
-          node --test tests/m2-sportscore-observe.test.mjs tests/m2-openfoot-rpl-diagnostic.test.mjs tests/m2-openfoot-round-audit.test.mjs
+          node --check scripts/m2-openfoot-team-audit.mjs
+          node --test tests/m2-sportscore-observe.test.mjs tests/m2-openfoot-rpl-diagnostic.test.mjs tests/m2-openfoot-round-audit.test.mjs tests/m2-openfoot-team-audit.test.mjs
       - name: Verify protected automated and manual M1 source import with conservative refresh controls
         run: |
           node --check scripts/m1-revision-report.mjs

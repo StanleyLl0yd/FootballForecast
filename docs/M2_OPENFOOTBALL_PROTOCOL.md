@@ -167,3 +167,33 @@ Even 240 structurally valid directed fixtures across 30 rounds remain
 current freshness, original upstream source licence/attribution and rights
 checks. The 2025/26 sealed holdout is untouched; no train/predict writes;
 M2 remains 4/8 OPEN; M3 remains unauthorized.
+
+### OpenFoot free team-filter fallback (2026-11-03)
+
+[Owner round-scope run #41631229550](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41631229550)
+was explicitly triggered on protected main, but stopped after the first query.
+The legacy preflight reported `INCONCLUSIVE_NOT_FREE_STARTER` for a **combined**
+condition (tier, number of rows, default window or unavailable metadata);
+this is **not evidence that the key became invalid**, because the previous
+authenticated one-page test proved Starter. The updated workflow prints safe
+numeric first-round scope flags and uses the less misleading
+`INCONCLUSIVE_ROUND_ONE_SCOPE_OR_TIER` code.
+
+To distinguish provider coverage from paging, a separate owner-only
+`openfoot_teams=AUDIT_OPENFOOT_TEAMS` dispatch or exact owner-authored
+issue #182 comment `/m2-openfoot-teams` can perform at most **17**
+free Starter requests: one explicit season page, then one documented
+`team` filter per **16** source-derived club IDs. IDs remain inside a
+private temporary runner directory. The validator refuses non-Starter
+tiers, arbitrary club IDs, incorrect team membership, duplicates,
+changed identities between the two club views, non-UTC kickoffs,
+unexpected pagination and ambiguous scope. A full 240-match union
+requires each of 16 clubs to have 30 matches and each match to appear
+in both club views. Output is only numerical status counters and a
+SHA-256 aggregate of response hashes. There is no paid cursor, model
+fit, database write, raw row artifact or holdout access.
+
+This is **pending real execution**, not confirmation of 240 accessible
+matches. Source and upstream licence, attribution, temporal provenance,
+and independently checked current fixture quality still require
+review. M2 stays OPEN 4/8; M3 not authorized.

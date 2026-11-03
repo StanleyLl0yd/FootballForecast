@@ -1,3 +1,6 @@
+## M2 free OpenFoot team-filter coverage research — 2026-11-03
+- Added owner-only free Starter `team`-filtered, max-17-GET RPL 2026/27 diagnostic as fallback after bounded round audit #41631229550 ended with ambiguous first-round preflight. Closed-schema per-team cross-view match identity verification and safe numeric/SHA-only summary; no paid pagination or credential/row artifacts. Corrected misleading first-round error classification and added synthetic security/data-quality tests. No current-season source approval or holdout evaluation. M2 4/8 OPEN.
+
 ## M2 free Starter 30-round coverage diagnostic — 2026-11-03
 - Recorded real owner-triggered Starter 50/16 partial result (#41628766870) and discovered documented 50-result default page plus paid Developer-only cursor. Added separately explicit, owner-only, zero-cost 30-round filter audit (also dispatchable by strict owner-only issue #182 command `/m2-openfoot-rounds`) to existing workflow with per-response free-tier/scope/duplicate checks, stop-on-error, bounded temporary files, only numeric/SHA output and synthetic negative tests. Neither current-season ingestion nor holdout evaluation approved; no paid cursor used. M2 remains 4/8 OPEN.
 
