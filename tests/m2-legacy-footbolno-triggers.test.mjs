@@ -3,7 +3,22 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 
 const root=new URL('../.github/workflows/',import.meta.url);
-const get=name=>readFileSync(new URL(name,root),'utf8');
+const workflows=Object.freeze({
+  'ci.yml':readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8'),
+  'codeql.yml':readFileSync(new URL('../.github/workflows/codeql.yml',import.meta.url),'utf8'),
+  'm0-footbolno-csv-research.yml':readFileSync(new URL('../.github/workflows/m0-footbolno-csv-research.yml',import.meta.url),'utf8'),
+  'm0-footbolno-metadata.yml':readFileSync(new URL('../.github/workflows/m0-footbolno-metadata.yml',import.meta.url),'utf8'),
+  'm0-live-rest-denials.yml':readFileSync(new URL('../.github/workflows/m0-live-rest-denials.yml',import.meta.url),'utf8'),
+  'm0-sportscore-day-research.yml':readFileSync(new URL('../.github/workflows/m0-sportscore-day-research.yml',import.meta.url),'utf8'),
+  'm0-sportscore-filtered-rpl-research.yml':readFileSync(new URL('../.github/workflows/m0-sportscore-filtered-rpl-research.yml',import.meta.url),'utf8'),
+  'm1-footbolno-dataset.yml':readFileSync(new URL('../.github/workflows/m1-footbolno-dataset.yml',import.meta.url),'utf8'),
+  'm1-private-stage-import.yml':readFileSync(new URL('../.github/workflows/m1-private-stage-import.yml',import.meta.url),'utf8'),
+  'm2-manual-research-lock.yml':readFileSync(new URL('../.github/workflows/m2-manual-research-lock.yml',import.meta.url),'utf8'),
+  'm2-openfootball-train-only.yml':readFileSync(new URL('../.github/workflows/m2-openfootball-train-only.yml',import.meta.url),'utf8'),
+  'm2-public-sources-observe.yml':readFileSync(new URL('../.github/workflows/m2-public-sources-observe.yml',import.meta.url),'utf8'),
+  'security.yml':readFileSync(new URL('../.github/workflows/security.yml',import.meta.url),'utf8'),
+});
+const get=name=>workflows[name];
 const legacy=[
   'm0-footbolno-csv-research.yml',
   'm0-footbolno-metadata.yml',
@@ -38,8 +53,9 @@ test('push-triggered M1 unit tests are isolated from optional manual-only publis
 });
 
 test('any workflow with an automatic Footbolno URL requires an explicit network-job gate',()=>{
-  const workflows=readdirSync(root).filter(name=>name.endsWith('.yml'));
-  for(const name of workflows){
+  assert.deepEqual(readdirSync(root).filter(name=>name.endsWith('.yml')).sort(),
+    Object.keys(workflows).sort(), 'new workflows must be explicitly reviewed');
+  for(const name of Object.keys(workflows)){
     const source=get(name);
     const accessesSource=source.includes('https://footbolno.ru/')||
       source.includes('footbolno.csv')||
