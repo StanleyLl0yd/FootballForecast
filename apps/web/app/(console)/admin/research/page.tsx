@@ -3,7 +3,7 @@ import {PageHeading} from '@/components/empty-state';
 import {M2CandidateReplay} from '@/components/m2-candidate-replay';
 import {ResearchLockViewer} from '@/components/research-lock-viewer';
 import {M2AnchorRequestViewer} from '@/components/m2-anchor-request-viewer';
-import {readM2TrainOnlyRun,readM2PublicSourcesRun} from '@/lib/m2-run-status';
+import {readM2TrainOnlyRun,readM2PublicSourcesRun,readM2OpenFootballTrainRun} from '@/lib/m2-run-status';
 import {summarizeM2OwnerEvidence} from '@/lib/m2-owner-research.mjs';
 import recordedEvidence from '../../../../../../docs/M2_STORED_TRAIN_REPLAY_EVIDENCE.json';
 
@@ -13,8 +13,8 @@ export default async function Page(){
   // Authorize before inspecting any further state; redirect is fail-closed.
   await requireOwner();
   const evidence=summarizeM2OwnerEvidence(recordedEvidence);
-  const [latest,publicSources]=await Promise.all([
-    readM2TrainOnlyRun(),readM2PublicSourcesRun()
+  const [latest,publicSources,openFootball]=await Promise.all([
+    readM2TrainOnlyRun(),readM2PublicSourcesRun(),readM2OpenFootballTrainRun()
   ]);
   return <>
     <PageHeading eyebrow="OWNER · M2" title="Контроль исследования"
@@ -22,11 +22,11 @@ export default async function Page(){
     <div className="stat-grid">
       <div className="stat"><span>Общий этап M2</span><strong>4/8</strong>
         <small>4 критерия не приняты. M3 запрещён.</small></div>
-      <div className="stat"><span>Временные train-only запуски</span>
+      <div className="stat"><span>Архивные train-only запуски v1</span>
         <strong>{evidence.state==='recorded'?'2/2':'—'}</strong>
         <small>Записанное наблюдение, не утверждённая модель</small></div>
-      <div className="stat"><span>Сверка точного CSV</span><strong>0/1</strong>
-        <small>Источник недоступен; 240/240 повторно не сверены</small></div>
+      <div className="stat"><span>Старый протокол Footbolno v1</span><strong>архив</strong>
+        <small>Не блокирует новый независимый путь OpenFootball.</small></div>
       <div className="stat"><span>Оценка holdout</span><strong>0</strong>
         <small>Контрольный сезон 2025/26 закрыт</small></div>
     </div>
@@ -39,12 +39,14 @@ export default async function Page(){
           <tr><th scope="row">Воспроизводимость train-only</th>
             <td>{evidence.state==='recorded'?'Два запуска записаны':'Не удалось проверить evidence'}</td>
             <td>Сопоставление исходных job logs и SHA; без статуса утверждённой модели</td></tr>
-          <tr><th scope="row">Независимая сверка источника</th><td>Блокировано</td>
-            <td>Точный Footbolno CSV SHA и независимые 240/240 матчей</td></tr>
+          <tr><th scope="row">Новый источник обучения</th><td>OpenFootball CC0</td>
+            <td>Закреплённый Git blob 2024/25: 240 матчей, 16 клубов. Новый протокол календарных дат; training-only не означает одобрение модели.</td></tr>
+          <tr><th scope="row">Текущие матчи и holdout</th><td>Источник не утверждён</td>
+            <td>Нужны отдельно лицензированный источник результатов 2025/26 и доказуемо актуальный источник 2026/27. Подмена старого holdout запрещена.</td></tr>
           <tr><th scope="row">Неизменяемый pre-holdout lock</th><td>Не создан</td>
             <td>Подписанный процессом защищённый Git-якорь с SHA кода, источника, обучающей выборки и модели</td></tr>
           <tr><th scope="row">Однократная ретроспективная оценка</th><td>Запрещена до lock</td>
-            <td>Только заранее зафиксированный Poisson v1; без настройки параметров и подбора на holdout</td></tr>
+            <td>Только защищённый, заранее фиксированный новый study lock и одна согласованная оценка; ни v1, ни новый train-only job не дают разрешения.</td></tr>
         </tbody>
       </table></div>
       <p className="source-lab-warning">Нельзя трактовать успешный GitHub Actions как approval модели. Историческая as-of доступность не подтверждена;
@@ -80,6 +82,20 @@ export default async function Page(){
         <p><a className="sources-method"
           href="https://github.com/StanleyLl0yd/FootballForecast/issues/182"
           target="_blank" rel="noopener noreferrer">Условия приёмки #182 ↗</a></p>
+        <h3>Новый OpenFootball-only train-only</h3>
+        {openFootball.state==='run'?<p>Исследовательский запуск:
+          {' '}<strong>{openFootball.status}</strong>
+          {openFootball.conclusion?` · ${openFootball.conclusion}`:''}.
+          {' '}<a href={openFootball.url} target="_blank" rel="noopener noreferrer">
+            #{openFootball.id} ↗</a>. Git SHA: <code>{openFootball.sha}</code>.</p>:
+          <p>{openFootball.state==='no_runs'?'Новый учебный запуск ещё не производился.':
+            'Метаданные новой исследовательской задачи недоступны.'}</p>}
+        <p><a className="sources-method"
+          href="https://github.com/StanleyLl0yd/FootballForecast/actions/workflows/m2-openfootball-train-only.yml"
+          target="_blank" rel="noopener noreferrer">OpenFootball train-only · CC0 ↗</a></p>
+        <p className="source-lab-note">Новый протокол «m2-openfootball-calendar-v1» не зависит от Footbolno,
+          не получает доступ к БД или 2025/26 и не публикует модель. Успех задания — лишь
+          воспроизводимый обучающий кандидат; текущие матчи, holdout и публикация заблокированы.</p>
         <h3>Независимые публичные источники</h3>
         {publicSources.state==='run'?<p>Последний диагностический запуск:
           {' '}<strong>{publicSources.status}</strong>

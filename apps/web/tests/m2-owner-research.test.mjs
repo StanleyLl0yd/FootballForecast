@@ -40,6 +40,8 @@ test('owner research route is dynamic, gated before reading and contains no muta
   assert.ok(auth>=0&&auth<route.indexOf('summarizeM2OwnerEvidence('));
   assert.ok(auth<route.indexOf('readM2TrainOnlyRun()'));
   assert.ok(auth<route.indexOf('readM2PublicSourcesRun()'));
+  assert.ok(auth<route.indexOf('readM2OpenFootballTrainRun()'));
+  assert.match(route,/m2-openfootball-train-only\.yml/);
   assert.match(route,/m2-public-sources-observe\.yml/);
   assert.match(route,/но не доступность/);
   assert.match(route,/M2CandidateReplay/);

@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 OpenFootball-first train-only source migration — 2026-11-03
+
+- Owner-directed no-Footbolno path: preregistered separate pinned CC0 OpenFootball 2024/25 calendar-only research protocol, isolated normalized 240/16 dataset, deterministic Poisson train-only candidate with source/input/model SHA metadata and synthetic negative tests. No fabricated UTC kickoff, holdout access, saved model or public forecast. Manual no-secret owner workflow only; disabled legacy scheduled/push Footbolno imports without deleting historical snapshots. Owner research console displays new workflow metadata and blocker states, README/ROADMAP/AGENTS updated. M2 still 4/8, M3 forbidden.
+
 ## M2 owner research console: public-source workflow status — 2026-11-03
 
 - Extended the existing owner-authenticated read-only M2 console with separately allowlisted GitHub status for the manual OpenFootball/SportScore diagnostics. Shared bounded metadata validation; no tokens or private rows; a successful workflow never implies verified provider data or model approval. Synthetic negative tests preserve denied access and the 4/8 M2 boundary.
