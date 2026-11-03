@@ -1,3 +1,6 @@
+## M2 real 7×240 match cross-confirmation and bounded score-schema diagnosis — 2026-11-03
+- Protected run #41651058492 returned 1,680 distinct RPL historical fixtures (240 in each development year) with 16 clubs per season, validated via both team-filter views; 0/1,680 numeric goal pairs existed at the expected top-level field names. Anchored aggregate-only SHA evidence; added owner-only single-GET historical score-shape probe and synthetic negative tests. No raw provider data, trained model, sealed 2025/26 labels or publication.
+
 ## M2 2019/20 pandemic date-boundary research fix — 2026-11-03
 - Protected full-history observation #41650108616 stopped on historical season index 2 (2019/20) with a fail-closed schema result. Verified the delayed 2019/20 RPL campaign ended 22 July 2020. Added a narrowly scoped through-July-2020 allowed cutoff and synthetic refusal tests; no 2025/26 access, model fitting or source-row publication. Re-run required; no complete seven-season coverage inferred.
 

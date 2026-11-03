@@ -59,7 +59,10 @@
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
       "trained": false,
-      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
+      "openfootFullFixtureStructureVerified": true,
+      "openfootCrossConfirmedMatches": 240,
+      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
     },
     {
       "season": "2019/20",
@@ -74,7 +77,10 @@
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
       "trained": false,
-      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
+      "openfootFullFixtureStructureVerified": true,
+      "openfootCrossConfirmedMatches": 240,
+      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
     },
     {
       "season": "2020/21",
@@ -89,7 +95,10 @@
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
       "trained": false,
-      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
+      "openfootFullFixtureStructureVerified": true,
+      "openfootCrossConfirmedMatches": 240,
+      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
     },
     {
       "season": "2021/22",
@@ -104,7 +113,10 @@
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
       "trained": false,
-      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
+      "openfootFullFixtureStructureVerified": true,
+      "openfootCrossConfirmedMatches": 240,
+      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
     },
     {
       "season": "2022/23",
@@ -119,7 +131,10 @@
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
       "trained": false,
-      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
+      "openfootFullFixtureStructureVerified": true,
+      "openfootCrossConfirmedMatches": 240,
+      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
     },
     {
       "season": "2023/24",
@@ -134,7 +149,10 @@
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
       "trained": false,
-      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
+      "openfootFullFixtureStructureVerified": true,
+      "openfootCrossConfirmedMatches": 240,
+      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
     },
     {
       "season": "2024/25",
@@ -149,7 +167,10 @@
       "weatherAsOf": "UNVERIFIED",
       "xg": "UNVERIFIED",
       "trained": false,
-      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE"
+      "openfootFirstPageStatus": "PAGINATION_RESTRICTED_SAMPLE",
+      "openfootFullFixtureStructureVerified": true,
+      "openfootCrossConfirmedMatches": 240,
+      "openfootScoreSchema": "UNKNOWN_UNVERIFIED"
     }
   ],
   "separateExistingM2": {
@@ -172,5 +193,16 @@
     "matchedSeasons": 7,
     "firstPageBound": 50,
     "eachSeasonFullCoverageVerified": false
+  },
+  "sevenSeasonFullStructuralEvidence": {
+    "runId": 41651058492,
+    "observedAtUtc": "2026-11-03T14:10:29Z",
+    "crossConfirmedMatches": 1680,
+    "uniqueMatches": 1680,
+    "seasonCount": 7,
+    "perSeason": 240,
+    "finalScoresExpectedFieldPairVerified": 0,
+    "actualScoreSchema": "UNVERIFIED",
+    "sourceResponsesSha256": "4e7537ebad9550d5282449f3d652eb538ab08f085ff9cb9d0a0bb81a6dad1dbf"
   }
 }

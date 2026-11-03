@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_RPL_SEVEN_SEASON_FULL_STRUCTURE_RESEARCH",
+  "runId": 41651058492,
+  "observedAtUtc": "2026-11-03T14:10:29Z",
+  "source": "OpenFoot Starter",
+  "executedMainSha": "d1949fe3f5f9fd80e0824aab43f670309dac60eb",
+  "requests": 119,
+  "teamFilteredRequests": 112,
+  "seedRequests": 7,
+  "seasons": [
+    {
+      "season": "2018/19",
+      "uniqueMatchesObserved": 240,
+      "crossConfirmedMatches": 240,
+      "clubs": 16,
+      "finishedStatus": 240,
+      "utcKickoffs": 240,
+      "goalPairAtExpectedTopLevel": 0,
+      "paginationRestrictedPages": 0,
+      "sourceMetadataPages": 16,
+      "coverageState": "PARTIAL_UNAPPROVED"
+    },
+    {
+      "season": "2019/20",
+      "uniqueMatchesObserved": 240,
+      "crossConfirmedMatches": 240,
+      "clubs": 16,
+      "finishedStatus": 240,
+      "utcKickoffs": 240,
+      "goalPairAtExpectedTopLevel": 0,
+      "paginationRestrictedPages": 0,
+      "sourceMetadataPages": 16,
+      "coverageState": "PARTIAL_UNAPPROVED"
+    },
+    {
+      "season": "2020/21",
+      "uniqueMatchesObserved": 240,
+      "crossConfirmedMatches": 240,
+      "clubs": 16,
+      "finishedStatus": 240,
+      "utcKickoffs": 240,
+      "goalPairAtExpectedTopLevel": 0,
+      "paginationRestrictedPages": 0,
+      "sourceMetadataPages": 16,
+      "coverageState": "PARTIAL_UNAPPROVED"
+    },
+    {
+      "season": "2021/22",
+      "uniqueMatchesObserved": 240,
+      "crossConfirmedMatches": 240,
+      "clubs": 16,
+      "finishedStatus": 240,
+      "utcKickoffs": 240,
+      "goalPairAtExpectedTopLevel": 0,
+      "paginationRestrictedPages": 0,
+      "sourceMetadataPages": 16,
+      "coverageState": "PARTIAL_UNAPPROVED"
+    },
+    {
+      "season": "2022/23",
+      "uniqueMatchesObserved": 240,
+      "crossConfirmedMatches": 240,
+      "clubs": 16,
+      "finishedStatus": 240,
+      "utcKickoffs": 240,
+      "goalPairAtExpectedTopLevel": 0,
+      "paginationRestrictedPages": 0,
+      "sourceMetadataPages": 16,
+      "coverageState": "PARTIAL_UNAPPROVED"
+    },
+    {
+      "season": "2023/24",
+      "uniqueMatchesObserved": 240,
+      "crossConfirmedMatches": 240,
+      "clubs": 16,
+      "finishedStatus": 240,
+      "utcKickoffs": 240,
+      "goalPairAtExpectedTopLevel": 0,
+      "paginationRestrictedPages": 0,
+      "sourceMetadataPages": 16,
+      "coverageState": "PARTIAL_UNAPPROVED"
+    },
+    {
+      "season": "2024/25",
+      "uniqueMatchesObserved": 240,
+      "crossConfirmedMatches": 240,
+      "clubs": 16,
+      "finishedStatus": 240,
+      "utcKickoffs": 240,
+      "goalPairAtExpectedTopLevel": 0,
+      "paginationRestrictedPages": 0,
+      "sourceMetadataPages": 16,
+      "coverageState": "PARTIAL_UNAPPROVED"
+    }
+  ],
+  "totals": {
+    "uniqueMatches": 1680,
+    "crossConfirmedMatches": 1680,
+    "topLevelValidatedFinalScores": 0
+  },
+  "sourceResponsesSha256": "4e7537ebad9550d5282449f3d652eb538ab08f085ff9cb9d0a0bb81a6dad1dbf",
+  "completeFixtureStructureVerified": true,
+  "finalScoreFieldSchemaVerified": false,
+  "strictHistoricalPrematchVerified": false,
+  "holdoutRead": false,
+  "trainableDatasetQualified": false,
+  "providerRowsLogged": 0,
+  "providerRowsPersisted": false
+}
