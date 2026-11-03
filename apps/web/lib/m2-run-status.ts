@@ -1,6 +1,6 @@
 import {readResponseTextBounded} from './limited-response.mjs';
 
-const githubRunsURL='https://api.github.com/repos/StanleyLl0yd/FootballForecast/actions/workflows/m2-manual-research-lock.yml/runs?branch=main&per_page=10';
+const githubWorkflowBase='https://api.github.com/repos/StanleyLl0yd/FootballForecast/actions/workflows/';
 const validStatuses=new Set(['queued','in_progress','completed','waiting','requested','pending']);
 const validConclusions=new Set(['success','failure','cancelled','timed_out','neutral','action_required','skipped','stale']);
 const shaPattern=/^[a-f0-9]{40}$/;
@@ -10,9 +10,11 @@ export type M2RunStatus=
   | {state:'run'; id:number; url:string; status:string; conclusion:string|null; sha:string};
 
 /** Server-only read-only public GitHub status. No token, no workflow dispatch. */
-export async function readM2TrainOnlyRun(
-  fetchImpl:typeof fetch=fetch
+async function readM2Run(
+  workflowFile:'m2-manual-research-lock.yml'|'m2-public-sources-observe.yml',
+  fetchImpl:typeof fetch
 ):Promise<M2RunStatus>{
+  const githubRunsURL=`${githubWorkflowBase}${workflowFile}/runs?branch=main&per_page=10`;
   try{
     const response=await fetchImpl(githubRunsURL,{
       method:'GET',
@@ -59,4 +61,13 @@ export async function readM2TrainOnlyRun(
   }catch{
     return {state:'unavailable'};
   }
+}
+
+/** Run metadata is not proof that source contents passed quality checks. */
+export function readM2TrainOnlyRun(fetchImpl:typeof fetch=fetch):Promise<M2RunStatus>{
+  return readM2Run('m2-manual-research-lock.yml',fetchImpl);
+}
+
+export function readM2PublicSourcesRun(fetchImpl:typeof fetch=fetch):Promise<M2RunStatus>{
+  return readM2Run('m2-public-sources-observe.yml',fetchImpl);
 }

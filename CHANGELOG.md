@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 owner research console: public-source workflow status — 2026-11-03
+
+- Extended the existing owner-authenticated read-only M2 console with separately allowlisted GitHub status for the manual OpenFootball/SportScore diagnostics. Shared bounded metadata validation; no tokens or private rows; a successful workflow never implies verified provider data or model approval. Synthetic negative tests preserve denied access and the 4/8 M2 boundary.
+
 ## M2 owner-only independent public-source observation — 2026-11-03
 
 - Added a guarded manual GitHub Actions proof of pinned OpenFootball reference and a separate single-current-UTC-day SportScore API observation. Strict owner trigger, zero secrets, bounded read-only HTTP and temporary files, numeric-only reports and required SportScore attribution; missing provider data returns INCONCLUSIVE. No Footbolno dependency, production ingestion/forecast/model writes, sealed holdout access, or change to the frozen source model lock. M2 remains 4/8 OPEN.

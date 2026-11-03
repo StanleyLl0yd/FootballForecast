@@ -3,7 +3,7 @@ import {PageHeading} from '@/components/empty-state';
 import {M2CandidateReplay} from '@/components/m2-candidate-replay';
 import {ResearchLockViewer} from '@/components/research-lock-viewer';
 import {M2AnchorRequestViewer} from '@/components/m2-anchor-request-viewer';
-import {readM2TrainOnlyRun} from '@/lib/m2-run-status';
+import {readM2TrainOnlyRun,readM2PublicSourcesRun} from '@/lib/m2-run-status';
 import {summarizeM2OwnerEvidence} from '@/lib/m2-owner-research.mjs';
 import recordedEvidence from '../../../../../../docs/M2_STORED_TRAIN_REPLAY_EVIDENCE.json';
 
@@ -13,7 +13,9 @@ export default async function Page(){
   // Authorize before inspecting any further state; redirect is fail-closed.
   await requireOwner();
   const evidence=summarizeM2OwnerEvidence(recordedEvidence);
-  const latest=await readM2TrainOnlyRun();
+  const [latest,publicSources]=await Promise.all([
+    readM2TrainOnlyRun(),readM2PublicSourcesRun()
+  ]);
   return <>
     <PageHeading eyebrow="OWNER · M2" title="Контроль исследования"
       subtitle="Защищённый, только для чтения: наблюдения, недостающие доказательства и запреты до допуска к holdout."/>
@@ -78,6 +80,20 @@ export default async function Page(){
         <p><a className="sources-method"
           href="https://github.com/StanleyLl0yd/FootballForecast/issues/182"
           target="_blank" rel="noopener noreferrer">Условия приёмки #182 ↗</a></p>
+        <h3>Независимые публичные источники</h3>
+        {publicSources.state==='run'?<p>Последний диагностический запуск:
+          {' '}<strong>{publicSources.status}</strong>
+          {publicSources.conclusion?` · ${publicSources.conclusion}`:''}.
+          {' '}<a href={publicSources.url} target="_blank" rel="noopener noreferrer">
+            #{publicSources.id} ↗</a>. Git SHA: <code>{publicSources.sha}</code>.</p>:
+          <p>{publicSources.state==='no_runs'?'Диагностических запусков нет.':
+            'Метаданные диагностического workflow недоступны.'}</p>}
+        <p><a className="sources-method"
+          href="https://github.com/StanleyLl0yd/FootballForecast/actions/workflows/m2-public-sources-observe.yml"
+          target="_blank" rel="noopener noreferrer">Проверить OpenFootball / SportScore ↗</a></p>
+        <p className="source-lab-note">Успех workflow подтверждает выполнение заданий, но не доступность,
+          полноту или достоверность данных обоих источников. Реальные ответы проверяются отдельно в summary.
+          Ни одна диагностика не утверждает model lock и не открывает holdout.</p>
         <p className="source-lab-note">Здесь нет управляющих кнопок, API записи, экспорта приватных строк
           или операций с Supabase.</p>
       </section>
