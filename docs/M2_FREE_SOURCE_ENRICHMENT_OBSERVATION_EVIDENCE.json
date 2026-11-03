@@ -16,7 +16,18 @@
     "privateDataPersisted": false,
     "followupOwnerRunId": 41695180516,
     "followupState": "INCONCLUSIVE_SCHEMA_NO_SAFE_FORMAT_RECEIPT",
-    "followupGamesFetched": false
+    "followupGamesFetched": false,
+    "formatDiagnosticRunId": 41697495298,
+    "formatDiagnosticState": "INVALID_JSON_WITH_CAPTURE_AT_1500000_BYTE_LIMIT",
+    "capturedPayloadClass": "JSON_PREFIX_INVALID",
+    "capturedResponseBytes": 1500000,
+    "configuredMaximumResponseBytes": 1500000,
+    "capturedBytesSha256": "f7cedf5253ebc50f2c5d7f626cfc4c0517ec882a86a69aba5af0e976a0947d85",
+    "capturedBytesAreCompleteResponseVerified": false,
+    "curlTransferExitStatusRecorded": false,
+    "probableSizeLimitTruncation": true,
+    "fullSourceResponseDigestVerified": false,
+    "historicalGamesRequestedAfterDiagnostic": false
   },
   "weather": {
     "provider": "Open-Meteo Previous Runs",

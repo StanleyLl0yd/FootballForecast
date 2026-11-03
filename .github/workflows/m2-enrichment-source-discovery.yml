@@ -54,12 +54,15 @@ jobs:
           work="$(mktemp -d)"
           trap 'rm -rf "$work"' EXIT
           observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+          if ! status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
             --connect-timeout 8 --max-time 25 --max-filesize 1500000 \
             -H 'Accept: application/json' \
             -H 'User-Agent: FootballForecast-M2-Source-Research/1.0' \
             --output "$work/leagues.json" --write-out '%{http_code}' \
-            'https://api.sstats.net/Leagues' 2>/dev/null || true)"
+            'https://api.sstats.net/Leagues' 2>/dev/null)"; then
+            echo 'M2_SSTATS_CATALOG=INCONCLUSIVE_TRANSFER'
+            exit 0
+          fi
           if [[ "$status" != 200 || ! -s "$work/leagues.json" ]]; then
             echo "M2_SSTATS_CATALOG=INCONCLUSIVE_HTTP"
             exit 0
@@ -77,13 +80,16 @@ jobs:
           IFS= read -r league_id < "$work/id.txt"
           [[ "$league_id" =~ ^[0-9]{1,8}$ ]]
           sleep 2.5 # Anonymous source documented limit: 30/min per IP.
-          status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+          if ! status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
             --connect-timeout 8 --max-time 25 --max-filesize 1500000 \
             -H 'Accept: application/json' \
             -H 'User-Agent: FootballForecast-M2-Source-Research/1.0' \
             --output "$work/games.json" --write-out '%{http_code}' \
             "https://api.sstats.net/Games/list?LeagueId=$league_id&Year=2022" \
-            2>/dev/null || true)"
+            2>/dev/null)"; then
+            echo 'M2_SSTATS_GAMES=INCONCLUSIVE_TRANSFER'
+            exit 0
+          fi
           if [[ "$status" != 200 || ! -s "$work/games.json" ]]; then
             echo 'M2_SSTATS_GAMES=INCONCLUSIVE_HTTP'
             exit 0
@@ -136,13 +142,16 @@ jobs:
           work="$(mktemp -d)"
           trap 'rm -rf "$work"' EXIT
           observed="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+          if ! status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
             --connect-timeout 8 --max-time 25 --max-filesize 50000 \
             -H 'Accept: application/json' \
             -H 'User-Agent: FootballForecast-M2-Source-Research/1.0' \
             --output "$work/weather.json" --write-out '%{http_code}' \
             'https://previous-runs-api.open-meteo.com/v1/forecast?latitude=59.93&longitude=30.31&start_date=2024-08-01&end_date=2024-08-01&hourly=temperature_2m_previous_day1&models=gfs_global&timezone=GMT' \
-            2>/dev/null || true)"
+            2>/dev/null)"; then
+            echo 'M2_WEATHER_PREVIOUS_DAY=INCONCLUSIVE_TRANSFER'
+            exit 0
+          fi
           if [[ "$status" != 200 || ! -s "$work/weather.json" ]]; then
             echo 'M2_WEATHER_PREVIOUS_DAY=INCONCLUSIVE_HTTP'
             exit 0
@@ -199,13 +208,17 @@ jobs:
           for year in 2018 2019 2020 2021 2022 2023 2024; do
             n=$((n+1))
             file="$work/$(printf '%02d' "$n").json"
-            status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
+            if ! status="$(curl --silent --show-error --fail --proto '=https' --max-redirs 0 \
               --connect-timeout 8 --max-time 20 --max-filesize 60000 \
               -H 'Accept: application/json' \
               -H 'User-Agent: FootballForecast-M2-Source-Research/1.0' \
               --output "$file" --write-out '%{http_code}' \
               "https://previous-runs-api.open-meteo.com/v1/forecast?latitude=59.93&longitude=30.31&start_date=$year-08-01&end_date=$year-08-01&hourly=temperature_2m_previous_day1&models=jma_gsm&timezone=GMT" \
-              2>/dev/null || true)"
+              2>/dev/null)"; then
+              rm -f "$file"
+              sleep 1.2
+              continue
+            fi
             if [[ "$status" != 200 || ! -s "$file" ]]; then
               rm -f "$file"
             fi

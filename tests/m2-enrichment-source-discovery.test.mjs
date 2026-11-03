@@ -110,6 +110,20 @@ test('reject shifted time, missing lead and falsified location/timezone',()=>{
     assert.throws(()=>inspectPreviousDayWeather(w,OBSERVED),/INCONCLUSIVE/);
   }
 });
+test('all four bounded external requests fail closed on curl transport/size-limit errors',()=>{
+  const yaml=readFileSync(new URL('../.github/workflows/m2-enrichment-source-discovery.yml',
+    import.meta.url),'utf8');
+  assert.equal((yaml.match(/if ! status="\$\(curl/g)||[]).length,4);
+  assert.doesNotMatch(yaml,/2>\/dev\/null \|\| true/);
+  for(const state of [
+    'M2_SSTATS_CATALOG=INCONCLUSIVE_TRANSFER',
+    'M2_SSTATS_GAMES=INCONCLUSIVE_TRANSFER',
+    'M2_WEATHER_PREVIOUS_DAY=INCONCLUSIVE_TRANSFER',
+    'rm -f "$file"',
+  ])assert.ok(yaml.includes(state),state);
+  assert.match(yaml,/--max-filesize 1500000/);
+  assert.match(yaml,/--max-filesize 60000/);
+});
 test('manual discovery workflow is owner-only, exactly bounded, no holdout or upload',()=>{
   const yaml=readFileSync(new URL(
     '../.github/workflows/m2-enrichment-source-discovery.yml',import.meta.url),'utf8');
