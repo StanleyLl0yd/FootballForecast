@@ -48,7 +48,7 @@ test('explicitly unavailable catalog status is INCONCLUSIVE even with past fixtu
   assert.equal(report.researchInterpretation,'SOURCE_CATALOG_INCONSISTENT_WITH_OBSERVED_FIXTURES');
   assert.equal(report.productionIngestionApproved,false);
 });
-test('catalog probe requires exact owner issue command or manual input; no secrets or data',()=>{
+test('catalog probe requires owner issue command and private Starter key without leaking data',()=>{
   const workflow=readFileSync(new URL(
     '../.github/workflows/m2-public-sources-observe.yml',import.meta.url),'utf8');
   const marker='  bounded-openfoot-source-catalog:';
@@ -66,8 +66,11 @@ test('catalog probe requires exact owner issue command or manual input; no secre
     "https://openfootapi.com/v1/competitions",
     "scripts/m2-openfoot-rpl-catalog.mjs",
     "--max-redirs 0","persist-credentials: false",
-    "M2_OPENFOOT_CATALOG_OBSERVATION=INCONCLUSIVE_HTTP"
+    "M2_OPENFOOT_CATALOG_OBSERVATION=INCONCLUSIVE_HTTP_",
+    "INCONCLUSIVE_NO_FREE_KEY","INCONCLUSIVE_KEY_FORMAT",
+    "OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}"
   ])assert.ok(job.includes(expected),expected);
-  assert.doesNotMatch(job,/secrets\.|OPENFOOT_API_KEY|--location|curl -L|upload-artifact|DATABASE_URL|set -x|git push|psql /);
+  assert.doesNotMatch(job,/--location|curl -L|upload-artifact|DATABASE_URL|set -x|git push|psql /);
+  assert.doesNotMatch(job,/echo[^\n]*\$\{?OPENFOOT_API_KEY/);
   assert.doesNotMatch(workflow,/^  (?:push|schedule|workflow_run):/m);
 });

@@ -509,7 +509,7 @@ qualified state is `STRUCTURALLY_COMPLETE_UNAPPROVED`; the source is
 the sealed 2025/26 holdout.
 
 The existing source-observation workflow now offers an independent bounded,
-owner-only public `GET /v1/competitions` probe, triggered by
+owner-only **authenticated free Starter** `GET /v1/competitions` probe, triggered by
 `openfoot_catalog=AUDIT_OPENFOOT_CATALOG` or exact owner-authored issue
 #182 comment `/m2-openfoot-catalog`. It logs only the Russian league's
 closed-schema source name, claimed licence, HTTPS attribution URL, current
@@ -519,3 +519,5 @@ metadata returns `INCONCLUSIVE`. A catalog attribution/rights claim
 must still be checked against upstream terms before any public reuse,
 and the independent actual-score/kickoff/freshness audit remains pending.
 M2 **4/8 OPEN**, M3 not authorized.
+
+Observed first catalog research [#41634009571](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41634009571) returned `INCONCLUSIVE_HTTP` without a key, **not** an upstream-rights decision. The manual owner-only catalog probe now uses the existing protected free Starter credential, no paid plan and no raw match retention; the authenticated result is not asserted until a real run succeeds.
