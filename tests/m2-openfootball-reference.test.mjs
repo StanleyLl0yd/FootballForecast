@@ -9,12 +9,21 @@ import {
 const teams=Array.from({length:16},(_,i)=>'Synthetic Club '+String(i).padStart(2,'0'));
 const line=(home,away)=>'    14:00  '+home.padEnd(25)+'v '+away.padEnd(25)+'1-0 (0-0)';
 function source(){
-  const pairs=teams.flatMap(home=>teams.filter(away=>away!==home)
-    .map(away=>line(home,away)));
+  const firstHalf=[];
+  const rotating=teams.slice(1);
+  for(let i=0;i<15;i++){
+    const round=[teams[0],...rotating];
+    firstHalf.push(Array.from({length:8},(_,j)=>[round[j],round[15-j]]));
+    rotating.unshift(rotating.pop());
+  }
+  const fixtures=[
+    ...firstHalf,
+    ...firstHalf.map(round=>round.map(([home,away])=>[away,home]))
+  ];
   const records=['= Russia Premier League 2024/25','# Teams 16','# Matches 240'];
   for(let i=0;i<30;i++)records.push(
     '▪ Matchday '+(i+1),'  Sat Jul 20 2024',
-    ...pairs.slice(i*8,i*8+8)
+    ...fixtures[i].map(([home,away])=>line(home,away))
   );
   return records.join('\n')+'\n';
 }
