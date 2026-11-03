@@ -1,5 +1,9 @@
 # Changelog
 
+## M2 owner-only independent public-source observation — 2026-11-03
+
+- Added a guarded manual GitHub Actions proof of pinned OpenFootball reference and a separate single-current-UTC-day SportScore API observation. Strict owner trigger, zero secrets, bounded read-only HTTP and temporary files, numeric-only reports and required SportScore attribution; missing provider data returns INCONCLUSIVE. No Footbolno dependency, production ingestion/forecast/model writes, sealed holdout access, or change to the frozen source model lock. M2 remains 4/8 OPEN.
+
 ## M2 pinned independent OpenFootball reference — 2026-11-03
 
 - Added bounded offline OpenFootball 2024/25 read-only reference adapter with exact immutable Git blob verification, 240 directed fixtures, 16 clubs, 30 matchdays, no awarded games, no invented kickoff times, and aggregate-only CLI. Reused existing quality/date parser and added synthetic-only failures for source substitution and malformed season/fixture data. Frozen Footbolno study, sealed holdout, model approval, Supabase and production publishing unchanged; M2 4/8 OPEN.
