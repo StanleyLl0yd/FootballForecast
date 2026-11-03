@@ -1,3 +1,6 @@
+## M2 seven historical RPL seasons privately stored; leakage-safe feature foundation — 2026-11-03
+- Protected source import #41668066639 succeeded after protected #230 test-env repair, recording seven immutable Supabase Frankfurt snapshots, 1,680/1,680 validated final-score fixtures. Independent read-only SQL confirmed 7×240 rows, 16 clubs each, force RLS and service/client denial, existing one train-only Poisson escrow, zero forecasts and no sealed holdout use. Only aggregate receipt/hash in Git. Added separate pure synthetic-tested, prior-day-only 7-season team/form/rest feature engine; no model fit, evaluation or production forecast.
+
 ## M2 private-history protected-run test environment fix — 2026-11-03
 - Owner run #41667471761 stopped at synthetic-only preflight before any source download or database write: `pytest` missing in runner venv. Protected workflow now installs existing `ml[test]` extras alongside pinned psycopg, and static CI prevents repeating the omission. Source/data privileges unchanged; a new protected run is required.
 
