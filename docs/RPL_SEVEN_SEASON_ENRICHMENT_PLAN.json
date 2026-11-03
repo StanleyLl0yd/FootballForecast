@@ -221,14 +221,20 @@
   "sourceDiscoveryActions": [
     {
       "id": "sstats_catalog",
-      "status": "REPEAT_INCONCLUSIVE_SCHEMA_FORMAT_DIAGNOSTIC_NEXT",
+      "status": "CAPTURE_AT_1500000_BYTE_LIMIT_INTEGRITY_UNVERIFIED",
       "maxGetRequests": 2,
       "expectedPublicLog": "AGGREGATES_AND_SHA256_ONLY",
       "seasonProbe": 2022,
       "runId": 41690706216,
-      "latestRunId": 41695180516,
+      "latestRunId": 41697495298,
       "historicalGamesFetched": false,
-      "apiRplCoverageVerified": false
+      "apiRplCoverageVerified": false,
+      "configuredCatalogBodyLimitBytes": 1500000,
+      "capturedBytes": 1500000,
+      "possibleTruncation": true,
+      "curlExitCodeWasIgnored": true,
+      "completeResponseSha256Verified": false,
+      "followupPolicy": "DO_NOT_RETRY_UNTIL_TRANSPORT_GUARD_AND_ENDPOINT_REVIEW"
     },
     {
       "id": "weather_previous_day",
