@@ -96,7 +96,7 @@ export default async function Page(){
             <code>{openFootballReplay.receipt.fittedModelSha256}</code>.
             {' '}Источник: <code>{openFootballReplay.receipt.sourceSha256}</code>.
             {' '}Только TRAIN_ONLY_UNAPPROVED, не утверждённая модель.</span>
-          {openFootballReplay.runs.map(id=><a className="sources-method" key={id}
+          {openFootballReplay.runs.map((id:number)=><a className="sources-method" key={id}
             href={`https://github.com/StanleyLl0yd/FootballForecast/actions/runs/${id}`}
             target="_blank" rel="noopener noreferrer">Исходный запуск #{id} ↗ </a>)}
         </p>:<p role="alert">Закреплённые данные OpenFootball train-only не прошли проверку
