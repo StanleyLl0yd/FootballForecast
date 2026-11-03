@@ -63,7 +63,8 @@ test('free OpenFoot demo job is owner/main-only and cannot authorize ingestion',
     '../.github/workflows/m2-public-sources-observe.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('  bounded-openfoot-rpl-demo:');
   assert.ok(start>0);
-  const job=workflow.slice(start);
+  const end=workflow.indexOf('  bounded-openfoot-free-starter:',start);
+  const job=workflow.slice(start,end);
   for(const constraint of [
     "github.repository == 'StanleyLl0yd/FootballForecast'",
     "github.ref == 'refs/heads/main'",
@@ -80,7 +81,8 @@ test('free OpenFoot demo job is owner/main-only and cannot authorize ingestion',
     "status" // only checked as literal sentinel
   ])assert.ok(job.includes(constraint),constraint);
   assert.doesNotMatch(job,/secrets\.|psql |SUPABASE|DATABASE_URL|upload-artifact|git push|--location|curl -L|npm install|FF_M1_DB_WRITE_ENABLED/);
-  assert.match(workflow,/^on:\n  workflow_dispatch:\n  issue_comment:/m);
+  assert.match(workflow,/^on:\n  workflow_dispatch:\n    inputs:\n      openfoot_starter:/m);
+  assert.match(workflow,/^  issue_comment:/m);
   assert.doesNotMatch(workflow,/^  (?:push|schedule|workflow_run):/m);
 });
 
@@ -98,5 +100,59 @@ test('manual source workflow outputs only the existing safe aggregates to job lo
     'M2_OPENFOOT_OBSERVATION=$(cat'
   ])assert.ok(workflow.includes(marker),marker);
   assert.doesNotMatch(workflow,/cat "\$work\/(?:day|search|openfootball)\.(?:json|txt)"/);
-  assert.doesNotMatch(workflow,/upload-artifact|FF_M1_DB_WRITE_ENABLED|psql |secrets\./);
+  assert.doesNotMatch(workflow,/upload-artifact|FF_M1_DB_WRITE_ENABLED|psql /);
+});
+
+
+test('authenticated Starter season gate rejects paid, public and truncated access',()=>{
+  const games=[];
+  for(let h=0;h<16;h++)for(let a=0;a<16;a++)
+    if(h!==a)games.push(fixture('club_'+h,'club_'+a));
+  const ready={data:games,meta:{count:240,access:{authenticated:true,plan:'starter'},
+    sources:[{name:'supplier',license:'open'}]}};
+  const checked=summarizeOpenFootRpl(ready,now,'starter');
+  assert.equal(checked.kind,'M2_OPENFOOT_RPL_2026_27_FREE_STARTER_DIAGNOSTIC');
+  assert.equal(checked.starterTierVerified,true);
+  assert.equal(checked.coverageState,'STRUCTURALLY_COMPLETE_UNAPPROVED');
+  assert.equal(checked.readyForIndependentQualityReview,true);
+  assert.equal(checked.fullRplSeasonApproved,false);
+  assert.equal(checked.productionIngestionApproved,false);
+  assert.equal(checked.holdoutRead,false);
+  assert.doesNotMatch(JSON.stringify(checked),/club_\d|supplier|private home/);
+  for(const access of [
+    {authenticated:false,plan:'public'},
+    {authenticated:true,plan:'developer'},
+    {authenticated:true,plan:'pro'},null
+  ]){
+    const checkedBad=summarizeOpenFootRpl(
+      {...ready,meta:{...ready.meta,access}},now,'starter');
+    assert.equal(checkedBad.coverageState,'INCONCLUSIVE_NOT_FREE_STARTER');
+    assert.equal(checkedBad.readyForIndependentQualityReview,false);
+  }
+  assert.equal(summarizeOpenFootRpl({...ready,data:games.slice(0,239)},now,'starter')
+    .readyForIndependentQualityReview,false);
+  assert.equal(summarizeOpenFootRpl({...ready,meta:{...ready.meta,sources:[]}},now,'starter')
+    .readyForIndependentQualityReview,false);
+  assert.throws(()=>summarizeOpenFootRpl(ready,now,'developer'),/refused/);
+});
+
+test('optional free-key job requires explicit owner/main dispatch, never logs the token',()=>{
+  const workflow=readFileSync(new URL(
+    '../.github/workflows/m2-public-sources-observe.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('  bounded-openfoot-free-starter:');
+  assert.ok(start>0);
+  const job=workflow.slice(start);
+  for(const guard of [
+    "github.repository == 'StanleyLl0yd/FootballForecast'",
+    "github.ref == 'refs/heads/main'","github.actor == 'StanleyLl0yd'",
+    "github.event_name == 'workflow_dispatch'",
+    "inputs.openfoot_starter == 'AUDIT_OPENFOOT_FREE'",
+    'OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}',
+    "INCONCLUSIVE_NO_FREE_KEY","INCONCLUSIVE_HTTP","INCONCLUSIVE_SCHEMA",
+    'timeout-minutes: 5','persist-credentials: false',
+    'scripts/m2-openfoot-rpl-diagnostic.mjs',
+    'competition=comp_premier_league_rus&season=2026%2F27'
+  ])assert.ok(job.includes(guard),guard);
+  assert.doesNotMatch(job,/upload-artifact|DATABASE_URL|SUPABASE|psql |git push|set -x/);
+  assert.doesNotMatch(job,/^.*echo.*OPENFOOT_API_KEY.*$/m);
 });
