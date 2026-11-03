@@ -379,7 +379,9 @@ jobs:
               if ! node --input-type=module - "$work/tier.json" <<'FREE_TIER'
           import {readFileSync} from 'node:fs';
           const result=JSON.parse(readFileSync(process.argv[2],'utf8'));
-          if(result.starterTierVerified!==true)process.exit(2);
+          if(result.starterTierVerified!==true||result.matchesObserved>8||
+             result.scopeWindowLimited!==false||
+             result.unavailableFlagPresent!==false)process.exit(2);
           FREE_TIER
               then
                 echo 'M2_OPENFOOT_ROUNDS_OBSERVATION=INCONCLUSIVE_NOT_FREE_STARTER'
