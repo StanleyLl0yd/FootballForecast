@@ -1,3 +1,7 @@
+## M2 seven-season enrichment source coverage VERIFIED (first pages only) — 2026-11-03
+
+Protected owner [run #41674569785](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41674569785) read 7×50 first-page match records, confirmed 26 unique club IDs with adjacent overlaps 14/14/14/13/14/13 (**82** shared-ID name matches, zero name conflicts), and observed **0/350 nonempty candidate fields** for venues, cities, surface, weather, staff, lineups, players, xG, shots and odds. These are **sampled keys only**; full-season richness and independent club identity remain unproven. Next qualify SStats.net official free API for RPL extended match statistics and historical odds, Wikidata/TheSportsDB for dated venue and personnel identity, and Open-Meteo for historical as-of weather forecasts from ~2022. Preserve no-data/no-train/no-holdout guarantees. [Pinned aggregate-only receipt](docs/M2_RPL_TEAM_IDENTITY_SAMPLE_EVIDENCE.json) · [Prioritized enrichment matrix](docs/RPL_SEVEN_SEASON_ENRICHMENT_SOURCES.md).
+
 ## M2 owner-only historical club identity consistency discovery — 2026-11-03
 
 Prepare a bounded seven-GET Starter-only private club-ID/name continuity audit; compare with previously verified private SQL aggregates (26 unique IDs, 19 multi-season, 8 in all seven; adjacent overlaps 14/14/14/13/14/13). No public team identifiers/names, no automatic aliases or extra data source and no holdout access. Even a perfect source-name match is not independent club identity evidence; remain unapproved until a cross-provider corroboration policy is reviewed.

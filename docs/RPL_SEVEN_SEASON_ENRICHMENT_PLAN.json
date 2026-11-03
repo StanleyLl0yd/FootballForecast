@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "kind": "RPL_SEVEN_SEASON_PRIVATE_ENRICHMENT_CANDIDATE_MATRIX",
+  "asOf": "2026-11-03",
+  "costLimitUSD": 0,
+  "developmentSeasons": [
+    "2018/19",
+    "2019/20",
+    "2020/21",
+    "2021/22",
+    "2022/23",
+    "2023/24",
+    "2024/25"
+  ],
+  "sealedHoldout": "2025/26",
+  "archivedFixtureCoverage": {
+    "rows": 1680,
+    "finishedAndFinalScores": 1680,
+    "privateSnapshots": 7,
+    "providerInternallyConsistent": true
+  },
+  "candidateFeatureKeysObservedFirstPageSamples": 0,
+  "firstPageSourceRowsChecked": 350,
+  "firstPageFieldCounts": {
+    "venue": 0,
+    "city": 0,
+    "pitchSurface": 0,
+    "weather": 0,
+    "coaches": 0,
+    "lineups": 0,
+    "players": 0,
+    "xg": 0,
+    "shots": 0,
+    "bookmakerOdds": 0
+  },
+  "candidateProviders": [
+    {
+      "id": "open_meteo",
+      "officialDocs": "https://open-meteo.com/en/docs/historical-forecast-api",
+      "roles": [
+        "weatherForecast"
+      ],
+      "status": "DOCUMENTED_ARCHIVED_FORECASTS_2022_PLUS",
+      "historicalRplCoverage": "UNVERIFIED",
+      "rights": "FREE_NONCOMMERCIAL_WITH_TERMS",
+      "temporalPolicy": "ARCHIVED_FORECAST_RUN_ISSUED_BEFORE_CUTOFF_ONLY"
+    },
+    {
+      "id": "open_meteo_reanalysis",
+      "officialDocs": "https://open-meteo.com/en/docs/historical-weather-api",
+      "roles": [
+        "weatherObservedExplanatory"
+      ],
+      "status": "REANALYSIS_NOT_STRICT_PREMATCH",
+      "historicalRplCoverage": "UNVERIFIED",
+      "rights": "FREE_NONCOMMERCIAL_WITH_TERMS",
+      "temporalPolicy": "POST_HOC_EXPLANATORY_ONLY"
+    },
+    {
+      "id": "sstats_net",
+      "officialDocs": "https://api.sstats.net/docs/",
+      "roles": [
+        "xg",
+        "shots",
+        "lineups",
+        "bookmakerOdds",
+        "matchEvents"
+      ],
+      "status": "FREE_API_ADVERTISED",
+      "historicalRplCoverage": "UNVERIFIED",
+      "rights": "PRIVATE_TRAINING_RIGHTS_AND_TIMESTAMPS_UNVERIFIED",
+      "temporalPolicy": "QUOTE_ASOF_AND_STAT_PUBLISH_TIME_REQUIRED"
+    },
+    {
+      "id": "thesportsdb",
+      "officialDocs": "https://api.thesportsdb.com/documentation",
+      "roles": [
+        "lineups",
+        "players",
+        "stadium",
+        "events"
+      ],
+      "status": "FREE_API_WITH_EVENT_LINEUP_RESULTS_LIMITS",
+      "historicalRplCoverage": "UNVERIFIED",
+      "rights": "FREE_API_SCOPE_SEPARATE_THIRD_PARTY_RIGHTS",
+      "temporalPolicy": "CURRENT_ROSTER_NOT_HISTORICAL_LINEUP_PROOF"
+    },
+    {
+      "id": "wikidata",
+      "officialDocs": "https://www.wikidata.org/wiki/Wikidata:Data_access",
+      "roles": [
+        "stadium",
+        "city",
+        "coachHistoricalIdentity",
+        "geolocation"
+      ],
+      "status": "OPEN_STRUCTURED_REFERENCE_DATA",
+      "historicalRplCoverage": "UNVERIFIED",
+      "rights": "CC0_STRUCTURED_DATA",
+      "temporalPolicy": "VENUE_AND_COACH_VALIDITY_INTERVALS_REQUIRED"
+    },
+    {
+      "id": "football_data_uk",
+      "officialDocs": "https://football-data.co.uk/russia.php",
+      "roles": [
+        "bookmakerOddsHistoricalReference"
+      ],
+      "status": "RPL_ARCHIVES_EXIST_THROUGH_2025_26",
+      "historicalRplCoverage": "UNVERIFIED_FOR_MATCHED_TIMESTAMP_QUOTES",
+      "rights": "PERSONAL_RESEARCH_TERMS_WITH_ML_RESTRICTIONS",
+      "temporalPolicy": "UNVERIFIED_QUOTE_TIMESTAMPS_NOT_A_MATCHED_MIDNIGHT_BENCHMARK"
+    }
+  ],
+  "fieldFamilies": [
+    {
+      "field": "teamResults",
+      "current": "PRIVATE_1680_SOURCE_RESULTS",
+      "providerCandidates": [
+        "openfoot"
+      ],
+      "strictPrematchPotential": "PRIOR_MATCH_RESULTS_ONLY"
+    },
+    {
+      "field": "clubIdentity",
+      "current": "26_IDS_SAME_SOURCE_NAME_CONSISTENT_IN_SAMPLE",
+      "providerCandidates": [
+        "wikidata",
+        "thesportsdb"
+      ],
+      "strictPrematchPotential": "MANUAL_INDEPENDENT_MAPPING_REQUIRED"
+    },
+    {
+      "field": "stadiumCitySurface",
+      "current": "CANDIDATE_KEYS_0_OF_350_SAMPLES",
+      "providerCandidates": [
+        "wikidata",
+        "thesportsdb"
+      ],
+      "strictPrematchPotential": "HISTORICAL_VENUE_VALIDITY_REQUIRED"
+    },
+    {
+      "field": "weather",
+      "current": "CANDIDATE_KEYS_0_OF_350_SAMPLES",
+      "providerCandidates": [
+        "open_meteo",
+        "open_meteo_reanalysis"
+      ],
+      "strictPrematchPotential": "HISTORICAL_ISSUED_FORECAST_ONLY"
+    },
+    {
+      "field": "coachStaff",
+      "current": "CANDIDATE_KEYS_0_OF_350_SAMPLES",
+      "providerCandidates": [
+        "wikidata",
+        "thesportsdb"
+      ],
+      "strictPrematchPotential": "DATED_APPOINTMENT_BEFORE_CUTOFF"
+    },
+    {
+      "field": "lineupsPlayers",
+      "current": "CANDIDATE_KEYS_0_OF_350_SAMPLES",
+      "providerCandidates": [
+        "sstats_net",
+        "thesportsdb"
+      ],
+      "strictPrematchPotential": "PUBLISHED_BEFORE_PREDICTION_CUTOFF"
+    },
+    {
+      "field": "xgShotsEvents",
+      "current": "CANDIDATE_KEYS_0_OF_350_SAMPLES",
+      "providerCandidates": [
+        "sstats_net"
+      ],
+      "strictPrematchPotential": "PREVIOUS_MATCH_EVENTS_ONLY"
+    },
+    {
+      "field": "marketOdds",
+      "current": "CANDIDATE_KEYS_0_OF_350_SAMPLES",
+      "providerCandidates": [
+        "sstats_net",
+        "football_data_uk"
+      ],
+      "strictPrematchPotential": "QUOTE_SNAPSHOT_BEFORE_MIDNIGHT_UTC_CUTOFF"
+    }
+  ],
+  "safety": {
+    "noSealedHoldoutAccess": true,
+    "noAutomaticScraping": true,
+    "noRawSourceDataInPublicGit": true,
+    "noClaimsOfFullSeasonFieldAbsence": true,
+    "noNewModelTrainingApproval": true,
+    "noPretendHistoricalAsOf": true,
+    "noBookmakerSuperiorityClaim": true
+  }
+}

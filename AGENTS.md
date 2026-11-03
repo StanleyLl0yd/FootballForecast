@@ -15,6 +15,8 @@ Applies to the entire repository, including Python ML, Next.js/TypeScript, SQL, 
 
 ## FootballForecast invariants
 
+- **Real seven-season rich-stat observations (owner protected #41674569785):** first 50 records for each 2018/19–2024/25 season contained **zero observed candidate fields** for stadium/city/surface, weather, coaches, lineups, players, xG, shots and odds. This is a first-page JSON-key test, not proof of absence across all source endpoints. Never fabricate missing fields, infer historical pre-match weather/lineup timestamps or claim same-provider club-name consistency as independent mapping. See `docs/RPL_SEVEN_SEASON_ENRICHMENT_SOURCES.md`; respect source-specific free API rights and $0 limit.
+
 - **RPL club identity continuity observation:** the private source team-ID/name probe may emit only counts, eligibility flags and digests for 2018/19–2024/25. Do not expose raw provider club IDs or names, infer aliases from matching labels alone, or treat one-source consistency as independent club mapping acceptance. Existing M2 Poisson and sealed 2025/26 holdout are strictly out of scope.
 
 - **Private RPL rolling development (2026-11-03):** five fixed season folds F1–F5 (2018/19–2019/20 → 2020/21 through 2018/19–2023/24 → 2024/25) and market H/D/A paired benchmark are pure, synthetic-tested only. Cross-season team IDs require independent validation, bookmaker quote capture must predate the model's midnight UTC cutoff, no odds after cutoff/closing-price leakage, no arbitrary match-day input or 2025/26 data, and all comparisons must count missing matched odds. See `docs/RPL_SEVEN_SEASON_DEVELOPMENT_PROTOCOL.md`. Never declare real model superiority without proper historical evidence and clustered uncertainty.
