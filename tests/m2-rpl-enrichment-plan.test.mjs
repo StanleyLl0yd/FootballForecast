@@ -25,7 +25,7 @@ test('pinned owner evidence matches seven historical team identity samples witho
   for(const k of groups)assert.equal(e.featurePresenceCountAcrossAllFirstPages[k],0,k);
   assert.match(e.identityContinuitySha256,/^[a-f0-9]{64}$/);
   assert.match(e.sourcePagesSha256,/^[a-f0-9]{64}$/);
-  assert.equal(e.limitations.modelTrainingApproved,false);
+  assert.equal(e.limitations.newModelTrainingApproved,false);
   assert.equal(e.limitations.holdoutRead,false);
   assert.equal(e.limitations.independentClubIdentityMappingAccepted,false);
   assert.equal(e.limitations.fullSeasonFeatureAbsenceProven,false);
