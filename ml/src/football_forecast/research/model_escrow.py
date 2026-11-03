@@ -9,8 +9,9 @@ from math import isfinite
 from re import fullmatch
 
 from football_forecast.data.contracts import DataError
+from football_forecast.data.openfootball_training import PROTOCOL as OPENFOOTBALL_PROTOCOL
 from football_forecast.models.team_strength import TeamStrengthModel
-from football_forecast.research.locking import PROTOCOL, _model_fingerprint
+from football_forecast.research.locking import PROTOCOL, _digest, _model_fingerprint
 
 _MAX_BYTES = 8192
 _FIELDS = {
@@ -18,6 +19,7 @@ _FIELDS = {
     "appearances", "intercept", "homeAdvantage", "trainingMatches",
 }
 _SHA = r"[a-f0-9]{64}"
+_ALLOWED_PROTOCOLS = (PROTOCOL, OPENFOOTBALL_PROTOCOL)
 
 
 def _checked_model(model: TeamStrengthModel) -> None:
@@ -47,13 +49,34 @@ def _checked_model(model: TeamStrengthModel) -> None:
         raise DataError("M2 private model: invalid global coefficients")
 
 
-def serialize_private_model(model: TeamStrengthModel) -> bytes:
-    """Return canonical, private coefficient bytes; caller must secure them."""
+def _fingerprint_for_protocol(model: TeamStrengthModel, protocol: str) -> str:
+    """Preserve the frozen legacy digest and the calendar-only train receipt digest."""
+    if protocol == PROTOCOL:
+        return _model_fingerprint(model)
+    if protocol != OPENFOOTBALL_PROTOCOL:
+        raise DataError("M2 private model: unsupported research protocol")
+    return _digest({
+        "protocol": protocol, "teams": model.teams,
+        "attack": [x.hex() for x in model.attack],
+        "defence": [x.hex() for x in model.defence],
+        "appearances": model.appearances,
+        "intercept": model.intercept.hex(),
+        "homeAdvantage": model.home_advantage.hex(),
+        "trainingMatches": model.training_matches,
+    })
+
+
+def serialize_private_model(
+    model: TeamStrengthModel, *, protocol: str = PROTOCOL,
+) -> bytes:
+    """Return canonical private bytes for an explicitly selected frozen study."""
+    if type(protocol) is not str or protocol not in _ALLOWED_PROTOCOLS:
+        raise DataError("M2 private model: unsupported research protocol")
     _checked_model(model)
     content = {
         "schemaVersion": 1,
         "kind": "M2_PRIVATE_FIXED_POISSON_MODEL",
-        "protocol": PROTOCOL,
+        "protocol": protocol,
         "teams": list(model.teams),
         "attack": [n.hex() for n in model.attack],
         "defence": [n.hex() for n in model.defence],
@@ -85,6 +108,7 @@ def _canonical_float(value: object) -> float:
 
 def load_private_model(
     payload: bytes, *, artifact_sha256: str, fitted_model_sha256: str,
+    expected_protocol: str = PROTOCOL,
 ) -> TeamStrengthModel:
     """Verify exact private bytes and existing fitted-model fingerprint.
 
@@ -92,6 +116,8 @@ def load_private_model(
     The trusted worker must independently authenticate both digests against
     its previously accepted protected pre-holdout record.
     """
+    if type(expected_protocol) is not str or expected_protocol not in _ALLOWED_PROTOCOLS:
+        raise DataError("M2 private model: unsupported research protocol")
     if (type(payload) is not bytes or not 0 < len(payload) <= _MAX_BYTES
             or not isinstance(artifact_sha256, str)
             or not fullmatch(_SHA, artifact_sha256)
@@ -106,7 +132,7 @@ def load_private_model(
     if (type(data) is not dict or set(data) != _FIELDS
             or type(data["schemaVersion"]) is not int or data["schemaVersion"] != 1
             or data["kind"] != "M2_PRIVATE_FIXED_POISSON_MODEL"
-            or data["protocol"] != PROTOCOL
+            or data["protocol"] != expected_protocol
             or any(type(data[key]) is not list or len(data[key]) != 16
                    for key in ("teams", "attack", "defence", "appearances"))):
         raise DataError("M2 private model: invalid closed schema")
@@ -121,8 +147,8 @@ def load_private_model(
             training_matches=data["trainingMatches"],
         )
         _checked_model(model)
-        if (serialize_private_model(model) != payload
-                or _model_fingerprint(model) != fitted_model_sha256):
+        if (serialize_private_model(model, protocol=expected_protocol) != payload
+                or _fingerprint_for_protocol(model, expected_protocol) != fitted_model_sha256):
             raise DataError("M2 private model: model digest or encoding mismatch")
     except DataError:
         raise

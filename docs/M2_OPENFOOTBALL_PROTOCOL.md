@@ -83,3 +83,31 @@ The same existing M2 manual owner-only source-observation workflow may perform *
 - $0 only, public pages read-only, owner identity fail-closed; RLS and protected
   branch policies remain intact. M2 full exit still needs all acceptance checks,
   two complete repository-wide audits and explicit owner sign-off.
+
+## Calendar-only private coefficient encoding — preparation, not a study lock (2026-11-03)
+
+The existing strictly canonical, bounded in-memory private model codec now supports
+`m2-openfootball-calendar-v1` **only when explicitly selected**. Its fitted-model
+SHA-256 must equal the original train-only candidate receipt; the legacy
+Footbolno study remains the default and cannot silently load calendar-model
+bytes (or vice versa). The same 240/16 training-only alias, 8-KiB canonical
+format and coefficient checks apply. Synthetic tests prove round-trip and
+cross-protocol refusal without touching any real private records.
+
+This is **not an executed escrow**: no actual fitted coefficient bytes have
+been saved, encrypted, uploaded, approved, or compared against independent
+protected-run evidence. The study still needs authenticated private storage,
+protected Git anchoring, provenance and source qualification, independent
+review, and single-use authorization **before** any 2025/26 holdout identity or
+label is read. No automatic training or publication has been enabled.
+
+### Separate source eligibility observation (metadata only)
+
+[Football-Data.co.uk Russia](https://football-data.co.uk/russia.php) states its
+**2025/26** Russia data is the **final** season offered and provides an
+archival CSV link. This makes it a possible **independent evaluation-source
+candidate**, not a confirmed complete, independently sourced, model-use-
+permitted or verified 240-match holdout. The CSV's match rows and labels were
+**not fetched or inspected** for this note; rights, pinned revision, full
+coverage, score/status accuracy and non-tuned training-only cross-season club
+mapping all remain unresolved. It cannot supply the 2026/27 live season.
