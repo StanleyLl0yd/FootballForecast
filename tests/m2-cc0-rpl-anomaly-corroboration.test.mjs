@@ -63,7 +63,7 @@ test('all six explicitly awarded rows have individual independent non-played-res
     for(const item of season.observations) {
       assert.ok(Number.isInteger(item.zeroBasedSourceIndex));
       assert.ok(item.zeroBasedSourceIndex >= 0 && item.zeroBasedSourceIndex < 240);
-      assert.match(item.calendarDate, /^20\\d{2}-\\d{2}-\\d{2}$/);
+      assert.match(item.calendarDate, /^20\d{2}-\d{2}-\d{2}$/);
       const key = season.season + ':' + item.zeroBasedSourceIndex;
       assert.ok(!seen.has(key), key);
       seen.add(key);
@@ -105,5 +105,5 @@ test('citations are bounded public HTTPS references and holdout / private data r
   assert.equal(restrictions.onlySpecificPublicAnomaliesReviewed, true);
   assert.equal(restrictions.m2AcceptanceTasksComplete, 4);
   const serialized = JSON.stringify(receipt);
-  assert.doesNotMatch(serialized, /"(?:team1|team2|homeTeam|awayTeam|homeGoals|awayGoals|score|matchId|sourceMatchId|clubId)"\\s*:/);
+  assert.doesNotMatch(serialized, /"(?:team1|team2|homeTeam|awayTeam|homeGoals|awayGoals|score|matchId|sourceMatchId|clubId)"\s*:/);
 });
