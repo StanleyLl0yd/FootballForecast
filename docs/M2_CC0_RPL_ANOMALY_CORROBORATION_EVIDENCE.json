@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_INDEPENDENT_CC0_RPL_ANOMALY_CORROBORATION",
+  "observedAt": "2026-11-05",
+  "scope": "READ_ONLY_PUBLIC_CC0_DEVELOPMENT_SEASONS",
+  "priorShapeEvidence": "M2_CC0_RPL_DEVELOPMENT_SOURCE_SHAPE_EVIDENCE.json",
+  "scheduleSwap": {
+    "season": "2023/24",
+    "repository": "openfootball/europe",
+    "publisherCommitSha": "63df627f3c87ce71708f016522ea236cf74332c3",
+    "publisherPath": "russia/2023-24_ru1.txt",
+    "publisherBlobSha": "3ea6829a971d1cbdf56552be0519cc125707bd99",
+    "originalTextLineNumbers": [
+      113,
+      328
+    ],
+    "duplicateDirectedPairs": 1,
+    "missingDirectedPairs": 1,
+    "changedFixture": {
+      "matchday": 8,
+      "calendarDate": "2023-09-16",
+      "publisherTextLineNumber": 113,
+      "recordedHomeAwayDirectionCorrect": false,
+      "officialRevisedHomeAwayDirectionCorroborated": true,
+      "originalChangeNoticePublishedBeforeMatch": true,
+      "playedResultCorroborated": true
+    },
+    "evidence": [
+      {
+        "kind": "CLUB_OFFICIAL_PREMATCH_SWITCH_ANNOUNCEMENT",
+        "publishedDate": "2023-09-07",
+        "url": "https://pfcsochi.ru/news/2023-2024/rfs-i-rpl-soglasovali-perenos-matchey-mezhdu-sochi-i-spartakom/"
+      },
+      {
+        "kind": "FEDERATION_SEASON_CALENDAR",
+        "url": "https://www.rfs.ru/tournament/1434/calendar?round_id=18568"
+      },
+      {
+        "kind": "INDEPENDENT_MATCH_REPORT",
+        "url": "https://www.championat.com/football/_russiapl/tournament/5441/match/1101821/"
+      }
+    ],
+    "determination": "PUBLIC_SOURCE_HOME_AWAY_DIRECTION_ERROR_INDEPENDENTLY_CORROBORATED",
+    "automaticArchiveCorrectionPermitted": false
+  },
+  "awarded": {
+    "sourceRepository": "openfootball/football.json",
+    "publisherCommitSha": "e6744429ee395bc86f247348c6184bb08d4eb361",
+    "explicitlyAwardedRows": 6,
+    "independentlyCorroboratedAsNotPlayed": 6,
+    "bySeason": [
+      {
+        "season": "2019/20",
+        "publisherPath": "2019-20/ru.1.json",
+        "publisherBlobSha": "25a5738b595d9b6d074208e4e5df47f2c2a9bcc3",
+        "declaredAwardedRows": 4,
+        "notPlayedCorroboratedRows": 4,
+        "observations": [
+          {
+            "zeroBasedSourceIndex": 186,
+            "round": 24,
+            "calendarDate": "2020-06-27",
+            "evidenceUrl": "https://www.championat.com/football/_russiapl/tournament/2973/match/774517/"
+          },
+          {
+            "zeroBasedSourceIndex": 195,
+            "round": 25,
+            "calendarDate": "2020-07-01",
+            "evidenceUrl": "https://www.championat.com/football/_russiapl/tournament/2973/match/774533/"
+          },
+          {
+            "zeroBasedSourceIndex": 228,
+            "round": 29,
+            "calendarDate": "2020-07-16",
+            "evidenceUrl": "https://www.championat.com/football/_russiapl/tournament/2973/match/774587/"
+          },
+          {
+            "zeroBasedSourceIndex": 237,
+            "round": 30,
+            "calendarDate": "2020-07-22",
+            "evidenceUrl": "https://bombardir.ru/online/138086-fc-krylia-sovetov-sochi-2019-2020"
+          }
+        ]
+      },
+      {
+        "season": "2020/21",
+        "publisherPath": "2020-21/ru.1.json",
+        "publisherBlobSha": "48f77704081ac4405b98341c81b02b4664536733",
+        "declaredAwardedRows": 2,
+        "notPlayedCorroboratedRows": 2,
+        "observations": [
+          {
+            "zeroBasedSourceIndex": 51,
+            "round": 7,
+            "calendarDate": "2020-09-13",
+            "evidenceUrl": "https://www.rfs.ru/news/212277?mobile=no"
+          },
+          {
+            "zeroBasedSourceIndex": 57,
+            "round": 8,
+            "calendarDate": "2020-09-19",
+            "evidenceUrl": "https://news.sportbox.ru/Vidy_sporta/Futbol/Russia/premier_league/spbnews_NI1243250_Rotoru_zaschitano_tehnicheskoje_porazhenije_za_nejavku_na_match_s_Rostovom"
+          }
+        ]
+      }
+    ],
+    "eligibleAsPlayedGoals": false,
+    "removeAwardedFromFuturePlayedGoalFitting": true
+  },
+  "limitations": {
+    "onlySpecificPublicAnomaliesReviewed": true,
+    "allOtherCc0RowsIndependentlyVerified": false,
+    "sourcePublisherInitialHistoricalAvailabilityVerified": false,
+    "upstreamOriginalRecordRightsVerified": false,
+    "privateSourceRowsRead": false,
+    "privateTeamIdentityCrosswalkApproved": false,
+    "automaticallyModifiedSourceOrPrivateSnapshots": false,
+    "multiseasonTrainingApproved": false,
+    "sealedHoldout2025_26Read": false,
+    "rawMatchNamesScoresOrPrivateIdsRetainedInGit": false,
+    "m2AcceptanceTasksComplete": 4,
+    "m3Authorized": false
+  }
+}

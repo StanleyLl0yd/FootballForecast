@@ -1,5 +1,7 @@
 # FootballForecast
 
+> **M2 CC0 anomaly review (05.11.2026):** independent confirmation of one reversed 2023/24 home/away fixture and six unplayed technical results. Original sources and private history untouched; no training authorization. [Evidence](docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json).
+
 **Персональная некоммерческая лаборатория вероятностных прогнозов РПЛ; публичный сайт пока лишь прототип.**
 
 [Открыть приложение](https://footballforecast.vercel.app) · [План разработки](ROADMAP.md) · [Ограничения](docs/KNOWN_LIMITATIONS.md)

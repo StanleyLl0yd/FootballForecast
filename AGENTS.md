@@ -15,6 +15,8 @@ Applies to the entire repository, including Python ML, Next.js/TypeScript, SQL, 
 
 ## FootballForecast invariants
 
+- **Independent CC0 anomaly corroboration (2026-11-05):** The separate `docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json` establishes a reversed 2023/24 source home/away direction using official pre-match schedule-switch evidence and separately confirms six `awarded` outcomes as unplayed technical results. Source rows/private snapshots remain unchanged. Do not auto-correct the archive, infer approval for other fixtures, treat technical results as played goals, join private IDs, train, or unseal 2025/26. M2 4/8 OPEN.
+
 - **Independent CC0 archive review (2026-11-05):** The aggregate-only pinned snapshot `docs/M2_CC0_RPL_DEVELOPMENT_SOURCE_SHAPE_EVIDENCE.json` covers five development seasons in `openfootball/football.json` / `openfootball/europe`. Do not treat all 240 score-bearing rows per season as played: 2019/20 has four explicit `awarded` results, 2020/21 two, and 2023/24 has 239/240 unique directed home/away pairs. Block automatic repair or adoption; require independent per-match match-ID, actual played-score, date and original publisher time/rights corroboration. Declared CC0 at repository level does not independently prove third-party source chain rights. 2025/26 remains sealed; no multiseason fit authorized.
 
 
