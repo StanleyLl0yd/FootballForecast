@@ -147,7 +147,51 @@
     "privateFixtureCrosswalkApproved": false,
     "eligibleForActualWeatherFeatureJoin": false,
     "multiseasonModelTrainingApproved": false,
-    "sealedHoldout2025_26Read": false
+    "sealedHoldout2025_26Read": false,
+    "coordinateReferenceCandidates": {
+      "kind": "APPROXIMATE_PUBLIC_VENUE_POINT_REFERENCES_NOT_HISTORICAL_WEATHER_EVIDENCE",
+      "sourceScope": "READ_ONLY_PUBLIC_STADIUM_LOCATION_PAGES",
+      "matches": [
+        {
+          "calendarDate": "2023-09-16",
+          "venueNameAtMatchTime": "Открытие Банк Арена",
+          "architecturalReference": {
+            "latitude": 55.817778,
+            "longitude": 37.440379,
+            "url": "https://archi.ru/projects/world/7965/stadion-otkrytie-arena-fk-spartak"
+          },
+          "separateStadiumDirectoryReference": {
+            "latitude": 55.817928,
+            "longitude": 37.440254,
+            "url": "https://superfan.ru/stadiums/europa/Russia/otkrytie-bank-arena/"
+          }
+        },
+        {
+          "calendarDate": "2024-04-13",
+          "venueNameAtMatchTime": "Фишт",
+          "architecturalReference": {
+            "latitude": 43.401849,
+            "longitude": 39.955869,
+            "url": "https://archi.ru/projects/russia/8725/stadion-fisht"
+          },
+          "separateStadiumDirectoryReference": {
+            "latitude": 43.402025,
+            "longitude": 39.955903,
+            "url": "https://superfan.ru/stadiums/europa/Russia/stadion-fisht/"
+          }
+        }
+      ],
+      "allDatesMatchPriorIndependentPlayedVenueSamples": true,
+      "publishedLocationSourcesAreSeparatePages": true,
+      "sourceSurveyMethodsOrOriginalProvenanceIndependentlyValidated": false,
+      "historicalMatchDaySiteSurveyOrPointPrecisionVerified": false,
+      "forecastProviderSpatialGridAndPitchExposureVerified": false,
+      "originalForecastFirstAvailableBeforeCutoffVerified": false,
+      "privateSourceFixtureIdentityCrosswalkApproved": false,
+      "approvedForHistoricalWeatherFeatureJoin": false,
+      "approvedForMultiseasonTraining": false,
+      "sealedHoldout2025_26Read": false
+    }
   },
   "limitations": {
     "onlySpecificPublicAnomaliesReviewed": true,

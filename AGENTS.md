@@ -15,6 +15,8 @@ Applies to the entire repository, including Python ML, Next.js/TypeScript, SQL, 
 
 ## FootballForecast invariants
 
+- **Approximate 2023/24 stadium coordinate references (2026-11-05):** Two published location pages per already-confirmed swapped fixture agree within approximately 20 metres, but their underlying surveys, historical on-pitch point precision and actual forecast grid remain unauthenticated. Evidence is a non-operational location candidate only; never join weather, infer original first-serving time, train, open 2025/26 or change M2 4/8. See `docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json`.
+
 - **Two actual swapped-match historical stadiums (2026-11-05):** Official pre-match announcements and independent played venue reports identify the venue for only two 2023/24 fixtures (16 Sep 2023 in Moscow; 13 Apr 2024 in Sochi), recorded in `docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json`. Do not extrapolate a club's generic home venue or stadium validity range, infer exact venue coordinates, join to source-private match IDs, use weather as a feature, or claim historical run-serving timestamp/ML rights. Existing archives, model and 2025/26 remain untouched; M2 4/8 OPEN.
 
 - **Independent CC0 anomaly corroboration (2026-11-05):** The separate `docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json` establishes a reversed 2023/24 source home/away direction using official pre-match schedule-switch evidence and separately confirms six `awarded` outcomes as unplayed technical results. Source rows/private snapshots remain unchanged. Do not auto-correct the archive, infer approval for other fixtures, treat technical results as played goals, join private IDs, train, or unseal 2025/26. M2 4/8 OPEN.
