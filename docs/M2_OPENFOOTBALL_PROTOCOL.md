@@ -337,3 +337,45 @@ mapping, roster identity, code and model artifacts **before** any label read.
 The current module does not access a database, build a real manifest or grant
 single-use evaluation permission. The earlier private snapshot registry remains
 unchanged. M2 stays **5/8 OPEN**, M3 prohibited.
+
+## Protected train-metadata preflight toward first study lock — 2026-11-05
+
+The pre-results [official 2025/26 roster](M2_OFFICIAL_2025_26_ROSTER_EVIDENCE.json)
+was independently verified from dated RFU decisions (16 June original; 11 July
+Torpedo removal/Orenburg inclusion) before opening any heldout results.
+Exactly **14/16** source club names recur from the protected 2024/25 TRAIN
+snapshot, while Baltika and Sochi are newly promoted. The fixed 16-name
+OpenFootball alias set hashes to the already persisted escrow fingerprint.
+
+The existing manual owner-only `.github/workflows/m2-openfootball-train-only.yml`
+now offers the confirmation `OPENFOOTBALL_ROSTER_PREFLIGHT`, or exactly the
+owner-authored issue #182 comment `/m2-openfootball-roster-preflight`.
+It requires protected `main`, an OWNER identity, the existing private
+`m1-source-import` environment and PostgreSQL verify-full TLS with the
+reviewed CA. The bounded worker is **READ ONLY**: it retrieves just immutable
+source snapshot metadata, exactly 16 distinct team IDs and names from the
+**2024/25 `train_baseline`** role, and already saved model-escrow metadata
+(no coefficients). It explicitly never selects 2025/26 match rows, dates,
+scores, team identities, or a replacement data source.
+
+The worker independently checks model-escrow fingerprints and a separately
+reproduced precommitted roster crosswalk digest
+`99ad249ceae34aa8fd12d77be8e4b58ad8b80ec87b169021b5ca962d176080b2`,
+and the existing sealed snapshot **metadata-only** commitment
+`afe82bbf33d6e547403ef1ce9505493a655661e0e0f78dffecaea9e857f5b191`.
+Only allowlisted fingerprints, 16/14/2 aggregate counts, executing Git SHA,
+and explicit negative approval/holdout flags can leave the runner. All
+provider IDs remain private, temporary files are deleted.
+
+A successful preflight is **not** an approved immutable study lock, rights
+clearance, observed performance, a one-use scorer or permission to unseal
+2025/26. The full protected study record, eligible rights, historical
+result/status checks, single-use runner and explicit acceptance remain
+required. M2 remains **5/8 OPEN**, M3 forbidden.
+
+The fixed-model first-evaluation **predeclared theoretical coverage** is 182
+familiar-vs-familiar matches (14 × 13) with 58 abstentions involving one
+or both unseen clubs (240 − 182). This assumes a valid double round robin;
+the protected evaluator must abort or apply only an already frozen exclusion
+policy if statuses, rights, club mappings or coverage differ. The numbers
+were computed from the pre-kickoff roster, never from sealed 2025/26 results.
