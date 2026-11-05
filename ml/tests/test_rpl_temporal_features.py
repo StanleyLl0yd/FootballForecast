@@ -17,7 +17,7 @@ def match(day, home, away, hg, ag, *, season="2020/21"):
     return DevelopmentMatch(
         season, f"{season}-{day}-{home}-{away}",
         datetime(year, 9, day, 14, tzinfo=UTC),
-        home, away, hg, ag,
+        home, away, hg, ag, result_kind="played",
     )
 
 
@@ -68,6 +68,8 @@ def test_sealed_holdout_awarded_score_naive_time_and_duplicates_fail():
     invalid = (
         replace(good, season="2025/26"),
         replace(good, status="awarded"),
+        replace(good, result_kind="awarded"),
+        replace(good, result_kind="unverified"),
         replace(good, home_goals=-1),
         replace(good, kickoff_at=datetime(2020, 9, 10)),
         replace(good, kickoff_at=good.kickoff_at + timedelta(days=3650)),

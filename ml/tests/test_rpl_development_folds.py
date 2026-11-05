@@ -34,7 +34,7 @@ def synthetic_corpus():
             kickoff = datetime(year, 9, 1, 15, tzinfo=UTC) + timedelta(days=round_no * 7)
             matches.append(DevelopmentMatch(
                 season, f"synthetic_{year}_{idx}", kickoff,
-                f"club_{h}", f"club_{a}", h % 3, a % 2,
+                f"club_{h}", f"club_{a}", h % 3, a % 2, result_kind="played",
             ))
     return tuple(matches)
 
@@ -72,6 +72,8 @@ def test_refuses_incomplete_duplicate_or_sealed_development_years():
         plan_expanding_development_folds((replace(base[0], home_goals=21), *base[1:]))
     with pytest.raises(DataError):
         plan_expanding_development_folds(list(base))
+    with pytest.raises(DataError):
+        plan_expanding_development_folds((replace(base[0], result_kind="awarded"), *base[1:]))
 
 
 def test_refuses_temporal_overlap_from_pandemic_season_boundary():

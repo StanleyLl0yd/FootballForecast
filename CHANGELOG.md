@@ -1,3 +1,8 @@
+## M2 fail-closed historical result-revision semantics — 2026-11-05
+
+- Development-only played-goal features require explicit on-field result kind, rejecting technical awards and unverified final scores. New pure UTC-as-of result-version selector separates official-table and played-goal roles, with synthetic negative tests.
+- Public RFS/RSSSF chronology documents the on-field/official discrepancy without claiming original historical first-serving time or licensing. No private source rewrite, real fit, evaluation or sealed holdout read. M2 4/8 OPEN.
+
 ## M2 synthetic weather horizon and valid-hour safeguards — 2026-11-05
 
 - Reject fractional-hour Open-Meteo forecast-valid instants and impossible run-to-valid horizons beyond an explicit bounded model-specific lead. Added negative synthetic cases for invalid horizons, minute/second offsets and ancient runs.

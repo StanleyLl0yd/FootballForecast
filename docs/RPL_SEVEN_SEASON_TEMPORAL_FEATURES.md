@@ -12,7 +12,7 @@ Pre-registered on 2026-11-03. This is a separate pure feature-engineering founda
 
 ## Source boundary
 
-- Only finished matches from 2018/19–2024/25 may be input. A 2025/26 record is rejected regardless of whether it has already been fetched elsewhere.
+- Only finished matches from 2018/19–2024/25 may be input. A 2025/26 record is rejected regardless of whether it has already been fetched elsewhere. The pure builder additionally requires explicit `result_kind="played"`: numeric goals plus `finished` status alone cannot distinguish goals on the field from an administrative award. The field is a caller assertion, **not** independent proof of an eligible real archive.
 - Exact source IDs, played scores, UTC kickoffs, unique directed pairs and date bounds are checked. The COVID-delayed 2019/20 season includes the documented July 2020 extension.
 - Pre-game features for UTC calendar day D may use only outcomes with kickoff dates strictly before D. Same-day matches share the unchanged earlier state, regardless of the order of their starts.
 - The information cutoff is midnight UTC of match day; the builder never claims the retrospectively obtained records were actually published at that time. Classification remains NON_STRICT_RETROSPECTIVE.
@@ -23,6 +23,12 @@ Pre-registered on 2026-11-03. This is a separate pure feature-engineering founda
 Previous appearances, home/away appearances, last-five-match goals scored/conceded, days since last earlier match, and flags for unseen teams. No future scores, no same-day labels, no post-match xG of the target, no final lineup before publication, and no inferred historical weather forecasts.
 
 The pure Python module football_forecast.research.rpl_temporal_features does no database access, model fitting, scoring or publication. Synthetic CI tests verify shuffle invariance, chronological cutoff isolation, same-day source leakage refusal, cold starts, score changes and sealed season refusal.
+
+## Played goals versus later official-result revisions — 2026-11-05
+
+A public 2022/23 RPL match was actually played, then its official-table result was changed after a disciplinary decision. [Bounded public corroboration](M2_PUBLIC_RPL_RESULT_REVISION_EVIDENCE.json) records the decision and publication/appeal calendar dates, while **exact original first-serving UTC time remains unverified**. The match has not been mapped to private source IDs.
+
+The pure `rpl_result_revisions.select_result_as_of` helper separates `official_table` (latest result available at cutoff) from `on_field_goals` (latest available actually played score). It requires a UTC-midnight cutoff, strictly increasing original-availability UTC instants and a caller assertion of independent first-availability verification. Missing timestamps, conflicting versions, awarded-only played goals and sealed 2025/26 fail closed. Even passing these synthetic checks **cannot authenticate** historical publication, private fixture identity, licensing or eligibility for real training. No real seven-season archive has been passed through this helper.
 
 ## Further research
 

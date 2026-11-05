@@ -25,6 +25,7 @@ class DevelopmentMatch:
     home_goals: int
     away_goals: int
     status: str = "finished"
+    result_kind: str = "unverified"
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,7 +72,8 @@ def _validated(fixtures: tuple[DevelopmentMatch, ...]) -> tuple[DevelopmentMatch
             raise DataError("RPL features: non-development season or source record")
         if (not all(isinstance(x, str) and 0 < len(x) <= 160 and x.strip()
                     for x in (item.source_match_id, item.home_team_id, item.away_team_id))
-                or item.home_team_id == item.away_team_id or item.status != "finished"):
+                or item.home_team_id == item.away_team_id or item.status != "finished"
+                or item.result_kind != "played"):
             raise DataError("RPL features: invalid identity or status")
         if (not isinstance(item.kickoff_at, datetime)
                 or item.kickoff_at.tzinfo is None
@@ -104,6 +106,8 @@ def build_development_features(
 ) -> tuple[PregameFeatures, ...]:
     """Only earlier UTC-day matches; never same-day or future outcomes.
 
+    Only caller-identified on-field goals qualify, not technical awards.
+    Such an assertion does not independently prove source rights or original timing.
     Club identities are season-scoped until longitudinal aliases are proven.
     No network, database, training, predictions, labels in output or evaluation.
     """
