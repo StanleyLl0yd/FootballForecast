@@ -16,15 +16,19 @@ from re import fullmatch
 from football_forecast.data.contracts import DataError, aware
 from football_forecast.data.openfootball_training import PROTOCOL
 from football_forecast.evaluation.scoring import (
-    brier_score, log_loss, ranked_probability_score,
+    brier_score,
+    log_loss,
+    ranked_probability_score,
 )
 from football_forecast.models.team_strength import (
-    InsufficientTrainingData, TeamStrengthModel,
+    InsufficientTrainingData,
+    TeamStrengthModel,
 )
 from football_forecast.research.evaluate import NonStrictAggregateResult
 from football_forecast.research.locking import _digest
 from football_forecast.research.model_escrow import (
-    _fingerprint_for_protocol, serialize_private_model,
+    _fingerprint_for_protocol,
+    serialize_private_model,
 )
 
 _SHA = r"[a-f0-9]{64}"
