@@ -1,5 +1,8 @@
 # Automation and repository hygiene
 
+> **M2 2026-11-05 crosswalk boundary:** New pure team mapping helper consumes trusted 2024/25 TRAIN identities plus a *separately documented pre-results* 2025/26 team roster only. Its public SHA receipt does not approve a real mapping, source rights, study lock, scorer execution or heldout read. Never load 2025/26 result-bearing records to choose a mapping; independently review and anchor a private map before a single benchmark. M2 5/8 OPEN.
+
+
 > **2026-11-05 owner decision:** previously accumulated historical data may be used for private training/research within third-party rights. Preserve the sealed 2025/26 first-test split; do not tune it. The new pure OpenFootball-independent scorer does not authorize a real holdout read; independently reviewed immutable study lock, lawful source/crosswalk, one-use protected executor and owner acceptance are still required. M2 5/8 OPEN; M3 unauthorized.
 
 

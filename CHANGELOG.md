@@ -1,3 +1,8 @@
+## M2 training-only club crosswalk preparation — 2026-11-05
+
+- Added pure reproducible identity adapter: frozen 2024/25 team IDs, exact 16 OpenFootball names and model alias set, independently predeclared holdout roster IDs, deterministic promoted-team abstentions and closed-schema public-safe SHA receipt.
+- Synthetic negative tests cover correspondence/alias drift, duplicate or malformed club identities and unlisted 2025/26 teams. No real 2025/26 label/identity read, DB change, approved study lock, model prediction, or publication. M2 5/8 OPEN.
+
 ## M2 independent holdout identity groundwork — 2026-11-05
 
 - Added pure fixed OpenFootball 2024/25 model scorer contract for a separate 2025/26 source, locked snapshot and predeclared club crosswalk (unlike the archived same-source legacy study). Rejects model/artifact/source/role drift, synthetic bad status/awards, club/day duplication and non-UTC dates; abstains for newly promoted clubs.

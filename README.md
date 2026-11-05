@@ -1,5 +1,8 @@
 # FootballForecast
 
+**M2 source-to-model team matching:** synthetic-only frozen 2024/25 train-club crosswalk and pre-results 2025/26 roster digest contract; no heldout scores, private source rows or approved lock. [Study limitations](docs/M2_OPENFOOTBALL_PROTOCOL.md).
+
+
 **M2 fixed-model evaluation preparation (05.11.2026):** a pure new OpenFootball calendar model scorer accepts separately committed train/holdout source identities and guards promoted clubs; tests are synthetic-only. This is **not** a signed immutable study lock, a 2025/26 read, a benchmark or forecast. Owner authorized private historical training/evaluation subject to licensing and sealed first-test integrity. [Research protocol](docs/M2_OPENFOOTBALL_PROTOCOL.md).
 
 
