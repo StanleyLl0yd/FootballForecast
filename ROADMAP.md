@@ -1,3 +1,7 @@
+## M2 pre-holdout team mapping, synthetic-only — 2026-11-05
+
+Pure train-derived source/team-to-fixed-model crosswalk prepared. It binds 16 immutable 2024/25 identities and a separately documented fixed 2025/26 roster without using heldout results; only a hash/count receipt may leave the future protected runner. Real mapping, source rights, independent roster attestation, study lock and single-use evaluation are **not yet completed**. [Protocol](docs/M2_OPENFOOTBALL_PROTOCOL.md#immutable-train-derived-team-crosswalk-preparation--2026-11-05). **M2 5/8 OPEN.**
+
 ## M2 independent-source evaluator, synthetic-only preparation — 2026-11-05
 
 The new pure `openfootball_evaluate.py` scorer binds the frozen train-only model to a **different, independently pinned** 2025/26 source/snapshot/crosswalk; the legacy evaluator remains unchanged. Unit tests exercise outcome metrics, promoted-club abstention and bad-source/awarded/UTC/calendar refusals. **No real 2025/26 data, no study-lock approval, no model training or benchmarks. M2 remains 5/8 OPEN.** [Protocol](docs/M2_OPENFOOTBALL_PROTOCOL.md#source-independent-202526-evaluation-contract--2026-11-05-preparation-only).

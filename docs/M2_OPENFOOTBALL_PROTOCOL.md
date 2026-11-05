@@ -307,3 +307,33 @@ The pure module `ml/src/football_forecast/research/openfootball_evaluate.py` pre
 ### Owner data-use direction, 2026-11-05
 
 The owner explicitly permits using all **already accumulated historical datasets** for private model training and retrospective research, subject to actual third-party source permissions and keeping the frozen 2025/26 control cohort independent for its **first** M2 evaluation. This permission does **not** allow silently reclassifying a provider license, training on the sealed holdout before the fixed-model test, using heldout labels for aliases/hyperparameters, source redistribution, production forecast publication, or paid upgrades. Later seven-season experiments must be separately preregistered and evaluated on a genuinely independent cohort.
+
+## Immutable train-derived team crosswalk preparation — 2026-11-05
+
+The pure module `ml/src/football_forecast/research/openfootball_crosswalk.py`
+constructs a **candidate only** from: (1) the 16 trusted 2024/25 training-source
+team IDs, (2) the exact 16 pinned OpenFootball 2024/25 club strings, (3) an
+independently reviewed bijective mapping between those **training-only** identities,
+(4) a separately sourced **pre-results** fixed 2025/26 16-club roster-ID list, and
+(5) the already fixed model's 16 hashed `S_` aliases. It refuses unknown names,
+duplicate/reassigned training identities, invalid source IDs, inconsistent
+model identities and incomplete rosters.
+
+The crosswalk maps the 2024/25 incumbents onto model aliases, gives genuinely
+unseen roster IDs deterministic `U_` aliases that the fixed model must abstain
+on, and rejects IDs outside the frozen roster. It returns private mappings
+in memory, while its public receipt contains **only** the deterministic
+crosswalk SHA-256, counts and explicit `independentlyApproved=false`,
+`studyLockApproved=false` and `holdoutRead=false` flags. No source IDs,
+club names, fixture rows, provider secrets, heldout outcomes or coefficients
+may appear in public artifacts.
+
+**Limits:** The pure helper cannot authenticate where input roster/team IDs
+originated or certify that a manual correspondence is correct. In particular,
+a predeclared roster input MUST come from independently documented prior metadata
+and not from unsealing score-bearing 2025/26 rows. A future protected operator
+must review and freeze the actual source/rights, old 2024 training-to-provider
+mapping, roster identity, code and model artifacts **before** any label read.
+The current module does not access a database, build a real manifest or grant
+single-use evaluation permission. The earlier private snapshot registry remains
+unchanged. M2 stays **5/8 OPEN**, M3 prohibited.
