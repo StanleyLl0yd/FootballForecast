@@ -1,3 +1,8 @@
+## M2 independently corroborated CC0 development anomalies — 2026-11-05
+
+- Public source pins and nine public references corroborate one 2023/24 reversed home/away fixture and six technical outcomes in 2019/20–2020/21. Added a separate aggregate-safe evidence receipt and four static regression tests; the previous shape evidence is unchanged.
+- No private data access, automatic source correction, study-lock approval, historical publisher-as-of proof, new model fitting, or 2025/26 holdout read. M2 remains 4/8 OPEN.
+
 ## M2 pinned independent CC0 RPL source shape evidence — 2026-11-05
 
 - Pinned two publicly CC0-licensed publisher repository commits and five development-season file blob SHAs in a safe aggregate-only source-quality receipt. Observed 5×240 structural fixture records, six explicitly awarded scores in 2019/20–2020/21, and one duplicate/missing directed pairing in 2023/24. Added synthetic/static evidence tests; no raw match rows or private sources in Git.
