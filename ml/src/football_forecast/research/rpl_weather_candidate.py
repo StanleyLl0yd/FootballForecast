@@ -51,7 +51,8 @@ def check_weather_candidate(candidate: WeatherCandidate) -> WeatherCandidateRece
     review, not authentication performed here. Missing evidence fails closed.
     Never infer issuance or serving time from a `_previous_day1` value alone.
     """
-    if not isinstance(candidate, WeatherCandidate) or candidate.season not in DEVELOPMENT_SEASONS:
+    if (not isinstance(candidate, WeatherCandidate) or not isinstance(candidate.season, str)
+            or candidate.season not in DEVELOPMENT_SEASONS):
         raise DataError("RPL weather: only 2018/19–2024/25 development research is eligible")
     values = (
         candidate.kickoff_at, candidate.forecast_valid_at, candidate.forecast_run_at,

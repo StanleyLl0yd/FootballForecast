@@ -49,6 +49,7 @@ def test_exact_cutoff_inclusive_but_later_delivery_rejected():
 
 @pytest.mark.parametrize('changes', [
     {'season': '2025/26'},
+    {'season': []},
     {'season': '2026/27'},
     {'kickoff_at': datetime(2024, 6, 30, 18, 30, tzinfo=UTC)},
     {'forecast_valid_at': datetime(2024, 8, 1, 19, tzinfo=UTC)},
