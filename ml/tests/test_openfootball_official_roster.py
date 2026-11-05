@@ -60,6 +60,18 @@ def test_official_roster_precedes_first_match_and_corrects_provisional_torpedo()
     assert data["matchResultsOrHoldoutRecordsIncluded"] is False
     assert data["studyLockApproved"] is False
     assert data["holdoutRead"] is False
+    live = data["trainOnlyLiveAggregate"]
+    assert live["role"] == "2024/2025 train_baseline only"
+    assert live["distinctSourceIdNamePairs"] == 16
+    assert live["distinctSourceIds"] == 16
+    assert live["distinctSourceNames"] == 16
+    assert live["unmappedTrainNames"] == 0
+    assert live["missingDeclaredTrainNames"] == 0
+    assert live["distinctOpenFootballAliases"] == 16
+    assert live["modelAliasListSha256"] == _digest(ALIASES)
+    assert live["holdoutRowsQueried"] == 0
+    assert live["rawProviderIdentifiersOrRowsLogged"] is False
+    assert live["mappingApproval"] == "CANDIDATE_ONLY"
 
 
 def test_training_names_exactly_match_immutable_escrow_alias_fingerprint():
