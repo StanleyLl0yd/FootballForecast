@@ -1,3 +1,8 @@
+## M2 two match-level historical stadium corroborations — 2026-11-05
+
+- Added two dated official pre-match stadium notices and independent played-venue references to the already-pinned 2023/24 source anomaly receipt, with conservative regression checks. Venue is a per-match fact, not automatically inherited from the club's usual home ground.
+- No private source linkage, precise venue coordinates, historical model-run availability, model-use rights, weather features, real training, 2025/26 access, or acceptance-count change. M2 4/8 OPEN.
+
 ## M2 independently corroborated CC0 development anomalies — 2026-11-05
 
 - Public source pins and nine public references corroborate one 2023/24 reversed home/away fixture and six technical outcomes in 2019/20–2020/21. Added a separate aggregate-safe evidence receipt and four static regression tests; the previous shape evidence is unchanged.

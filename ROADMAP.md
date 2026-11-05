@@ -1,3 +1,7 @@
+## M2 match-level historical venue proof — 2026-11-05
+
+Two specific swapped 2023/24 fixtures now have dated official pre-match stadium notices and independent played-venue reports: 16 Sep 2023 (round 8, Открытие Банк Арена in Moscow) and 13 Apr 2024 (round 24, Фишт in Sochi). [Evidence](docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json) is public, bounded, no private team IDs/scores, and only establishes *two* actual match venues. Exact coordinates, first source-serving UTC time, whole-season venues, lawful model-use rights, private fixture mapping and historical weather availability remain unverified. Original archives and 2025/26 holdout unchanged; no model fit; **M2 4/8 OPEN**.
+
 ## M2 independently corroborated CC0 anomalies — 2026-11-05
 
 Pinned publisher data revealed a **specific 2023/24 direction error**: line 113 (matchday 8, 2023-09-16) retains the pre-reversal home/away schedule, creating the duplicate directed pair with line 328. The [home club's dated 2023-09-07 official swap notice](https://pfcsochi.ru/news/2023-2024/rfs-i-rpl-soglasovali-perenos-matchey-mezhdu-sochi-i-spartakom/), [RFS season calendar](https://www.rfs.ru/tournament/1434/calendar?round_id=18568), and [independent played-result record](https://www.championat.com/football/_russiapl/tournament/5441/match/1101821/) independently verify that this archived home/away direction is wrong. The publisher file and private snapshots were **not corrected or changed**; only the single public anomaly is corroborated, not the remainder of the season.
