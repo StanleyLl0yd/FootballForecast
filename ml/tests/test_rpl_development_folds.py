@@ -17,17 +17,25 @@ def synthetic_corpus():
     matches = []
     for year in range(2018, 2025):
         season = f"{year}/{(year + 1) % 100:02d}"
-        idx = 0
-        for h in range(16):
-            for a in range(16):
-                if h == a:
-                    continue
-                kickoff = datetime(year, 9, 1, 15, tzinfo=UTC) + timedelta(days=idx // 8)
-                matches.append(DevelopmentMatch(
-                    season, f"synthetic_{year}_{idx}", kickoff,
-                    f"club_{h}", f"club_{a}", h % 3, a % 2,
-                ))
-                idx += 1
+        # Realistic double round-robin: eight disjoint fixtures each round.
+        rotation = list(range(16))
+        first_leg = []
+        for round_no in range(15):
+            for slot in range(8):
+                home, away = rotation[slot], rotation[-slot - 1]
+                if round_no % 2:
+                    home, away = away, home
+                first_leg.append((home, away, round_no))
+            rotation = [rotation[0], rotation[-1], *rotation[1:-1]]
+        schedule = first_leg + [
+            (away, home, round_no + 15) for home, away, round_no in first_leg
+        ]
+        for idx, (h, a, round_no) in enumerate(schedule):
+            kickoff = datetime(year, 9, 1, 15, tzinfo=UTC) + timedelta(days=round_no * 7)
+            matches.append(DevelopmentMatch(
+                season, f"synthetic_{year}_{idx}", kickoff,
+                f"club_{h}", f"club_{a}", h % 3, a % 2,
+            ))
     return tuple(matches)
 
 
@@ -73,4 +81,15 @@ def test_refuses_temporal_overlap_from_pandemic_season_boundary():
     rows[train_idx] = replace(rows[train_idx], kickoff_at=datetime(2020, 7, 22, tzinfo=UTC))
     rows[eval_idx] = replace(rows[eval_idx], kickoff_at=datetime(2020, 7, 15, tzinfo=UTC))
     with pytest.raises(DataError, match="overlap"):
+        plan_expanding_development_folds(tuple(rows))
+
+
+def test_refuses_same_club_twice_in_one_utc_day_with_all_pairs_present():
+    rows = list(synthetic_corpus())
+    original = rows[0]
+    other = next(i for i, row in enumerate(rows) if row.season == original.season
+                 and row.kickoff_at != original.kickoff_at
+                 and original.home_team_id in (row.home_team_id, row.away_team_id))
+    rows[other] = replace(rows[other], kickoff_at=original.kickoff_at)
+    with pytest.raises(DataError, match="twice on one UTC day"):
         plan_expanding_development_folds(tuple(rows))
