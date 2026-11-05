@@ -1,3 +1,8 @@
+## M2 pinned independent CC0 RPL source shape evidence — 2026-11-05
+
+- Pinned two publicly CC0-licensed publisher repository commits and five development-season file blob SHAs in a safe aggregate-only source-quality receipt. Observed 5×240 structural fixture records, six explicitly awarded scores in 2019/20–2020/21, and one duplicate/missing directed pairing in 2023/24. Added synthetic/static evidence tests; no raw match rows or private sources in Git.
+- Sources are **candidates for independent retrospective result corroboration only**, not automatically adopted played scores or source identity, timestamp or upstream-rights verification; sealed holdout, training approval and M2 4/8 unchanged.
+
 ## M2 fail-closed weather candidate preflight — 2026-11-05
 
 - Added synthetic-only `rpl_weather_candidate` gate and 26 tests for UTC midnight cutoff, forecast initialization and actual availability, dated venues, strict 2018/19–2024/25 scope, and explicit source-rights assertions. Even a passing candidate is **never approved** for real training.

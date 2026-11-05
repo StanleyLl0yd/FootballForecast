@@ -1,3 +1,7 @@
+## M2 five CC0 historical RPL source shape snapshots — 2026-11-05
+
+Read-only original-repository, content-SHA-pinned evidence confirms 1,200 structurally present RPL fixtures across five 2018/19–2024/25 development seasons, **not 1,200 eligible played-score training rows**: 2019/20 contains four and 2020/21 two explicitly awarded results; 2023/24 Football.TXT has only 239 unique home/away pairings out of 240. Individual original kickoff/publication times and rights of upstream contributions are not independently verified. 2021/22 and 2022/23 are missing from the two checked CC0 repositories, not from the wider internet. [Research-only evidence](docs/M2_CC0_RPL_DEVELOPMENT_SOURCE_SHAPE_EVIDENCE.json); no private match read, model fitting, or 2025/26 holdout access. M2 4/8 OPEN.
+
 ## M2 synthetic weather candidate preflight and SStats specification status — 2026-11-05
 
 A pure 26-test synthetic gate now refuses RPL historical weather without pre-cutoff source availability, verified venue validity and source rights; it **never** authorizes model admission. Official SStats docs expose `/Ls/Leagues` but its bounded query parameters, complete downloadable specification, and training rights remain unverified. No new SStats request, source data import, model fitting or holdout read. M2 4/8 OPEN; M3 unauthorized. [Details](docs/RPL_SEVEN_SEASON_ENRICHMENT_SOURCES.md).
