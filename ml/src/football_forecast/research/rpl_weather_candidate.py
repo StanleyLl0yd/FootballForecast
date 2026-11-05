@@ -24,6 +24,8 @@ class WeatherCandidate:
     venue_valid_until: datetime | None
     venue_latitude: float | None
     venue_longitude: float | None
+    # Explicit model-supported upper lead; assertion is not source authentication.
+    model_max_lead_hours: int | None = None
     venue_independent_evidence: bool = False
     run_independent_evidence: bool = False
     availability_independent_evidence: bool = False
@@ -47,8 +49,9 @@ def _utc(value: object) -> bool:
 def check_weather_candidate(candidate: WeatherCandidate) -> WeatherCandidateReceipt:
     """Reject timing/location/provenance gaps; never produce an approved feature.
 
-    The evidence booleans are explicit assertions from a separate human/source
-    review, not authentication performed here. Missing evidence fails closed.
+    The evidence booleans and per-model maximum lead are assertions from
+    separate source review, not authentication performed here.
+    Missing evidence or a run older than the declared horizon fails closed.
     Never infer issuance or serving time from a `_previous_day1` value alone.
     """
     if (not isinstance(candidate, WeatherCandidate) or not isinstance(candidate.season, str)
@@ -71,7 +74,17 @@ def check_weather_candidate(candidate: WeatherCandidate) -> WeatherCandidateRece
     cutoff = datetime(kickoff.year, kickoff.month, kickoff.day, tzinfo=UTC)
     if not (timedelta(0) <= kickoff - valid < timedelta(hours=1)):
         raise DataError("RPL weather: future or nonmatching forecast valid hour")
-    if not (valid - run >= timedelta(hours=24) and run <= available <= cutoff):
+    # The selected Open-Meteo hourly variable must have a whole-hour valid time.
+    if valid.minute or valid.second or valid.microsecond:
+        raise DataError("RPL weather: expected an exact hourly forecast valid instant")
+    # Do not accept an arbitrarily ancient run: even the caller-declared model
+    # limit is bounded. This check does not authenticate the claim historically.
+    horizon = candidate.model_max_lead_hours
+    if type(horizon) is not int or not 24 <= horizon <= 16 * 24:
+        raise DataError("RPL weather: independently reviewed bounded model horizon required")
+    lead = valid - run
+    if not (timedelta(hours=24) <= lead <= timedelta(hours=horizon)
+            and run <= available <= cutoff):
         raise DataError("RPL weather: run or original source availability after cutoff")
     if not venue_from <= kickoff < venue_until:
         raise DataError("RPL weather: historical venue validity interval does not cover kickoff")

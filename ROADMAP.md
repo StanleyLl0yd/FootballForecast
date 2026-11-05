@@ -1,3 +1,7 @@
+## M2 hourly weather and bounded model-horizon negative gates — 2026-11-05
+
+Pure research-only preflight rejects fractional-hour valid instants and implausibly old forecast runs outside an explicit per-model declared horizon (24–384h). Current JMA nominal updates and historical Open-Meteo fixed lead values do **not** authenticate first original serving. No real match weather, source admission, model training, holdout access or M2 acceptance change. **M2 4/8 OPEN**.
+
 ## M2 non-operational stadium coordinate reference pairs — 2026-11-05
 
 For the two independently confirmed swapped 2023/24 played venues, separate architectural and stadium-directory location listings agree within approximately 20 metres. [Bounded public evidence](docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json) is a reference-point candidate, not an authenticated historical pitch coordinate, forecast grid, original product first-serving time, source-rights clearance, private fixture join or model-use permission. No DB/model/holdout access; **M2 4/8 OPEN**.
