@@ -1,3 +1,8 @@
+## M2 synthetic weather horizon and valid-hour safeguards — 2026-11-05
+
+- Reject fractional-hour Open-Meteo forecast-valid instants and impossible run-to-valid horizons beyond an explicit bounded model-specific lead. Added negative synthetic cases for invalid horizons, minute/second offsets and ancient runs.
+- No verification of original historical forecast first-serving times, model rights, stadium grids or approved join; no database, model or holdout access. M2 4/8 OPEN.
+
 ## M2 approximate stadium-location references, evidence only — 2026-11-05
 
 - Added two separate published coordinate reference pages for each of the two previously corroborated 2023/24 switched venues, with static crosschecks against existing fixture-level evidence and explicit fail-closed permission flags.
