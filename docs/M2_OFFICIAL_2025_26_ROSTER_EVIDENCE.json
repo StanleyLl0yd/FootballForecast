@@ -119,7 +119,7 @@
     "assumes": "16-team home-and-away double round robin, source identities exactly official, all fixtures played/validated",
     "sourceOfCounts": "pre-kickoff roster combinatorics only; not 2025/26 match records",
     "holdoutResultsRead": false,
-    "notModelAccuracy": false,
-    "mustFailClosedOnUnexpectedCoverage": true
+    "mustFailClosedOnUnexpectedCoverage": true,
+    "modelAccuracyEvaluated": false
   }
 }
