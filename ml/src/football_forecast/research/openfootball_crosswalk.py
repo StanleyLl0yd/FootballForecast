@@ -133,3 +133,167 @@ def prepare_train_only_crosswalk(
         "unknownPolicy": _POLICY,
     })
     return FrozenTrainCrosswalk(train_entries, roster_entries, commitment)
+
+
+# Names are public preseason facts, never provider IDs or heldout match records.
+# The two dated official RFU decisions and final names are separately recorded in
+# docs/M2_OFFICIAL_2025_26_ROSTER_EVIDENCE.json. Torpedo was replaced by
+# Orenburg BEFORE the first 2025/26 match, so the provisional roster is invalid.
+TRAIN_2024_PUBLIC_NAME_TO_OPENFOOTBALL = {
+    "Акрон": "Akron Tolyatti",
+    "Ахмат": "Akhmat Grozny",
+    "Динамо Махачкала": "FK Dinamo Makhachkala",
+    "Динамо Москва": "Dinamo Moskva",
+    "Зенит": "Zenit St. Petersburg",
+    "Краснодар": "FK Krasnodar",
+    "Крылья Советов": "Krylia Sovetov",
+    "Локомотив": "Lokomotiv Moskva",
+    "Оренбург": "FK Orenburg",
+    "Пари НН": "FK Nizhny Novgorod",
+    "Ростов": "FK Rostov",
+    "Рубин": "Rubin Kazan",
+    "Спартак": "Spartak Moskva",
+    "Факел": "Fakel Voronezh",
+    "Химки": "FK Khimki",
+    "ЦСКА": "CSKA Moskva",
+}
+OFFICIAL_2025_FINAL_ROSTER = tuple(sorted((
+    "Акрон", "Ахмат", "Балтика", "Динамо Махачкала", "Динамо Москва",
+    "Зенит", "Краснодар", "Крылья Советов", "Локомотив",
+    "Оренбург", "Пари НН", "Ростов", "Рубин", "Сочи", "Спартак", "ЦСКА",
+)))
+OFFICIAL_2025_NEW = ("Балтика", "Сочи")
+_PINNED_TRAIN_MODEL_ALIAS_SHA = (
+    "3f10e2bd77f348b570036efc8827f0571a26cae55c7dcb4ad93b5a39710e631b"
+)
+_OFFICIAL_ROSTER_POLICY = "rfs-2025-07-11-exact-name-incumbent-id-promoted-abstain-v1"
+
+
+@dataclass(frozen=True, slots=True)
+class FrozenOfficialRosterCrosswalk:
+    """Private 2024 metadata and public 2025 roster, fixed BEFORE heldout reads.
+
+    The unknown promoted provider IDs are not invented: after a study lock,
+    the worker must verify that the source's exact names match the official
+    roster, and that returning clubs still use their known 2024 source IDs.
+    No 2025/26 ID, result or match time is used to construct this digest.
+    """
+    training_entries: tuple[tuple[str, str, str], ...]
+    sha256: str
+
+    def public_receipt(self) -> dict[str, object]:
+        return {
+            "schemaVersion": 1,
+            "kind": "M2_OFFICIAL_PRESEASON_ROSTER_CROSSWALK_CANDIDATE",
+            "protocol": PROTOCOL,
+            "trainClubs": 16,
+            "returningClubs": 14,
+            "unseenClubs": 2,
+            "sourceRosterRevision": "2025-07-11",
+            "trainAliasSetSha256": _PINNED_TRAIN_MODEL_ALIAS_SHA,
+            "crosswalkSha256": self.sha256,
+            "privateProviderIdsIncluded": False,
+            "holdoutRead": False,
+            "studyLockApproved": False,
+            "modelEvaluationApproved": False,
+        }
+
+    def resolve_roster_metadata(
+        self, source_pairs: tuple[tuple[str, str], ...],
+    ) -> tuple[tuple[str, str, str], ...]:
+        """Only for a LATER approved one-use worker; no scores are accepted.
+
+        Validate complete source metadata after authenticating a pre-holdout
+        lock. Unexpected/renamed teams or reused IDs reject the entire set.
+        The returned private tuples are NOT public receipts.
+        """
+        if type(source_pairs) is not tuple or len(source_pairs) != 16:
+            raise DataError("M2 official roster: expected 16 source identity pairs")
+        incumbents = {
+            name: (source_id, alias)
+            for source_id, name, alias in self.training_entries
+        }
+        incumbent_ids = {entry[0] for entry in self.training_entries}
+        unique_ids: set[str] = set()
+        unique_names: set[str] = set()
+        resolved: list[tuple[str, str, str]] = []
+        for pair in source_pairs:
+            if (type(pair) is not tuple or len(pair) != 2
+                    or type(pair[1]) is not str):
+                raise DataError("M2 official roster: invalid provider team metadata")
+            source_id, name = _source_id(pair[0]), pair[1]
+            if (source_id in unique_ids or name in unique_names
+                    or name not in OFFICIAL_2025_FINAL_ROSTER):
+                raise DataError("M2 official roster: duplicate or unexpected club")
+            unique_ids.add(source_id)
+            unique_names.add(name)
+            if name in incumbents:
+                expected_id, alias = incumbents[name]
+                if source_id != expected_id:
+                    raise DataError("M2 official roster: incumbent source ID drift")
+            elif name in OFFICIAL_2025_NEW and source_id not in incumbent_ids:
+                alias = _unseen_alias("official-2025-26:" + name)
+            else:
+                raise DataError("M2 official roster: unapproved promoted club identity")
+            resolved.append((source_id, name, alias))
+        if (unique_names != set(OFFICIAL_2025_FINAL_ROSTER)
+                or len({entry[2] for entry in resolved}) != 16):
+            raise DataError("M2 official roster: incomplete or colliding identities")
+        return tuple(sorted(resolved))
+
+
+def prepare_official_roster_crosswalk(
+    *, train_source_pairs: tuple[tuple[str, str], ...],
+    model_team_aliases: tuple[str, ...],
+) -> FrozenOfficialRosterCrosswalk:
+    """No heldout data: construct the real-name candidate from 2024 TRAIN only.
+
+    Caller must independently verify 2024 source identity/bytes, the manual
+    16-name correspondence, the RFU dated revision and the stored model escrow
+    BEFORE claiming a protected lock. This function does not make that claim.
+    """
+    names = TRAIN_2024_PUBLIC_NAME_TO_OPENFOOTBALL
+    if (type(train_source_pairs) is not tuple or len(train_source_pairs) != 16
+            or type(model_team_aliases) is not tuple
+            or len(model_team_aliases) != 16):
+        raise DataError("M2 official crosswalk: incomplete train-only input")
+    if (len(set(names)) != 16 or len(set(names.values())) != 16
+            or set(OFFICIAL_2025_FINAL_ROSTER) - set(names) != set(OFFICIAL_2025_NEW)
+            or len(set(OFFICIAL_2025_FINAL_ROSTER) & set(names)) != 14):
+        raise DataError("M2 official crosswalk: invalid reviewed roster policy")
+    frozen_aliases = tuple(sorted(_train_alias(value) for value in names.values()))
+    if (_digest(frozen_aliases) != _PINNED_TRAIN_MODEL_ALIAS_SHA
+            or tuple(sorted(model_team_aliases)) != frozen_aliases):
+        raise DataError("M2 official crosswalk: model alias set mismatch")
+    source_ids: set[str] = set()
+    source_names: set[str] = set()
+    entries: list[tuple[str, str, str]] = []
+    for pair in train_source_pairs:
+        if (type(pair) is not tuple or len(pair) != 2
+                or type(pair[1]) is not str):
+            raise DataError("M2 official crosswalk: invalid train identity pair")
+        source_id, name = _source_id(pair[0]), pair[1]
+        if (source_id in source_ids or name in source_names or name not in names):
+            raise DataError("M2 official crosswalk: unknown or duplicate train club")
+        source_ids.add(source_id)
+        source_names.add(name)
+        entries.append((source_id, name, _train_alias(names[name])))
+    if source_names != set(names):
+        raise DataError("M2 official crosswalk: incomplete 2024 team roster")
+    train_entries = tuple(sorted(entries))
+    return FrozenOfficialRosterCrosswalk(
+        training_entries=train_entries,
+        sha256=_digest({
+            "schemaVersion": 1,
+            "protocol": PROTOCOL,
+            "policy": _OFFICIAL_ROSTER_POLICY,
+            "sourceEvidence": [
+                "https://www.rfs.ru/news/222586",
+                "https://www.rfs.ru/news/222692",
+            ],
+            "trainingEntries": train_entries,
+            "officialFinalRoster": OFFICIAL_2025_FINAL_ROSTER,
+            "unseenOfficialNames": OFFICIAL_2025_NEW,
+            "modelAliasSetSha256": _PINNED_TRAIN_MODEL_ALIAS_SHA,
+        }),
+    )
