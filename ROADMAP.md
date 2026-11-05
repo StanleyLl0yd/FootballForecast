@@ -1,3 +1,7 @@
+## M2 synthetic weather candidate preflight and SStats specification status — 2026-11-05
+
+A pure 25-test synthetic gate now refuses RPL historical weather without pre-cutoff source availability, verified venue validity and source rights; it **never** authorizes model admission. Official SStats docs expose `/Ls/Leagues` but its bounded query parameters, complete downloadable specification, and training rights remain unverified. No new SStats request, source data import, model fitting or holdout read. M2 4/8 OPEN; M3 unauthorized. [Details](docs/RPL_SEVEN_SEASON_ENRICHMENT_SOURCES.md).
+
 ## M2 bounded SStats catalog transfer-integrity finding — 2026-11-03
 
 Protected [owner run #41697495298](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41697495298) safely classified HTTP200 catalog as JSON-prefixed, invalid JSON with **exactly 1,500,000 captured bytes**, equal to the configured maximum. Curl exit code was discarded by `|| true`, therefore successful full transfer cannot be attested and size-cap truncation is likely; no claim that SStats itself sends malformed JSON. Subsequent guarded source workflows must check nonzero curl status and fail closed as inconclusive transfer (all four bounded GETs). Do not raise the 1.5MB cap or repeat a large catalog download until endpoint/pagination/rights are independently qualified. No games, odds, model fitting or holdout reads. M2 4/8 OPEN; M3 forbidden. [Aggregate evidence](docs/M2_FREE_SOURCE_ENRICHMENT_OBSERVATION_EVIDENCE.json).

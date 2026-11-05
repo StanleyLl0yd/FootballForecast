@@ -15,6 +15,9 @@ Applies to the entire repository, including Python ML, Next.js/TypeScript, SQL, 
 
 ## FootballForecast invariants
 
+- **2026-11-05 historical weather candidate preflight:** `rpl_weather_candidate.py` is synthetic-only and cannot approve real model features or a historical pre-match-as-of claim. Historical venue identity/location, model-run initialization, **actual earliest source availability** before midnight UTC, and rights must be independently evidenced; JMA nominal update tables and Open-Meteo `_previous_day1` cannot substitute. Never attach city-reference weather to match records. `/Ls/Leagues` appears in official SStats docs but its official bounded filter contract/rights are unverified: no further full-catalog requests or games data until established.
+
+
 - **SStats #41697495298 transfer completeness:** catalog probe captured exactly 1,500,000 bytes (its configured maximum), JSON prefix invalid; full response integrity NOT verified because curl error status was previously ignored. The captured-payload SHA is not a complete-source digest. Never label a partial download as successful HTTP200 JSON, raise limits implicitly, log provider body or infer missing API coverage; all four bounded GETs must honor curl exit status and fail closed. Do not fetch games without an independently validated unique league ID and lawful terms.
 
 - **Real 2018–2024 JMA GSM reference #41695184408:** 7/7 days, 168/168 non-null hours, without verified stadium, match as-of or historical forecast issuance. **SStats repeat #41695180516:** INCONCLUSIVE_SCHEMA, no games fetched. Future catalog probes may classify raw response only by allowlisted format/length/SHA, never output body, headers, provider messages, IDs, match rows or odds. Keep sealed 2025/26 untouched and research-only.

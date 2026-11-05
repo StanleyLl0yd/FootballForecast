@@ -1,3 +1,8 @@
+## M2 fail-closed weather candidate preflight — 2026-11-05
+
+- Added synthetic-only `rpl_weather_candidate` gate and 25 tests for UTC midnight cutoff, forecast initialization and actual availability, dated venues, strict 2018/19–2024/25 scope, and explicit source-rights assertions. Even a passing candidate is **never approved** for real training.
+- Documented JMA GSM nominal publication lag, independent historical venue limitations and the still-unverified SStats `/Ls/Leagues` official filter/terms. No large catalog rerun, new data, real fit, holdout or M3 activity. M2 stays 4/8 OPEN.
+
 ## M2 safe curl transfer-status enforcement — 2026-11-03
 - Protected SStats #41697495298 returned JSON-prefixed invalid data at exactly the 1,500,000-byte configured body cap; body completeness not verified because curl nonzero exits were ignored. Hardened all four bounded source GETs so transfer failures, including body-size limits, fail closed without treating HTTP 200 as a complete response. Added static regression checks, no enlarged request cap and no raw data logging. Pinned only safe partial-capture digest and evidence; no match/odds import, training or holdout access.
 
