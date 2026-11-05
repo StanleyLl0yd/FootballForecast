@@ -294,3 +294,16 @@ match rows**, is anchored in Git by the protected review of
 **not** independently approved pre-holdout study lock. Sealed 2025/26
 evaluation and forecast publication remain forbidden. M2 stays **4/8 OPEN**;
 M3 unauthorized.
+
+## Source-independent 2025/26 evaluation contract — 2026-11-05 (preparation only)
+
+The pure module `ml/src/football_forecast/research/openfootball_evaluate.py` prepares the **existing fixed OpenFootball calendar Poisson model** for a future, owner-authorized, **non-strict retrospective** single-use evaluation. It is separate from the historical source-specific `m2-independent-poisson-v1` evaluator, which cannot bind an independently sourced 2025/26 cohort to a distinct source SHA. The new module has no network, database, filesystem, training, artifact or publication path.
+
+- A separately reviewed protected **pre-holdout lock** must pin the actual train-only escrow model SHA, canonical private artifact SHA, training rows/source/code and immutable 2025/26 holdout source/snapshot/crosswalk commitments. The train and holdout source SHA **must differ**. The pure `CalendarStudyLock` is only an in-memory data shape: constructing or validating it **cannot authorize** a holdout read.
+- A trusted one-use runner must verify the *real* protected immutable lock, permissions and source-specific terms, 2025/26 source bytes, protected read-only permissions, and a crosswalk fixed independently of heldout scores **before reading labels**. The runner and a qualified independent result source are **not yet implemented/approved**. No score may be generated from real 2025/26 labels yet.
+- Synthetic-only tests exercise 240 directed fixtures, strict played-vs-awarded semantics, UTC kickoff bounds, 16-club 15-home/15-away structure, unique identities, source/snapshot/crosswalk commitment mismatch, model escrow digest mismatch and deterministic H/D/A Log Loss/Brier/RPS with training-only H/D/A prior **103/65/72**. Unseen/promoted clubs abstain and are counted; no strengths are inferred from 2025/26 labels.
+- This is not a pre-match-as-of authenticated walk-forward, a calibrated model, an approved training pipeline, a superior-to-bookmaker claim, or M3 authorization. The previous seven private immutable development snapshots, 2024/25 model escrow, and sealed 2025/26 holdout remain unchanged. **M2 is 5/8 OPEN.**
+
+### Owner data-use direction, 2026-11-05
+
+The owner explicitly permits using all **already accumulated historical datasets** for private model training and retrospective research, subject to actual third-party source permissions and keeping the frozen 2025/26 control cohort independent for its **first** M2 evaluation. This permission does **not** allow silently reclassifying a provider license, training on the sealed holdout before the fixed-model test, using heldout labels for aliases/hyperparameters, source redistribution, production forecast publication, or paid upgrades. Later seven-season experiments must be separately preregistered and evaluated on a genuinely independent cohort.
