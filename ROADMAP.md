@@ -1,3 +1,7 @@
+## M2 independent-source evaluator, synthetic-only preparation — 2026-11-05
+
+The new pure `openfootball_evaluate.py` scorer binds the frozen train-only model to a **different, independently pinned** 2025/26 source/snapshot/crosswalk; the legacy evaluator remains unchanged. Unit tests exercise outcome metrics, promoted-club abstention and bad-source/awarded/UTC/calendar refusals. **No real 2025/26 data, no study-lock approval, no model training or benchmarks. M2 remains 5/8 OPEN.** [Protocol](docs/M2_OPENFOOTBALL_PROTOCOL.md#source-independent-202526-evaluation-contract--2026-11-05-preparation-only).
+
 ## M2 owner-facing research UI accepted — 2026-11-05
 
 **M2 актуальная приёмка (05.11.2026): 5/8, OPEN.** Владелец подтвердил реальный вход через GitHub и доступ к защищённому `/admin/research`; приватное окно без сессии перенаправляется на `/login`. Сервисные переменные Supabase/Vercel проверены, production `dpl_HL1zubyys1rZe6MfMf1WRijfK1tg` READY в `fra1` на `99d1b424c96e04eb75a853daa7225154bd14770e` и основной alias подтверждён. Проверка реального входа **чужого авторизованного** GitHub-аккаунта не выполнялась (unit-тесты отказа существуют). Временные токены управления отозваны владельцем. 2025/26 закрыт, study lock и оценка не утверждены; M3 запрещён. Подтверждение: [issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182#issuecomment-6659061668).

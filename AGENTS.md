@@ -1,5 +1,8 @@
 # Automation and repository hygiene
 
+> **2026-11-05 owner decision:** previously accumulated historical data may be used for private training/research within third-party rights. Preserve the sealed 2025/26 first-test split; do not tune it. The new pure OpenFootball-independent scorer does not authorize a real holdout read; independently reviewed immutable study lock, lawful source/crosswalk, one-use protected executor and owner acceptance are still required. M2 5/8 OPEN; M3 unauthorized.
+
+
 > **Current M2 acceptance, 2026-11-05: 5/8 OPEN.** Owner-browser GitHub OAuth and anonymous denial have been accepted; authenticated non-owner browser denial has not been observed. Historical entries below describing 4/8 are dated snapshots, not the current count. No holdout access, study-lock approval or M3 authorization.
 
 These rules apply repository-wide to human maintainers and coding agents.

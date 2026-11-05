@@ -1,5 +1,8 @@
 # FootballForecast
 
+**M2 fixed-model evaluation preparation (05.11.2026):** a pure new OpenFootball calendar model scorer accepts separately committed train/holdout source identities and guards promoted clubs; tests are synthetic-only. This is **not** a signed immutable study lock, a 2025/26 read, a benchmark or forecast. Owner authorized private historical training/evaluation subject to licensing and sealed first-test integrity. [Research protocol](docs/M2_OPENFOOTBALL_PROTOCOL.md).
+
+
 **M2 актуальная приёмка (05.11.2026): 5/8, OPEN.** Владелец подтвердил реальный вход через GitHub и доступ к защищённому `/admin/research`; приватное окно без сессии перенаправляется на `/login`. Сервисные переменные Supabase/Vercel проверены, production `dpl_HL1zubyys1rZe6MfMf1WRijfK1tg` READY в `fra1` на `99d1b424c96e04eb75a853daa7225154bd14770e` и основной alias подтверждён. Проверка реального входа **чужого авторизованного** GitHub-аккаунта не выполнялась (unit-тесты отказа существуют). Временные токены управления отозваны владельцем. 2025/26 закрыт, study lock и оценка не утверждены; M3 запрещён. Подтверждение: [issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182#issuecomment-6659061668).
 
 

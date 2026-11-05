@@ -1,3 +1,8 @@
+## M2 independent holdout identity groundwork — 2026-11-05
+
+- Added pure fixed OpenFootball 2024/25 model scorer contract for a separate 2025/26 source, locked snapshot and predeclared club crosswalk (unlike the archived same-source legacy study). Rejects model/artifact/source/role drift, synthetic bad status/awards, club/day duplication and non-UTC dates; abstains for newly promoted clubs.
+- Synthetic-only reproducibility and invalid-data tests; no real holdout read, private DB role change, production predictions or model performance claims. Owner private-data-use permission recorded with unchanged third-party rights and frozen holdout conditions. **M2 5/8 OPEN.**
+
 ## M2 protected owner research acceptance — 2026-11-05
 
 - Реальная GitHub OAuth-сессия владельца открывает owner-only `/admin/research`, а анонимный приватный браузер перенаправляется на `/login`. Конфигурация Vercel/Supabase подтверждена, временные management-токены отозваны владельцем. Отказ чужому авторизованному GitHub-аккаунту пока подтверждён только синтетическими тестами.
