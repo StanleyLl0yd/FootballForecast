@@ -44,7 +44,8 @@ def test_time_plausible_candidate_does_not_authorize_any_model_use():
 def test_exact_cutoff_inclusive_but_later_delivery_rejected():
     assert check_weather_candidate(candidate(first_available_at=datetime(2024, 8, 1, tzinfo=UTC)))
     with pytest.raises(DataError):
-        check_weather_candidate(candidate(first_available_at=datetime(2024, 8, 1, 0, 1, tzinfo=UTC)))
+        late = datetime(2024, 8, 1, 0, 1, tzinfo=UTC)
+        check_weather_candidate(candidate(first_available_at=late))
 
 
 @pytest.mark.parametrize('changes', [

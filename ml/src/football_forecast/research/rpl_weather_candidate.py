@@ -64,7 +64,8 @@ def check_weather_candidate(candidate: WeatherCandidate) -> WeatherCandidateRece
     kickoff, valid, run, available, venue_from, venue_until = values
     year = int(candidate.season[:4])
     season_start = datetime(year, 7, 1, tzinfo=UTC)
-    season_end = datetime(2020, 8, 1, tzinfo=UTC) if year == 2019 else datetime(year + 1, 7, 1, tzinfo=UTC)
+    season_end = (datetime(2020, 8, 1, tzinfo=UTC) if year == 2019
+                  else datetime(year + 1, 7, 1, tzinfo=UTC))
     if not season_start <= kickoff < season_end:
         raise DataError("RPL weather: kickoff outside development season")
     cutoff = datetime(kickoff.year, kickoff.month, kickoff.day, tzinfo=UTC)
@@ -84,5 +85,5 @@ def check_weather_candidate(candidate: WeatherCandidate) -> WeatherCandidateRece
         candidate.availability_independent_evidence, candidate.rights_independent_evidence,
     )
     if any(flag is not True for flag in evidence):
-        raise DataError("RPL weather: independently reviewed venue/run/availability/rights evidence missing")
+        raise DataError("RPL weather: independent venue/run/availability/rights evidence missing")
     return WeatherCandidateReceipt(cutoff_at=cutoff)
