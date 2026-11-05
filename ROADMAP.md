@@ -1,3 +1,7 @@
+## M2 historical result revision and played-goal safety — 2026-11-05
+
+Official RFS disciplinary and appeal notices and independent RSSSF archives establish an actually played 2022/23 match whose official result changed later. Development features now refuse unknown/awarded score origins, and a synthetic pure revision timeline helper separates on-field goals from official-table status. [Public evidence and unresolved historical first-serving UTC](docs/M2_PUBLIC_RPL_RESULT_REVISION_EVIDENCE.json). No private mapping, database mutation, real fit, held-out evaluation or acceptance-count change. **M2 4/8 OPEN; M3 prohibited.**
+
 ## M2 hourly weather and bounded model-horizon negative gates — 2026-11-05
 
 Pure research-only preflight rejects fractional-hour valid instants and implausibly old forecast runs outside an explicit per-model declared horizon (24–384h). Current JMA nominal updates and historical Open-Meteo fixed lead values do **not** authenticate first original serving. No real match weather, source admission, model training, holdout access or M2 acceptance change. **M2 4/8 OPEN**.

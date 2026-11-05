@@ -23,6 +23,10 @@
 
 First implement a *new, separate* seven-season model in its own module and protocol version only after club identity resolution and source eligibility review. Initial baselines are a frozen training-season H/D/A frequency baseline and a development-only multiseason Poisson model with pre-specified regularization, club promotion policy and deterministic fit. Do **not** modify, reuse as new results or silently expand the 2024/25 independent Poisson model stored for existing M2. Report proper scores **per validation season**, denominators, abstentions and coverage; then compare across all five folds. Any selection between model families or calibration curves must be based **only** on these development folds and preregistered before scoring the sealed independent holdout. Missing time-as-of provenance means only retrospective exploratory claims.
 
+## Revised official results versus played goals — 2026-11-05
+
+Result-score completeness is not played-score completeness. A 2022/23 independently documented RPL match was played and later awarded a different official result after a disciplinary decision. The pure feature builder now fails closed unless a caller explicitly supplies `result_kind="played"`; generic `finished` status plus numeric score is insufficient. A separate synthetic-only result-version selector requires exact original UTC availability instants before selecting either played goals or official-table result at historical cutoff. [Public chronology and missing proof](M2_PUBLIC_RPL_RESULT_REVISION_EVIDENCE.json). No private fixture join, automatic correction, model fitting, benchmarking or holdout read.
+
 ## Bookmaker-market comparison: exact matched timing
 
 `football_forecast.research.rpl_market_benchmark` is a **pure synthetic-tested metric helper**, not a downloader, odds database, betting recommendation, prediction publication or historical source attestation.

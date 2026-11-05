@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_PUBLIC_RPL_RESULT_REVISION_CROSSCHECK",
+  "observedAt": "2026-11-05",
+  "scope": "MANUAL_PUBLIC_REFERENCE_ONLY",
+  "sample": {
+    "season": "2022/23",
+    "calendarDate": "2023-03-19",
+    "federationDecisionDate": "2023-03-22",
+    "federationPublishedCalendarDate": "2023-03-23",
+    "federationAppealCalendarDate": "2023-04-27",
+    "federationAppealPublishedCalendarDate": "2023-04-28",
+    "fieldMatchPlayed": true,
+    "originalFieldResultLaterAnnulled": true,
+    "technicalResultDifferent": true,
+    "matchSpecificCrossSourceIdentityReviewed": false,
+    "historicalOriginalFirstServingUtc": null
+  },
+  "sources": [
+    {
+      "kind": "FEDERATION_DISCIPLINARY_PUBLICATION",
+      "url": "https://www.rfs.ru/news/217736"
+    },
+    {
+      "kind": "FEDERATION_APPEAL_PUBLICATION",
+      "url": "https://www.rfs.ru/news/218012"
+    },
+    {
+      "kind": "INDEPENDENT_RETROSPECTIVE_ARCHIVE",
+      "url": "https://www.rsssf.org/tablesr/rus2023.html"
+    }
+  ],
+  "gates": {
+    "automaticArchiveRewriteApproved": false,
+    "playedGoalsMayBeReadFromFinalTechnicalScore": false,
+    "retroactiveOfficialResultBeforeDecisionApproved": false,
+    "historicalExactPublicationUtcVerified": false,
+    "sourceRightsForAutomatedModelTrainingVerified": false,
+    "privateSourceMatchCrosswalkApproved": false,
+    "newModelFitOrEvaluationApproved": false,
+    "holdout2025_26Read": false,
+    "m3Authorized": false
+  },
+  "m2AcceptedCriteria": 4
+}

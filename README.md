@@ -1,5 +1,7 @@
 # FootballForecast
 
+> **M2 historical result revision (05.11.2026):** a played score and final official table result can differ following a later disciplinary ruling. Synthetic development features now reject unspecified/awarded score origins; a separate pure cutoff-aware helper is under test. Exact first historical availability and private match identity remain unverified. No real retraining, scoring or 2025/26 access. [Evidence](docs/M2_PUBLIC_RPL_RESULT_REVISION_EVIDENCE.json).
+
 > **M2 CC0 anomaly and venue review (05.11.2026):** independent confirmation of one reversed 2023/24 home/away fixture, the actual stadiums of both swapped fixtures, and six unplayed technical results. No automatic source correction, venue-to-private-match/weather join or training authorization. Two pairs of independent published stadium-location references are approximate only; no historical weather availability proven. Original snapshots and 2025/26 holdout untouched. [Evidence](docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json).
 
 **Персональная некоммерческая лаборатория вероятностных прогнозов РПЛ; публичный сайт пока лишь прототип.**
