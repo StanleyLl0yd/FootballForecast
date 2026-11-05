@@ -1,3 +1,8 @@
+## M2 protected owner research acceptance — 2026-11-05
+
+- Реальная GitHub OAuth-сессия владельца открывает owner-only `/admin/research`, а анонимный приватный браузер перенаправляется на `/login`. Конфигурация Vercel/Supabase подтверждена, временные management-токены отозваны владельцем. Отказ чужому авторизованному GitHub-аккаунту пока подтверждён только синтетическими тестами.
+- Согласован статус M2 **5/8 OPEN** в панели и актуальных разделах документации. Модель, sealed 2025/26, RLS и прогнозы не изменялись; M3 запрещён.
+
 ## M2 fail-closed historical result-revision semantics — 2026-11-05
 
 - Development-only played-goal features require explicit on-field result kind, rejecting technical awards and unverified final scores. New pure UTC-as-of result-version selector separates official-table and played-goal roles, with synthetic negative tests.
