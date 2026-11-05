@@ -108,6 +108,8 @@ def build_preflight_receipt(
         "trainOnlyClubCount": 16,
         "returningClubCount": 14,
         "unseenClubCount": 2,
+        "expectedEligibleMatchesIfAllValid": 182,
+        "expectedAbstentionsForUnseen": 58,
         "trainAliasSetSha256": _EXPECTED_ESCROW["club_mapping_sha256"],
         "trainModelArtifactSha256": _EXPECTED_ESCROW["model_artifact_sha256"],
         "trainFittedModelSha256": _EXPECTED_ESCROW["fitted_model_sha256"],
@@ -166,11 +168,15 @@ def main() -> None:
         evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
         aggregate = evidence["trainOnlyLiveAggregate"]
         pending = evidence["preHoldoutMetadataCommitmentCandidate"]
+        coverage = evidence["preregisteredEvaluationCoverage"]
         if (evidence["kind"] != "M2_OFFICIAL_2025_26_PRESEASON_ROSTER_GATE"
                 or pending["candidateCrosswalkSha256"] != _PINNED_CROSSWALK_SHA
                 or pending["sealedSourceSnapshotIdentitySha256"]
                 != _PINNED_SNAPSHOT_SHA
                 or pending["sealedMatchRowsRead"] != 0
+                or coverage["eligibleKnownVsKnownFixturesIfAllValid"] != 182
+                or coverage["expectedAbstentionsInvolvingUnseenClubIfAllValid"] != 58
+                or coverage["holdoutResultsRead"] is not False
                 or pending["immutableStudyLockApproved"] is not False
                 or aggregate["modelAliasListSha256"]
                 != _EXPECTED_ESCROW["club_mapping_sha256"]

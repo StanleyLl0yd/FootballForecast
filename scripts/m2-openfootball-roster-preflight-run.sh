@@ -30,7 +30,8 @@ const bytes=readFileSync(process.argv[2]);
 if(!bytes.length||bytes.length>4096)throw Error('Refuse oversized private receipt');
 const v=JSON.parse(bytes.toString('utf8'));
 const fields=['schemaVersion','kind','protocol','codeSha','trainOnlyClubCount',
-'returningClubCount','unseenClubCount','trainAliasSetSha256',
+'returningClubCount','unseenClubCount','expectedEligibleMatchesIfAllValid',
+'expectedAbstentionsForUnseen','trainAliasSetSha256',
 'trainModelArtifactSha256','trainFittedModelSha256',
 'privateHoldoutSnapshotIdentitySha256','candidateCrosswalkSha256',
 'realPrivateTrainMetadataVerified','externalHoldoutSourceRechecked',
@@ -41,6 +42,7 @@ if(Object.keys(v).length!==fields.length||fields.some(k=>!Object.hasOwn(v,k))||
    v.schemaVersion!==1||v.kind!=='M2_PROTECTED_PREHOLDOUT_ROSTER_PREFLIGHT'||
    v.protocol!=='m2-openfootball-calendar-v1'||v.codeSha!==process.env.GITHUB_SHA||
    v.trainOnlyClubCount!==16||v.returningClubCount!==14||v.unseenClubCount!==2||
+   v.expectedEligibleMatchesIfAllValid!==182||v.expectedAbstentionsForUnseen!==58||
    ['trainAliasSetSha256','trainModelArtifactSha256','trainFittedModelSha256',
     'privateHoldoutSnapshotIdentitySha256','candidateCrosswalkSha256']
      .some(k=>!digest.test(v[k]))||

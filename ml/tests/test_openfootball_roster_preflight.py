@@ -58,6 +58,8 @@ def test_synthetic_protected_readonly_receipt_and_no_private_identifiers(monkeyp
     assert receipt["trainOnlyClubCount"] == 16
     assert receipt["returningClubCount"] == 14
     assert receipt["unseenClubCount"] == 2
+    assert receipt["expectedEligibleMatchesIfAllValid"] == 182
+    assert receipt["expectedAbstentionsForUnseen"] == 58
     assert receipt["realPrivateTrainMetadataVerified"] is True
     for name in (
         "holdoutRead", "modelApproved", "immutableStudyLockApproved",
@@ -80,6 +82,10 @@ def test_synthetic_protected_readonly_receipt_and_no_private_identifiers(monkeyp
     assert pending["sealedMatchRowsRead"] == 0
     assert pending["protectedMainExecutionReverified"] is False
     assert pending["immutableStudyLockApproved"] is False
+    coverage = evidence["preregisteredEvaluationCoverage"]
+    assert coverage["eligibleKnownVsKnownFixturesIfAllValid"] == 14 * 13
+    assert coverage["expectedAbstentionsInvolvingUnseenClubIfAllValid"] == 240 - 182
+    assert coverage["holdoutResultsRead"] is False
 
 
 def test_bad_metadata_or_escrow_fails_closed(monkeypatch):

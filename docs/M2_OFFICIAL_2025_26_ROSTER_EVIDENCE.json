@@ -108,5 +108,18 @@
     "protectedMainExecutionReverified": false,
     "immutableStudyLockApproved": false,
     "interpretation": "Candidate commitment computed independently by read-only PostgreSQL over only 2024/25 TRAIN identities plus official pre-season roster. A separate pinned protected-main read-only worker must reproduce both hashes before any approval. Neither digest certifies original source rights or authorizes reading 2025/26."
+  },
+  "preregisteredEvaluationCoverage": {
+    "totalCompletedFixturesExpected": 240,
+    "trainingKnownClubsInOfficialFinalRoster": 14,
+    "trainingUnseenClubsInOfficialFinalRoster": 2,
+    "eligibleKnownVsKnownFixturesIfAllValid": 182,
+    "expectedAbstentionsInvolvingUnseenClubIfAllValid": 58,
+    "formula": "14 * (14 - 1) = 182; 240 - 182 = 58",
+    "assumes": "16-team home-and-away double round robin, source identities exactly official, all fixtures played/validated",
+    "sourceOfCounts": "pre-kickoff roster combinatorics only; not 2025/26 match records",
+    "holdoutResultsRead": false,
+    "notModelAccuracy": false,
+    "mustFailClosedOnUnexpectedCoverage": true
   }
 }

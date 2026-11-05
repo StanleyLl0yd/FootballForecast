@@ -372,3 +372,10 @@ clearance, observed performance, a one-use scorer or permission to unseal
 2025/26. The full protected study record, eligible rights, historical
 result/status checks, single-use runner and explicit acceptance remain
 required. M2 remains **5/8 OPEN**, M3 forbidden.
+
+The fixed-model first-evaluation **predeclared theoretical coverage** is 182
+familiar-vs-familiar matches (14 × 13) with 58 abstentions involving one
+or both unseen clubs (240 − 182). This assumes a valid double round robin;
+the protected evaluator must abort or apply only an already frozen exclusion
+policy if statuses, rights, club mappings or coverage differ. The numbers
+were computed from the pre-kickoff roster, never from sealed 2025/26 results.
