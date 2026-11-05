@@ -29,8 +29,10 @@ export default async function Page(){
     <PageHeading eyebrow="OWNER · M2" title="Контроль исследования"
       subtitle="Защищённый, только для чтения: наблюдения, недостающие доказательства и запреты до допуска к holdout."/>
     <div className="stat-grid">
-      <div className="stat"><span>Общий этап M2</span><strong>4/8</strong>
-        <small>4 критерия не приняты. M3 запрещён.</small></div>
+      <div className="stat"><span>Общий этап M2</span><strong>5/8</strong>
+        <small>3 критерия не приняты. M3 запрещён.</small></div>
+      <div className="stat"><span>Вход владельца · GitHub OAuth</span><strong>Принят</strong>
+        <small>Реальный вход и анонимный отказ подтверждены 05.11.2026; вход под чужим GitHub не проверялся в браузере.</small></div>
       <div className="stat"><span>Архивные train-only запуски v1</span>
         <strong>{evidence.state==='recorded'?'2/2':'—'}</strong>
         <small>Записанное наблюдение, не утверждённая модель</small></div>
@@ -48,6 +50,8 @@ export default async function Page(){
         <caption className="source-lab-note">Статусы относятся к текущему сохранённому наблюдению; ни один не предоставляет разрешений</caption>
         <thead><tr><th scope="col">Этап</th><th scope="col">Состояние</th><th scope="col">Следующее доказательство</th></tr></thead>
         <tbody>
+          <tr><th scope="row">Веб-интерфейс владельца</th><td>Принят 05.11.2026</td>
+            <td>Вход владельца и перенаправление без сессии проверены в браузере; чужой GitHub-аккаунт проверен только модульными тестами.</td></tr>
           <tr><th scope="row">Воспроизводимость train-only</th>
             <td>{evidence.state==='recorded'?'Два запуска записаны':'Не удалось проверить evidence'}</td>
             <td>Сопоставление исходных job logs и SHA; без статуса утверждённой модели</td></tr>

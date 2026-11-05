@@ -1,3 +1,9 @@
+## M2 owner-facing research UI accepted — 2026-11-05
+
+**M2 актуальная приёмка (05.11.2026): 5/8, OPEN.** Владелец подтвердил реальный вход через GitHub и доступ к защищённому `/admin/research`; приватное окно без сессии перенаправляется на `/login`. Сервисные переменные Supabase/Vercel проверены, production `dpl_HL1zubyys1rZe6MfMf1WRijfK1tg` READY в `fra1` на `99d1b424c96e04eb75a853daa7225154bd14770e` и основной alias подтверждён. Проверка реального входа **чужого авторизованного** GitHub-аккаунта не выполнялась (unit-тесты отказа существуют). Временные токены управления отозваны владельцем. 2025/26 закрыт, study lock и оценка не утверждены; M3 запрещён. Подтверждение: [issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182#issuecomment-6659061668).
+
+Осталось три критерия M2: разрешённая однократная независимая оценка на 2025/26 после подтверждения пригодности источника; защищённый immutable study lock и исследовательский отчёт; два полных repository-wide exit-аудита с окончательной приёмкой владельцем. Выполненное в браузере не служит разрешением читать holdout или публиковать прогнозы.
+
 ## M2 shared development-season guard for market/revision comparisons — 2026-11-05
 
 Three pure research modules now use one UTC season-window contract; the synthetic bookmaker comparator also rejects a forecast whose kickoff lies outside its declared validation season, even if the pre-game midnight cutoff is otherwise consistent. The 2019/20 July extension is preserved. No real market quotes or model scores were accessed, 2025/26 remains sealed, no new training or accuracy claims. **M2 4/8 OPEN; M3 prohibited.**

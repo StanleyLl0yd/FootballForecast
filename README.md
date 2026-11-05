@@ -1,5 +1,8 @@
 # FootballForecast
 
+**M2 актуальная приёмка (05.11.2026): 5/8, OPEN.** Владелец подтвердил реальный вход через GitHub и доступ к защищённому `/admin/research`; приватное окно без сессии перенаправляется на `/login`. Сервисные переменные Supabase/Vercel проверены, production `dpl_HL1zubyys1rZe6MfMf1WRijfK1tg` READY в `fra1` на `99d1b424c96e04eb75a853daa7225154bd14770e` и основной alias подтверждён. Проверка реального входа **чужого авторизованного** GitHub-аккаунта не выполнялась (unit-тесты отказа существуют). Временные токены управления отозваны владельцем. 2025/26 закрыт, study lock и оценка не утверждены; M3 запрещён. Подтверждение: [issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182#issuecomment-6659061668).
+
+
 > **M2 historical result revision (05.11.2026):** a played score and final official table result can differ following a later disciplinary ruling. Synthetic development features now reject unspecified/awarded score origins; a separate pure cutoff-aware helper is under test. Exact first historical availability and private match identity remain unverified. No real retraining, scoring or 2025/26 access. [Evidence](docs/M2_PUBLIC_RPL_RESULT_REVISION_EVIDENCE.json).
 
 > **M2 CC0 anomaly and venue review (05.11.2026):** independent confirmation of one reversed 2023/24 home/away fixture, the actual stadiums of both swapped fixtures, and six unplayed technical results. No automatic source correction, venue-to-private-match/weather join or training authorization. Two pairs of independent published stadium-location references are approximate only; no historical weather availability proven. Original snapshots and 2025/26 holdout untouched. [Evidence](docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json).

@@ -1,5 +1,7 @@
 # Automation and repository hygiene
 
+> **Current M2 acceptance, 2026-11-05: 5/8 OPEN.** Owner-browser GitHub OAuth and anonymous denial have been accepted; authenticated non-owner browser denial has not been observed. Historical entries below describing 4/8 are dated snapshots, not the current count. No holdout access, study-lock approval or M3 authorization.
+
 These rules apply repository-wide to human maintainers and coding agents.
 
 1. Treat GitHub `main`, active PRs, ROADMAP and open issues as the source of truth. Read their current state before starting; do not repeat completed work.
