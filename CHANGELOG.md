@@ -1,3 +1,8 @@
+## M2 approximate stadium-location references, evidence only — 2026-11-05
+
+- Added two separate published coordinate reference pages for each of the two previously corroborated 2023/24 switched venues, with static crosschecks against existing fixture-level evidence and explicit fail-closed permission flags.
+- These are approximate public location points, not pitch-centroid surveys or authenticated historical match-day positions; no weather join, actual forecast first-serving proof, model rights, private source access, training or holdout use. M2 4/8 OPEN.
+
 ## M2 two match-level historical stadium corroborations — 2026-11-05
 
 - Added two dated official pre-match stadium notices and independent played-venue references to the already-pinned 2023/24 source anomaly receipt, with conservative regression checks. Venue is a per-match fact, not automatically inherited from the club's usual home ground.

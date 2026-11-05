@@ -143,3 +143,45 @@ test('both 2023/24 swapped fixtures have distinct dated match-level stadium evid
   assert.equal(x.historicalVenueMatchLevelCrosscheckSupported, true);
   assert.equal(receipt.limitations.m2AcceptanceTasksComplete, 4);
 });
+
+test('two separately published approximate stadium locations remain non-operational research references', () => {
+  const swap = receipt.venueSwapMatchEvidence;
+  const candidate = swap.coordinateReferenceCandidates;
+  assert.equal(candidate.kind, 'APPROXIMATE_PUBLIC_VENUE_POINT_REFERENCES_NOT_HISTORICAL_WEATHER_EVIDENCE');
+  assert.equal(candidate.sourceScope, 'READ_ONLY_PUBLIC_STADIUM_LOCATION_PAGES');
+  assert.equal(candidate.matches.length, 2);
+  assert.equal(candidate.allDatesMatchPriorIndependentPlayedVenueSamples, true);
+  assert.equal(candidate.publishedLocationSourcesAreSeparatePages, true);
+  const allowed = new Set(['archi.ru', 'superfan.ru']);
+  for (const [i, row] of candidate.matches.entries()) {
+    assert.equal(row.calendarDate, swap.samples[i].calendarDate);
+    assert.equal(row.venueNameAtMatchTime, swap.samples[i].venueNameAtMatchTime);
+    const a = row.architecturalReference;
+    const b = row.separateStadiumDirectoryReference;
+    for (const point of [a, b]) {
+      assert.equal(typeof point.latitude, 'number');
+      assert.equal(typeof point.longitude, 'number');
+      assert.ok(Number.isFinite(point.latitude) && point.latitude >= -90 && point.latitude <= 90);
+      assert.ok(Number.isFinite(point.longitude) && point.longitude >= -180 && point.longitude <= 180);
+      const u = new URL(point.url);
+      assert.equal(u.protocol, 'https:');
+      assert.ok(allowed.has(u.hostname), u.hostname);
+    }
+    assert.notEqual(a.url, b.url);
+    assert.ok(Math.abs(a.latitude - b.latitude) < 0.001);
+    assert.ok(Math.abs(a.longitude - b.longitude) < 0.001);
+  }
+  for (const flag of [
+    'sourceSurveyMethodsOrOriginalProvenanceIndependentlyValidated',
+    'historicalMatchDaySiteSurveyOrPointPrecisionVerified',
+    'forecastProviderSpatialGridAndPitchExposureVerified',
+    'originalForecastFirstAvailableBeforeCutoffVerified',
+    'privateSourceFixtureIdentityCrosswalkApproved',
+    'approvedForHistoricalWeatherFeatureJoin',
+    'approvedForMultiseasonTraining',
+    'sealedHoldout2025_26Read'
+  ]) assert.equal(candidate[flag], false, flag);
+  assert.equal(swap.preciseVenueCoordinatesVerified, false);
+  assert.equal(swap.eligibleForActualWeatherFeatureJoin, false);
+  assert.equal(receipt.limitations.m2AcceptanceTasksComplete, 4);
+});

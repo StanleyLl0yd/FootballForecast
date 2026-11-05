@@ -1,3 +1,7 @@
+## M2 non-operational stadium coordinate reference pairs — 2026-11-05
+
+For the two independently confirmed swapped 2023/24 played venues, separate architectural and stadium-directory location listings agree within approximately 20 metres. [Bounded public evidence](docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json) is a reference-point candidate, not an authenticated historical pitch coordinate, forecast grid, original product first-serving time, source-rights clearance, private fixture join or model-use permission. No DB/model/holdout access; **M2 4/8 OPEN**.
+
 ## M2 match-level historical venue proof — 2026-11-05
 
 Two specific swapped 2023/24 fixtures now have dated official pre-match stadium notices and independent played-venue reports: 16 Sep 2023 (round 8, Открытие Банк Арена in Moscow) and 13 Apr 2024 (round 24, Фишт in Sochi). [Evidence](docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json) is public, bounded, no private team IDs/scores, and only establishes *two* actual match venues. Exact coordinates, first source-serving UTC time, whole-season venues, lawful model-use rights, private fixture mapping and historical weather availability remain unverified. Original archives and 2025/26 holdout unchanged; no model fit; **M2 4/8 OPEN**.
