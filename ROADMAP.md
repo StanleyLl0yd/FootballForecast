@@ -1,3 +1,7 @@
+## M2 source-rights distinctions and revision season-date gate — 2026-11-05
+
+The pure synthetic result-revision selector now rejects kickoffs mislabelled as a different development season, retaining the exceptional July 2020 end of 2019/20. Separate [public rights review](docs/M2_HISTORICAL_SOURCE_RIGHTS_GATE_EVIDENCE.json) distinguishes a CC0 repository declaration from independent original-source authorization and does not treat RFS/RSSSF site publication as bulk machine-use permission. No automatic import, private fixture crosswalk, new model, 2025/26 holdout read, or M2 acceptance change. **M2 4/8 OPEN; M3 prohibited.**
+
 ## M2 historical result revision and played-goal safety — 2026-11-05
 
 Official RFS disciplinary and appeal notices and independent RSSSF archives establish an actually played 2022/23 match whose official result changed later. Development features now refuse unknown/awarded score origins, and a synthetic pure revision timeline helper separates on-field goals from official-table status. [Public evidence and unresolved historical first-serving UTC](docs/M2_PUBLIC_RPL_RESULT_REVISION_EVIDENCE.json). No private mapping, database mutation, real fit, held-out evaluation or acceptance-count change. **M2 4/8 OPEN; M3 prohibited.**

@@ -74,3 +74,34 @@ def test_conflicts_and_untrusted_clock_or_role_fail_closed():
         with pytest.raises(DataError):
             select_result_as_of((PLAYED,), kickoff_at=KICKOFF,
                                 cutoff_at=cutoff, role=role)
+
+
+@pytest.mark.parametrize("bad_kickoff", [
+    datetime(2022, 6, 30, 15, tzinfo=UTC),
+    datetime(2023, 7, 1, 15, tzinfo=UTC),
+    datetime(2025, 9, 10, 15, tzinfo=UTC),
+])
+def test_relabelled_or_out_of_season_kickoff_cannot_pass_revision_gate(bad_kickoff):
+    # Keep the version otherwise valid: this must fail on season/date alone.
+    version = replace(PLAYED,
+                      first_available_at=bad_kickoff + timedelta(hours=3))
+    with pytest.raises(DataError, match="kickoff outside declared"):
+        select_result_as_of(
+            (version,), kickoff_at=bad_kickoff,
+            cutoff_at=datetime(bad_kickoff.year, bad_kickoff.month,
+                               bad_kickoff.day, tzinfo=UTC) + timedelta(days=2),
+            role="on_field_goals",
+        )
+
+
+def test_exceptional_2019_20_july_extension_is_not_rejected():
+    kickoff = datetime(2020, 7, 22, 15, tzinfo=UTC)
+    version = replace(
+        PLAYED, season="2019/20",
+        first_available_at=kickoff + timedelta(hours=3),
+    )
+    assert select_result_as_of(
+        (version,), kickoff_at=kickoff,
+        cutoff_at=datetime(2020, 7, 24, tzinfo=UTC),
+        role="official_table",
+    ) == version
