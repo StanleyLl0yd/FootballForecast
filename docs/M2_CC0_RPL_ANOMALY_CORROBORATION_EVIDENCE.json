@@ -107,6 +107,48 @@
     "eligibleAsPlayedGoals": false,
     "removeAwardedFromFuturePlayedGoalFitting": true
   },
+  "venueSwapMatchEvidence": {
+    "kind": "MATCH_LEVEL_HISTORICAL_STADIUM_CROSSCHECK",
+    "season": "2023/24",
+    "matchCount": 2,
+    "officialFederationSwapDecision": {
+      "publishedDate": "2023-09-07",
+      "url": "https://www.rfs.ru/news/218884?mobile=no"
+    },
+    "samples": [
+      {
+        "matchday": 8,
+        "calendarDate": "2023-09-16",
+        "venueNameAtMatchTime": "Открытие Банк Арена",
+        "city": "Москва",
+        "officialPrematchVenueNotice": {
+          "publishedDate": "2023-09-13",
+          "url": "https://pfcsochi.ru/news/2023-2024/informatsiya-dlya-bolelshchikov-o-matche-so-spartakom/"
+        },
+        "independentPlayedVenueReportUrl": "https://www.championat.com/football/_russiapl/tournament/5441/match/1101821/"
+      },
+      {
+        "matchday": 24,
+        "calendarDate": "2024-04-13",
+        "venueNameAtMatchTime": "Фишт",
+        "city": "Сочи",
+        "officialPrematchVenueNotice": {
+          "publishedDate": "2024-04-08",
+          "url": "https://pfcsochi.ru/news/2023-2024/akkreditatsiya-smi-na-match-so-spartakom/"
+        },
+        "independentPlayedVenueReportUrl": "https://static.sportbox.ru/Vidy_sporta/Futbol/Russia/premier_league/stats/turnir_20912/game_1380865534"
+      }
+    ],
+    "historicalVenueMatchLevelCrosscheckSupported": true,
+    "allSeasonVenuesIndependentlyVerified": false,
+    "preciseVenueCoordinatesVerified": false,
+    "originalPublisherFirstAvailabilityAtExactUtcTimeVerified": false,
+    "upstreamMatchRightsForAutomatedModelUseVerified": false,
+    "privateFixtureCrosswalkApproved": false,
+    "eligibleForActualWeatherFeatureJoin": false,
+    "multiseasonModelTrainingApproved": false,
+    "sealedHoldout2025_26Read": false
+  },
   "limitations": {
     "onlySpecificPublicAnomaliesReviewed": true,
     "allOtherCc0RowsIndependentlyVerified": false,

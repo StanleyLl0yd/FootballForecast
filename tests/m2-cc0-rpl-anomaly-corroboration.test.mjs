@@ -107,3 +107,39 @@ test('citations are bounded public HTTPS references and holdout / private data r
   const serialized = JSON.stringify(receipt);
   assert.doesNotMatch(serialized, /"(?:team1|team2|homeTeam|awayTeam|homeGoals|awayGoals|score|matchId|sourceMatchId|clubId)"\s*:/);
 });
+
+test('both 2023/24 swapped fixtures have distinct dated match-level stadium evidence', () => {
+  const x = receipt.venueSwapMatchEvidence;
+  assert.equal(x.kind, 'MATCH_LEVEL_HISTORICAL_STADIUM_CROSSCHECK');
+  assert.equal(x.season, '2023/24');
+  assert.equal(x.matchCount, 2);
+  assert.deepEqual(x.samples.map(m => [m.matchday, m.calendarDate, m.venueNameAtMatchTime, m.city]), [
+    [8, '2023-09-16', 'Открытие Банк Арена', 'Москва'],
+    [24, '2024-04-13', 'Фишт', 'Сочи']
+  ]);
+  assert.equal(x.officialFederationSwapDecision.publishedDate, '2023-09-07');
+  const allowed = new Set(['www.rfs.ru', 'pfcsochi.ru', 'www.championat.com', 'static.sportbox.ru']);
+  const urls = [x.officialFederationSwapDecision.url];
+  for (const match of x.samples) {
+    assert.ok(match.officialPrematchVenueNotice.publishedDate < match.calendarDate);
+    urls.push(match.officialPrematchVenueNotice.url, match.independentPlayedVenueReportUrl);
+  }
+  assert.equal(urls.length, 5);
+  for (const raw of urls) {
+    const u = new URL(raw);
+    assert.equal(u.protocol, 'https:');
+    assert.ok(allowed.has(u.hostname), u.hostname);
+  }
+  for (const flag of [
+    'allSeasonVenuesIndependentlyVerified',
+    'preciseVenueCoordinatesVerified',
+    'originalPublisherFirstAvailabilityAtExactUtcTimeVerified',
+    'upstreamMatchRightsForAutomatedModelUseVerified',
+    'privateFixtureCrosswalkApproved',
+    'eligibleForActualWeatherFeatureJoin',
+    'multiseasonModelTrainingApproved',
+    'sealedHoldout2025_26Read'
+  ]) assert.equal(x[flag], false, flag);
+  assert.equal(x.historicalVenueMatchLevelCrosscheckSupported, true);
+  assert.equal(receipt.limitations.m2AcceptanceTasksComplete, 4);
+});

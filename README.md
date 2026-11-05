@@ -1,6 +1,6 @@
 # FootballForecast
 
-> **M2 CC0 anomaly review (05.11.2026):** independent confirmation of one reversed 2023/24 home/away fixture and six unplayed technical results. Original sources and private history untouched; no training authorization. [Evidence](docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json).
+> **M2 CC0 anomaly and venue review (05.11.2026):** independent confirmation of one reversed 2023/24 home/away fixture, the actual stadiums of both swapped fixtures, and six unplayed technical results. No automatic source correction, venue-to-private-match/weather join or training authorization. Original snapshots and 2025/26 holdout untouched. [Evidence](docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json).
 
 **Персональная некоммерческая лаборатория вероятностных прогнозов РПЛ; публичный сайт пока лишь прототип.**
 
