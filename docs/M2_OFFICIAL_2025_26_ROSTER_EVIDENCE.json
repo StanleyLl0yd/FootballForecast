@@ -92,5 +92,21 @@
     "holdoutRowsQueried": 0,
     "rawProviderIdentifiersOrRowsLogged": false,
     "mappingApproval": "CANDIDATE_ONLY"
+  },
+  "preHoldoutMetadataCommitmentCandidate": {
+    "observedAtDate": "2026-11-05",
+    "trainSnapshotRole": "2024/2025 train_baseline only",
+    "privateTrainSourceIDAndNamePairs": 16,
+    "candidateCrosswalkSha256": "99ad249ceae34aa8fd12d77be8e4b58ad8b80ec87b169021b5ca962d176080b2",
+    "sealedSourceSnapshotIdentitySha256": "afe82bbf33d6e547403ef1ce9505493a655661e0e0f78dffecaea9e857f5b191",
+    "sourceRevisionSha256": "038fde66188771bccf40ef8b8a219b269fdfe5c30708c0d3243021ab00279a9f",
+    "privateProviderIDsPublished": false,
+    "sealedMatchRowsRead": 0,
+    "modelFitted": false,
+    "sourceRightsIndependentlyCleared": false,
+    "oneTimeScorerAuthorized": false,
+    "protectedMainExecutionReverified": false,
+    "immutableStudyLockApproved": false,
+    "interpretation": "Candidate commitment computed independently by read-only PostgreSQL over only 2024/25 TRAIN identities plus official pre-season roster. A separate pinned protected-main read-only worker must reproduce both hashes before any approval. Neither digest certifies original source rights or authorizes reading 2025/26."
   }
 }
