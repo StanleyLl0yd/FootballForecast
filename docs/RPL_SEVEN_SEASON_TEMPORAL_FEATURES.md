@@ -26,9 +26,13 @@ The pure Python module football_forecast.research.rpl_temporal_features does no 
 
 ## Played goals versus later official-result revisions — 2026-11-05
 
-A public 2022/23 RPL match was actually played, then its official-table result was changed after a disciplinary decision. [Bounded public corroboration](M2_PUBLIC_RPL_RESULT_REVISION_EVIDENCE.json) records the decision and publication/appeal calendar dates, while **exact original first-serving UTC time remains unverified**. The match has not been mapped to private source IDs.
+A public 2022/23 RPL match was actually played, then its official-table result was changed after a disciplinary decision. [Bounded public corroboration](M2_PUBLIC_RPL_RESULT_REVISION_EVIDENCE.json) records the decision and publication/appeal calendar dates, while **exact original first-serving UTC time remains unverified**. The match has not been mapped to private source IDs. The result-revision helper also enforces kickoff within its declared development season, with the July 2020 extension only for 2019/20; mislabelled year/season pairs fail closed.
 
 The pure `rpl_result_revisions.select_result_as_of` helper separates `official_table` (latest result available at cutoff) from `on_field_goals` (latest available actually played score). It requires a UTC-midnight cutoff, strictly increasing original-availability UTC instants and a caller assertion of independent first-availability verification. Missing timestamps, conflicting versions, awarded-only played goals and sealed 2025/26 fail closed. Even passing these synthetic checks **cannot authenticate** historical publication, private fixture identity, licensing or eligibility for real training. No real seven-season archive has been passed through this helper.
+
+## Historical archive rights boundary — 2026-11-05
+
+[Public source-rights review](M2_HISTORICAL_SOURCE_RIGHTS_GATE_EVIDENCE.json) distinguishes the OpenFootball repository's CC0 declaration, the RFS restriction on reuse of copyright-covered site materials, and the RSSSF homepage's limited acknowledgement language. None independently verifies the original authority and training eligibility of every archived fixture or provides original first-serving timestamps. This is a **manual reference-only check**, not bulk download approval or a ban on quoting public match facts. Private source joins, fitting and held-out evaluation remain prohibited.
 
 ## Further research
 

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_PUBLIC_HISTORICAL_SOURCE_RIGHTS_REVIEW",
+  "observedAt": "2026-11-05",
+  "scope": "BOUNDED_MANUAL_PUBLIC_REFERENCE_ONLY",
+  "observations": [
+    {
+      "category": "PUBLIC_CC0_ARCHIVE",
+      "url": "https://github.com/openfootball/europe",
+      "finding": "Repository declares CC0-1.0; an archive-level licence does not itself authenticate all upstream match-record origins, correction history or historical first-serving times.",
+      "repoDeclaredCc0": true,
+      "originalMatchRecordAuthorityIndependentlyVerified": false
+    },
+    {
+      "category": "FEDERATION_SITE_REUSE_NOTICE",
+      "url": "https://www.rfs.ru/license",
+      "finding": "The federation requires advance written consent for reuse of its photographs and other copyright-covered site materials; scope for individual public match facts and bulk machine collection is not resolved by this notice.",
+      "sourceContentMassReuseApproved": false,
+      "individualPublicFactsCategoricallyProhibited": false
+    },
+    {
+      "category": "RETROSPECTIVE_ARCHIVE_INTRODUCTION",
+      "url": "https://www.rsssf.org/",
+      "finding": "The RSSSF introduction asserts copyright and permits copying that introductory document with acknowledgement; it is not an independently verified blanket licence for automated re-use of every historical match table.",
+      "allArchiveTablesMachineUseRightsVerified": false,
+      "originalHistoricalPublicationTimelineVerified": false
+    }
+  ],
+  "gates": {
+    "privateMatchIdentityCrosswalkApproved": false,
+    "originalSourceRightsForAutomaticTrainingVerified": false,
+    "allSevenSeasonsIndependentlyMatchVerified": false,
+    "originalFirstServingUtcVerified": false,
+    "autoArchiveIngestionOrCorrectionApproved": false,
+    "approvedPreHoldoutStudyLockCreated": false,
+    "anyNewModelFitOrEvaluationApproved": false,
+    "holdout2025_26Read": false,
+    "m3Authorized": false
+  },
+  "m2AcceptedCriteria": 4
+}
