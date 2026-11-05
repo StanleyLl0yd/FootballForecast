@@ -1,3 +1,9 @@
+
+## Weather candidate preflight, synthetic only — 2026-11-05
+
+`rpl_weather_candidate.py` is a **negative eligibility gate**, not a weather downloader, match joiner, or new feature in any real model. It requires UTC historical kickoff and forecast valid hour, model initialization, documented **first availability** at or before 00:00 UTC on match day, and historically valid match venue/coordinates with separate provenance and rights assertions. The 2019/20 July 2020 season extension remains valid; sealed 2025/26 and all non-development seasons are rejected.
+
+A passing candidate only receives `RESEARCH_CANDIDATE_REQUIRES_INDEPENDENT_REVIEW` with model-use flags permanently false. Boolean assertions of external review do not prove the sources. The 26 synthetic tests exercise future/late forecasts, wrong venue ranges, missing evidence, timezone errors, and holdout exclusion. See [independent source review](RPL_SEVEN_SEASON_ENRICHMENT_SOURCES.md). No weather model training or source import authorized.
 # RPL seven-season temporal feature contract — development-only
 
 Pre-registered on 2026-11-03. This is a separate pure feature-engineering foundation, not an amendment to the frozen M2 2024/25 Poisson study, not an approved future model, and not authorization to read 2025/26.
