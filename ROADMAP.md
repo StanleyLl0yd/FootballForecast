@@ -1,6 +1,6 @@
 ## M2 synthetic weather candidate preflight and SStats specification status — 2026-11-05
 
-A pure 25-test synthetic gate now refuses RPL historical weather without pre-cutoff source availability, verified venue validity and source rights; it **never** authorizes model admission. Official SStats docs expose `/Ls/Leagues` but its bounded query parameters, complete downloadable specification, and training rights remain unverified. No new SStats request, source data import, model fitting or holdout read. M2 4/8 OPEN; M3 unauthorized. [Details](docs/RPL_SEVEN_SEASON_ENRICHMENT_SOURCES.md).
+A pure 26-test synthetic gate now refuses RPL historical weather without pre-cutoff source availability, verified venue validity and source rights; it **never** authorizes model admission. Official SStats docs expose `/Ls/Leagues` but its bounded query parameters, complete downloadable specification, and training rights remain unverified. No new SStats request, source data import, model fitting or holdout read. M2 4/8 OPEN; M3 unauthorized. [Details](docs/RPL_SEVEN_SEASON_ENRICHMENT_SOURCES.md).
 
 ## M2 bounded SStats catalog transfer-integrity finding — 2026-11-03
 
