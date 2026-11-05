@@ -56,6 +56,15 @@ def plan_expanding_development_folds(
         records = seasons[season]
         if len(records) != 240:
             raise DataError("RPL folds: incomplete source season")
+        # One club cannot play two distinct fixtures on the same UTC date.
+        # Directed-pair completeness alone does not detect this source error.
+        daily_appearances = Counter(
+            (m.kickoff_at.date(), club)
+            for m in records
+            for club in (m.home_team_id, m.away_team_id)
+        )
+        if any(count > 1 for count in daily_appearances.values()):
+            raise DataError("RPL folds: club scheduled twice on one UTC day")
         home = Counter(m.home_team_id for m in records)
         away = Counter(m.away_team_id for m in records)
         teams = set(home) | set(away)

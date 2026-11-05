@@ -6,7 +6,7 @@
 
 - Private OpenFoot Starter RPL archive, **2018/19–2024/25**, seven immutable 240-match snapshots, 1,680 finished matches. Provenance and source digests are pinned in [private archive evidence](M2_PRIVATE_RPL_HISTORY_EVIDENCE.json). This establishes provider-internal consistency, **not** independent official result truth or historical publisher publication time.
 - `football_forecast.research.rpl_development_folds` creates five fixed expanding-window folds **without fitting or scoring**. The source of each fold is all earlier complete seasons; the validation season is exactly the next season.
-- A complete directed competition must have 16 clubs, each with exactly 15 home and 15 away fixtures. Incomplete seasons, duplicate identities, altered scores, naive dates, overlap between training and validation periods, unknown seasons and sealed-year records fail closed.
+- A complete directed competition must have 16 clubs, each with exactly 15 home and 15 away fixtures. The fold planner also rejects any club appearing twice on one UTC calendar date, even if the season still has all 240 directed pairings. Incomplete seasons, duplicate identities, impossible same-day double-bookings, altered scores, naive dates, overlap between training and validation periods, unknown seasons and sealed-year records fail closed.
 - Consecutive-season club-ID overlap was measured privately without exposing team identifiers: **14, 14, 14, 13, 14, 13** of 16, respectively. This is only an identity-continuity *signal*, not permission to infer a persistent club mapping. Require independently reviewed per-club continuity and promotion/renaming policy before any multi-season strength fitting.
 
 | Fixed fold | Train seasons | Train matches | Development validation | Matches |
