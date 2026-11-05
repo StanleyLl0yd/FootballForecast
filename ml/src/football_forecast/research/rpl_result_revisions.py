@@ -1,9 +1,12 @@
 """Pure, synthetic-tested revision timeline guard; no real source ingestion or scoring."""
 from dataclasses import dataclass
-from datetime import UTC, datetime, time
+from datetime import datetime, time
 
 from football_forecast.data.contracts import DataError
-from football_forecast.research.rpl_temporal_features import DEVELOPMENT_SEASONS
+from football_forecast.research.rpl_temporal_features import (
+    DEVELOPMENT_SEASONS,
+    development_season_bounds,
+)
 
 ROLES = ("official_table", "on_field_goals")
 KINDS = ("played", "awarded")
@@ -49,13 +52,7 @@ def select_result_as_of(
             or not 0 < len(first.source_match_id) <= 160
             or not first.source_match_id.strip()):
         raise DataError("RPL revisions: unapproved season or match identity")
-    # Bind the claimed development season to the actual UTC fixture date.
-    # The 2019/20 season exceptionally continued into July 2020.
-    year = int(first.season[:4])
-    season_start = datetime(year, 7, 1, tzinfo=UTC)
-    season_end = (datetime(2020, 8, 1, tzinfo=UTC)
-                  if first.season == "2019/20"
-                  else datetime(year + 1, 7, 1, tzinfo=UTC))
+    season_start, season_end = development_season_bounds(first.season)
     if not season_start <= kickoff_at < season_end:
         raise DataError("RPL revisions: kickoff outside declared development season")
 

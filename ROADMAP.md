@@ -1,3 +1,7 @@
+## M2 shared development-season guard for market/revision comparisons — 2026-11-05
+
+Three pure research modules now use one UTC season-window contract; the synthetic bookmaker comparator also rejects a forecast whose kickoff lies outside its declared validation season, even if the pre-game midnight cutoff is otherwise consistent. The 2019/20 July extension is preserved. No real market quotes or model scores were accessed, 2025/26 remains sealed, no new training or accuracy claims. **M2 4/8 OPEN; M3 prohibited.**
+
 ## M2 source-rights distinctions and revision season-date gate — 2026-11-05
 
 The pure synthetic result-revision selector now rejects kickoffs mislabelled as a different development season, retaining the exceptional July 2020 end of 2019/20. Separate [public rights review](docs/M2_HISTORICAL_SOURCE_RIGHTS_GATE_EVIDENCE.json) distinguishes a CC0 repository declaration from independent original-source authorization and does not treat RFS/RSSSF site publication as bulk machine-use permission. No automatic import, private fixture crosswalk, new model, 2025/26 holdout read, or M2 acceptance change. **M2 4/8 OPEN; M3 prohibited.**

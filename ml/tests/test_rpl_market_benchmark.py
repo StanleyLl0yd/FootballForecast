@@ -107,3 +107,19 @@ def test_forecast_cutoff_not_midnight_utc_or_after_kickoff_refused():
     ):
         with pytest.raises((DataError, ValueError)):
             compare_development_market((modified,), ())
+
+
+@pytest.mark.parametrize("wrong_kickoff", [
+    datetime(2023, 6, 30, 18, tzinfo=UTC),
+    datetime(2024, 7, 1, 18, tzinfo=UTC),
+    datetime(2025, 9, 15, 18, tzinfo=UTC),
+])
+def test_market_comparator_rejects_season_relabelled_target(wrong_kickoff):
+    # A matching midnight cutoff is not sufficient if the claimed year is false.
+    f = replace(
+        forecast(), kickoff_at=wrong_kickoff,
+        cutoff_at=datetime(wrong_kickoff.year, wrong_kickoff.month,
+                           wrong_kickoff.day, tzinfo=UTC),
+    )
+    with pytest.raises(DataError, match="kickoff outside declared development season"):
+        compare_development_market((f,), ())
