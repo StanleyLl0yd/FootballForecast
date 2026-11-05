@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_OFFICIAL_2025_26_PRESEASON_ROSTER_GATE",
+  "researchClassification": "PUBLIC_PRESEASON_ROSTER_ONLY_NOT_HOLDOUT_ACCESS",
+  "season": "2025/2026",
+  "firstLeagueKickoffDate": "2025-07-18",
+  "sourceEvidence": [
+    {
+      "publisher": "Russian Football Union",
+      "publicationLocal": "2025-06-16T18:00:00+03:00",
+      "url": "https://www.rfs.ru/news/222586",
+      "role": "original_provisional_16_roster_included_torpedo"
+    },
+    {
+      "publisher": "Russian Football Union",
+      "publicationLocal": "2025-07-11T14:02:00+03:00",
+      "url": "https://www.rfs.ru/news/222692",
+      "role": "final_preseason_revision_replaces_torpedo_with_orenburg"
+    }
+  ],
+  "finalSourceClubNames": [
+    "Акрон",
+    "Ахмат",
+    "Балтика",
+    "Динамо Махачкала",
+    "Динамо Москва",
+    "Зенит",
+    "Краснодар",
+    "Крылья Советов",
+    "Локомотив",
+    "Оренбург",
+    "Пари НН",
+    "Ростов",
+    "Рубин",
+    "Сочи",
+    "Спартак",
+    "ЦСКА"
+  ],
+  "trainSourceClubNames": [
+    "Акрон",
+    "Ахмат",
+    "Динамо Махачкала",
+    "Динамо Москва",
+    "Зенит",
+    "Краснодар",
+    "Крылья Советов",
+    "Локомотив",
+    "Оренбург",
+    "Пари НН",
+    "Ростов",
+    "Рубин",
+    "Спартак",
+    "Факел",
+    "Химки",
+    "ЦСКА"
+  ],
+  "retainedClubCount": 14,
+  "newClubNames": [
+    "Балтика",
+    "Сочи"
+  ],
+  "notReturningClubNames": [
+    "Факел",
+    "Химки"
+  ],
+  "removedBeforeSeason": "Торпедо",
+  "addedBeforeSeason": "Оренбург",
+  "sourceRights": "official_document_manual_factual_citation_only_no_bulk_extraction",
+  "privateProviderIdsIncluded": false,
+  "matchResultsOrHoldoutRecordsIncluded": false,
+  "historicalPrematchVerified": false,
+  "crosswalkSourceIdsApproved": false,
+  "studyLockApproved": false,
+  "holdoutRead": false,
+  "modelEvaluationApproved": false,
+  "productionForecastsWritten": 0,
+  "limitation": "Official pre-season participant names are independently documented before the season's first match. They are not private provider team IDs, source rights for match-level training, or evidence of per-match correct scores/kickoffs. Do not read 2025/26 labels or identities to choose a mapping."
+}
