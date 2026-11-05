@@ -46,14 +46,25 @@ try {
   sessionId=session?.sessionId;
   assert.ok(sessionId,'Safari WebDriver session not created');
   // Only one Safari automation session at a time.
-  for(const [path,content] of [
-    ['/dashboard',/Футбольная аналитика/],
-    ['/admin',/Административный вход пока не настроен/]
-  ]) {
+  // OAuth can now be configured in production; an anonymous admin visit must
+  // still redirect to /login (configured) or /setup (unconfigured).
+  for(const path of ['/dashboard','/admin']) {
     await webdriver(`/session/${sessionId}/url`,{url:origin+path},'POST');
     const source=await webdriver(`/session/${sessionId}/source`);
     assert.equal(typeof source,'string');
-    assert.match(source,content,`Safari ${path} must render expected public/denied view`);
+    if(path==='/dashboard') {
+      assert.match(source,/Футбольная аналитика/);
+    } else {
+      const current=await webdriver(`/session/${sessionId}/url`);
+      const url=new URL(current);
+      assert.equal(url.origin,origin,'anonymous Safari admin must stay same-origin');
+      assert.ok(['/login','/setup'].includes(url.pathname),
+        'anonymous Safari admin must redirect to the auth landing page');
+      assert.match(source,/Вход администратора|Административный вход пока не настроен/,
+        'Safari anonymous admin must show login or setup, not private research');
+      assert.doesNotMatch(source,/Контроль исследования|OWNER · M2/,
+        'Safari must not render owner-only research content anonymously');
+    }
   }
   // Screenshot sanity on a real WebKit browser. Resizing may be constrained by
   // remote macOS screen dimensions, so don't invent mobile-size guarantees.

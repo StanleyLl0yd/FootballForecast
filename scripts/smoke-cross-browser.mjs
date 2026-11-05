@@ -18,14 +18,24 @@ function expectPage(html,path) {
     assert.match(html,/Футбольная аналитика/,'public dashboard must render');
     assert.match(html,/Публичная база подключена/,'anonymous REST must work in browser output');
   } else {
-    assert.match(html,/Административный вход пока не настроен/,
-      'unauthenticated admin must reach the safe setup page');
+    assert.match(html,/Вход администратора|Административный вход пока не настроен/,
+      'anonymous admin must land on login or setup, never the research panel');
+    assert.doesNotMatch(html,/Контроль исследования|OWNER · M2/,
+      'anonymous admin must not expose owner-only research content');
   }
 }
 
 async function edge() {
   const dir=await mkdtemp(join(tmpdir(),'ff-edge-'));
   try {
+    const anonymous=await fetch(origin+'/admin',{redirect:'manual',cache:'no-store',
+      signal:AbortSignal.timeout(12000)});
+    assert.ok([303,307,308].includes(anonymous.status),
+      'anonymous /admin must redirect rather than render research content');
+    const target=new URL(anonymous.headers.get('location')||'',origin);
+    assert.equal(target.origin,origin);
+    assert.ok(['/login','/setup'].includes(target.pathname),
+      'anonymous /admin redirect must target login or setup');
     const flags=['--headless=new','--no-sandbox','--disable-gpu',
       '--disable-dev-shm-usage','--disable-background-networking','--no-first-run',
       '--no-default-browser-check',`--user-data-dir=${dir}`,'--window-size=390,844'];
@@ -129,6 +139,13 @@ async function firefox() {
       await request(`/session/${id}/url`,{url:origin+path},'POST');
       const source=await request(`/session/${id}/source`);
       assert.equal(typeof source,'string');
+      if(path==='/admin') {
+        const current=await request(`/session/${id}/url`);
+        const actual=new URL(current);
+        assert.equal(actual.origin,origin,'Firefox anonymous admin redirect origin');
+        assert.ok(['/login','/setup'].includes(actual.pathname),
+          'Firefox anonymous admin must redirect to login or setup');
+      }
       expectPage(source,path);
     }
     // Exercise the actual React submit/hydration path, not just static SSR.
