@@ -7,7 +7,7 @@ The GitHub Actions caller must authenticate protected main and TLS root.
 import json
 import os
 import sys
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 from re import fullmatch
 
