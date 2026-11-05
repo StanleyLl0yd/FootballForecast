@@ -93,3 +93,13 @@ def test_same_day_label_changes_leave_current_features_unchanged():
     ))
     assert baseline[:2] == updated[:2]
     assert baseline[2] != updated[2]
+
+
+def test_2019_20_july_exception_survives_shared_season_window():
+    july = replace(
+        match(10, "A", "B", 2, 1, season="2019/20"),
+        kickoff_at=datetime(2020, 7, 22, 14, tzinfo=UTC),
+    )
+    assert build_development_features((july,))[0].season == "2019/20"
+    with pytest.raises(DataError, match="kickoff outside declared season"):
+        build_development_features((replace(july, season="2018/19"),))

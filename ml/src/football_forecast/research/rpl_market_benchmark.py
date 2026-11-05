@@ -15,6 +15,7 @@ from football_forecast.evaluation.scoring import (
     ranked_probability_score,
 )
 from football_forecast.research.rpl_development_folds import VALIDATION_SEASONS
+from football_forecast.research.rpl_temporal_features import development_season_bounds
 
 MAX_QUOTE_AGE = timedelta(hours=36)
 MAX_OVERROUND = 1.30
@@ -116,6 +117,9 @@ def compare_development_market(
         if key in actual:
             raise DataError("RPL odds: duplicated model fixture")
         _cutoff(f.kickoff_at, f.cutoff_at)
+        season_start, season_end = development_season_bounds(f.season)
+        if not season_start <= f.kickoff_at < season_end:
+            raise DataError("RPL odds: kickoff outside declared development season")
         if type(f.actual_outcome) is not int or f.actual_outcome not in (0, 1, 2):
             raise DataError("RPL odds: invalid H/D/A label")
         # Validate the same probability contract and class order as M2.

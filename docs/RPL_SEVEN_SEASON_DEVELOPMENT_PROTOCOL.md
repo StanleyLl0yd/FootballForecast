@@ -27,6 +27,10 @@ First implement a *new, separate* seven-season model in its own module and proto
 
 Result-score completeness is not played-score completeness. A 2022/23 independently documented RPL match was played and later awarded a different official result after a disciplinary decision. The pure feature builder now fails closed unless a caller explicitly supplies `result_kind="played"`; generic `finished` status plus numeric score is insufficient. A separate synthetic-only result-version selector requires exact original UTC availability instants before selecting either played goals or official-table result at historical cutoff. [Public chronology and missing proof](M2_PUBLIC_RPL_RESULT_REVISION_EVIDENCE.json). No private fixture join, automatic correction, model fitting, benchmarking or holdout read.
 
+## Shared development-season kickoff boundary — 2026-11-05
+
+The development feature builder, result revision selector and bookmaker comparator now share one bounded UTC season-window contract (2018/19–2024/25, July 2020 2019/20 extension). This prevents a target from carrying a syntactically permitted season label but an unrelated/future kickoff date, including a disguised sealed-year fixture. These are synthetic negative gates, **not** independent match identity or first-availability verification; no real model or historical market evaluation has been run.
+
 ## Bookmaker-market comparison: exact matched timing
 
 `football_forecast.research.rpl_market_benchmark` is a **pure synthetic-tested metric helper**, not a downloader, odds database, betting recommendation, prediction publication or historical source attestation.

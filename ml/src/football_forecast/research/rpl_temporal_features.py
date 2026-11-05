@@ -15,6 +15,18 @@ RECENT_MATCHES = 5
 CLASSIFICATION = "NON_STRICT_RETROSPECTIVE"
 
 
+def development_season_bounds(season: str) -> tuple[datetime, datetime]:
+    """Single authoritative UTC fixture window for development-only records."""
+    if season not in DEVELOPMENT_SEASONS:
+        raise DataError("RPL features: non-development season")
+    year = int(season[:4])
+    start = datetime(year, 7, 1, tzinfo=UTC)
+    # 2019/20 exceptionally continued after the COVID suspension into July.
+    stop = (datetime(2020, 8, 1, tzinfo=UTC) if season == "2019/20"
+            else datetime(year + 1, 7, 1, tzinfo=UTC))
+    return start, stop
+
+
 @dataclass(frozen=True, slots=True)
 class DevelopmentMatch:
     season: str
@@ -83,11 +95,7 @@ def _validated(fixtures: tuple[DevelopmentMatch, ...]) -> tuple[DevelopmentMatch
         if any(type(n) is not int or n < 0 or n > 20
                for n in (item.home_goals, item.away_goals)):
             raise DataError("RPL features: invalid final score")
-        year = int(item.season[:4])
-        start = datetime(year, 7, 1, tzinfo=UTC)
-        stop = datetime(2020, 8, 1, tzinfo=UTC) if item.season == "2019/20" else (
-            datetime(year + 1, 7, 1, tzinfo=UTC)
-        )
+        start, stop = development_season_bounds(item.season)
         if not start <= item.kickoff_at < stop:
             raise DataError("RPL features: kickoff outside declared season")
         key = (item.season, item.source_match_id)
