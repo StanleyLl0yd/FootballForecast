@@ -201,5 +201,63 @@
     "realModelTrainingAuthorized": false,
     "sealed2025_26HoldoutRead": false,
     "publicForecastsWritten": false
+  },
+  "livePrivateArchiveReadOnlyEvidence": {
+    "kind": "M3_DEVELOPMENT_ONLY_POSTGRES17_READ_ONLY_FULL_ARCHIVE_TEAM_TOPOLOGY",
+    "observedOn": "2026-11-09",
+    "queryScope": "FF_PRIVATE_2018_19_TO_2024_25_AGGREGATE_SELECT_ONLY",
+    "uniqueProviderClubIds": 26,
+    "perSeason": [
+      {
+        "season": "2018/19",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 14
+      },
+      {
+        "season": "2019/20",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 14
+      },
+      {
+        "season": "2020/21",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 14
+      },
+      {
+        "season": "2021/22",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 13
+      },
+      {
+        "season": "2022/23",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 14
+      },
+      {
+        "season": "2023/24",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 13
+      },
+      {
+        "season": "2024/25",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": null
+      }
+    ],
+    "adjacentSharedProviderClubIds": [
+      14,
+      14,
+      14,
+      13,
+      14,
+      13
+    ],
+    "totalAdjacentSharedProviderClubIds": 82,
+    "providerIdsExported": false,
+    "privateFixtureRowsExported": false,
+    "sealedHoldoutRead": false,
+    "independentProviderIdToOfficialClubNameVerified": false,
+    "historicalFirstPublicationVerified": false,
+    "realTrainingApproved": false
   }
 }

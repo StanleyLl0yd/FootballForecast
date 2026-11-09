@@ -42,6 +42,8 @@ class PublicRosterAudit:
     public_overlap_total: int
     private_sample_distinct_ids: int
     private_sample_overlap_total: int
+    live_full_archive_distinct_provider_ids: int
+    live_full_archive_adjacent_overlaps: tuple[int, ...]
     public_and_private_aggregate_shapes_coincide: bool
     protocol: str = PROTOCOL
     private_id_to_name_mapping_verified: bool = False
@@ -119,6 +121,34 @@ def audit_public_roster_topology(
     }
     if aggregate != expected_public:
         _deny("inconsistent claimed public or private topology counts")
+    live = _dict(p.get("livePrivateArchiveReadOnlyEvidence"))
+    if (live.get("kind")
+            != "M3_DEVELOPMENT_ONLY_POSTGRES17_READ_ONLY_FULL_ARCHIVE_TEAM_TOPOLOGY"
+            or live.get("observedOn") != "2026-11-09"
+            or live.get("queryScope") != "FF_PRIVATE_2018_19_TO_2024_25_AGGREGATE_SELECT_ONLY"
+            or not _count(live.get("uniqueProviderClubIds"), 26)
+            or live.get("adjacentSharedProviderClubIds") != list(FROZEN_ADJACENT_OVERLAPS)
+            or not _count(live.get("totalAdjacentSharedProviderClubIds"), 82)):
+        _deny("live full development-archive topology not attested")
+    for key in ("providerIdsExported", "privateFixtureRowsExported",
+                "sealedHoldoutRead", "independentProviderIdToOfficialClubNameVerified",
+                "historicalFirstPublicationVerified", "realTrainingApproved"):
+        if live.get(key) is not False:
+            _deny("private source disclosure or identity/holdout training assertion")
+    full_years = live.get("perSeason")
+    if type(full_years) is not list or len(full_years) != 7:
+        _deny("live aggregate must cover all seven development seasons")
+    for i, row in enumerate(full_years):
+        actual = _dict(row)
+        expected = {
+            "season": DEVELOPMENT_SEASONS[i],
+            "distinctProviderClubIds": 16,
+            "sharedProviderIdsWithNextSeason": (
+                FROZEN_ADJACENT_OVERLAPS[i] if i < 6 else None
+            ),
+        }
+        if actual != expected:
+            _deny("live archive overlap is not the frozen public topology")
     if (not _count(q.get("observedUniqueClubIds"), 26)
             or not _count(q.get("totalSharedAdjacentClubIdInstances"), 82)
             or _dict(q.get("limitations")).get(
@@ -143,5 +173,7 @@ def audit_public_roster_topology(
         public_overlap_total=82,
         private_sample_distinct_ids=26,
         private_sample_overlap_total=82,
+        live_full_archive_distinct_provider_ids=26,
+        live_full_archive_adjacent_overlaps=FROZEN_ADJACENT_OVERLAPS,
         public_and_private_aggregate_shapes_coincide=True,
     )

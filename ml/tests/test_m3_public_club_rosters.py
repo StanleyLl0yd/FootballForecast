@@ -37,6 +37,8 @@ def test_frozen_public_roster_structure_agrees_with_private_sample_count_only(ev
     assert report.public_overlap_total == 82
     assert report.private_sample_distinct_ids == 26
     assert report.private_sample_overlap_total == 82
+    assert report.live_full_archive_distinct_provider_ids == 26
+    assert report.live_full_archive_adjacent_overlaps == FROZEN_ADJACENT_OVERLAPS
     assert report.public_and_private_aggregate_shapes_coincide
     assert not report.private_id_to_name_mapping_verified
     assert not report.official_legal_club_continuity_verified
@@ -74,6 +76,13 @@ def test_manual_names_only_are_not_a_private_id_or_fixture_crosswalk(evidence):
     (0, ("seasonReferences", 0, "leagueGamesPerClubReported"), True),
     (0, ("aggregate", "totalAdjacentSharedPublicNameAliases"), 83),
     (0, ("aggregate", "privateProviderSourceSampleUniqueIds"), 27),
+    (0, ("livePrivateArchiveReadOnlyEvidence", "uniqueProviderClubIds"), 27),
+    (0, ("livePrivateArchiveReadOnlyEvidence", "perSeason", 3,
+          "sharedProviderIdsWithNextSeason"), 14),
+    (0, ("livePrivateArchiveReadOnlyEvidence", "providerIdsExported"), True),
+    (0, ("livePrivateArchiveReadOnlyEvidence", "sealedHoldoutRead"), True),
+    (0, ("livePrivateArchiveReadOnlyEvidence",
+          "independentProviderIdToOfficialClubNameVerified"), True),
     (0, ("limitations", "privateProviderIdToPublicNameApproved"), True),
     (0, ("limitations", "realModelTrainingAuthorized"), True),
     (0, ("limitations", "sealed2025_26HoldoutRead"), True),
