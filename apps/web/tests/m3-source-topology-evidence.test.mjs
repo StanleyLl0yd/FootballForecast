@@ -72,3 +72,12 @@ test('extra raw-row identifiers and a false eligible-row aggregate fail closed',
   b[2].aggregate.independentlyEligiblePrivatePlayedRows=8;
   assert.equal(inspectM3Topology(...b).state,'blocked');
 });
+
+test('altered independent reference URL and raw private ID field fail closed',()=>{
+  let a=read();
+  a[2].events[7].publicEvidenceUrl='https://example.org/incorrect-April-match';
+  assert.equal(inspectM3Topology(...a).state,'blocked');
+  a=read();
+  a[1].privateProviderIds=['must never be exported'];
+  assert.equal(inspectM3Topology(...a).state,'blocked');
+});
