@@ -108,7 +108,7 @@ async function testServer(name, overrides) {
     const get = path => fetch(origin + path, {redirect: 'manual', signal: AbortSignal.timeout(5000)});
     const health = await get('/api/health');
     assert.equal(health.status, 200, `${name}: health status`);
-    assert.deepEqual(await health.json(), {service: 'footballforecast', status: 'setup_required'});
+    assert.deepEqual(await health.json(), {service: 'footballforecast', status: 'setup_required', releaseCommitSha: null});
     assert.match(health.headers.get('cache-control') ?? '', /no-store/);
     assert.equal(health.headers.get('x-frame-options'), 'DENY');
     assert.equal(health.headers.get('x-content-type-options'), 'nosniff');
