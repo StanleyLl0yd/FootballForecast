@@ -47,7 +47,7 @@ def test_same_26_and_82_not_enough_when_membership_profiles_differ(evidence):
     public, sample, observed = deepcopy(evidence)
     # Transfer one one-season club from earliest to latest season. This keeps
     # 26 clubs, 112 club-season appearances, and all 82 adjacent overlaps.
-    first, last = observed["privateReadOnlyHistogram"][0], None
+    first = observed["privateReadOnlyHistogram"][0]
     last = next(row for row in observed["privateReadOnlyHistogram"] if row["mask"] == 64)
     first["clubCount"] -= 1
     last["clubCount"] += 1
