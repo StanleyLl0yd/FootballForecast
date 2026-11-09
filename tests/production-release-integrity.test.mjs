@@ -57,6 +57,21 @@ test('unexpected service, bad HTTP and invalid alias input are rejected',async()
     /Invalid production alias list/);
 });
 
+test('partial or repeated alias sets must never yield an apparent three-domain PASS',async()=>{
+  await assert.rejects(
+    verifyProductionRelease({fetchImpl:mockFetch(),origins:[PRODUCTION_ORIGINS[0]]}),
+    /Invalid production alias list/
+  );
+  await assert.rejects(
+    verifyProductionRelease({fetchImpl:mockFetch(),origins:[
+      PRODUCTION_ORIGINS[0],PRODUCTION_ORIGINS[0],PRODUCTION_ORIGINS[1]]}),
+    /Invalid production alias list/
+  );
+  const reversed=[...PRODUCTION_ORIGINS].reverse();
+  const result=await verifyProductionRelease({fetchImpl:mockFetch(),origins:reversed});
+  assert.equal(result.observations.length,3);
+});
+
 test('read-only hourly workflow and server health release identity are source-controlled',()=>{
   const workflow=readFileSync('.github/workflows/production-release-integrity.yml','utf8');
   assert.match(workflow,/cron: '17 \* \* \* \*'/);
