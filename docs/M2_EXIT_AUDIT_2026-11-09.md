@@ -3,7 +3,7 @@
 **Scope:** the *entire* `StanleyLl0yd/FootballForecast` repository, not a PR diff.
 **Final audited baseline:** protected `main=e4a0853ff3abc60e1a6c30b785c9921b66d767ff`,
 Git tree `23b57107538aff8cae322c466af6511617843456`.
-**Milestone:** #182 remains **7/8 OPEN**; no implicit owner acceptance or M3 authorization.
+**Owner acceptance 2026-11-09:** both complete audits and documented exceptions explicitly accepted in [#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182). **M2 ACCEPTED 8/8**; model production approval and M3 are not authorized. The reviewed baseline below predates this sign-off.
 
 ## Complete pass 1: file-by-file source, tests, documents and access-boundary scan
 
@@ -109,9 +109,13 @@ single authorized read. Neither was claimed independently pre-read locked.
 
 ## Decision gate
 
-Both complete repository-wide audit passes and all technical verifications
-above are recorded **with exceptions explicitly left visible**.
-The final checkbox of M2 #182 must remain **unchecked** until its owner
-explicitly accepts the audit findings, scientific limitations and the
-reconciled protected main. No model retuning against 2025/26, new
-production forecasting, paid data services or M3 work is authorized.
+Both complete repository-wide audit passes were recorded with remaining
+exceptions explicitly visible. **On 2026-11-09, the owner accepted these findings
+and limitations** in [issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182).
+M2 is **ACCEPTED 8/8**, as a retrospective research milestone only.
+Missing CSV bytes, unverified as-of, unreconciled awarded outcomes, restricted
+182/240 coverage, unobserved non-owner browser denial and deferred defense in
+depth are **not** claimed fixed. One-use 2025/26 evaluation must never be
+repeated or tuned on, private metrics stay private, and neither production
+forecast publication nor M3 is authorized. Production drift is tracked in
+[issue #266](https://github.com/StanleyLl0yd/FootballForecast/issues/266).

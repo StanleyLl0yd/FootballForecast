@@ -1,8 +1,10 @@
-## CURRENT · 2026-11-09 · M2 7/8 OPEN, first private evaluation completed
+## CURRENT · 2026-11-09 · M2 ACCEPTED 8/8; M3 NOT AUTHORIZED
 
-[PR #262](https://github.com/StanleyLl0yd/FootballForecast/pull/262) protected squash merged; exact-head and post-merge checks passed. One GitHub owner-only run [#42590191735](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42590191735) performed the preregistered fixed OpenFootball 2024/25 Poisson vs 2025/26 Football-Data **non-strict retrospective, DAY_ONLY** private evaluation. Model: 182 eligible 1X2 outcomes, 58 abstentions, training-only 103/65/72 comparator. Single-use claim and aggregate result are both stored in immutable restricted private tables; no publication or tuning. See [allowlisted evidence](docs/M2_FIRST_PRIVATE_EVALUATION_EVIDENCE.json) (counts and SHA only; numeric metrics private). The exact original source CSV bytes were **not archived**; a bitwise second replay is not guaranteed and the study cannot be rerun. No pre-match-as-of or bookmaker superiority claim.
+The owner explicitly accepted the two complete M2 audits and disclosed exceptions ([#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182), [audit](docs/M2_EXIT_AUDIT_2026-11-09.md)). This closes the research milestone, **not** production model approval. Protected main after #267 was `0d33cb03f2a2e023de3c3a9146f107e67e5fa369`, post-merge 10/10 PASS, Vercel READY / fra1 / three exact-SHA aliases. The stale deployment issue [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains open.
 
-M2 checklist #182: research-only first evaluation and protected immutable study execution evidenced; **full two-pass repository-wide exit audit, remaining findings and explicit owner sign-off still required**. M3 forbidden. Entries below are dated historical checkpoints, not current assertions.
+The sole one-use [2025/26 study run #42590191735](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42590191735) has 182 eligible outcomes and 58 abstentions among 240 finished fixtures. No repeat/re-scoring/tuning on the consumed holdout; private metrics stay private. Non-strict retrospective day-only study, missing verbatim CSV archive, no verified historical kickoffs/as-of, incomplete played-vs-awarded match reconciliation, selective coverage and no bookmaker comparison remain accepted limitations. No public forecasts or authorized M3 work. Authenticated non-owner browser denial remains unobserved.
+
+The OPEN/4/8/5/8 notes below are **dated historical checkpoints**.
 
 ## M2 2025/26 label-source eligibility and cross-provider identity — 2026-11-09
 
@@ -203,19 +205,18 @@ The following M0 material is retained as historical acceptance evidence.
 ## M1 - Data Foundation (ACCEPTED 2026-11-02 — see exit evidence above)
 Licensed adapters, provenance, normalized seasons and teams, timestamp checks, data center and sync.
 
-## M2 - Statistical Baselines (OPEN 2026-11-02)
+## M2 - Statistical Baselines (ACCEPTED 2026-11-09; opened 2026-11-02)
 
-- [x] Owner explicitly authorized [M2 issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182), while [M1 #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124) remains ACCEPTED.
-- [x] [Independent-Poisson protocol v1](docs/M2_BASELINE_PROTOCOL.md) frozen **before real training**, with 2024/25 train, 2025/26 sealed holdout and current-season time gates; no retrospective strict-as-of or accuracy claims.
-- [x] Deterministic regularized Poisson team-strength fit with synthetic-only tests (PR #183); protected real training read (PR #184).
-- [x] Conditional Elo/Dixon–Coles validation decision: independently validated alternate models cannot be selected with the sole fixed 2024/25 train, sealed 2025/26 holdout and incomplete 2026/27. [Documented M2 deferral](docs/M2_BASELINE_PROTOCOL.md#conditional-model-family-decision--2026-11-02); no extra fitting, holdout tuning or calibration; **M2 remains OPEN 4/8**, four milestones pending.
-- [ ] Protected pre-holdout model and source attestations: implementation/tests prepared; protected runner with owner-only workflow dispatch or strict manual issue #182 command prepared; real source-corroborated lock and immutable anchoring NOT YET DONE; two source-offline ephemeral train-only fits reproduced exact model and data fingerprints ([contract](docs/M2_RESEARCH_LOCK.md)).
-- [ ] Protected real-data read-only training extraction and QC; no private raw records or provider credentials in artifacts. Protected [real preflight #41442233583](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41442233583) **PASS** (240/16). Two protected [temporary train-only fits #41443294566](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41443294566) and [#41443547849](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/41443547849) **PASS** with identical train, mapping, snapshot and model SHA; external source not rechecked. These are not approved locks, production models or holdout evaluation. GitHub train-only run #41436355466 attempts 1–2 failed **before fit** due to Footbolno DNS resolution; guarded same-origin DoH recovery prepared, not proof of a successful run.
-- [ ] One-time **non-strict retrospective** holdout evaluation after immutable real lock and provenance: offline scorer with strict 240/240 role/identity gates and synthetic-only tests prepared; **real study NOT RUN**, no tuning or accuracy claim.
-- [ ] Browser-based owner M2 research/status interface and reproducible constrained study jobs: public read-only GitHub workflow status (bounded tokenless GET, fail-closed), local schema-guarded aggregate-attestation viewer, two-file offline train-only replay comparison and pinned two-run SHA-validated aggregate evidence on the Models page prepared; trusted owner authentication, source-corroborated immutable evidence anchoring and one-time real evaluation NOT COMPLETE. No browser DB writes or default predictions.
-- [ ] Complete two repository-wide M2 exit audits, exact-main CI/Security/CodeQL/browser, verified production and explicit owner acceptance.
+- [x] Frozen research protocol and independent deterministic Poisson solver, including malformed-data tests.
+- [x] Protected 2024/25 real-data read-only training adapter with season/provenance gates.
+- [x] One immutable 2025/26 fixed-model retrospective evaluation: 182 eligible, 58 abstentions, no reuse or tuning.
+- [x] Conditional Elo/Dixon–Coles and calibration deferred without independent validation data.
+- [x] Owner research UI with authorization; live non-owner browser session remains an accepted unobserved check.
+- [x] Immutable one-use claim/result, protected job, SHA-only receipt and private result storage.
+- [x] Training/source provenance, bounded execution, RLS and zero-cost constraints verified.
+- [x] Two complete repo-wide audits, exact-head/main CI/Security/CodeQL/browser, Supabase private integrity, Vercel exact SHA/aliases and **explicit owner sign-off** ([#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182)).
 
-Deferred calibration/Elo/Dixon-Coles selection requires independent validation/cohort; do not tune on the sealed holdout. **M3 is not open.**
+**No M3 authorization or production forecast approval.** The consumed 2025/26 holdout must never be used again. Release integrity [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains open.
 
 ## M3 - Calibration & Evaluation
 Independent calibration validation, Log Loss, Brier, RPS, uncertainty and baseline comparisons.
