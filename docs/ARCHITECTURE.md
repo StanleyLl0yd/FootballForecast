@@ -1,5 +1,8 @@
 # Architecture (M0/M1 accepted; M2 research open)
 
+**CURRENT M2 IMPLEMENTATION (2026-11-09):** Owner GitHub OAuth is **configured and browser-verified**, and `/admin/research` is protected. The browser and Vercel route do not have private PostgreSQL credentials or a model-fitting endpoint. One pre-read owner-only GitHub Action consumed an immutable private one-use evaluation reservation and wrote one aggregate-only 2025/26 research result. The full CSV bytes were **not** archived for independent replay; the private model is **not approved** for production forecasting. There are 14 applied migrations and 11 `ff_private` tables in live Supabase. [Current full audit](M2_EXIT_AUDIT_2026-11-09.md). The M0/M1 architecture and future-work statements below are historical milestones, not assertions that OAuth or the first private study remain unconfigured.
+
+
 Accepted operating mode: unrestricted viewing without user registration for the initial non-commercial prototype. First audience is Russia, then potentially Europe/US. One real Russian home/wired network without VPN passed health/dashboard/archive checks (3/3 HTTP 200 on 2026-10-22); T-Mobile (primarily T2, St Petersburg) and MegaFon mobile networks failed without VPN. Mobile limitations are owner-accepted, non-gating for M0; no claim of nationwide availability or proven network root cause.
 
 ```text

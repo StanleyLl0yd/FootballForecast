@@ -1,5 +1,8 @@
 # Operations
 
+**CURRENT M2 OPERATIONS (2026-11-09):** The owner-only one-use 2025/26 fixed-model retrospective evaluation has already executed in [run #42590191735](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42590191735) and the immutable claim is consumed. **Do not dispatch the first-score command again or re-fetch the holdout.** Keep source and score numerical metrics private; production forecasts remain 0. M2 7/8 OPEN pending owner acceptance of the two-pass [exit audit](M2_EXIT_AUDIT_2026-11-09.md); M3 forbidden. The M1 and old M2 procedures below are historical and are not permission to recreate the first study.
+
+
 **Legacy M0 workflow note (2026-11-03):** the four archival Footbolno CSV/metadata and SportScore-to-Footbolno comparative workflows are manually invoked from protected `main` by the owner only. Their former source-file `push` hooks are removed. The M1 unit test workflow may still run on PR/push, but its Footbolno network snapshot job is `workflow_dispatch`-only. No automatic Footbolno network dependency remains; source-specific scripts and historical reports are preserved for explicit recovery.
 
 **M2 OPEN 2026-11-02:** statistical research and synthetic-only model implementation are authorized under [the frozen protocol](M2_BASELINE_PROTOCOL.md) and [issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182). The protected live importer and its private credentials remain M1-only. No experimental M2 job may read the sealed holdout to tune a model, expose private source rows, write forecasts or modify the live database.
