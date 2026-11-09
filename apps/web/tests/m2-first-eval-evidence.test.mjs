@@ -65,7 +65,7 @@ test('private M2 owner view shows scored evaluation only after authentication',(
   const owner=page.indexOf('await requireOwner()');
   assert.ok(owner>=0);
   assert.ok(owner<page.indexOf('inspectM2FirstPrivateEvaluation('));
-  assert.match(page,/Общий этап M2<\/span><strong>7\/8<\/strong>/);
+  assert.match(page,/Общий этап M2<\/span><strong>8\/8<\/strong>/);
   assert.match(page,/Оценка 2025\/26/);
   assert.match(page,/182\/240/);
   assert.match(page,/58/);
