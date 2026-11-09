@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_FIRST_FIXED_POISSON_PRIVATE_RETROSPECTIVE_STUDY_INTENT",
+  "declaredAtUtcDate": "2026-11-09",
+  "source": {
+    "uri": "https://www.football-data.co.uk/new/RUS.csv",
+    "provenancePage": "https://football-data.co.uk/russia.php",
+    "documentation": "https://football-data.co.uk/notes.txt",
+    "countryFile": "RUS",
+    "fetchPlan": "exactly one one-shot private retrieval after protected code + approval",
+    "seasonSelector": "calendar date 2025-07-01 inclusive to 2026-07-01 exclusive",
+    "league": "Russian Premier League",
+    "format": "multi-season extra-league CSV; 2025/26 day-only dates and finished scores",
+    "sourceByteSha256": null,
+    "selectedRowsSha256": null,
+    "status": "UNFETCHED_SEALED"
+  },
+  "fixedTraining": {
+    "protocol": "m2-openfootball-calendar-v1",
+    "trainingSeason": "2024/2025",
+    "trainingModelArtifactSha256": "5d1893ac2d3e632f979b1ec67ed751edfa38733b9faf6371fc3f5e24b97fa28d",
+    "fixedModelSha256": "987caad53cf77e4977482b4e9750b2c779912b47d0bc884cfb3807e8151ad95d",
+    "modelAliasSetSha256": "3f10e2bd77f348b570036efc8827f0571a26cae55c7dcb4ad93b5a39710e631b",
+    "trainingOnlyHdaCounts": [
+      103,
+      65,
+      72
+    ],
+    "trainedOn2025OrLater": false,
+    "reTrainingPermitted": false
+  },
+  "crosswalk": {
+    "officialPreseasonSource": "https://www.rfs.ru/news/222692",
+    "officialRosterRevision": "2025-07-11",
+    "knownClubs": 14,
+    "unseenClubs": [
+      "Балтика",
+      "Сочи"
+    ],
+    "namePolicyCode": "ml/src/football_forecast/research/football_data_day_only.py",
+    "currentProviderIdDependence": false,
+    "mappingMayBeEditedAfterFirstSourceRead": false
+  },
+  "evaluation": {
+    "design": "NON_STRICT_RETROSPECTIVE_FIXED_2024_25_VS_2025_26",
+    "scoreUnit": "1X2",
+    "totalSeasonFixturesExpected": 240,
+    "modelEligibleExpected": 182,
+    "abstentionsExpected": 58,
+    "datePrecision": "DAY_ONLY",
+    "kickoffTimeAsOfVerified": false,
+    "resultQuality": "full-time finished results and signed H/D/A consistency",
+    "primaryMetrics": [
+      "multiclassLogLoss",
+      "multiclassBrierSum",
+      "RPS"
+    ],
+    "auxiliaryMetric": "top1HDAAccuracy",
+    "comparator": "frozen 2024/25 training-only H/D/A frequency baseline 103/65/72",
+    "bookmakerSuperiorityClaim": false,
+    "tuningOnHoldoutPermitted": false,
+    "scoreDataPublished": false,
+    "output": "aggregate-only; private raw fixtures/club IDs and model coefficients never printed"
+  },
+  "privatePersonalUse": true,
+  "dataRedistributionApproved": false,
+  "authorizedToFetchHoldout": false,
+  "immutableStudyLockAccepted": false,
+  "evaluated": false,
+  "productionForecastsWritten": 0,
+  "researchStatus": "PRECOMMITTED_METHOD_CANDIDATE_ONLY",
+  "decisionRule": "If the one-shot download or cohort validation fails, stop and record INCONCLUSIVE without using results to change model, team mapping, source or hyperparameters."
+}

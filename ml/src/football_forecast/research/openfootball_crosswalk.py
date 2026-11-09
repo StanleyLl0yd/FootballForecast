@@ -173,6 +173,10 @@ _OFFICIAL_ROSTER_POLICY = "rfs-2025-07-11-exact-name-incumbent-id-promoted-absta
 class FrozenOfficialRosterCrosswalk:
     """Private 2024 metadata and public 2025 roster, fixed BEFORE heldout reads.
 
+    This contract assumes the SAME team-ID namespace as the 2024 train source.
+    It MUST NOT validate a different 2025/26 provider; use the provider-agnostic
+    official-name policy below, then separately bind that provider's roster.
+
     The unknown promoted provider IDs are not invented: after a study lock,
     the worker must verify that the source's exact names match the official
     roster, and that returning clubs still use their known 2024 source IDs.
@@ -295,5 +299,170 @@ def prepare_official_roster_crosswalk(
             "officialFinalRoster": OFFICIAL_2025_FINAL_ROSTER,
             "unseenOfficialNames": OFFICIAL_2025_NEW,
             "modelAliasSetSha256": _PINNED_TRAIN_MODEL_ALIAS_SHA,
+        }),
+    )
+
+
+# Independent holdout providers are NOT required to reuse 2024 training source
+# identifiers. The 2025 official name->model alias policy is provider-agnostic.
+# Any later source-ID->official-name map must be captured from independent
+# source roster metadata *before* reading any 2025/26 match rows or results.
+_INDEPENDENT_2025_POLICY = "rfs-2025-07-11-provider-agnostic-name-alias-v1"
+
+
+@dataclass(frozen=True, slots=True)
+class IndependentRosterPolicy:
+    official_entries: tuple[tuple[str, str], ...]
+    sha256: str
+
+    def resolve_official_name(self, name: str) -> str:
+        if type(name) is not str:
+            raise DataError("M2 independent roster: invalid official name")
+        for official_name, alias in self.official_entries:
+            if name == official_name:
+                return alias
+        raise DataError("M2 independent roster: unknown or misspelled official name")
+
+    def public_receipt(self) -> dict[str, object]:
+        return {
+            "schemaVersion": 1,
+            "kind": "M2_PROVIDER_INDEPENDENT_NAME_POLICY_CANDIDATE",
+            "protocol": PROTOCOL,
+            "officialRosterRevision": "2025-07-11",
+            "officialClubCount": 16,
+            "knownTrainingClubs": 14,
+            "unseenClubs": 2,
+            "theoreticalEligibleMatches": 182,
+            "theoreticalAbstentions": 58,
+            "policySha256": self.sha256,
+            "providerSourceBound": False,
+            "sourceRightsApproved": False,
+            "holdoutRead": False,
+            "immutableStudyLockApproved": False,
+            "evaluationPermitted": False,
+        }
+
+    def prepare_provider_roster_candidate(
+        self, *, source_namespace: str,
+        roster_pairs: tuple[tuple[str, str], ...],
+    ) -> "ProviderRosterCandidate":
+        """Only source-side identity metadata, never result-bearing matches.
+
+        The caller must authenticate an independent source-specific roster
+        *before* unsealing any 2025/26 results. This pure candidate does not
+        prove when that source metadata was published or grant authorization.
+        """
+        if (type(source_namespace) is not str
+                or fullmatch(r"[a-z][a-z0-9_.-]{2,80}", source_namespace) is None
+                or type(roster_pairs) is not tuple
+                or len(roster_pairs) != 16):
+            raise DataError("M2 independent roster: invalid source roster envelope")
+        names: set[str] = set()
+        provider_ids: set[str] = set()
+        entries: list[tuple[str, str, str]] = []
+        for pair in roster_pairs:
+            if type(pair) is not tuple or len(pair) != 2:
+                raise DataError("M2 independent roster: invalid team identity pair")
+            provider_id, name = pair
+            provider_id = _source_id(provider_id)
+            alias = self.resolve_official_name(name)
+            if provider_id in provider_ids or name in names:
+                raise DataError("M2 independent roster: repeated team or provider ID")
+            names.add(name)
+            provider_ids.add(provider_id)
+            entries.append((provider_id, name, alias))
+        if (names != set(OFFICIAL_2025_FINAL_ROSTER)
+                or len({value[2] for value in entries}) != 16):
+            raise DataError("M2 independent roster: incomplete or colliding roster")
+        sorted_entries = tuple(sorted(entries))
+        digest = _digest({
+            "schemaVersion": 1,
+            "policySha256": self.sha256,
+            "sourceNamespace": source_namespace,
+            "sourceRosterEntries": sorted_entries,
+        })
+        return ProviderRosterCandidate(
+            source_namespace=source_namespace,
+            entries=sorted_entries,
+            policy_sha256=self.sha256,
+            sha256=digest,
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class ProviderRosterCandidate:
+    """Source-specific mapping CANDIDATE, not proof of rights or a study lock."""
+    source_namespace: str
+    entries: tuple[tuple[str, str, str], ...]
+    policy_sha256: str
+    sha256: str
+
+    def resolve_source_id(self, source_id: str) -> str:
+        source_id = _source_id(source_id)
+        for provider_id, _official_name, alias in self.entries:
+            if source_id == provider_id:
+                return alias
+        raise DataError("M2 independent roster: undeclared source identifier")
+
+    def public_receipt(self) -> dict[str, object]:
+        return {
+            "schemaVersion": 1,
+            "kind": "M2_SOURCE_ROSTER_BINDING_CANDIDATE",
+            "protocol": PROTOCOL,
+            "officialClubCount": 16,
+            "knownTrainingClubs": 14,
+            "unseenClubs": 2,
+            "theoreticalEligibleMatches": 182,
+            "theoreticalAbstentions": 58,
+            "policySha256": self.policy_sha256,
+            "providerRosterSha256": self.sha256,
+            "sourceRosterIndependentlyAuthenticated": False,
+            "sourceRightsApproved": False,
+            "holdoutRead": False,
+            "immutableStudyLockApproved": False,
+            "evaluationPermitted": False,
+        }
+
+
+def prepare_provider_independent_name_policy(
+    *, model_team_aliases: tuple[str, ...],
+) -> IndependentRosterPolicy:
+    """Commit to 14 known / 2 unseen CLUB NAMES before a source is selected.
+
+    The model is the already-frozen 2024/25 OpenFootball training artifact.
+    This operation has no source-team IDs, source content, I/O or labels.
+    """
+    if (type(model_team_aliases) is not tuple
+            or len(model_team_aliases) != 16
+            or any(type(alias) is not str
+                   or fullmatch(r"S_[A-F0-9]{20}", alias) is None
+                   for alias in model_team_aliases)
+            or len(set(model_team_aliases)) != 16):
+        raise DataError("M2 independent roster: incomplete trained alias set")
+    names = TRAIN_2024_PUBLIC_NAME_TO_OPENFOOTBALL
+    locked = tuple(sorted(_train_alias(name) for name in names.values()))
+    if (tuple(sorted(model_team_aliases)) != locked
+            or _digest(locked) != _PINNED_TRAIN_MODEL_ALIAS_SHA):
+        raise DataError("M2 independent roster: model differs from approved train-only escrow")
+    roster: list[tuple[str, str]] = []
+    for official in OFFICIAL_2025_FINAL_ROSTER:
+        alias = (_train_alias(names[official]) if official in names
+                 else _unseen_alias("official-2025-26:" + official))
+        roster.append((official, alias))
+    if (len(roster) != 16 or len({name for name, _ in roster}) != 16
+            or len({alias for _, alias in roster}) != 16
+            or sum(alias.startswith("S_") for _, alias in roster) != 14
+            or sum(alias.startswith("U_") for _, alias in roster) != 2):
+        raise DataError("M2 independent roster: pre-kickoff coverage differs")
+    items = tuple(sorted(roster))
+    return IndependentRosterPolicy(
+        official_entries=items,
+        sha256=_digest({
+            "schemaVersion": 1,
+            "protocol": PROTOCOL,
+            "policy": _INDEPENDENT_2025_POLICY,
+            "officialPreseasonRevision": "2025-07-11",
+            "officialNameEntries": items,
+            "trainModelAliasSetSha256": _PINNED_TRAIN_MODEL_ALIAS_SHA,
         }),
     )

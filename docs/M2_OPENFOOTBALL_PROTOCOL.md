@@ -379,3 +379,112 @@ or both unseen clubs (240 − 182). This assumes a valid double round robin;
 the protected evaluator must abort or apply only an already frozen exclusion
 policy if statuses, rights, club mappings or coverage differ. The numbers
 were computed from the pre-kickoff roster, never from sealed 2025/26 results.
+
+
+## Provider-independent frozen official-roster identity, 2026-11-09
+
+The earlier owner-only 2024 TRAIN preflight and digest
+`99ad249ceae34aa8fd12d77be8e4b58ad8b80ec87b169021b5ca962d176080b2`
+bind **legacy TRAIN-provider IDs only** to the immutable 2024/25 OpenFootball
+Poisson model. They do NOT bind the IDs of a different 2025/26 publisher.
+Do not demand that a new provider reuse those IDs, or silently treat a same
+numeric ID as the same club.
+
+`prepare_provider_independent_name_policy` is a separate pure, fail-closed
+candidate derived from the **pre-kickoff official 2025/26 club names**,
+the reviewed 16-name 2024/25 OpenFootball training map and the already-pinned
+model alias-set SHA `3f10e2bd77f348b570036efc8827f0571a26cae55c7dcb4ad93b5a39710e631b`.
+It fixes 14 known `S_` aliases, two unseen `U_` aliases, and the purely
+combinatorial 182/58 theoretical coverage, with no source, results, I/O or
+fit. An independent 2025/26 source must first supply a separately verified
+16-club **roster metadata** map to exact official names, documented and
+SHA-anchored in a trusted pre-label protected study. A source-specific
+candidate digest then binds its provider IDs to the official names and fixed
+model aliases; this is **not** a licence, publication-time certificate,
+study approval, or permission to read match outcomes. Unknown, duplicate
+or ambiguous provider identities fail closed.
+
+[2025/26 source eligibility review](M2_2025_HOLDOUT_SOURCE_REVIEW.json)
+documents the evidence without retrieving score-bearing 2025/26 records.
+The official OpenFoot RPL competition catalogue was independently queried
+on 2026-11-09 in
+[protected run #42580084123](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42580084123);
+it reported upstream **FotMob / Unlicensed-Beta** for the current RPL
+competition. OpenFoot permits retained internal research under its
+[terms](https://openfootapi.com/terms), but this does not license the
+underlying unlicensed feed; the old historical archive and this current
+catalogue must NOT authorize a new 2025/26 result source.
+The exact OpenFootball/europe Git tree at `63df627f3c87ce71708f016522ea236cf74332c3`
+has a 2024/25 training file but **no** Russian 2025/26 file.
+Football-Data.co.uk explicitly offers Russia 2025/26 as its final season
+for **private individual research**, subject to its private-individual use conditions. Owner explicitly
+approved a **single personal scoring-only evaluation** on 2026-11-09,
+not bulk source redistribution or heavy automated training.
+RSSSF can inform manual corroboration, not presumed bulk re-licensing.
+Per owner direction, Footbolno is not a new source dependency.
+
+No source is selected or downloaded; no source bytes/2025/26 identities,
+match results, timestamps, corrections or heldout labels were read from
+the protected research database. M2 still **5/8 OPEN**. The next trusted
+step is source-specific rights and metadata proof plus an opaque exact
+byte commitment; only after a separate immutable lock and one-use runner
+can actual 2025/26 results be opened for an honest non-strict benchmark.
+
+## First private retrospective evaluation, owner decision 2026-11-09
+
+The owner approved personal historical-data research and the provider-independent
+16-club name policy. To avoid another unresolved supplier-ID dependency, select
+**one** archived finished-results source for RPL 2025/26: Football-Data's
+all-seasons Russia CSV `https://www.football-data.co.uk/new/RUS.csv`.
+The operator will retrieve it **once** for this private research when the
+protected immutable study lock and one-use evaluator have been approved.
+No third-party data or model coefficients will be published; preserve truthful
+provenance and provider restrictions on redistribution.
+
+`M2_FIRST_FIXED_RETRO_STUDY_INTENT.json` freezes the 2024/25 model SHA,
+training-only 103/65/72 baseline, final 11 July 2025 official roster,
+14 familiar / 2 unseen clubs, 182 candidate predictions / 58 abstentions,
+season date bounds, exact external source URL, full-time score consistency,
+metrics and **no holdout-driven model changes**.
+
+The pure `football_data_day_only.py` parser/scorer processes supplied bytes
+only, extracts the 2025/26 240-row cohort and refuses missing/repeated games,
+awarded/missing scores, inconsistent outcomes, unofficial teams or changed
+model artifacts. The provider documents `Date`, `Time`, `Home`, `Away`,
+`HG`, `AG`, `Res`; its `Time` field has no independently authenticated
+UTC timezone, so we explicitly **ignore time** and label the study
+`DAY_ONLY / NON_STRICT_RETROSPECTIVE`, NOT a contemporaneous backtest.
+
+**Code and a declaration are not an immutable approval:** the independent
+trusted one-use runner, source snapshot byte commitment, issuer validation,
+private report, reproducibility and owner acceptance still need completion.
+Until then 2025/26 remains sealed and the first metrics are **not measured**.
+M2 is **5/8 OPEN**, M3 forbidden.
+
+## Protected one-use private execution contract — 2026-11-09
+
+The separate `m2-private-first-fixed-evaluation.yml` workflow only reacts
+to the exact owner-authored issue #182 comment
+`/m2-private-fixed-first-score-2025-26` on protected `main`, revalidates the
+owner GitHub numeric ID and run attempt, and uses the pre-existing privileged
+`m1-source-import` environment. It requires previously installed
+`database/migrations/0014_m2_private_one_use_fixed_evaluation.sql`.
+
+The runner verifies the fixed 2024/25 private model escrow, the Git-anchored
+prior 2025/26 source/mapping/scoring declaration, and a bounded HTTPS HEAD
+request (without labels). It then **commits** an immutable UNIQUE claim to the
+private PostgreSQL database **before the first result-bearing GET**.
+A second attempt, even after an error, is rejected. Once claimed, the source
+is fetched only once, the cohort must pass the complete day-only 240-match,
+16-team, 182-scored/58-abstained validation, and aggregate results are stored
+in a separate immutable private table. Log output contains only hashes,
+counts and confirmation of private storage, **never** the 240 source rows,
+per-match scores, model coefficients or numerical performance metrics.
+
+A successful run does not certify pre-match-as-of predictions, bookmaker
+superiority or production readiness. Failure after the claim is **INCONCLUSIVE
+and irreversible for this study**; any later experiment needs a separately
+preregistered protocol and truly independent evaluation. No M3 permission.
+
+Prior to the first owner-triggered action, this is **prepared but NOT executed**;
+source identities/labels are not downloaded by CI or the synthetic unit tests.
