@@ -13,8 +13,9 @@ const SHA40=/^[0-9a-f]{40}$/;
 
 export async function verifyProductionRelease({fetchImpl=fetch,githubToken=process.env.GITHUB_TOKEN,
   origins=PRODUCTION_ORIGINS}={}) {
-  if (!Array.isArray(origins)||origins.length===0 || origins.some(x=>!PRODUCTION_ORIGINS.includes(x)) ||
-      new Set(origins).size!==origins.length)throw new Error('Invalid production alias list');
+  if (!Array.isArray(origins)||origins.length!==PRODUCTION_ORIGINS.length ||
+      origins.some(x=>!PRODUCTION_ORIGINS.includes(x)) ||
+      new Set(origins).size!==PRODUCTION_ORIGINS.length)throw new Error('Invalid production alias list');
   const githubHeaders={accept:'application/vnd.github+json',
     'x-github-api-version':'2022-11-28',
     'user-agent':'FootballForecast-Release-Integrity/1'};
