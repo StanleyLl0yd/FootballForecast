@@ -161,6 +161,52 @@
     "protectedRealModelTrainingAuthorized": false,
     "historicalFirstPublicationVerified": false,
     "sealedHoldout2025_26Read": false,
-    "publicPredictionsWritten": false
+    "publicPredictionsWritten": false,
+    "sourceTeamIdCrossDateEqualityCheckedInsideReadOnlySQL": true,
+    "independentPrivateProviderIdToOfficialClubCrosswalkAccepted": false,
+    "technicalDayPatternPromotedToConfirmedPlayedGoalClassification": false,
+    "officialRevisionPlayedResultRecoveredFromPrivateArchive": false,
+    "homeAwayEvidenceProvesOriginalPublishedClock": false
+  },
+  "independentPublicAndPrivateStructuralCrosschecks": {
+    "kind": "CROSS_DATE_SCORE_AND_PROVIDER_ID_CONSISTENCY_ONLY",
+    "publicHistoricalEvidenceSources": [
+      "https://fcorenburg.ru/matchs/2019-2020/rossijskaya-premer-liga.html",
+      "https://www.rfs.ru/news/217736",
+      "https://www.rfs.ru/news/218012",
+      "https://www.championat.com/football/_russiapl/tournament/5441/match/1101821/",
+      "https://www.100bombardirov.ru/ru/pair/sci-spm.htm",
+      "https://news.sportbox.ru/Vidy_sporta/Futbol/Russia/premier_league/spbnews_NI1243250_Rotoru_zaschitano_tehnicheskoje_porazhenije_za_nejavku_na_match_s_Rostovom"
+    ],
+    "sixTechnicalAwardExactDaysAndScoreDirectionsUnique": true,
+    "samePrivateHomeClubOnBoth2020OrenburgAwardDates": true,
+    "samePrivateAwayClubOnBoth2020SochiAwardDates": true,
+    "samePrivateRotorClubAsHomeAndAwayAcrossTwo2020AwardDates": true,
+    "theseStructuralConstraintsProveRealClubNames": false,
+    "officialResultRevision2022_23": {
+      "observedDay": "2023-03-19",
+      "publicRecordedOnFieldScore": "1:1",
+      "publicOfficialDecisionScore": "0:3",
+      "privateDayTotalFixtureCount": 4,
+      "privateDayCount0_3": 1,
+      "privateDayCount3_0": 0,
+      "privateDayCount1_1": 0,
+      "privateFixtureIdentityVerified": false,
+      "automaticCorrectedPlayedScoreWritten": false,
+      "matchSpecificPrivateScoreCorrespondenceProven": false
+    },
+    "season2023_24OfficialHomeAwaySwap": {
+      "firstDay": "2023-09-16",
+      "returnDay": "2024-04-13",
+      "firstOfficialHomeWinScore": "1:0",
+      "returnOfficialHomeWinScore": "1:0",
+      "privateFirstDayCount1_0": 1,
+      "privateReturnDayCount1_0": 1,
+      "matchingPrivateReversedClubIdPairs": 1,
+      "providerIdsMatchSwapDirectionPattern": true,
+      "independentExternalClubNameToPrivateIdsVerified": false,
+      "independentHistoricalKickoffTimeVerified": false,
+      "automaticArchiveCorrectionWritten": false
+    }
   }
 }

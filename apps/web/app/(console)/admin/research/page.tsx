@@ -17,6 +17,7 @@ import firstScoreEvidence from '../../../../../../docs/M2_FIRST_PRIVATE_EVALUATI
 import m3HistoricalArchive from '../../../../../../docs/M2_PRIVATE_RPL_HISTORY_EVIDENCE.json';
 import m3PublicCc0Shape from '../../../../../../docs/M2_CC0_RPL_DEVELOPMENT_SOURCE_SHAPE_EVIDENCE.json';
 import m3PublicAnomalies from '../../../../../../docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json';
+import m3PrivateReadOnlyEvidence from '../../../../../../docs/M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json';
 
 export const dynamic='force-dynamic';
 
@@ -25,13 +26,28 @@ export default async function Page(){
   await requireOwner();
   const m3References=m3PublicCc0Shape.developmentSeasonsObserved;
   const m3Archive=m3HistoricalArchive.databaseVerification;
+  const m3Triage=m3PrivateReadOnlyEvidence.independentPublicAndPrivateStructuralCrosschecks;
+  const m3TriageLimits=m3PrivateReadOnlyEvidence.limitations;
   const m3EvidenceConsistent=m3Archive.matchCount===1680 &&
     m3Archive.snapshotCount===7 && m3Archive.sealedHoldoutRead===false &&
     m3HistoricalArchive.run.importReceipt.sourceOnly===true &&
     m3HistoricalArchive.run.importReceipt.modelTrainingApproved===false &&
     m3References.length===5 &&
     m3References.reduce((total,item)=>total+item.structuralMatchRows,0)===1200 &&
-    m3PublicAnomalies.awarded.independentlyCorroboratedAsNotPlayed===6;
+    m3PublicAnomalies.awarded.independentlyCorroboratedAsNotPlayed===6 &&
+    m3PrivateReadOnlyEvidence.totalSourceFinishedRecords===1680 &&
+    m3PrivateReadOnlyEvidence.queryType==='READ_ONLY_SELECT_EXISTING_FF_PRIVATE_DEVELOPMENT_TABLES' &&
+    m3Triage.sixTechnicalAwardExactDaysAndScoreDirectionsUnique===true &&
+    m3Triage.samePrivateHomeClubOnBoth2020OrenburgAwardDates===true &&
+    m3Triage.samePrivateAwayClubOnBoth2020SochiAwardDates===true &&
+    m3Triage.samePrivateRotorClubAsHomeAndAwayAcrossTwo2020AwardDates===true &&
+    m3Triage.officialResultRevision2022_23.privateDayCount0_3===1 &&
+    m3Triage.officialResultRevision2022_23.privateDayCount1_1===0 &&
+    m3Triage.season2023_24OfficialHomeAwaySwap.matchingPrivateReversedClubIdPairs===1 &&
+    m3TriageLimits.independentPrivateProviderIdToOfficialClubCrosswalkAccepted===false &&
+    m3TriageLimits.technicalDayPatternPromotedToConfirmedPlayedGoalClassification===false &&
+    m3TriageLimits.sealedHoldout2025_26Read===false &&
+    m3TriageLimits.protectedRealModelTrainingAuthorized===false;
   const evidence=summarizeM2OwnerEvidence(recordedEvidence);
   const openFootballReplay=inspectM2OpenFootballReplay(openFootballEvidence);
   const privateEscrow=inspectM2ProtectedPrivateEscrow(privateEscrowEvidence,openFootballEvidence);
@@ -87,6 +103,22 @@ export default async function Page(){
             </tr>;
           })}</tbody>
         </table></div>
+        <h3>Проверка с живой базой · кандидаты на ручное подтверждение</h3>
+        <div className="stat-grid">
+          <div className="stat"><span>Технические результаты · совпадение даты и счёта</span>
+            <strong>6</strong><small>Шесть уникальных кандидатов. Клубные ID не аттестованы.</small></div>
+          <div className="stat"><span>Матч с пересмотренным результатом · 2022/23</span>
+            <strong>1</strong><small>На поле 1:1; в архиве на эту дату имеется 0:3, но нет 1:1.</small></div>
+          <div className="stat"><span>Обмен полем · 2023/24</span>
+            <strong>2</strong><small>Два счёта 1:0 и обратный порядок клубных ID; связывание с названиями ожидает проверки.</small></div>
+        </div>
+        <p className="source-lab-note">Это только агрегатная проверка приватной базы PostgreSQL 17:
+          технические даты и счета уникальны, повторяющиеся клубные ID согласуются
+          с тремя парами публичных матчей. Исходные ID, строки и параметры модели не раскрываются.
+          Никакие записи не удалены, исправлены или допущены к обучению.</p>
+        <p><a className="sources-method"
+          href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json"
+          target="_blank" rel="noopener noreferrer">Проверить агрегированное свидетельство ↗</a></p>
         <p className="source-lab-warning">В независимых публичных архивах установлены шесть
           технических результатов и ошибка «хозяева/гости» 2023/24. Их нельзя
           автоматически вычитать из 1 680 приватных строк без сопоставления матчей.

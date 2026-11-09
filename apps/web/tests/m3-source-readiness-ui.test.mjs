@@ -9,6 +9,7 @@ const admin=read('../app/(console)/admin/page.tsx');
 const archive=JSON.parse(read('../../../docs/M2_PRIVATE_RPL_HISTORY_EVIDENCE.json'));
 const cc0=JSON.parse(read('../../../docs/M2_CC0_RPL_DEVELOPMENT_SOURCE_SHAPE_EVIDENCE.json'));
 const anomalies=JSON.parse(read('../../../docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json'));
+const live=JSON.parse(read('../../../docs/M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json'));
 
 test('M3 owner UI remains authenticated and source-only, without training or data reads',()=>{
   const auth=owner.indexOf('await requireOwner()');
@@ -27,6 +28,12 @@ test('M3 owner UI remains authenticated and source-only, without training or dat
   assert.match(panel,/m3References.find/);
   assert.match(panel,/М3-A3|M3-A3/);
   assert.match(panel,/M3_SOURCE_READINESS_2026-11-09.md/);
+  assert.match(panel,/M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json/);
+  assert.match(owner,/m3Triage.sixTechnicalAwardExactDaysAndScoreDirectionsUnique/);
+  assert.match(owner,/m3TriageLimits.independentPrivateProviderIdToOfficialClubCrosswalkAccepted/);
+  assert.match(panel,/Шесть уникальных кандидатов/);
+  assert.match(panel,/На поле 1:1; в архиве на эту дату имеется 0:3/);
+  assert.match(panel,/Два счёта 1:0 и обратный порядок клубных ID/);
   assert.match(panel,/не сопоставлен с приватным источником/);
   assert.doesNotMatch(panel,/fetch\s*\(|supabase|service_role|INSERT INTO|DELETE FROM|UPDATE ff_|2025\/26.*(?:оценить заново|повторно оценить)/i);
 });
@@ -44,6 +51,19 @@ test('UI receives only already public source-summary JSON with correct boundarie
   assert.equal(cc0.developmentSeasonsObserved.reduce((n,r)=>
     n+r.rowsWithoutExplicitClockTime,0),47);
   assert.equal(archive.databaseVerification.publicForecastCount,0);
+  assert.equal(live.totalSourceFinishedRecords,1680);
+  const x=live.independentPublicAndPrivateStructuralCrosschecks;
+  assert.equal(x.sixTechnicalAwardExactDaysAndScoreDirectionsUnique,true);
+  assert.equal(x.samePrivateHomeClubOnBoth2020OrenburgAwardDates,true);
+  assert.equal(x.samePrivateAwayClubOnBoth2020SochiAwardDates,true);
+  assert.equal(x.samePrivateRotorClubAsHomeAndAwayAcrossTwo2020AwardDates,true);
+  assert.equal(x.theseStructuralConstraintsProveRealClubNames,false);
+  assert.equal(x.officialResultRevision2022_23.privateDayCount0_3,1);
+  assert.equal(x.officialResultRevision2022_23.privateDayCount1_1,0);
+  assert.equal(x.officialResultRevision2022_23.privateFixtureIdentityVerified,false);
+  assert.equal(x.season2023_24OfficialHomeAwaySwap.matchingPrivateReversedClubIdPairs,1);
+  assert.equal(x.season2023_24OfficialHomeAwaySwap.independentExternalClubNameToPrivateIdsVerified,false);
+  assert.equal(live.limitations.protectedRealModelTrainingAuthorized,false);
 });
 
 test('M2 accepted and M3 open are no longer contradicted on three product pages',()=>{
