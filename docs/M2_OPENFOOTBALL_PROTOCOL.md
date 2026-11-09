@@ -430,3 +430,34 @@ the protected research database. M2 still **5/8 OPEN**. The next trusted
 step is source-specific rights and metadata proof plus an opaque exact
 byte commitment; only after a separate immutable lock and one-use runner
 can actual 2025/26 results be opened for an honest non-strict benchmark.
+
+## First private retrospective evaluation, owner decision 2026-11-09
+
+The owner approved personal historical-data research and the provider-independent
+16-club name policy. To avoid another unresolved supplier-ID dependency, select
+**one** archived finished-results source for RPL 2025/26: Football-Data's
+all-seasons Russia CSV `https://www.football-data.co.uk/new/RUS.csv`.
+The operator will retrieve it **once** for this private research when the
+protected immutable study lock and one-use evaluator have been approved.
+No third-party data or model coefficients will be published; preserve truthful
+provenance and provider restrictions on redistribution.
+
+`M2_FIRST_FIXED_RETRO_STUDY_INTENT.json` freezes the 2024/25 model SHA,
+training-only 103/65/72 baseline, final 11 July 2025 official roster,
+14 familiar / 2 unseen clubs, 182 candidate predictions / 58 abstentions,
+season date bounds, exact external source URL, full-time score consistency,
+metrics and **no holdout-driven model changes**.
+
+The pure `football_data_day_only.py` parser/scorer processes supplied bytes
+only, extracts the 2025/26 240-row cohort and refuses missing/repeated games,
+awarded/missing scores, inconsistent outcomes, unofficial teams or changed
+model artifacts. The provider documents `Date`, `Time`, `Home`, `Away`,
+`HG`, `AG`, `Res`; its `Time` field has no independently authenticated
+UTC timezone, so we explicitly **ignore time** and label the study
+`DAY_ONLY / NON_STRICT_RETROSPECTIVE`, NOT a contemporaneous backtest.
+
+**Code and a declaration are not an immutable approval:** the independent
+trusted one-use runner, source snapshot byte commitment, issuer validation,
+private report, reproducibility and owner acceptance still need completion.
+Until then 2025/26 remains sealed and the first metrics are **not measured**.
+M2 is **5/8 OPEN**, M3 forbidden.
