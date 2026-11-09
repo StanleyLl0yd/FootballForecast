@@ -8,11 +8,11 @@ from test_rpl_development_folds import synthetic_corpus
 
 from football_forecast.data.contracts import DataError
 from football_forecast.research.m3_fixture_correspondence import (
+    REASONS,
+    RESEARCH_PROTOCOL,
     DeclaredSeasonClubLink,
     IndependentReferenceFixture,
     PrivateDevelopmentFixture,
-    REASONS,
-    RESEARCH_PROTOCOL,
     audit_independent_fixture_candidates,
 )
 from football_forecast.research.rpl_temporal_features import DEVELOPMENT_SEASONS
