@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "kind": "M3_AGGREGATE_ONLY_PUBLIC_EVENT_TO_PRIVATE_MEMBERSHIP_MASK_DATE_CANDIDATES",
+  "observedOn": "2026-11-09",
+  "queryScope": "FF_PRIVATE_SEVEN_DEVELOPMENT_SEASONS_SQL_READ_ONLY_UTC_DAY_MASK_COUNTS",
+  "evidenceSource": "M3_PUBLIC_SEVEN_SEASON_CLUB_ROSTERS_EVIDENCE.json",
+  "historicalAnomalySource": "M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json",
+  "events": [
+    {
+      "eventKey": "orenburg_a",
+      "season": "2019/20",
+      "dayUtc": "2020-06-27",
+      "publicClubAlias": "orenburg",
+      "publicRole": "home",
+      "publicSevenSeasonMask": 115,
+      "privateMatchesOnSameUtcDay": 5,
+      "matchingMaskRoleCount": 1,
+      "allSevenSeasonOpponentPairCount": null,
+      "publicEvidenceUrl": "https://fcorenburg.ru/matchs/2019-2020/rossijskaya-premer-liga.html"
+    },
+    {
+      "eventKey": "orenburg_b",
+      "season": "2019/20",
+      "dayUtc": "2020-07-01",
+      "publicClubAlias": "orenburg",
+      "publicRole": "home",
+      "publicSevenSeasonMask": 115,
+      "privateMatchesOnSameUtcDay": 6,
+      "matchingMaskRoleCount": 1,
+      "allSevenSeasonOpponentPairCount": null,
+      "publicEvidenceUrl": "https://fcorenburg.ru/matchs/2019-2020/rossijskaya-premer-liga.html"
+    },
+    {
+      "eventKey": "sochi_a",
+      "season": "2019/20",
+      "dayUtc": "2020-07-16",
+      "publicClubAlias": "sochi",
+      "publicRole": "away",
+      "publicSevenSeasonMask": 62,
+      "privateMatchesOnSameUtcDay": 4,
+      "matchingMaskRoleCount": 1,
+      "allSevenSeasonOpponentPairCount": null,
+      "publicEvidenceUrl": "https://www.championat.com/football/_russiapl/tournament/2973/match/774587/"
+    },
+    {
+      "eventKey": "sochi_b",
+      "season": "2019/20",
+      "dayUtc": "2020-07-22",
+      "publicClubAlias": "sochi",
+      "publicRole": "away",
+      "publicSevenSeasonMask": 62,
+      "privateMatchesOnSameUtcDay": 8,
+      "matchingMaskRoleCount": 1,
+      "allSevenSeasonOpponentPairCount": null,
+      "publicEvidenceUrl": "https://bombardir.ru/online/138086-fc-krylia-sovetov-sochi-2019-2020"
+    },
+    {
+      "eventKey": "rotor_a",
+      "season": "2020/21",
+      "dayUtc": "2020-09-13",
+      "publicClubAlias": "rotor",
+      "publicRole": "home",
+      "publicSevenSeasonMask": 4,
+      "privateMatchesOnSameUtcDay": 3,
+      "matchingMaskRoleCount": 1,
+      "allSevenSeasonOpponentPairCount": null,
+      "publicEvidenceUrl": "https://www.rfs.ru/news/212277?mobile=no"
+    },
+    {
+      "eventKey": "rotor_b",
+      "season": "2020/21",
+      "dayUtc": "2020-09-19",
+      "publicClubAlias": "rotor",
+      "publicRole": "away",
+      "publicSevenSeasonMask": 4,
+      "privateMatchesOnSameUtcDay": 2,
+      "matchingMaskRoleCount": 1,
+      "allSevenSeasonOpponentPairCount": null,
+      "publicEvidenceUrl": "https://news.sportbox.ru/Vidy_sporta/Futbol/Russia/premier_league/spbnews_NI1243250_Rotoru_zaschitano_tehnicheskoje_porazhenije_za_nejavku_na_match_s_Rostovom"
+    },
+    {
+      "eventKey": "sochi_spartak_a",
+      "season": "2023/24",
+      "dayUtc": "2023-09-16",
+      "publicClubAlias": "sochi",
+      "publicRole": "either",
+      "publicSevenSeasonMask": 62,
+      "privateMatchesOnSameUtcDay": 4,
+      "matchingMaskRoleCount": 1,
+      "allSevenSeasonOpponentPairCount": 1,
+      "publicEvidenceUrl": "https://pfcsochi.ru/news/2023-2024/rfs-i-rpl-soglasovali-perenos-matchey-mezhdu-sochi-i-spartakom/"
+    },
+    {
+      "eventKey": "sochi_spartak_b",
+      "season": "2023/24",
+      "dayUtc": "2024-04-13",
+      "publicClubAlias": "sochi",
+      "publicRole": "either",
+      "publicSevenSeasonMask": 62,
+      "privateMatchesOnSameUtcDay": 4,
+      "matchingMaskRoleCount": 1,
+      "allSevenSeasonOpponentPairCount": 1,
+      "publicEvidenceUrl": "https://www.championat.com/football/_russiapl/tournament/5441/match/1101821/"
+    }
+  ],
+  "aggregate": {
+    "publicEventsChecked": 8,
+    "anonymousMembershipAndRoleMatches": 8,
+    "publicSingletonClubAliasesInEventSet": 3,
+    "allSevenSeasonOpponentPairCandidates": 2,
+    "independentlyVerifiedPrivateClubLinks": 0,
+    "independentlyEligiblePrivatePlayedRows": 0
+  },
+  "limitations": {
+    "privateIdsExported": false,
+    "privateRowsExported": false,
+    "scoreFieldsRead": false,
+    "individualPrivateClubNamesRead": false,
+    "sourceCalendarDatesIndependentlyConvertedToUTC": false,
+    "officialClubIdentityVerified": false,
+    "playedGoalStatusVerified": false,
+    "firstPublicationTimesVerified": false,
+    "sourceRightsVerified": false,
+    "trainingAuthorized": false,
+    "holdout2025_26Read": false,
+    "publicForecastsWritten": false
+  }
+}

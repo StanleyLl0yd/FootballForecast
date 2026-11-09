@@ -18,6 +18,10 @@ import m3HistoricalArchive from '../../../../../../docs/M2_PRIVATE_RPL_HISTORY_E
 import m3PublicCc0Shape from '../../../../../../docs/M2_CC0_RPL_DEVELOPMENT_SOURCE_SHAPE_EVIDENCE.json';
 import m3PublicAnomalies from '../../../../../../docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json';
 import m3PrivateReadOnlyEvidence from '../../../../../../docs/M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json';
+import m3PublicRosters from '../../../../../../docs/M3_PUBLIC_SEVEN_SEASON_CLUB_ROSTERS_EVIDENCE.json';
+import m3SignatureEvidence from '../../../../../../docs/M3_SEVEN_SEASON_MEMBERSHIP_SIGNATURE_EVIDENCE.json';
+import m3CalendarEvidence from '../../../../../../docs/M3_PRIVATE_CALENDAR_MASK_TRIAGE_EVIDENCE.json';
+import {inspectM3Topology} from '@/lib/m3-source-topology-evidence.mjs';
 
 export const dynamic='force-dynamic';
 
@@ -28,7 +32,10 @@ export default async function Page(){
   const m3Archive=m3HistoricalArchive.databaseVerification;
   const m3Triage=m3PrivateReadOnlyEvidence.independentPublicAndPrivateStructuralCrosschecks;
   const m3TriageLimits=m3PrivateReadOnlyEvidence.limitations;
-  const m3EvidenceConsistent=m3Archive.matchCount===1680 &&
+  const m3Topology=inspectM3Topology(m3PublicRosters,m3SignatureEvidence,m3CalendarEvidence,
+    m3PrivateReadOnlyEvidence);
+  const m3EvidenceConsistent=m3Topology.state==='corroborated' &&
+    m3Archive.matchCount===1680 &&
     m3Archive.snapshotCount===7 && m3Archive.sealedHoldoutRead===false &&
     m3HistoricalArchive.run.importReceipt.sourceOnly===true &&
     m3HistoricalArchive.run.importReceipt.modelTrainingApproved===false &&
@@ -111,6 +118,12 @@ export default async function Page(){
             <strong>1</strong><small>На поле 1:1; в архиве на эту дату имеется 0:3, но нет 1:1.</small></div>
           <div className="stat"><span>Обмен полем · 2023/24</span>
             <strong>2</strong><small>Два счёта 1:0 и обратный порядок клубных ID; связывание с названиями ожидает проверки.</small></div>
+          <div className="stat"><span>Профили участия клубов · семь сезонов</span>
+            <strong>{m3Topology.verifiedProfileGroups}/16</strong>
+            <small>Совпадение всех групп: 12 одиночных профилей, 14 клубов в неоднозначных группах. Соответствия ID и названий не доказаны.</small></div>
+          <div className="stat"><span>Даты и анонимные профили · без счёта матчей</span>
+            <strong>{m3Topology.calendarDayCandidates}/8</strong>
+            <small>«Оренбург», «Сочи», «Ротор» и два публичных события «Сочи» – «Спартак». Календарь UTC и клубные ID не аттестованы.</small></div>
         </div>
         <p className="source-lab-note">Это только агрегатная проверка приватной базы PostgreSQL 17:
           технические даты и счета уникальны, повторяющиеся клубные ID согласуются
@@ -119,6 +132,9 @@ export default async function Page(){
         <p><a className="sources-method"
           href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json"
           target="_blank" rel="noopener noreferrer">Проверить агрегированное свидетельство ↗</a></p>
+        <p><a className="sources-method"
+          href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M3_CALENDAR_MASK_CROSSCHECK_2026-11-09.md"
+          target="_blank" rel="noopener noreferrer">Проверка семисезонных профилей и дат ↗</a></p>
         <p className="source-lab-warning">В независимых публичных архивах установлены шесть
           технических результатов и ошибка «хозяева/гости» 2023/24. Их нельзя
           автоматически вычитать из 1 680 приватных строк без сопоставления матчей.
