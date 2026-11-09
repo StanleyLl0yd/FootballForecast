@@ -1,8 +1,10 @@
-# Hosting and deployment — M0/M1 accepted; M2 research open
+# Hosting and deployment — M0/M1/M2 accepted; production release integrity pending
 
-**M2 authorized on 2026-11-02:** the research implementation is initially offline/synthetic-only; no new database migration, privileged production training worker or public forecast publisher has been deployed. Keep accepted M1 source history, zero-cost protections and browser RLS unchanged. Since the owner decision 2026-11-03, legacy Footbolno schedules/push imports are disabled; the separate OpenFootball calendar-only train-only workflow has no database or holdout access. See [M2 #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182).
+**Historical M2 authorization 2026-11-02; owner acceptance 2026-11-09:** the research implementation is initially offline/synthetic-only; no new database migration, privileged production training worker or public forecast publisher has been deployed. Keep accepted M1 source history, zero-cost protections and browser RLS unchanged. Since the owner decision 2026-11-03, legacy Footbolno schedules/push imports are disabled; the separate OpenFootball calendar-only train-only workflow has no database or holdout access. See [M2 #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182).
 
 **M1 was accepted on 2026-11-02** ([closed #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124)) after full internal technical audits and exact-main Frankfurt production verification. The protected importer ran before the 2026-11-03 Footbolno-free source transition; it is now manual-only. M1 acceptance did not itself enable M2 model publication. The deployment and database counts below are dated operational observations.
+
+**Current 2026-11-09 production baseline:** M2 [#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182) ACCEPTED 8/8 for bounded retrospective research only; M3 and production forecasts not authorized. Protected `main=56e85202456a71777be875def3512b98b6a15ab5` passed post-merge exact-main 9/9; Vercel `dpl_28TBD9mVdnZ97wwppm3SkWoM3bcg` READY / `fra1` with all three production domains mapping to the matching SHA. Vercel production-domain auto-assignment was subsequently disabled to require an explicit reviewed promotion for future releases. [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains OPEN until this preventive setting and the read-only monitor are validated on a later staged release. Below are dated M0/M1 operational observations, not fresh Supabase counts.
 
 ## Verified infrastructure
 
@@ -29,7 +31,7 @@ Actual evidence: [exact-main CI run #39764646186](https://github.com/StanleyLl0y
 
 **Owner decision (2026-10-22):** accept the residual risk of total current Free database loss without a production backup. Do not block M0/M1 on real encrypted offsite backup or isolated production restore. Re-evaluate backup needs **after FootballForecast is fully functional** ([issue #96](https://github.com/StanleyLl0yd/FootballForecast/issues/96)); nothing has been backed up in production.
 
-## Production release integrity: read-only drift warning (#266)
+## Production release integrity: staged release control and read-only drift warning (#266)
 
 On 2026-11-09, a **later Git-triggered Vercel build of an older SHA** reassigned all
 three production aliases after the newer audited deployment had already been READY.
@@ -63,6 +65,54 @@ a separately reviewed manual promotion. Do not promote a build just because its
 self-reported health metadata matches; verify independent Vercel metadata and
 protected exact-main checks first. Issue #266 stays open until live observability
 and a prevention policy are accepted. This neither closes M2 nor authorizes M3.
+
+### Production release control (Vercel Hobby; 2026-11-09)
+
+After the stale-build incident, the owner project's `Auto-assign Custom Production Domains`
+setting was changed to **off** through the authenticated Vercel project settings API.
+The three existing live aliases were immediately re-read and remained mapped to
+`dpl_28TBD9mVdnZ97wwppm3SkWoM3bcg` (SHA
+`56e85202456a71777be875def3512b98b6a15ab5`, READY, `fra1`).
+This is a **release process change**: merging into protected `main` may create a
+new **staged production** deployment, but does not itself authorize its promotion.
+Do not turn automatic assignment back on to make dependency updates easier.
+This setting is controlled in Vercel rather than source-controlled; inspect it
+after project restore or settings changes. See [Vercel's staged-production release
+guide](https://vercel.com/docs/deployments/promoting-a-deployment).
+
+**Required manual promotion procedure, including routine dependency updates:**
+
+1. Confirm the current protected GitHub `main` full SHA and all exact-main CI,
+   Security, CodeQL and required checks. Do not rely solely on green checks for
+   an older PR HEAD or a previous `main`.
+2. Inspect the **specific staged production** Vercel deployment independently:
+   its Git SHA must equal the *current* protected `main`, target must be
+   `production`, state `READY`, project `footballforecast`, and region `fra1`.
+   Do not promote preview deployments, rebuild a previously tested candidate,
+   or trust only an application's self-reported health SHA.
+3. Re-read protected `main` immediately before promoting to reject a moving
+   target. Promote that exact deployment using Vercel's staging **Promote**
+   operation; never use a stale deployment merely because its build is READY.
+4. Read the three production aliases from the Vercel API *after* promotion.
+   Require **all three** to point to the same intended deployment ID and its
+   verified SHA/region. Check the live `/api/health` metadata and the
+   [read-only workflow](../.github/workflows/production-release-integrity.yml).
+   Missing HTTP evidence, system variables, failed monitor runs, or mismatched
+   aliases are **unverified**, never a PASS; investigate before accepting.
+5. If release verification fails, keep issue #266 open, identify the current
+   deployment from authenticated metadata, and use a deliberate Vercel rollback
+   to a separately verified known-good deployment as needed. A rollback is not
+   permission to replay private data or relax GitHub protection.
+
+The hourly monitor is **detection**, not automatic remediation, and GitHub
+scheduled runs may be delayed. The release setting prevents ordinary
+auto-promotion of staged builds, but it does not provide an atomic SHA check
+inside Vercel's promotion API, nor prevent a privileged operator or API client
+from explicitly promoting the wrong deployment. Avoid claims of proven
+end-to-end prevention until a real staged build and monitor run have been
+observed. No additional permanent Vercel token, paid tier or GitHub secret
+is required for this procedure.
+
 
 ## Reproducible build and verification
 

@@ -35,13 +35,13 @@ test('accepted M1 docs do not claim live RPL database is empty or M1 blocked',()
     assert.doesNotMatch(doc,/M0 remains OPEN|M1 stays blocked|The real database is empty/);
 });
 
-test('opened M2 preserves sealed-holdout and preregistration boundaries',()=>{
-  assert.match(roadmap,/M2 - Statistical Baselines \(OPEN 2026-11-02\)/);
+test('accepted M2 preserves sealed-holdout and preregistration boundaries',()=>{
+  assert.match(roadmap,/M2 - Statistical Baselines \(ACCEPTED 2026-11-09/);
   assert.match(m2Protocol,/Protocol version: \`m2-independent-poisson-v1\`/);
   assert.match(m2Protocol,/2025\/26.*sealed/i);
   assert.match(m2Protocol,/No production model, database write or public forecast/);
   assert.match(agents,/M3 is not authorized/);
-  assert.match(operations,/M2 OPEN 2026-11-02/);
+  assert.match(operations,/M2 opened 2026-11-02; accepted 2026-11-09/);
 });
 
 test('retired automatic Footbolno fetches and absence of production models are disclosed',()=>{
@@ -87,10 +87,10 @@ test('accepted M1 milestone is consistently represented in current operational s
   assert.match(roadmap,/M1 — RPL data foundation \(ACCEPTED 2026-11-02\)/);
   assert.match(changelog,/M1 data foundation accepted — 2026-11-02/);
   assert.match(agents,/M1 ACCEPTED 2026-11-02/);
-  assert.match(agents,/M2 OPEN, authorized by owner 2026-11-02/);
-  assert.match(readme,/M2 OPEN \(02\.11\.2026\)/);
+  assert.match(agents,/M2 was OPEN from the 2026-11-02 authorization, ACCEPTED by owner 2026-11-09/);
+  assert.match(readme,/M2 ACCEPTED \(09\.11\.2026\)/);
   assert.match(limitations,/M1 ACCEPTED on 2026-11-02/);
-  assert.match(sourceRegister,/M0 and M1 accepted; M2 research OPEN 2026-11-02/);
+  assert.match(sourceRegister,/M0, M1 and M2 ACCEPTED/);
   assert.match(deploy,/M1 was accepted on 2026-11-02/);
   assert.match(operations,/M1 accepted on 2026-11-02/);
   assert.match(licensing,/M1 accepted by owner on 2026-11-02/);
@@ -115,7 +115,7 @@ test('live M1 migration, canonical match and private row counts match documented
 
 test('source register dates and supersedes historical M0 zero-data conclusions',()=>{
   assert.match(sourceRegister,/### Accepted M1 operations \(last source snapshot verified 2026-11-01\)/);
-  assert.match(sourceRegister,/M2 is OPEN for bounded research/);
+  assert.match(sourceRegister,/M2 was opened for bounded research/);
   assert.match(sourceRegister,/616 canonical RPL matches/);
   assert.match(sourceRegister,/2880 private match records/);
   assert.match(sourceRegister,/Archived M0 source-gate criteria/);
