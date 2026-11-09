@@ -91,8 +91,8 @@ def prepared(monkeypatch):
 def score(model, source_batch, **overrides):
     kw = {
         "model": model, "batch": source_batch,
-        "expected_source_sha256": batch.source_sha256,
-        "expected_cohort_sha256": batch.cohort_sha256,
+        "expected_source_sha256": source_batch.source_sha256,
+        "expected_cohort_sha256": source_batch.cohort_sha256,
         "expected_name_policy_sha256": module._NAME_POLICY_SHA,
     }
     kw.update(overrides)
