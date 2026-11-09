@@ -71,6 +71,8 @@ test('private M2 owner view shows scored evaluation only after authentication',(
   assert.match(page,/58/);
   assert.match(page,/M2_FIRST_PRIVATE_EVALUATION_EVIDENCE\.json/);
   assert.match(page,/42590191735/);
+  assert.match(page,/SHA полученного CSV и выборки зафиксированы после чтения/);
+  assert.doesNotMatch(page,/SHA кода, модели, метода и источника/);
   assert.match(page,/без исходных матчей и коэффициентов/i);
   assert.match(page,/не сохранён целиком/i);
   assert.doesNotMatch(page,/Оценка holdout<\/span><strong>0<\/strong>/);

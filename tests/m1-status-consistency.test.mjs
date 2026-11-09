@@ -35,11 +35,11 @@ test('owner admin page does not advertise obsolete M0 or disabled protected inge
 });
 
 test('auth and model screens accurately describe imported M1 source data and disabled training',()=>{
-  assert.match(login,/АДМИНИСТРИРОВАНИЕ \/ M1 ПРИНЯТ/);
+  assert.match(login,/АДМИНИСТРИРОВАНИЕ \/ M2 · В РАБОТЕ/);
   assert.match(dataCenter,/M1 ПРИНЯТ \/ РЕЕСТР ИСТОЧНИКОВ/);
   assert.match(dataCenter,/Этап проекта<\/span><strong>M1 принят<\/strong>/);
   assert.match(dataCenter,/M2 открыт для разработки статистических моделей/);
-  assert.match(setup,/FOOTBALLFORECAST \/ M1 ПРИНЯТ/);
+  assert.match(setup,/FOOTBALLFORECAST \/ M2 · В РАБОТЕ/);
   assert.match(models,/Обучающая выборка/);
   assert.match(models,/2 временных train-only fit подтверждены/);
   assert.match(models,/2025\/26 доступ к оценке ещё не разрешён/);
