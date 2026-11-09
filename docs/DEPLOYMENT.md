@@ -40,7 +40,11 @@ for timestamped Vercel audit/build evidence. The validated main deployment was m
 re-promoted, without rebuilding or touching private research data.
 
 The scheduled [Production Release Integrity workflow](../.github/workflows/production-release-integrity.yml)
-runs hourly (minute 17 UTC), or on owner manual dispatch. It queries the exact protected
+runs hourly (minute 17 UTC), on owner manual dispatch, or via an exact
+`/release-integrity-check` comment by the authenticated repository owner on
+[issue #266](https://github.com/StanleyLl0yd/FootballForecast/issues/266).
+The comment trigger rejects all other issues, PR comments, authors and commands;
+it uses the same read-only check, not production promotion. It queries the exact protected
 GitHub main SHA **before and after** reading all three allowlisted production aliases'
 public `/api/health` responses, using no-cache GETs. An absent/malformed SHA,
 wrong service, HTTP error, alias disagreement, or main moving during the observation
@@ -75,7 +79,11 @@ The three existing live aliases were immediately re-read and remained mapped to
 `56e85202456a71777be875def3512b98b6a15ab5`, READY, `fra1`).
 This is a **release process change**: merging into protected `main` may create a
 new **staged production** deployment, but does not itself authorize its promotion.
-Do not turn automatic assignment back on to make dependency updates easier.
+The generated `footballforecast-git-main-stanleylloyd-4725.vercel.app` alias
+still automatically follows new staged Git deployments; the primary and named
+production domains do not. Treat the generated alias as **unstable during staging**
+and expect a temporary read-only monitor FAIL until explicit promotion aligns all
+three domains. Do not turn automatic assignment back on to make dependency updates easier.
 This setting is controlled in Vercel rather than source-controlled; inspect it
 after project restore or settings changes. See [Vercel's staged-production release
 guide](https://vercel.com/docs/deployments/promoting-a-deployment).
