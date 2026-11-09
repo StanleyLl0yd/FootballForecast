@@ -88,6 +88,17 @@ def score(model, batch, **overrides):
     return module.score_fixed_day_only(**kw)
 
 
+def test_older_source_schema_drift_does_not_invalidate_fixed_holdout(prepared):
+    _model, blob, cohort = prepared
+    lines = blob.decode("utf-8").splitlines()
+    # Historical rows have sometimes lacked later-added odds/stat columns.
+    # An old record ending before the final field is NOT a 2025/26 defect.
+    lines[1] = lines[1].rsplit(",", 1)[0]
+    parsed = module.parse_russian_2025_csv(("\n".join(lines) + "\n").encode())
+    assert len(parsed.fixtures) == 240
+    assert parsed.cohort_sha256 == cohort.cohort_sha256
+
+
 def test_synthetic_full_calendar_parses_only_target_season(prepared):
     _model, blob, batch = prepared
     assert len(batch.fixtures) == 240

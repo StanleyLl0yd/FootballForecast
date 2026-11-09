@@ -203,12 +203,14 @@ def parse_russian_2025_csv(blob: bytes) -> DayCohort:
         for row in reader:
             if len(fixtures) > 240:
                 raise DataError("M2 day-only: too many selected matches")
-            if None in row or any(value is None for value in row.values()):
-                # Extra-league historical CSV must stay structurally valid.
-                raise DataError("M2 day-only: malformed CSV record")
-            date_value = _day(row["Date"])
+            # Older seasons may have fewer odds/stat fields (schema drift).
+            # Never reject irrelevant historical rows, but selected 2025/26
+            # records MUST have a complete and unambiguous source schema.
+            date_value = _day(row.get("Date") or "")
             if date_value is None or not _START <= date_value < _END:
                 continue
+            if None in row or any(value is None for value in row.values()):
+                raise DataError("M2 day-only: malformed selected source record")
             home = _NAME_TO_OFFICIAL.get(row["Home"].casefold())
             away = _NAME_TO_OFFICIAL.get(row["Away"].casefold())
             if home is None or away is None:
