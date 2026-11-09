@@ -37,8 +37,6 @@ from football_forecast.research.model_escrow import (
 )
 from football_forecast.research.openfootball_crosswalk import (
     OFFICIAL_2025_FINAL_ROSTER,
-    TRAIN_2024_PUBLIC_NAME_TO_OPENFOOTBALL,
-    _train_alias,
     prepare_provider_independent_name_policy,
 )
 

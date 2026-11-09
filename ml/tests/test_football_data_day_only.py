@@ -218,7 +218,8 @@ def test_extra_or_missing_target_rows_fail_closed(prepared):
     header, other, *games_and_last = rows
     assert other.startswith("Russia,")
     with pytest.raises(DataError):
-        module.parse_russian_2025_csv(("\n".join([header, other, *games_and_last[:-2]])+"\n").encode())
+        truncated = "\n".join([header, other, *games_and_last[:-2]]) + "\n"
+        module.parse_russian_2025_csv(truncated.encode())
     with pytest.raises(DataError):
         module.parse_russian_2025_csv((text + rows[2] + "\n").encode())
     with pytest.raises(DataError):
