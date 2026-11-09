@@ -77,6 +77,15 @@ test('read-only hourly workflow and server health release identity are source-co
   assert.match(workflow,/cron: '17 \* \* \* \*'/);
   assert.match(workflow,/contents: read/);
   assert.match(workflow,/node scripts\/check-production-release\.mjs/);
+  assert.match(workflow,/issue_comment:\s*\n\s*types: \[created\]/);
+  assert.match(workflow,/github\.repository == 'StanleyLl0yd\/FootballForecast'/);
+  assert.match(workflow,/github\.ref == 'refs\/heads\/main'/);
+  assert.match(workflow,/github\.actor == 'StanleyLl0yd'/);
+  assert.match(workflow,/github\.event\.issue\.number == 266/);
+  assert.match(workflow,/!github\.event\.issue\.pull_request/);
+  assert.match(workflow,/github\.event\.comment\.user\.id == 131160519/);
+  assert.match(workflow,/github\.event\.comment\.author_association == 'OWNER'/);
+  assert.match(workflow,/github\.event\.comment\.body == '\/release-integrity-check'/);
   assert.doesNotMatch(workflow,/VERCEL_TOKEN|issues: write|request_promote/);
   const route=readFileSync('apps/web/app/api/health/route.ts','utf8');
   assert.match(route,/VERCEL_GIT_COMMIT_SHA/);
