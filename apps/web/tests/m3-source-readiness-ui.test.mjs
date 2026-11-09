@@ -29,8 +29,8 @@ test('M3 owner UI remains authenticated and source-only, without training or dat
   assert.match(panel,/М3-A3|M3-A3/);
   assert.match(panel,/M3_SOURCE_READINESS_2026-11-09.md/);
   assert.match(panel,/M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json/);
-  assert.match(panel,/m3Triage.sixTechnicalAwardExactDaysAndScoreDirectionsUnique/);
-  assert.match(panel,/m3TriageLimits.independentPrivateProviderIdToOfficialClubCrosswalkAccepted/);
+  assert.match(owner,/m3Triage.sixTechnicalAwardExactDaysAndScoreDirectionsUnique/);
+  assert.match(owner,/m3TriageLimits.independentPrivateProviderIdToOfficialClubCrosswalkAccepted/);
   assert.match(panel,/Шесть уникальных кандидатов/);
   assert.match(panel,/На поле 1:1; в архиве на эту дату имеется 0:3/);
   assert.match(panel,/Два счёта 1:0 и обратный порядок клубных ID/);
