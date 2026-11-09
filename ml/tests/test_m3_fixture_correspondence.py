@@ -188,7 +188,9 @@ def test_sealed_invalid_or_wrongly_asserted_private_input_fails_closed(corpus, c
 @pytest.mark.parametrize("change", [
     {"season": "2025/26"},
     {"source_namespace": "openfoot-starter"},
+    {"source_namespace": []},
     {"source_content_sha256": "non_verifiable"},
+    {"result_kind": []},
     {"result_kind": "made_up"},
     {"result_kind": "technical_award"},
     {"event_day_utc": "2018-09-01"},
