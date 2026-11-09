@@ -36,6 +36,10 @@ No training on the validation season's results for that fold. No same-day outcom
 
 Negative tests: unavailable/malformed/2025–26 inputs, awarded/unknown results, duplicate/incomplete fixtures, input permutation, and future-validation-label changes must not refit the same fold's probabilities. Production and existing M2 endpoints must not import/execute this module.
 
+## A3 source-readiness checkpoint (partial, not accepted)
+
+An [aggregate-only seven-season source review](M3_SOURCE_READINESS_2026-11-09.md) and pure refusal gate now distinguish 1,680 private **provider-finished** rows, 1,200 public CC0 structurally observed rows across five seasons, six confirmed public technical awards, one false 2023/24 home/away direction and 47 public rows lacking inline clock. These observations do not identify which private fixtures are played and exclude **zero proven** private rows. The two CC0 paths missing for 2021/22 and 2022/23 have alternative RSSSF retrospective archives but are not cross-mapped. No real training or model evaluation is authorized; A3 remains open until independently reviewed row-level coverage, rights, time and club continuity. Do not subtract public anomalies from private counts without a verified crosswalk.
+
 ## A3–A7: eligibility before real evaluation
 
 Before a protected real **development-only** study, separately review: per-fixture independent played vs awarded and home/away evidence; source-use eligibility; original UTC fixture confidence; immutable development-source SHA; official club identity continuity; promotion/renaming handling; and a job with least privileges, once-only anchored configuration and aggregate-only report. Reject or abstain if unproven. Never use the original private M2 2024/25 model as a tuned M3 candidate. Predeclare model families and hyperparameters before reading development validation results. Record per-fold N, exclusions, coverage and missingness. Aggregate Log Loss/Brier/RPS is not a claim of superiority without dependent-match uncertainty and independent benchmark coverage.
