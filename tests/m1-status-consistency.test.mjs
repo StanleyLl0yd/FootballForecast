@@ -12,7 +12,7 @@ const setup=read('../apps/web/app/setup/page.tsx');
 const dataCenter=read('../apps/web/app/(console)/data/page.tsx');
 
 test('public shell and README acknowledge accepted M0 and M1 without inventing models',()=>{
-  assert.match(shell,/M2 · Принят · M3 не разрешён/);
+  assert.match(shell,/M2 · Принят · M3 · Исследование/);
   assert.doesNotMatch(shell,/M0 · Подготовка данных/);
   assert.match(readme,/M1 ACCEPTED \(02\.11\.2026\)/);
   assert.match(readme,/M0 принят 29\.10\.2026/);

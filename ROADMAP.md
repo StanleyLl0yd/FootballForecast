@@ -1,10 +1,10 @@
-## CURRENT · 2026-11-09 · M2 ACCEPTED 8/8; M3 NOT AUTHORIZED
+## CURRENT · 2026-11-09 · M2 ACCEPTED 8/8; M3 OPEN (owner authorized)
 
 The owner explicitly accepted the two complete M2 audits and disclosed exceptions ([#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182), [audit](docs/M2_EXIT_AUDIT_2026-11-09.md)). This closes the research milestone, **not** production model approval. Protected main after #267 was `0d33cb03f2a2e023de3c3a9146f107e67e5fa369`, post-merge 10/10 PASS, Vercel READY / fra1 / three exact-SHA aliases. The stale deployment issue [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains open.
 
-The sole one-use [2025/26 study run #42590191735](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42590191735) has 182 eligible outcomes and 58 abstentions among 240 finished fixtures. No repeat/re-scoring/tuning on the consumed holdout; private metrics stay private. Non-strict retrospective day-only study, missing verbatim CSV archive, no verified historical kickoffs/as-of, incomplete played-vs-awarded match reconciliation, selective coverage and no bookmaker comparison remain accepted limitations. No public forecasts or authorized M3 work. Authenticated non-owner browser denial remains unobserved.
+The sole one-use [2025/26 study run #42590191735](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42590191735) has 182 eligible outcomes and 58 abstentions among 240 finished fixtures. No repeat/re-scoring/tuning on the consumed holdout; private metrics stay private. Non-strict retrospective day-only study, missing verbatim CSV archive, no verified historical kickoffs/as-of, incomplete played-vs-awarded match reconciliation, selective coverage and no bookmaker comparison remain accepted limitations. No public forecasts or 2025/26 reuse. On 2026-11-09 the owner separately authorized **M3 private development-only research**, tracked by [#271](https://github.com/StanleyLl0yd/FootballForecast/issues/271). Authenticated non-owner browser denial remains unobserved.
 
-The OPEN/4/8/5/8 notes below are **dated historical checkpoints**.
+The OPEN/4/8/5/8 notes and older **M3 prohibited** remarks below are **dated historical checkpoints**, superseded by M2 acceptance and M3 authorization. They do not authorize reusing the consumed holdout, real model fitting without eligibility or forecast publication.
 
 ## M2 2025/26 label-source eligibility and cross-provider identity — 2026-11-09
 
@@ -216,10 +216,20 @@ Licensed adapters, provenance, normalized seasons and teams, timestamp checks, d
 - [x] Training/source provenance, bounded execution, RLS and zero-cost constraints verified.
 - [x] Two complete repo-wide audits, exact-head/main CI/Security/CodeQL/browser, Supabase private integrity, Vercel exact SHA/aliases and **explicit owner sign-off** ([#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182)).
 
-**No M3 authorization or production forecast approval.** The consumed 2025/26 holdout must never be used again. Release integrity [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains open.
+**M3 private development-only authorization: 2026-11-09, [#271](https://github.com/StanleyLl0yd/FootballForecast/issues/271). No production forecast approval.** The consumed 2025/26 holdout must never be used again. Release integrity [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains open.
 
-## M3 - Calibration & Evaluation
-Independent calibration validation, Log Loss, Brier, RPS, uncertainty and baseline comparisons.
+## M3 - Calibration & Evaluation (OPEN, owner-authorized 2026-11-09)
+
+Private RPL development workbench; [frozen M3 protocol](docs/M3_PRIVATE_RESEARCH_PROTOCOL.md), [eight explicit acceptance gates #271](https://github.com/StanleyLl0yd/FootballForecast/issues/271). Keep M2 frozen and **never replay 2025/26 holdout**. Begin with 2018/19–2024/25 synthetic-only five-fold expanding validation, fixed Dirichlet-smoothed H/D/A baseline and Log Loss/Brier/RPS; it is not a measured real-RPL result.
+
+- [ ] A1: reviewed M3 protocol, eligibility and research/publication boundaries.
+- [ ] A2: synthetic-only five-fold baseline, positive/negative tests and per-fold honest metrics.
+- [ ] A3: independent played-score, team-identity, kickoff, rights and as-of eligibility for real development data.
+- [ ] A4: preregistered separate multi-season model with deterministic fit, refused missing data and no M2 retuning.
+- [ ] A5: protected, aggregate-only development evaluation on eligible real historical 2018/19–2024/25, no 2025/26.
+- [ ] A6: uncertainty, abstentions, coverage and matched benchmark only if authentic market snapshots exist.
+- [ ] A7: owner-facing private research GUI, secure non-owner denial and no public prediction publication.
+- [ ] A8: two full repository-wide audits, exact-head/main CI, Vercel and owner acceptance.
 
 ## M4 - Production Forecasting
 Immutable revisions, scheduled match updates, browser-triggered jobs, Zenit reports only for corresponding RPL fixtures, reliable monitoring.
