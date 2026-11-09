@@ -1,5 +1,8 @@
 # Model methodology
 
+**CURRENT RESEARCH STATUS (2026-11-09):** An actual 16-club fixed regularized independent-Poisson model was fitted privately on OpenFootball 2024/25 and persisted in an immutable escrow. The pre-registered one-use 2025/26 evaluation measured 182 eligible 1X2 outcomes and 58 abstentions for unseen Baltika/Sochi. The private result beat a simple training-frequency baseline, **not bookmakers**; no historical kickoff-as-of verification, prospective forecast publication, tuning on holdout, production model approval or M3 authorization. Full original CSV bytes were not archived and cannot be assumed replayable. [Two-pass exit audit](M2_EXIT_AUDIT_2026-11-09.md). The M0-only statements below are a historical record.
+
+
 M0 only implements a deterministic independent-Poisson distribution generator which accepts externally supplied non-negative intensities. **No team strength has been learned.** The input intensities are not real match predictions and must not be shown as such.
 
 **M2 is OPEN (owner 2026-11-02)**, with the frozen [M2 independent-Poisson baseline v1](M2_BASELINE_PROTOCOL.md): fixed regularization, centered identifiable team effects, shared home advantage and cautious insufficient-data abstention. Train only on verified 2024/25 matches; never use 2025/26 sealed labels for fitting, coefficient selection or calibration. Implement a synthetic-only deterministic fit before connecting protected real input. Dixon–Coles and Elo are conditional research candidates, **not** an excuse to tune against the sealed holdout; independent calibration belongs to M3, which remains closed. CatBoost and ensembles remain later research topics pending adequate validation.
