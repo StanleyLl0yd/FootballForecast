@@ -19,7 +19,11 @@ from football_forecast.research.model_escrow import (
     _fingerprint_for_protocol,
     serialize_private_model,
 )
-from football_forecast.research.openfootball_crosswalk import OFFICIAL_2025_FINAL_ROSTER
+from football_forecast.research.openfootball_crosswalk import (
+    OFFICIAL_2025_FINAL_ROSTER,
+    TRAIN_2024_PUBLIC_NAME_TO_OPENFOOTBALL,
+    _train_alias,
+)
 
 
 def synthetic_csv() -> bytes:
@@ -64,6 +68,13 @@ def prepared(monkeypatch):
     document = fixture_doc()
     rows, _ = read_openfootball_calendar_training(document)
     model = fit_independent_poisson(rows)
+    # Synthetic coefficients, but the EXACT predeclared frozen 2024 club
+    # aliases. Otherwise provider-independent roster validation correctly
+    # rejects unrelated synthetic team names before reaching metric tests.
+    model = replace(model, teams=tuple(sorted(
+        _train_alias(name)
+        for name in TRAIN_2024_PUBLIC_NAME_TO_OPENFOOTBALL.values()
+    )))
     train_bytes = serialize_private_model(model, protocol=PROTOCOL)
     monkeypatch.setattr(
         module, "_FROZEN_MODEL_ARTIFACT", sha256(train_bytes).hexdigest(),
@@ -77,9 +88,9 @@ def prepared(monkeypatch):
     return model, blob, batch
 
 
-def score(model, batch, **overrides):
+def score(model, source_batch, **overrides):
     kw = {
-        "model": model, "batch": batch,
+        "model": model, "batch": source_batch,
         "expected_source_sha256": batch.source_sha256,
         "expected_cohort_sha256": batch.cohort_sha256,
         "expected_name_policy_sha256": module._NAME_POLICY_SHA,
