@@ -71,6 +71,10 @@ def _outcome(row: DevelopmentMatch) -> int:
     return 2
 
 
+def _mean_score(metric, probabilities, outcomes) -> float:
+    return fsum(metric(probabilities, y) for y in outcomes) / len(outcomes)
+
+
 def evaluate_synthetic_hda_baseline(
     fixtures: tuple[DevelopmentMatch, ...],
 ) -> SyntheticBaselineStudy:
@@ -104,9 +108,6 @@ def evaluate_synthetic_hda_baseline(
         )
         outcomes = tuple(_outcome(row) for row in validation)
 
-        def mean(metric):
-            return fsum(metric(probabilities, y) for y in outcomes) / len(outcomes)
-
         reports.append(SyntheticBaselineFold(
             validation_season=fold.validation_season,
             training_seasons=fold.training_seasons,
@@ -114,9 +115,9 @@ def evaluate_synthetic_hda_baseline(
             scored_matches=len(outcomes),
             training_outcomes_hda=tuple(counts[i] for i in (0, 1, 2)),
             probabilities_hda=probabilities,
-            mean_log_loss=mean(log_loss),
-            mean_brier=mean(brier_score),
-            mean_rps=mean(ranked_probability_score),
+            mean_log_loss=_mean_score(log_loss, probabilities, outcomes),
+            mean_brier=_mean_score(brier_score, probabilities, outcomes),
+            mean_rps=_mean_score(ranked_probability_score, probabilities, outcomes),
         ))
     if tuple(f.validation_season for f in reports) != VALIDATION_SEASONS:
         raise DataError("M3 baseline: validation year mismatch")
