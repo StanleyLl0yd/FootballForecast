@@ -90,3 +90,8 @@ Exit only after the issue #271 checklist, two distinct complete repository-wide 
 ## Independent release incident
 
 [Issue #266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) is separate. Owner-triggered read-only monitor run [#42633780456](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42633780456) **PASS**, while the first independently witnessed scheduled run remains outstanding. The generated `git-main` alias continues to move with staged Git builds. Do not claim the original triggering cause was proven or that monitoring prevents alias assignment.
+
+
+## A3 complete seven-bit season-membership histogram (aggregate-only)
+
+The [read-only private/public mask histogram comparison](M3_MEMBERSHIP_SIGNATURE_AUDIT_2026-11-09.md) verifies **all 16 distinct season-participation profile counts**, not just 26 distinct clubs or 82 adjacent overlaps. Twelve singleton-profile and fourteen ambiguous-profile clubs are structural candidates only; **no private provider ID was exported or assigned an official name**. The SHA-256 fingerprints the public-safe histogram, not private match rows. No score, time, rights or played-goal eligibility has been established. A3/A4 real-fit/A5 remain blocked, M3 stays **2/8 OPEN**.
