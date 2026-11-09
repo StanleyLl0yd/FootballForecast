@@ -200,7 +200,9 @@ def audit_independent_fixture_candidates(
                 or ref.home_club == ref.away_club
                 or type(ref.event_day_utc) is not date
                 or not _match_day(ref.season, ref.event_day_utc)
+                or type(ref.result_kind) is not str
                 or ref.result_kind not in REFERENCE_KINDS
+                or type(ref.source_namespace) is not str
                 or ref.source_namespace not in REFERENCE_SOURCES
                 or type(ref.source_content_sha256) is not str
                 or fullmatch(r"[a-f0-9]{64}", ref.source_content_sha256) is None
