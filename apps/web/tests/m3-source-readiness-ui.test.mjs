@@ -77,3 +77,16 @@ test('M2 accepted and M3 open are no longer contradicted on three product pages'
   assert.match(owner,/M2 · принятое и оставшиеся ограничения/);
   assert.match(owner,/Повторное использование 2025\/26 запрещено/);
 });
+
+
+test('owner only: M3 full-profile and date evidence are fail-closed aggregates',()=>{
+  const auth=owner.indexOf('await requireOwner()');
+  const topo=owner.indexOf('const m3Topology=inspectM3Topology');
+  assert.ok(auth>=0 && topo>auth);
+  assert.match(owner,/m3Topology.state==='corroborated'/);
+  assert.match(owner,/m3Topology.verifiedProfileGroups/);
+  assert.match(owner,/m3Topology.calendarDayCandidates/);
+  assert.match(owner,/M3_CALENDAR_MASK_CROSSCHECK_2026-11-09.md/);
+  assert.match(owner,/Соответствия ID и названий не доказаны/);
+  assert.match(owner,/Календарь UTC и клубные ID не аттестованы/);
+});
