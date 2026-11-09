@@ -1,8 +1,10 @@
-# Hosting and deployment — M0/M1 accepted; M2 research open
+# Hosting and deployment — M0/M1/M2 accepted; production release integrity pending
 
-**M2 authorized on 2026-11-02:** the research implementation is initially offline/synthetic-only; no new database migration, privileged production training worker or public forecast publisher has been deployed. Keep accepted M1 source history, zero-cost protections and browser RLS unchanged. Since the owner decision 2026-11-03, legacy Footbolno schedules/push imports are disabled; the separate OpenFootball calendar-only train-only workflow has no database or holdout access. See [M2 #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182).
+**Historical M2 authorization 2026-11-02; owner acceptance 2026-11-09:** the research implementation is initially offline/synthetic-only; no new database migration, privileged production training worker or public forecast publisher has been deployed. Keep accepted M1 source history, zero-cost protections and browser RLS unchanged. Since the owner decision 2026-11-03, legacy Footbolno schedules/push imports are disabled; the separate OpenFootball calendar-only train-only workflow has no database or holdout access. See [M2 #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182).
 
 **M1 was accepted on 2026-11-02** ([closed #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124)) after full internal technical audits and exact-main Frankfurt production verification. The protected importer ran before the 2026-11-03 Footbolno-free source transition; it is now manual-only. M1 acceptance did not itself enable M2 model publication. The deployment and database counts below are dated operational observations.
+
+**Current 2026-11-09 production acceptance:** M2 [#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182) ACCEPTED 8/8 for bounded retrospective research only; M3 and production forecasts not authorized. Exact protected `main=0d33cb03f2a2e023de3c3a9146f107e67e5fa369` passed post-merge 10/10; Vercel `dpl_DZd89DvvsPRuBJqoV27E2Qz4jWnS` READY / `fra1` with all three production domains mapping to the matching SHA. [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains open because the read-only hourly SHA monitor from #267 does not prevent a late stale Git build. Below are dated M0/M1 operational observations, not fresh Supabase counts.
 
 ## Verified infrastructure
 
