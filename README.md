@@ -1,5 +1,9 @@
 # FootballForecast
 
+**Публичная панель M2 (05.11.2026):** текущий этап 5/8, отдельно указаны публичные матчи и приватный архив семи сезонов; реальная фиксированная модель пока train-only, независимых показателей точности нет. Публичная атрибуция CC BY 4.0 сохранена.
+
+
+
 **M2 source-to-model team matching:** synthetic-only frozen 2024/25 train-club crosswalk and pre-results 2025/26 roster digest contract; no heldout scores, private source rows or approved lock. [Study limitations](docs/M2_OPENFOOTBALL_PROTOCOL.md).
 
 

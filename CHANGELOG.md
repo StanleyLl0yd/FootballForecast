@@ -1,3 +1,8 @@
+## M2 public status copy synchronized — 2026-11-05
+
+- Replaced outdated M1-current label with M2 5/8 on the public dashboard, login and unconfigured setup fallback. Distinguished seven private historical seasons from the public match catalog and explicitly identified fixed Poisson as train-only with no holdout accuracy claim.
+- Retained mandatory public source CC BY attribution. Added static regression for status, honesty and citation. No private data, model, source/revision or forecast changes.
+
 ## M2 training-only club crosswalk preparation — 2026-11-05
 
 - Added pure reproducible identity adapter: frozen 2024/25 team IDs, exact 16 OpenFootball names and model alias set, independently predeclared holdout roster IDs, deterministic promoted-team abstentions and closed-schema public-safe SHA receipt.
