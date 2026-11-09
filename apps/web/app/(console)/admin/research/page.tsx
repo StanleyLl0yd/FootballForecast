@@ -14,12 +14,24 @@ import openFootballEvidence from '../../../../../../docs/M2_OPENFOOTBALL_TRAIN_R
 import privateEscrowEvidence from '../../../../../../docs/M2_OPENFOOTBALL_PRIVATE_ESCROW_EVIDENCE.json';
 import publicSourceEvidence from '../../../../../../docs/M2_PUBLIC_SOURCE_OBSERVATION_EVIDENCE.json';
 import firstScoreEvidence from '../../../../../../docs/M2_FIRST_PRIVATE_EVALUATION_EVIDENCE.json';
+import m3HistoricalArchive from '../../../../../../docs/M2_PRIVATE_RPL_HISTORY_EVIDENCE.json';
+import m3PublicCc0Shape from '../../../../../../docs/M2_CC0_RPL_DEVELOPMENT_SOURCE_SHAPE_EVIDENCE.json';
+import m3PublicAnomalies from '../../../../../../docs/M2_CC0_RPL_ANOMALY_CORROBORATION_EVIDENCE.json';
 
 export const dynamic='force-dynamic';
 
 export default async function Page(){
   // Authorize before inspecting any further state; redirect is fail-closed.
   await requireOwner();
+  const m3References=m3PublicCc0Shape.developmentSeasonsObserved;
+  const m3Archive=m3HistoricalArchive.databaseVerification;
+  const m3EvidenceConsistent=m3Archive.matchCount===1680 &&
+    m3Archive.snapshotCount===7 && m3Archive.sealedHoldoutRead===false &&
+    m3HistoricalArchive.run.importReceipt.sourceOnly===true &&
+    m3HistoricalArchive.run.importReceipt.modelTrainingApproved===false &&
+    m3References.length===5 &&
+    m3References.reduce((total,item)=>total+item.structuralMatchRows,0)===1200 &&
+    m3PublicAnomalies.awarded.independentlyCorroboratedAsNotPlayed===6;
   const evidence=summarizeM2OwnerEvidence(recordedEvidence);
   const openFootballReplay=inspectM2OpenFootballReplay(openFootballEvidence);
   const privateEscrow=inspectM2ProtectedPrivateEscrow(privateEscrowEvidence,openFootballEvidence);
@@ -29,11 +41,13 @@ export default async function Page(){
     readM2TrainOnlyRun(),readM2PublicSourcesRun(),readM2OpenFootballTrainRun()
   ]);
   return <>
-    <PageHeading eyebrow="OWNER · M2" title="Контроль исследования"
-      subtitle="Защищённый, только для чтения: первое измерение 2025/26, происхождение данных и ограничения после принятия M2 владельцем. Публикация прогнозов и M3 не разрешены."/>
+    <PageHeading eyebrow="OWNER · M2 / M3" title="Контроль исследования"
+      subtitle="Защищённый, только для чтения: первое измерение 2025/26, происхождение данных и ограничения после принятия M2 владельцем. M3 открыт для исследования, публикация прогнозов запрещена."/>
     <div className="stat-grid">
       <div className="stat"><span>Общий этап M2</span><strong>8/8</strong>
-        <small>Два полных аудита приняты владельцем 09.11.2026; M3 не разрешён.</small></div>
+        <small>Два полных аудита приняты владельцем 09.11.2026; M3 открыт отдельно.</small></div>
+      <div className="stat"><span>Этап M3 · калибровка</span><strong>2/8</strong>
+        <small>Исследование открыто; пригодность данных A3 ещё не доказана.</small></div>
       <div className="stat"><span>Вход владельца · GitHub OAuth</span><strong>Принят</strong>
         <small>Реальный вход и анонимный отказ подтверждены 05.11.2026; вход под чужим GitHub не проверялся в браузере.</small></div>
       <div className="stat"><span>Архивные train-only запуски v1</span>
@@ -49,6 +63,44 @@ export default async function Page(){
         <small>{firstEvaluation.state==='recorded'?'182/240 матчей, 58 отказов; метрики приватные':
           'Подтверждение первого теста не прошло проверку SHA'}</small></div>
     </div>
+    <section className="panel informative">
+      <h2>M3 · Семилетний архив · проверка пригодности данных</h2>
+      {m3EvidenceConsistent?<div>
+        <p><strong>1 680</strong> приватных записей источника за 2018/19–2024/25,
+          но <strong>0 независимо подтверждённых пригодных строк</strong> для нового обучения.
+          Это отсутствие подтверждения, а не отсутствие сыгранных матчей.
+          M3-A3 остаётся открытым.</p>
+        <div className="source-lab-table-wrapper"><table className="source-lab-table">
+          <caption className="source-lab-note">Отдельный публичный CC0-архив не сопоставлен с приватным источником</caption>
+          <thead><tr><th scope="col">Сезон</th><th scope="col">Приватный источник</th>
+            <th scope="col">Публичный CC0</th><th scope="col">Ограничения</th></tr></thead>
+          <tbody>{m3Archive.seasons.map(season=>{
+            const reference=m3References.find(item=>item.season===season);
+            return <tr key={season}>
+              <th scope="row">{season}</th><td>240 записей · не одобрены</td>
+              <td>{reference?reference.structuralMatchRows:'Нет в проверенных CC0-путях'}</td>
+              <td>{reference?
+                `Технических исходов: ${reference.explicitAwardedStatusRows===null?'не классифицированы':reference.explicitAwardedStatusRows}; без часа в строке: ${reference.rowsWithoutExplicitClockTime}`:
+                season==='2022/23'?'RSSSF: известен пересмотр итогового результата':
+                'RSSSF: ретроспективный источник; сопоставление не выполнено'}
+                {season==='2023/24'?'; ошибка направления хозяев поля':''}</td>
+            </tr>;
+          })}</tbody>
+        </table></div>
+        <p className="source-lab-warning">В независимых публичных архивах установлены шесть
+          технических результатов и ошибка «хозяева/гости» 2023/24. Их нельзя
+          автоматически вычитать из 1 680 приватных строк без сопоставления матчей.
+          Клубная идентичность, сыгранные голы и историческое UTC/as-of не подтверждены.
+          Повторное использование 2025/26 запрещено. Реальное обучение M3 пока заблокировано.</p>
+        <p><a className="sources-method"
+          href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M3_SOURCE_READINESS_2026-11-09.md"
+          target="_blank" rel="noopener noreferrer">Отчёт M3-A3 ↗</a>
+          {' '}<a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/issues/271"
+          target="_blank" rel="noopener noreferrer">Критерии M3 #271 ↗</a></p>
+      </div>:<p role="alert" className="source-lab-error">
+        Агрегированные свидетельства не прошли проверку согласованности.
+        Нельзя считать историю РПЛ пригодной для обучения.</p>}
+    </section>
     <section className="panel informative">
       <h2>Контроль M2 · принятое и оставшиеся ограничения</h2>
       <div className="source-lab-table-wrapper"><table className="source-lab-table">
@@ -69,7 +121,7 @@ export default async function Page(){
             <td>{firstEvaluation.state==='recorded'?'1/1 · использована':'Нет проверенного подтверждения'}</td>
             <td>До первого чтения были закреплены URL источника, SHA кода и модели, правила выбора матчей. SHA полученного CSV и выборки зафиксированы после чтения; повторный запуск запрещён.</td></tr>
           <tr><th scope="row">Аудиты репозитория и приёмка владельцем</th><td>Приняты 09.11.2026</td>
-            <td>Два полных прохода и проверка CI/Security/CodeQL/browser, Vercel и Supabase. Остаточные риски приняты, но не устранены; M3 отдельно не разрешён.</td></tr>
+            <td>Два полных прохода и проверка CI/Security/CodeQL/browser, Vercel и Supabase. Остаточные риски приняты, но не устранены; M3 открыт отдельно.</td></tr>
         </tbody>
       </table></div>
       <p className="source-lab-warning">Первый защищённый тест завершён, но модель не утверждена для production.
@@ -117,7 +169,7 @@ export default async function Page(){
           полное побайтовое повторение расчёта сейчас не гарантировано. Это
           <strong> DAY_ONLY / NON_STRICT_RETROSPECTIVE</strong>, не прогноз с подтверждённым временем начала.
           Нельзя подбирать параметры или повторно использовать 2025/26 для выбора модели.
-          M3 и публикация прогнозов остаются запрещены.</p>
+          M3 открыт только для отдельной разработки; повторная оценка 2025/26 и публикация прогнозов запрещены.</p>
       </div>:<p role="alert" className="source-lab-error">
         Публичное подтверждение первого исследования не прошло проверку.
         Сверьте приватную таблицу и исходный защищённый GitHub workflow;
