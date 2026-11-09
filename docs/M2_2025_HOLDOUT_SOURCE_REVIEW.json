@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_2025_26_HOLDOUT_SOURCE_ELIGIBILITY_REVIEW",
+  "reviewDate": "2026-11-09",
+  "season": "2025/2026",
+  "protocol": "m2-openfootball-calendar-v1",
+  "researchClassification": "NON_STRICT_RETROSPECTIVE",
+  "ownerIntent": "personal non-commercial model evaluation; no publication of raw source data",
+  "frozenTrainingModelUnchanged": true,
+  "preholdoutOfficialRosterRevision": "2025-07-11",
+  "officialRosterClubs": 16,
+  "frozenTrainingKnownClubs": 14,
+  "modelUnseenClubs": 2,
+  "theoreticalEligibleFixtures": 182,
+  "theoreticalAbstentions": 58,
+  "noResultsOr2025MatchRecordsInspectedForThisReview": true,
+  "sources": [
+    {
+      "id": "openfoot",
+      "status": "UNQUALIFIED_COMPETITION_SOURCE_UNLICENSED",
+      "competition": "comp_premier_league_rus",
+      "catalogueObservationDate": "2026-11-09",
+      "catalogueGithubRun": "https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42580084123",
+      "catalogueSourceName": "FotMob",
+      "catalogueLicenseClaim": "Unlicensed-Beta (owner-approved factual data)",
+      "catalogueSourceUrl": "https://www.fotmob.com/",
+      "catalogueResponseSha256": "d150eee0be09fd0e49c09060af17759bb3432170771a71145d955f3126bb02a1",
+      "termsUrl": "https://openfootapi.com/terms",
+      "notes": "Terms permit retained internal research but do not grant underlying provider rights. Current RPL source catalogue claims unlicensed upstream. Do not assume the 2025/26 source differs or use it without independently verified per-season rights; owner's preference excludes FotMob."
+    },
+    {
+      "id": "openfootball-europe",
+      "status": "NO_2025_26_RPL_ARCHIVE",
+      "repository": "https://github.com/openfootball/europe",
+      "reviewedCommit": "63df627f3c87ce71708f016522ea236cf74332c3",
+      "license": "CC0-1.0",
+      "notes": "2024-25_ru1.txt is present and fixed training source; 2025-26_ru1.txt is absent from complete non-truncated Git tree at reviewed commit. A CC0 licence on 2024/25 does not create unseen 2025/26 labels."
+    },
+    {
+      "id": "football-data-uk",
+      "status": "PERSONAL_RESEARCH_CANDIDATE_UNAPPROVED",
+      "catalogueUrl": "https://www.football-data.co.uk/russia.php",
+      "fairUsePolicyUrl": "https://www.football-data.co.uk/contact.php",
+      "dataAccess": "public historical CSV for Russia; last listed season 2025/26",
+      "permissionScope": "Provider states free data are for private individuals' personal betting and/or academic research via manual download or at most light automated download (twice a week); commercial/AI data-training products and heavy automated extraction are not permitted. Whether a one-time non-training personal retrospective scoring study is within the applicable terms still requires explicit project review before access.",
+      "selected": false,
+      "downloadAttempted": false,
+      "sourceContentSha256": null,
+      "publisherResultStatusEvidenceVerified": false,
+      "notes": "No filename, exact bytes, dataset row counts, dates, outcomes or source team identities were retrieved for the holdout; mutable upstream source and identity/stadium/status correctness unverified."
+    },
+    {
+      "id": "rsssf",
+      "status": "EDITORIAL_CORROBORATION_ONLY",
+      "reference": "https://www.rsssf.org/tablesr/rus2026.html",
+      "notes": "Potential manual independently cited match/status confirmation; no demonstrated licence for machine-extracting or redistributing an entire fixture database, and not a locked primary source."
+    },
+    {
+      "id": "footbolno",
+      "status": "EXCLUDED_BY_OWNER_DIRECTION",
+      "notes": "Already-stored legacy sealed study material stays untouched; new M2 test must not require provider availability or new downloads."
+    }
+  ],
+  "studyGates": {
+    "holdoutSourceSelected": false,
+    "originalUpstreamRightsIndependentlyCleared": false,
+    "exactHoldoutSourceBytesCommitted": false,
+    "sourceSpecificClubRosterBoundBeforeLabels": false,
+    "matchStatusAndAwardedProofCommitted": false,
+    "historicalPrematchTimingVerified": false,
+    "immutableStudyLockApproved": false,
+    "oneTimeEvaluationRunnerApproved": false,
+    "holdoutRead": false,
+    "holdoutMetricsCalculated": false,
+    "modelApproved": false,
+    "productionForecastsWritten": 0
+  },
+  "limitations": "Neither a repository licence nor publisher permission for internal model research automatically licenses underlying feeds or guarantees event correctness. Source metadata alone does not prove timestamp chronology, match status, rights or independence. All review is source-metadata-only, not a 2025/26 result inspection."
+}
