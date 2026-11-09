@@ -222,11 +222,12 @@ Licensed adapters, provenance, normalized seasons and teams, timestamp checks, d
 
 Private RPL development workbench; [frozen M3 protocol](docs/M3_PRIVATE_RESEARCH_PROTOCOL.md), [eight explicit acceptance gates #271](https://github.com/StanleyLl0yd/FootballForecast/issues/271). Keep M2 frozen and **never replay 2025/26 holdout**. Begin with 2018/19–2024/25 synthetic-only five-fold expanding validation, fixed Dirichlet-smoothed H/D/A baseline and Log Loss/Brier/RPS; it is not a measured real-RPL result.
 
-- [ ] A1: reviewed M3 protocol, eligibility and research/publication boundaries.
-- [ ] A2: synthetic-only five-fold baseline, positive/negative tests and per-fold honest metrics.
+- [x] A1: reviewed M3 protocol, eligibility and research/publication boundaries.
+- [x] A2: synthetic-only five-fold baseline, positive/negative tests and per-fold honest metrics.
 - [ ] A3: independent played-score, team-identity, kickoff, rights and as-of eligibility for real development data.
   - Aggregate-only public evidence inventory and six-source fail-closed gate prepared: [M3-A3 readiness review](docs/M3_SOURCE_READINESS_2026-11-09.md). No per-fixture private crosswalk or verified eligible training count; A3 remains OPEN. Six CC0 technical awards and a 2023/24 schedule-direction anomaly must not be silently applied to private source rows.
 - [ ] A4: preregistered separate multi-season model with deterministic fit, refused missing data and no M2 retuning.
+  - Pure synthetic multi-season team Poisson candidate with fixed 12-game club smoothing and 20-game league prior, 5 expanding folds, proper scores and future-label leakage refusals: [frozen M3 candidate contract](docs/M3_PRIVATE_RESEARCH_PROTOCOL.md#a4-candidate-preparation-synthetic-multi-season-team-poisson-not-a4-acceptance). Real fit remains gated by A3.
 - [ ] A5: protected, aggregate-only development evaluation on eligible real historical 2018/19–2024/25, no 2025/26.
 - [ ] A6: uncertainty, abstentions, coverage and matched benchmark only if authentic market snapshots exist.
 - [ ] A7: owner-facing private research GUI, secure non-owner denial and no public prediction publication.
