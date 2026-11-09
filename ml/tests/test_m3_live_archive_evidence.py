@@ -45,6 +45,41 @@ def test_six_award_day_candidate_scorelines_not_automatically_excluded():
     ] is False
 
 
+def test_strong_date_and_recurring_team_id_patterns_are_not_proof_of_identity():
+    cross = EVIDENCE["independentPublicAndPrivateStructuralCrosschecks"]
+    assert cross["kind"] == "CROSS_DATE_SCORE_AND_PROVIDER_ID_CONSISTENCY_ONLY"
+    assert cross["sixTechnicalAwardExactDaysAndScoreDirectionsUnique"] is True
+    assert cross["samePrivateHomeClubOnBoth2020OrenburgAwardDates"] is True
+    assert cross["samePrivateAwayClubOnBoth2020SochiAwardDates"] is True
+    assert cross["samePrivateRotorClubAsHomeAndAwayAcrossTwo2020AwardDates"] is True
+    assert cross["theseStructuralConstraintsProveRealClubNames"] is False
+    revised = cross["officialResultRevision2022_23"]
+    assert revised["observedDay"] == "2023-03-19"
+    assert revised["publicRecordedOnFieldScore"] == "1:1"
+    assert revised["publicOfficialDecisionScore"] == "0:3"
+    assert revised["privateDayCount0_3"] == 1
+    assert revised["privateDayCount1_1"] == 0
+    assert revised["privateFixtureIdentityVerified"] is False
+    assert revised["automaticCorrectedPlayedScoreWritten"] is False
+    swap = cross["season2023_24OfficialHomeAwaySwap"]
+    assert swap["firstDay"] == "2023-09-16"
+    assert swap["returnDay"] == "2024-04-13"
+    assert swap["privateFirstDayCount1_0"] == 1
+    assert swap["privateReturnDayCount1_0"] == 1
+    assert swap["matchingPrivateReversedClubIdPairs"] == 1
+    assert swap["independentExternalClubNameToPrivateIdsVerified"] is False
+    assert swap["automaticArchiveCorrectionWritten"] is False
+    assert EVIDENCE["limitations"][
+        "independentPrivateProviderIdToOfficialClubCrosswalkAccepted"
+    ] is False
+    assert EVIDENCE["limitations"][
+        "technicalDayPatternPromotedToConfirmedPlayedGoalClassification"
+    ] is False
+    assert EVIDENCE["limitations"]["officialRevisionPlayedResultRecoveredFromPrivateArchive"
+                                   ] is False
+    assert EVIDENCE["limitations"]["homeAwayEvidenceProvesOriginalPublishedClock"] is False
+
+
 def test_snapshot_access_remains_force_rls_and_no_api_grants():
     for item in EVIDENCE["databaseSecurity"].values():
         assert item == {
