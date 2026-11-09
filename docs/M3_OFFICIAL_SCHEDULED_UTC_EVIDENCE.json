@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "kind": "M3_OFFICIAL_SCHEDULED_UTC_MASK_CORROBORATION",
+  "observedOn": "2026-11-10",
+  "scope": "SEVEN_SEASON_SELECT_ONLY_MASK_DIRECTION_EXACT_UTC_MINUTE",
+  "previousEvidence": "M3_PRIVATE_CALENDAR_MASK_TRIAGE_EVIDENCE.json",
+  "events": [
+    {
+      "key": "sochi_spartak_a",
+      "season": "2023/24",
+      "dayUtc": "2023-09-16",
+      "articleDate": "2023-09-13",
+      "articleUrl": "https://pfcsochi.ru/news/2023-2024/informatsiya-dlya-bolelshchikov-o-matche-so-spartakom/",
+      "homeAlias": "spartak",
+      "awayAlias": "sochi",
+      "homeMask": 127,
+      "awayMask": 62,
+      "scheduledLocalMoscow": "2023-09-16T19:00:00",
+      "scheduledUtc": "2023-09-16T16:00:00Z",
+      "privateDayMatches": 4,
+      "privateMaskDirectionCount": 1,
+      "exactUtcMinuteCount": 1,
+      "withinHourCount": 1
+    },
+    {
+      "key": "sochi_spartak_b",
+      "season": "2023/24",
+      "dayUtc": "2024-04-13",
+      "articleDate": "2024-04-08",
+      "articleUrl": "https://pfcsochi.ru/news/2023-2024/akkreditatsiya-smi-na-match-so-spartakom/",
+      "homeAlias": "sochi",
+      "awayAlias": "spartak",
+      "homeMask": 62,
+      "awayMask": 127,
+      "scheduledLocalMoscow": "2024-04-13T14:00:00",
+      "scheduledUtc": "2024-04-13T11:00:00Z",
+      "privateDayMatches": 4,
+      "privateMaskDirectionCount": 1,
+      "exactUtcMinuteCount": 1,
+      "withinHourCount": 1
+    }
+  ],
+  "aggregate": {
+    "minuteCandidates": 2,
+    "certifiedPrivateTeamLinks": 0,
+    "eligiblePlayedRows": 0
+  },
+  "limitations": {
+    "privateIdsExported": false,
+    "privateRowsExported": false,
+    "scoreFieldsRead": false,
+    "privateSpartakIdVerified": false,
+    "actualKickoffVerified": false,
+    "originalFirstServingUtcVerified": false,
+    "playedGoalStatusVerified": false,
+    "sourceTrainingRightsVerified": false,
+    "realTrainingAuthorized": false,
+    "holdout2025_26Read": false,
+    "publicPredictionsWritten": false
+  }
+}
