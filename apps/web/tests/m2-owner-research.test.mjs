@@ -46,7 +46,7 @@ test('owner research route is dynamic, gated before reading and contains no muta
   assert.match(route,/но не доступность/);
   assert.match(route,/M2CandidateReplay/);
   assert.match(route,/ResearchLockViewer/);
-  assert.match(route,/non-strict retrospective/);
+  assert.match(route,/DAY_ONLY \/ NON_STRICT_RETROSPECTIVE/);
   assert.match(route,/holdout/);
   assert.doesNotMatch(route,/createClient\s*\(|service_role|INSERT INTO|fetch\s*\(|server action/i);
 });
