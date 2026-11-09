@@ -29,6 +29,41 @@ Actual evidence: [exact-main CI run #39764646186](https://github.com/StanleyLl0y
 
 **Owner decision (2026-10-22):** accept the residual risk of total current Free database loss without a production backup. Do not block M0/M1 on real encrypted offsite backup or isolated production restore. Re-evaluate backup needs **after FootballForecast is fully functional** ([issue #96](https://github.com/StanleyLl0yd/FootballForecast/issues/96)); nothing has been backed up in production.
 
+## Production release integrity: read-only drift warning (#266)
+
+On 2026-11-09, a **later Git-triggered Vercel build of an older SHA** reassigned all
+three production aliases after the newer audited deployment had already been READY.
+The initiating event is unknown; see [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266)
+for timestamped Vercel audit/build evidence. The validated main deployment was manually
+re-promoted, without rebuilding or touching private research data.
+
+The scheduled [Production Release Integrity workflow](../.github/workflows/production-release-integrity.yml)
+runs hourly (minute 17 UTC), or on owner manual dispatch. It queries the exact protected
+GitHub main SHA **before and after** reading all three allowlisted production aliases'
+public `/api/health` responses, using no-cache GETs. An absent/malformed SHA,
+wrong service, HTTP error, alias disagreement, or main moving during the observation
+fails the job, not a silent PASS. This is a diagnostic job, **not** a required
+exact-head PR check. Synthetic regression tests include an old-SHA READY build
+arriving after a newer release and one secondary alias drifting.
+
+The health JSON's public `releaseCommitSha` comes solely from Vercel's
+`VERCEL_GIT_COMMIT_SHA` system environment variable, never from a request or
+a database. Vercel documents this variable as available at build/runtime when
+system environment variables are exposed. If it is disabled, the monitor deliberately
+fails closed. Check Vercel Project Settings → Environment Variables →
+*Automatically expose System Environment Variables*; do not add a permanent
+GitHub/Vercel token to fix a missing value. GitHub Actions uses only its automatically
+scoped read-only `GITHUB_TOKEN`, and no Vercel API token.
+
+An hourly alert **cannot block alias assignment, restore production automatically,
+guarantee immediate notification, or establish the initiating cause**. Check the
+workflow's failed runs/notification settings. Investigate any failure with the
+Vercel deployment API, verifying alias deployment IDs, Git SHA and `fra1` before
+a separately reviewed manual promotion. Do not promote a build just because its
+self-reported health metadata matches; verify independent Vercel metadata and
+protected exact-main checks first. Issue #266 stays open until live observability
+and a prevention policy are accepted. This neither closes M2 nor authorizes M3.
+
 ## Reproducible build and verification
 
 From the repository root:
