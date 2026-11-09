@@ -77,10 +77,10 @@ test('real publisher archive panel shows only pinned aggregate statuses and no a
   assert.doesNotMatch(page,/fetch\(|createClient\(|localStorage|use client/);
 });
 
-test('accepted M1 status credits licensed Footbolno import and preserves M0 audit context',()=>{
+test('accepted M2 status retains licensed Footbolno credit and M0 audit context',()=>{
   assert.match(page,/M1 ПРИНЯТ \/ РЕЕСТР ИСТОЧНИКОВ/);
-  assert.match(page,/Этап проекта<\/span><strong>M1 принят<\/strong>/);
-  assert.match(page,/M2 открыт для разработки статистических моделей/);
+  assert.match(page,/Этап проекта<\/span><strong>M2 принят<\/strong>/);
+  assert.match(page,/M2 принят 09\.11\.2026/);
   assert.match(page,/Footbolno \(CC BY 4\.0\) импортирован/);
   assert.match(page,/source.id==='footbolno'/);
   assert.match(page,/Не подключён/);

@@ -30,10 +30,10 @@ export default async function Page(){
   ]);
   return <>
     <PageHeading eyebrow="OWNER · M2" title="Контроль исследования"
-      subtitle="Защищённый, только для чтения: первое измерение 2025/26, происхождение данных и ограничения перед завершением M2."/>
+      subtitle="Защищённый, только для чтения: первое измерение 2025/26, происхождение данных и ограничения после принятия M2 владельцем. Публикация прогнозов и M3 не разрешены."/>
     <div className="stat-grid">
-      <div className="stat"><span>Общий этап M2</span><strong>7/8</strong>
-        <small>Осталась полная двухпроходная приёмка репозитория. M3 запрещён.</small></div>
+      <div className="stat"><span>Общий этап M2</span><strong>8/8</strong>
+        <small>Два полных аудита приняты владельцем 09.11.2026; M3 не разрешён.</small></div>
       <div className="stat"><span>Вход владельца · GitHub OAuth</span><strong>Принят</strong>
         <small>Реальный вход и анонимный отказ подтверждены 05.11.2026; вход под чужим GitHub не проверялся в браузере.</small></div>
       <div className="stat"><span>Архивные train-only запуски v1</span>
@@ -68,8 +68,8 @@ export default async function Page(){
           <tr><th scope="row">Неизменяемая заявка до открытия результатов</th>
             <td>{firstEvaluation.state==='recorded'?'1/1 · использована':'Нет проверенного подтверждения'}</td>
             <td>До первого чтения были закреплены URL источника, SHA кода и модели, правила выбора матчей. SHA полученного CSV и выборки зафиксированы после чтения; повторный запуск запрещён.</td></tr>
-          <tr><th scope="row">Аудиты репозитория и приёмка владельцем</th><td>Ожидают завершения</td>
-            <td>Два полных независимых прохода, CI/Security/CodeQL/browser, сверка Vercel и Supabase; M3 отдельно не разрешён.</td></tr>
+          <tr><th scope="row">Аудиты репозитория и приёмка владельцем</th><td>Приняты 09.11.2026</td>
+            <td>Два полных прохода и проверка CI/Security/CodeQL/browser, Vercel и Supabase. Остаточные риски приняты, но не устранены; M3 отдельно не разрешён.</td></tr>
         </tbody>
       </table></div>
       <p className="source-lab-warning">Первый защищённый тест завершён, но модель не утверждена для production.
