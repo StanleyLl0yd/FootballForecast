@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "kind": "M2_FIRST_PRIVATE_FIXED_2025_26_EVALUATION_EVIDENCE",
+  "observedAtDate": "2026-11-09",
+  "researchClassification": "NON_STRICT_RETROSPECTIVE",
+  "run": {
+    "runId": 42590191735,
+    "jobId": 129069659805,
+    "headSha": "2e2bb2394b00d1c6a3fb8dc735f3fecddcaa9126",
+    "event": "issue_comment",
+    "actor": "StanleyLl0yd",
+    "conclusion": "success"
+  },
+  "receiptSha256": "5aa9772173206e93a60577adc4d02f4e0e04b47154e92f4103b82d4c11586f2e",
+  "receipt": {
+    "abstentions": 58,
+    "codeSha": "2e2bb2394b00d1c6a3fb8dc735f3fecddcaa9126",
+    "declarationSha256": "5adcdf55890a5ebf75019b8bf48ec2f274267b50ca0aee1454682f69c26a7591",
+    "eligibleMatches": 182,
+    "githubRunId": 42590191735,
+    "kind": "M2_FIRST_PRIVATE_FIXED_SCORE_STORED",
+    "oneUseReservationConsumed": true,
+    "predeclaredNamesSha256": "d6987da7a0362ee9917a002c0e88c5e99b5846377ea3cea2cb1819329484868e",
+    "privateAggregateSha256": "dacc42c91074d9a57bcc1ea0ee070e4a32696062977a62ba04b6a419922541b0",
+    "productionForecastsWritten": 0,
+    "rawLabelsPublished": false,
+    "schemaVersion": 1,
+    "scoreMetricsPrivate": true,
+    "selectedRowsSha256": "2c7c564533f1c56a8c35ff0c6b819f940f0b68c57d7be92e179341bcf598c5dc",
+    "sourceSha256": "433389a0e6cab9d84c519fdf5195994b86cc92687acefe10920b1d06eaacaf7b",
+    "strictAsOfBacktestClaimed": false,
+    "studyId": "rpl-2025-26-football-data-fixed-poisson-v1"
+  },
+  "databaseVerification": {
+    "relation": "ff_private.ff_m2_one_use_study_results",
+    "studyClaims": 1,
+    "storedResults": 1,
+    "trainOnlyModels": 1,
+    "source": "https://www.football-data.co.uk/new/RUS.csv",
+    "sourceSha256": "433389a0e6cab9d84c519fdf5195994b86cc92687acefe10920b1d06eaacaf7b",
+    "selectedRowsSha256": "2c7c564533f1c56a8c35ff0c6b819f940f0b68c57d7be92e179341bcf598c5dc",
+    "eligible": 182,
+    "abstentions": 58,
+    "totalFixtures": 240,
+    "kickoffTimeQuality": "DAY_ONLY",
+    "oneTimeClaimCommittedBeforeFetch": true,
+    "modelTuning": false,
+    "privateMetricsStored": true,
+    "rawSourceRowsPublished": false,
+    "publishedForecastCount": 0
+  },
+  "constraints": {
+    "fullSourceBytesArchived": false,
+    "bitwiseIndependentReplayPossible": false,
+    "metricsIncludedInPublicRepository": false,
+    "preMatchAsOfVerified": false,
+    "bookmakerSuperiorityProven": false,
+    "productionModelApproved": false,
+    "oneUseRerunPermitted": false,
+    "m3Authorized": false
+  }
+}

@@ -8,10 +8,12 @@ import {summarizeM2OwnerEvidence} from '@/lib/m2-owner-research.mjs';
 import {inspectM2OpenFootballReplay} from '@/lib/m2-openfootball-evidence.mjs';
 import {inspectM2ProtectedPrivateEscrow} from '@/lib/m2-private-escrow-evidence.mjs';
 import {inspectM2PublicSourceObservations} from '@/lib/m2-public-source-evidence.mjs';
+import {inspectM2FirstPrivateEvaluation} from '@/lib/m2-first-eval-evidence.mjs';
 import recordedEvidence from '../../../../../../docs/M2_STORED_TRAIN_REPLAY_EVIDENCE.json';
 import openFootballEvidence from '../../../../../../docs/M2_OPENFOOTBALL_TRAIN_REPLAY_EVIDENCE.json';
 import privateEscrowEvidence from '../../../../../../docs/M2_OPENFOOTBALL_PRIVATE_ESCROW_EVIDENCE.json';
 import publicSourceEvidence from '../../../../../../docs/M2_PUBLIC_SOURCE_OBSERVATION_EVIDENCE.json';
+import firstScoreEvidence from '../../../../../../docs/M2_FIRST_PRIVATE_EVALUATION_EVIDENCE.json';
 
 export const dynamic='force-dynamic';
 
@@ -22,15 +24,16 @@ export default async function Page(){
   const openFootballReplay=inspectM2OpenFootballReplay(openFootballEvidence);
   const privateEscrow=inspectM2ProtectedPrivateEscrow(privateEscrowEvidence,openFootballEvidence);
   const sourceObservation=inspectM2PublicSourceObservations(publicSourceEvidence);
+  const firstEvaluation=inspectM2FirstPrivateEvaluation(firstScoreEvidence);
   const [latest,publicSources,openFootball]=await Promise.all([
     readM2TrainOnlyRun(),readM2PublicSourcesRun(),readM2OpenFootballTrainRun()
   ]);
   return <>
     <PageHeading eyebrow="OWNER · M2" title="Контроль исследования"
-      subtitle="Защищённый, только для чтения: наблюдения, недостающие доказательства и запреты до допуска к holdout."/>
+      subtitle="Защищённый, только для чтения: первое измерение 2025/26, происхождение данных и ограничения перед завершением M2."/>
     <div className="stat-grid">
-      <div className="stat"><span>Общий этап M2</span><strong>5/8</strong>
-        <small>3 критерия не приняты. M3 запрещён.</small></div>
+      <div className="stat"><span>Общий этап M2</span><strong>7/8</strong>
+        <small>Осталась полная двухпроходная приёмка репозитория. M3 запрещён.</small></div>
       <div className="stat"><span>Вход владельца · GitHub OAuth</span><strong>Принят</strong>
         <small>Реальный вход и анонимный отказ подтверждены 05.11.2026; вход под чужим GitHub не проверялся в браузере.</small></div>
       <div className="stat"><span>Архивные train-only запуски v1</span>
@@ -41,11 +44,13 @@ export default async function Page(){
         <small>Реальное хранение TRAIN_ONLY_UNAPPROVED, не model lock.</small></div>
       <div className="stat"><span>Старый протокол Footbolno v1</span><strong>архив</strong>
         <small>Не блокирует новый независимый путь OpenFootball.</small></div>
-      <div className="stat"><span>Оценка holdout</span><strong>0</strong>
-        <small>Контрольный сезон 2025/26 закрыт</small></div>
+      <div className="stat"><span>Оценка 2025/26</span>
+        <strong>{firstEvaluation.state==='recorded'?'1/1':'—'}</strong>
+        <small>{firstEvaluation.state==='recorded'?'182/240 матчей, 58 отказов; метрики приватные':
+          'Подтверждение первого теста не прошло проверку SHA'}</small></div>
     </div>
     <section className="panel informative">
-      <h2>Условия допуска — все обязательны</h2>
+      <h2>Контроль M2 · принятое и оставшиеся ограничения</h2>
       <div className="source-lab-table-wrapper"><table className="source-lab-table">
         <caption className="source-lab-note">Статусы относятся к текущему сохранённому наблюдению; ни один не предоставляет разрешений</caption>
         <thead><tr><th scope="col">Этап</th><th scope="col">Состояние</th><th scope="col">Следующее доказательство</th></tr></thead>
@@ -57,16 +62,19 @@ export default async function Page(){
             <td>Сопоставление исходных job logs и SHA; без статуса утверждённой модели</td></tr>
           <tr><th scope="row">Новый источник обучения</th><td>OpenFootball CC0</td>
             <td>Закреплённый Git blob 2024/25: 240 матчей, 16 клубов. Новый протокол календарных дат; training-only не означает одобрение модели.</td></tr>
-          <tr><th scope="row">Текущие матчи и holdout</th><td>Источник не утверждён</td>
-            <td>Нужны отдельно лицензированный источник результатов 2025/26 и доказуемо актуальный источник 2026/27. Подмена старого holdout запрещена.</td></tr>
-          <tr><th scope="row">Неизменяемый pre-holdout lock</th><td>Не создан</td>
-            <td>Подписанный процессом защищённый Git-якорь с SHA кода, источника, обучающей выборки и модели</td></tr>
-          <tr><th scope="row">Однократная ретроспективная оценка</th><td>Запрещена до lock</td>
-            <td>Только защищённый, заранее фиксированный новый study lock и одна согласованная оценка; ни v1, ни новый train-only job не дают разрешения.</td></tr>
+          <tr><th scope="row">Первое измерение 2025/26</th>
+            <td>{firstEvaluation.state==='recorded'?'Приватно сохранено 09.11.2026':'Подтверждение недостоверно'}</td>
+            <td>Football-Data Russia: 240 завершённых матчей, 182 оценки и 58 отказов. DAY_ONLY, не аутентифицированный pre-match/as-of.</td></tr>
+          <tr><th scope="row">Неизменяемая заявка до открытия результатов</th>
+            <td>{firstEvaluation.state==='recorded'?'1/1 · использована':'Нет проверенного подтверждения'}</td>
+            <td>В приватном PostgreSQL зафиксированы SHA кода, модели, метода и источника; повторный запуск этого study ID запрещён.</td></tr>
+          <tr><th scope="row">Аудиты репозитория и приёмка владельцем</th><td>Ожидают завершения</td>
+            <td>Два полных независимых прохода, CI/Security/CodeQL/browser, сверка Vercel и Supabase; M3 отдельно не разрешён.</td></tr>
         </tbody>
       </table></div>
-      <p className="source-lab-warning">Нельзя трактовать успешный GitHub Actions как approval модели. Историческая as-of доступность не подтверждена;
-        будущая оценка, если разрешена, будет только non-strict retrospective.</p>
+      <p className="source-lab-warning">Первый защищённый тест завершён, но модель не утверждена для production.
+        Дата без подтверждённого UTC-часа не доказывает историческую as-of доступность. Не заявляем
+        превосходство над букмекерами и не переоцениваем тот же контрольный сезон.</p>
     </section>
     <section className="panel informative">
       <h2>Закрытое хранение настоящей модели · 2024/25</h2>
@@ -82,12 +90,38 @@ export default async function Page(){
             href={`https://github.com/StanleyLl0yd/FootballForecast/actions/runs/${privateEscrow.runId}`}
             target="_blank" rel="noopener noreferrer">#{privateEscrow.runId} ↗</a>;
           {' '}Git SHA: <code>{privateEscrow.codeSha}</code>.</p>
-        <p className="source-lab-warning">Хранение проверено, но immutable study lock
-          ещё не утверждён. TRAIN_ONLY_UNAPPROVED; holdout 2025/26 не прочитан,
-          результат модели не оценён, публичные прогнозы запрещены.</p>
+        <p className="source-lab-warning">Обученная модель по-прежнему имеет статус
+          TRAIN_ONLY_UNAPPROVED для production. Независимый приватный тест 2025/26
+          выполнен один раз без повторного обучения; публичные прогнозы запрещены.</p>
       </div>:<p role="alert" className="source-lab-error">
         Закреплённое evidence закрытого escrow не прошло проверку.
         Нельзя утверждать наличие верифицированной модели.</p>}
+    </section>
+    <section className="panel informative">
+      <h2>Первое фиксированное измерение · РПЛ 2025/26</h2>
+      {firstEvaluation.state==='recorded'?<div>
+        <p><strong>182/240</strong> матчей оценены ранее обученной моделью Poisson;
+          <strong> 58</strong> матчей с «Балтикой» или «Сочи» исключены по
+          заранее заданному правилу. Численные Log Loss, Brier, RPS и точность 1X2
+          находятся только в закрытой таблице Supabase, без исходных матчей и коэффициентов на сайте.</p>
+        <p>Однократная заявка и результат:
+          <strong> 1/1</strong>. Исследование: <code>{firstEvaluation.studyId}</code>.
+          Защищённый GitHub Actions:
+          {' '}<a className="sources-method"
+            href={`https://github.com/StanleyLl0yd/FootballForecast/actions/runs/${firstEvaluation.runId}`}
+            target="_blank" rel="noopener noreferrer">запуск #42590191735 ↗</a>.</p>
+        <p>SHA-256 исходного ответа: <code>{firstEvaluation.sourceSha256}</code>.
+          {' '}Выбранные строки: <code>{firstEvaluation.cohortSha256}</code>.
+          {' '}Контрольное подтверждение: <code>{firstEvaluation.receiptSha256}</code>.</p>
+        <p className="source-lab-warning">Исходный CSV не сохранён целиком в неизменяемом архиве:
+          полное побайтовое повторение расчёта сейчас не гарантировано. Это
+          <strong> DAY_ONLY / NON_STRICT_RETROSPECTIVE</strong>, не прогноз с подтверждённым временем начала.
+          Нельзя подбирать параметры или повторно использовать 2025/26 для выбора модели.
+          M3 и публикация прогнозов остаются запрещены.</p>
+      </div>:<p role="alert" className="source-lab-error">
+        Публичное подтверждение первого исследования не прошло проверку.
+        Сверьте приватную таблицу и исходный защищённый GitHub workflow;
+        не показывайте неподтверждённые результаты.</p>}
     </section>
     <div className="panel-grid secondary-panels">
       <section className="panel informative">

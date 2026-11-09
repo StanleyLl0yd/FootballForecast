@@ -1,12 +1,6 @@
 # Automation and repository hygiene
 
-> **M2 2026-11-05 crosswalk boundary:** New pure team mapping helper consumes trusted 2024/25 TRAIN identities plus a *separately documented pre-results* 2025/26 team roster only. Its public SHA receipt does not approve a real mapping, source rights, study lock, scorer execution or heldout read. Never load 2025/26 result-bearing records to choose a mapping; independently review and anchor a private map before a single benchmark. M2 5/8 OPEN.
-
-
-> **2026-11-05 owner decision:** previously accumulated historical data may be used for private training/research within third-party rights. Preserve the sealed 2025/26 first-test split; do not tune it. The new pure OpenFootball-independent scorer does not authorize a real holdout read; independently reviewed immutable study lock, lawful source/crosswalk, one-use protected executor and owner acceptance are still required. M2 5/8 OPEN; M3 unauthorized.
-
-
-> **Current M2 acceptance, 2026-11-05: 5/8 OPEN.** Owner-browser GitHub OAuth and anonymous denial have been accepted; authenticated non-owner browser denial has not been observed. Historical entries below describing 4/8 are dated snapshots, not the current count. No holdout access, study-lock approval or M3 authorization.
+> **CURRENT 2026-11-09 M2 7/8 OPEN.** Protected PR #262 merged; the first and sole fixed 2024/25 Poisson / 2025/26 **DAY_ONLY NON_STRICT_RETROSPECTIVE** evaluation ran on real sealed labels exactly once (GitHub #42590191735). Exactly 182 eligible matches, 58 precommitted abstentions; private numeric metrics and immutable one-use claim/results stay in Supabase, zero public forecasts. Original full CSV was **not** archived; do NOT attempt to re-fetch 2025/26 labels, rerun, alter club aliases, retune against this holdout, declare pre-match as-of verification or bookmaker superiority. M2 owner-only UI must not expose private score rows or coefficients. Remaining gate: **two complete repo-wide audits and explicit owner acceptance**. M3 remains prohibited. Older checkpoints below in repository files are dated historical evidence, not current state.
 
 These rules apply repository-wide to human maintainers and coding agents.
 

@@ -1,3 +1,9 @@
+## M2 one-use private first retrospective score and provenance — 2026-11-09
+
+- PR #262 MERGED: protected pre-read study claim, exact 2024/25 fixed Poisson escrow, protected owner-only workflow, single external source, sealed 2025/26 one-shot research label fetch, aggregate-only immutable private result. Run #42590191735 SUCCESS; 182 eligible/58 abstentions on 240 finished fixtures. Public SHA-only attestation added; numerical scores remain in Supabase.
+- Explicit **DAY_ONLY / NON_STRICT_RETROSPECTIVE**, historical as-of unavailable. No model tuning on evaluated season, model not approved for production, zero published forecasts, M3 not authorized. Original result CSV was not stored verbatim, so independent byte-for-byte replay is **not** established.
+- Public dashboard and owner-only research state corrected from pre-test 5/8/zero to **7/8** after verified one-use execution. Exit audit and owner acceptance remain open.
+
 ## M2 public status copy synchronized — 2026-11-05
 
 - Replaced outdated M1-current label with M2 5/8 on the public dashboard, login and unconfigured setup fallback. Distinguished seven private historical seasons from the public match catalog and explicitly identified fixed Poisson as train-only with no holdout accuracy claim.
