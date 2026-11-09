@@ -99,6 +99,23 @@ def score(model, source_batch, **overrides):
     return module.score_fixed_day_only(**kw)
 
 
+def test_optional_odds_truncation_does_not_refuse_complete_results(prepared):
+    _model, blob, original = prepared
+    lines = blob.decode("utf-8").splitlines()
+    header = lines[0].split(",")
+    # Add a bookmaker odds column, omitted entirely on a current-season
+    # result row. The six required result fields remain intact.
+    lines[0] += ",MissingMarketOdds"
+    lines[1] += ","
+    altered = module.parse_russian_2025_csv(
+        ("\n".join(lines) + "\n").encode("utf-8")
+    )
+    assert header[:6] == [
+        "Country", "League", "Season", "Date", "Time", "Home"
+    ]
+    assert altered.cohort_sha256 == original.cohort_sha256
+
+
 def test_older_source_schema_drift_does_not_invalidate_fixed_holdout(prepared):
     _model, blob, cohort = prepared
     lines = blob.decode("utf-8").splitlines()
