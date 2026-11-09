@@ -1,17 +1,6 @@
 # FootballForecast
 
-**Публичная панель M2 (05.11.2026):** текущий этап 5/8, отдельно указаны публичные матчи и приватный архив семи сезонов; реальная фиксированная модель пока train-only, независимых показателей точности нет. Публичная атрибуция CC BY 4.0 сохранена.
-
-
-
-**M2 source-to-model team matching:** synthetic-only frozen 2024/25 train-club crosswalk and pre-results 2025/26 roster digest contract; no heldout scores, private source rows or approved lock. [Study limitations](docs/M2_OPENFOOTBALL_PROTOCOL.md).
-
-
-**M2 fixed-model evaluation preparation (05.11.2026):** a pure new OpenFootball calendar model scorer accepts separately committed train/holdout source identities and guards promoted clubs; tests are synthetic-only. This is **not** a signed immutable study lock, a 2025/26 read, a benchmark or forecast. Owner authorized private historical training/evaluation subject to licensing and sealed first-test integrity. [Research protocol](docs/M2_OPENFOOTBALL_PROTOCOL.md).
-
-
-**M2 актуальная приёмка (05.11.2026): 5/8, OPEN.** Владелец подтвердил реальный вход через GitHub и доступ к защищённому `/admin/research`; приватное окно без сессии перенаправляется на `/login`. Сервисные переменные Supabase/Vercel проверены, production `dpl_HL1zubyys1rZe6MfMf1WRijfK1tg` READY в `fra1` на `99d1b424c96e04eb75a853daa7225154bd14770e` и основной alias подтверждён. Проверка реального входа **чужого авторизованного** GitHub-аккаунта не выполнялась (unit-тесты отказа существуют). Временные токены управления отозваны владельцем. 2025/26 закрыт, study lock и оценка не утверждены; M3 запрещён. Подтверждение: [issue #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182#issuecomment-6659061668).
-
+**Текущее состояние M2 (09.11.2026): 7/8, OPEN.** [PR #262](https://github.com/StanleyLl0yd/FootballForecast/pull/262) сохранил **первую и единственную** закрытую ретроспективную оценку фиксированной Poisson-модели (обучение на РПЛ 2024/25; тест на 2025/26): **182/240 оценённых матчей, 58 заранее определённых отказов** для неизвестных модели клубов. В защищённом GitHub Actions [#42590191735](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42590191735) выполнено одно необратимое исследование; исходные результаты и численные метрики хранятся только в приватном Supabase PostgreSQL. [Публичное подтверждение SHA и ограничений](docs/M2_FIRST_PRIVATE_EVALUATION_EVIDENCE.json); [методика](docs/M2_OPENFOOTBALL_PROTOCOL.md). Исходный CSV целиком не сохранён, полный побайтовый replay не гарантирован. **DAY_ONLY / NON_STRICT_RETROSPECTIVE**, не исторический as-of, не доказательство превосходства над букмекерами. Публичных прогнозов **0**, M3 не разрешён. Остался полный двухпроходный аудит и явная приёмка владельцем.
 
 > **M2 historical result revision (05.11.2026):** a played score and final official table result can differ following a later disciplinary ruling. Synthetic development features now reject unspecified/awarded score origins; a separate pure cutoff-aware helper is under test. Exact first historical availability and private match identity remain unverified. No real retraining, scoring or 2025/26 access. [Evidence](docs/M2_PUBLIC_RPL_RESULT_REVISION_EVIDENCE.json).
 

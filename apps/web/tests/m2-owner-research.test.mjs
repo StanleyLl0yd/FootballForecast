@@ -46,17 +46,18 @@ test('owner research route is dynamic, gated before reading and contains no muta
   assert.match(route,/но не доступность/);
   assert.match(route,/M2CandidateReplay/);
   assert.match(route,/ResearchLockViewer/);
-  assert.match(route,/non-strict retrospective/);
+  assert.match(route,/DAY_ONLY \/ NON_STRICT_RETROSPECTIVE/);
   assert.match(route,/holdout/);
   assert.doesNotMatch(route,/createClient\s*\(|service_role|INSERT INTO|fetch\s*\(|server action/i);
 });
 
 test('accepted M2 owner UI shows authenticated browser acceptance without claiming non-owner browser proof',()=>{
   const route=read('../app/(console)/admin/research/page.tsx');
-  assert.match(route,/Общий этап M2<\/span><strong>5\/8<\/strong>/);
+  assert.match(route,/Общий этап M2<\/span><strong>7\/8<\/strong>/);
   assert.match(route,/Вход владельца · GitHub OAuth/);
   assert.match(route,/Принят 05\.11\.2026/);
   assert.match(route,/вход под чужим GitHub не проверялся в браузере/i);
-  assert.match(route,/Оценка holdout<\/span><strong>0<\/strong>/);
-  assert.match(route,/Контрольный сезон 2025\/26 закрыт/);
+  assert.match(route,/Оценка 2025\/26/);
+  assert.match(route,/M2_FIRST_PRIVATE_EVALUATION_EVIDENCE\.json/);
+  assert.doesNotMatch(route,/Оценка holdout<\/span><strong>0<\/strong>/);
 });

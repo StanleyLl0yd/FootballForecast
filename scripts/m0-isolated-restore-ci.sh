@@ -26,34 +26,16 @@ docker cp "$source_container:/tmp/ff_m0_fixture.dump" "$archive"
 source_hash="$(sha256sum "$archive" | cut -d ' ' -f1)"
 test -n "$source_hash"
 
-# Obtain the SAME immutable official release asset via either GitHub's
-# release-asset API or tagged URL. GitHub's /releases/download/ edge can return
-# transient HTTP 504; retry only bounded transient HTTP/network failures.
-# Both official paths are pinned; NEVER execute unverified downloads.
-age_sha256='cbe24006683f8eb669266162894b9a522a1af52f2665fbc63a4bb032ed26ac10'
-age_asset_api='https://api.github.com/repos/FiloSottile/age/releases/assets/535541903'
-age_asset_tagged='https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-linux-amd64.tar.gz'
-fetch_verified_age() {
-  local url="$1"
-  rm -f -- "$age_tarball"
-  if ! curl --fail --silent --show-error --location \
-    --proto '=https' --proto-redir '=https' --max-redirs 4 \
-    --connect-timeout 12 --max-time 75 --max-filesize 25000000 \
-    --retry 2 --retry-delay 3 --retry-max-time 145 \
-    -H 'Accept: application/octet-stream' \
-    --output "$age_tarball" "$url"; then
-    return 1
-  fi
-  [[ "$(stat -c %s "$age_tarball")" -eq 19405817 ]] || return 1
-  printf '%s  %s\n' "$age_sha256" "$age_tarball" | sha256sum --check --status
-}
-if ! fetch_verified_age "$age_asset_api"; then
-  echo 'Official age GitHub asset API failed integrity/reachability; trying tagged URL' >&2
-  if ! fetch_verified_age "$age_asset_tagged"; then
-    echo 'ERROR: neither official age asset path produced the pinned SHA-256' >&2
-    exit 2
-  fi
-fi
+# Obtain one *exact immutable* official age binary and verify GitHub release
+# asset SHA-256 before execution. No paid service or mutable npm dependency.
+curl --fail --silent --show-error --location \
+  --proto '=https' --proto-redir '=https' --max-redirs 4 \
+  --connect-timeout 12 --max-time 90 --max-filesize 25000000 \
+  --output "$age_tarball" \
+  'https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-linux-amd64.tar.gz'
+printf '%s  %s\n' \
+  'cbe24006683f8eb669266162894b9a522a1af52f2665fbc63a4bb032ed26ac10' \
+  "$age_tarball" | sha256sum --check --status
 tar -xzf "$age_tarball" -C "$age_dir" age/age age/age-keygen
 test -x "$age_dir/age/age"
 test -x "$age_dir/age/age-keygen"
