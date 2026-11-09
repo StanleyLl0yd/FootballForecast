@@ -40,7 +40,9 @@ test('accepted M2 preserves sealed-holdout and preregistration boundaries',()=>{
   assert.match(m2Protocol,/Protocol version: \`m2-independent-poisson-v1\`/);
   assert.match(m2Protocol,/2025\/26.*sealed/i);
   assert.match(m2Protocol,/No production model, database write or public forecast/);
-  assert.match(agents,/M3 is not authorized/);
+  assert.match(agents,/M3 OPEN for private development research only/);
+  assert.match(roadmap,/M3 - Calibration & Evaluation \(OPEN, owner-authorized 2026-11-09\)/);
+  assert.match(agents,/no real protected model fitting, public forecasts/);
   assert.match(operations,/M2 opened 2026-11-02; accepted 2026-11-09/);
 });
 
