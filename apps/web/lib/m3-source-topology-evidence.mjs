@@ -1,14 +1,14 @@
 import {createHash} from 'node:crypto';
 
 export const M3_CALENDAR_MASK_EVENTS = Object.freeze([
-  ['orenburg_a','2019/20','2020-06-27','orenburg','home',115,5,1,null],
-  ['orenburg_b','2019/20','2020-07-01','orenburg','home',115,6,1,null],
-  ['sochi_a','2019/20','2020-07-16','sochi','away',62,4,1,null],
-  ['sochi_b','2019/20','2020-07-22','sochi','away',62,8,1,null],
-  ['rotor_a','2020/21','2020-09-13','rotor','home',4,3,1,null],
-  ['rotor_b','2020/21','2020-09-19','rotor','away',4,2,1,null],
-  ['sochi_spartak_a','2023/24','2023-09-16','sochi','either',62,4,1,1],
-  ['sochi_spartak_b','2023/24','2024-04-13','sochi','either',62,4,1,1]
+  ["orenburg_a","2019/20","2020-06-27","orenburg","home",115,5,1,null,"https://fcorenburg.ru/matchs/2019-2020/rossijskaya-premer-liga.html"],
+  ["orenburg_b","2019/20","2020-07-01","orenburg","home",115,6,1,null,"https://fcorenburg.ru/matchs/2019-2020/rossijskaya-premer-liga.html"],
+  ["sochi_a","2019/20","2020-07-16","sochi","away",62,4,1,null,"https://www.championat.com/football/_russiapl/tournament/2973/match/774587/"],
+  ["sochi_b","2019/20","2020-07-22","sochi","away",62,8,1,null,"https://bombardir.ru/online/138086-fc-krylia-sovetov-sochi-2019-2020"],
+  ["rotor_a","2020/21","2020-09-13","rotor","home",4,3,1,null,"https://www.rfs.ru/news/212277?mobile=no"],
+  ["rotor_b","2020/21","2020-09-19","rotor","away",4,2,1,null,"https://news.sportbox.ru/Vidy_sporta/Futbol/Russia/premier_league/spbnews_NI1243250_Rotoru_zaschitano_tehnicheskoje_porazhenije_za_nejavku_na_match_s_Rostovom"],
+  ["sochi_spartak_a","2023/24","2023-09-16","sochi","either",62,4,1,1,"https://pfcsochi.ru/news/2023-2024/rfs-i-rpl-soglasovali-perenos-matchey-mezhdu-sochi-i-spartakom/"],
+  ["sochi_spartak_b","2023/24","2024-04-13","sochi","either",62,4,1,1,"https://pfcsochi.ru/news/2023-2024/akkreditatsiya-smi-na-match-so-spartakom/"],
 ]);
 const YEARS=['2018/19','2019/20','2020/21','2021/22','2022/23','2023/24','2024/25'];
 const HISTOGRAM_LIMITS=[
@@ -41,9 +41,15 @@ export function inspectM3Topology(publicRosters,privateMasks,eventEvidence,previ
       privateMasks.kind!=='M3_DEVELOPMENT_ONLY_PRIVATE_TEAM_MEMBERSHIP_HISTOGRAM' ||
       eventEvidence.kind!==
         'M3_AGGREGATE_ONLY_PUBLIC_EVENT_TO_PRIVATE_MEMBERSHIP_MASK_DATE_CANDIDATES' ||
-      privateMasks.queryScope && privateMasks.queryScope!==
-        'READ_ONLY_SELECT_FF_PRIVATE_SEVEN_DEVELOPMENT_SEASONS') return deny();
+      !keys(privateMasks,['schemaVersion','kind','observedOn','scope','sourceTables',
+        'region','postgresMajor','seasonsLeastToMostSignificant','privateReadOnlyHistogram',
+        'aggregateHistogramSha256','aggregate','limitations']) ||
+      !keys(eventEvidence,['schemaVersion','kind','observedOn','queryScope',
+        'evidenceSource','historicalAnomalySource','events','aggregate','limitations']))
+    return deny();
   if (privateMasks.scope!=='READ_ONLY_SELECT_FF_PRIVATE_SEVEN_DEVELOPMENT_SEASONS' ||
+      eventEvidence.evidenceSource!=='M3_PUBLIC_SEVEN_SEASON_CLUB_ROSTERS_EVIDENCE.json' ||
+      eventEvidence.historicalAnomalySource!=='M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json' ||
       eventEvidence.queryScope!==
         'FF_PRIVATE_SEVEN_DEVELOPMENT_SEASONS_SQL_READ_ONLY_UTC_DAY_MASK_COUNTS' ||
       privateMasks.schemaVersion!==1 || eventEvidence.schemaVersion!==1 ||
@@ -98,7 +104,7 @@ export function inspectM3Topology(publicRosters,privateMasks,eventEvidence,previ
       eventEvidence.events.length!==M3_CALENDAR_MASK_EVENTS.length) return deny();
   const past=new Map(prior.map(row=>[row.day,row.privateMatchesOnSameUtcDay]));
   for (let i=0;i<M3_CALENDAR_MASK_EVENTS.length;i++){
-    const [key,season,day,alias,role,mask,dayN,matched,pair]=M3_CALENDAR_MASK_EVENTS[i];
+    const [key,season,day,alias,role,mask,dayN,matched,pair,url]=M3_CALENDAR_MASK_EVENTS[i];
     const row=eventEvidence.events[i];
     if (!keys(row,['eventKey','season','dayUtc','publicClubAlias','publicRole',
       'publicSevenSeasonMask','privateMatchesOnSameUtcDay','matchingMaskRoleCount',
@@ -109,8 +115,7 @@ export function inspectM3Topology(publicRosters,privateMasks,eventEvidence,previ
       counted.get(mask)!==1 || row.privateMatchesOnSameUtcDay!==dayN ||
       past.get(day)!==dayN || row.matchingMaskRoleCount!==matched ||
       row.allSevenSeasonOpponentPairCount!==pair ||
-      typeof row.publicEvidenceUrl!=='string' ||
-      !row.publicEvidenceUrl.startsWith('https://')) return deny();
+      row.publicEvidenceUrl!==url) return deny();
   }
   const summary=eventEvidence.aggregate;
   if (!keys(summary,['publicEventsChecked','anonymousMembershipAndRoleMatches',
