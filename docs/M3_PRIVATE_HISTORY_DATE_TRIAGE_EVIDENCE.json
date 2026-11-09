@@ -175,7 +175,7 @@
       "https://www.rfs.ru/news/217736",
       "https://www.rfs.ru/news/218012",
       "https://www.championat.com/football/_russiapl/tournament/5441/match/1101821/",
-      "https://www.sport-express.ru/football/n/russia/premier/match-sochi-spartak-374110/",
+      "https://www.100bombardirov.ru/ru/pair/sci-spm.htm",
       "https://news.sportbox.ru/Vidy_sporta/Futbol/Russia/premier_league/spbnews_NI1243250_Rotoru_zaschitano_tehnicheskoje_porazhenije_za_nejavku_na_match_s_Rostovom"
     ],
     "sixTechnicalAwardExactDaysAndScoreDirectionsUnique": true,
@@ -191,9 +191,9 @@
       "privateDayCount0_3": 1,
       "privateDayCount3_0": 0,
       "privateDayCount1_1": 0,
-      "publicOnFieldScoreMatchesStoredOfficialScore": false,
       "privateFixtureIdentityVerified": false,
-      "automaticCorrectedPlayedScoreWritten": false
+      "automaticCorrectedPlayedScoreWritten": false,
+      "matchSpecificPrivateScoreCorrespondenceProven": false
     },
     "season2023_24OfficialHomeAwaySwap": {
       "firstDay": "2023-09-16",
