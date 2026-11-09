@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "M3_DEVELOPMENT_ONLY_PRIVATE_TEAM_MEMBERSHIP_HISTOGRAM",
+  "observedOn": "2026-11-09",
+  "scope": "READ_ONLY_SELECT_FF_PRIVATE_SEVEN_DEVELOPMENT_SEASONS",
+  "sourceTables": [
+    "ff_private.ff_rpl_history_snapshots",
+    "ff_private.ff_rpl_history_matches"
+  ],
+  "region": "eu-central-1",
+  "postgresMajor": 17,
+  "seasonsLeastToMostSignificant": [
+    "2018/19",
+    "2019/20",
+    "2020/21",
+    "2021/22",
+    "2022/23",
+    "2023/24",
+    "2024/25"
+  ],
+  "privateReadOnlyHistogram": [
+    {
+      "mask": 1,
+      "clubCount": 2
+    },
+    {
+      "mask": 4,
+      "clubCount": 1
+    },
+    {
+      "mask": 6,
+      "clubCount": 1
+    },
+    {
+      "mask": 15,
+      "clubCount": 2
+    },
+    {
+      "mask": 16,
+      "clubCount": 1
+    },
+    {
+      "mask": 32,
+      "clubCount": 1
+    },
+    {
+      "mask": 62,
+      "clubCount": 1
+    },
+    {
+      "mask": 63,
+      "clubCount": 1
+    },
+    {
+      "mask": 64,
+      "clubCount": 2
+    },
+    {
+      "mask": 92,
+      "clubCount": 1
+    },
+    {
+      "mask": 111,
+      "clubCount": 1
+    },
+    {
+      "mask": 112,
+      "clubCount": 1
+    },
+    {
+      "mask": 115,
+      "clubCount": 1
+    },
+    {
+      "mask": 120,
+      "clubCount": 1
+    },
+    {
+      "mask": 123,
+      "clubCount": 1
+    },
+    {
+      "mask": 127,
+      "clubCount": 8
+    }
+  ],
+  "aggregateHistogramSha256": "281046ee181a3a404de4860125ce98c974a43c9e0aa20e0e66115279a0768add",
+  "aggregate": {
+    "privateProviderClubCount": 26,
+    "privateClubSeasonAppearances": 112,
+    "distinctMembershipProfiles": 16,
+    "singletonProfileClubs": 12,
+    "ambiguousProfileClubs": 14,
+    "largestAmbiguityGroup": 8,
+    "clubsPresentEverySeason": 8,
+    "adjacentOverlapTotal": 82
+  },
+  "limitations": {
+    "privateProviderIdsExported": false,
+    "privateFixtureRowsExported": false,
+    "matchGoalsRead": false,
+    "individualClubNamesRead": false,
+    "independentLegalIdentityVerified": false,
+    "privateIdToPublicNameMapped": false,
+    "playedScoreEligibilityProven": false,
+    "historicalKickoffVerified": false,
+    "originalPublicationTimesVerified": false,
+    "sourceTrainingRightsVerified": false,
+    "realTrainingAuthorized": false,
+    "holdout2025_26Read": false
+  }
+}
