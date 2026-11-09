@@ -207,8 +207,15 @@ def parse_russian_2025_csv(blob: bytes) -> DayCohort:
             date_value = _day(row.get("Date") or "")
             if date_value is None or not _START <= date_value < _END:
                 continue
-            if None in row or any(value is None for value in row.values()):
-                raise DataError("M2 day-only: malformed selected source record")
+            # Non-result odds columns may be absent even in the final
+            # 2025/26 season. Validate every required result column, not
+            # optional bookmaker data. Surplus unnamed columns still reject.
+            required = ("Date", "Home", "Away", "HG", "AG", "Res")
+            if (None in row or any(
+                type(row.get(key)) is not str or not row[key].strip()
+                for key in required
+            )):
+                raise DataError("M2 day-only: malformed selected result row")
             home = _NAME_TO_OFFICIAL.get(row["Home"].casefold())
             away = _NAME_TO_OFFICIAL.get(row["Away"].casefold())
             if home is None or away is None:
