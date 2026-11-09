@@ -60,6 +60,7 @@ def test_strong_date_and_recurring_team_id_patterns_are_not_proof_of_identity():
     assert revised["privateDayCount0_3"] == 1
     assert revised["privateDayCount1_1"] == 0
     assert revised["privateFixtureIdentityVerified"] is False
+    assert revised["matchSpecificPrivateScoreCorrespondenceProven"] is False
     assert revised["automaticCorrectedPlayedScoreWritten"] is False
     swap = cross["season2023_24OfficialHomeAwaySwap"]
     assert swap["firstDay"] == "2023-09-16"
