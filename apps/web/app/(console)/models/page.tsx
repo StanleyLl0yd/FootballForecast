@@ -7,10 +7,10 @@ import storedReplayEvidence from '../../../../../docs/M2_STORED_TRAIN_REPLAY_EVI
 export default async function Page(){
   const researchRun=await readM2TrainOnlyRun();
   return <>
-    <PageHeading eyebrow="M2 · ИССЛЕДОВАНИЕ" title="Лаборатория моделей"
+    <PageHeading eyebrow="M2 ПРИНЯТ · M3 ИССЛЕДОВАНИЕ" title="Лаборатория моделей"
       subtitle="Протокол, подготовка обучения и контроль исследовательских доказательств. Отчёты не равны опубликованным прогнозам."/>
     <div className="stat-grid">
-      <div className="stat"><span>План M2</span><strong>8/8</strong><small>M2 принят 09.11.2026 с ограничениями; M3 не разрешён</small></div>
+      <div className="stat"><span>План M2</span><strong>8/8</strong><small>M2 принят 09.11.2026; M3 открыт, 2/8 критериев выполнены</small></div>
       <div className="stat"><span>Обучающая выборка</span><strong>240</strong><small>2024/25 · 16 клубов · read-only</small></div>
       <div className="stat"><span>Утверждённых моделей</span><strong>0</strong><small>Один private escrow Poisson, TRAIN_ONLY_UNAPPROVED; production-модель не утверждена</small></div>
       <div className="stat"><span>Публикация прогнозов</span><strong>0</strong><small>Holdout 2025/26 использован ровно один раз; повтор запрещён</small></div>
@@ -76,12 +76,24 @@ export default async function Page(){
         через сайт не запускаются.</p>
       <a className="sources-method" href="/admin/research">Открыть защищённый контроль M2 ↗</a>
     </section>
+    <section className="panel informative">
+      <h2>M3 · Новый этап оценки и калибровки</h2>
+      <p>Первый baseline проверен на пяти хронологических выборках
+        <strong> исключительно из синтетических матчей</strong>.
+        Реальная точность РПЛ этим не измерена.
+        Семилетний приватный источник содержит 1 680 записей,
+        но число подтверждённых сыгранных матчей для нового обучения неизвестно.</p>
+      <p className="source-lab-warning">Прежде чем обучать многосезонную модель,
+        нужны независимая сверка технических результатов, клубов и исторического времени.
+        M3-A3 открыт, а контрольный сезон 2025/26 нельзя использовать повторно.</p>
+      <a className="sources-method" href="/admin/research">Защищённый контроль M3 ↗</a>
+    </section>
     <M2CandidateReplay/>
     <ResearchLockViewer/>
     <section className="panel informative">
       <h2>Ограничения M2</h2>
       <p>M2 принят как ограниченный исследовательский этап, но одна приватная оценка 2025/26 (182 матча, 58 отказов) имеет статус DAY_ONLY / NON_STRICT_RETROSPECTIVE. Численные Log Loss, Brier и RPS хранятся только в Supabase; оригинальный CSV не заархивирован, played-vs-awarded не полностью сверены и историческое время появления данных не доказано. Превосходство над букмекерами не подтверждено.
-        Elo, Dixon–Coles и калибровка отложены до независимой валидации. Модель не допущена к production, публичных прогнозов нет, повторное использование holdout запрещено и M3 не разрешён.</p>
+        Elo, Dixon–Coles и калибровка отложены до независимой валидации. Модель не допущена к production, публичных прогнозов нет; повторное использование holdout запрещено. M3 открыт отдельно для приватных исследований, но не разрешает публикацию.</p>
       <a className="sources-method" href="https://github.com/StanleyLl0yd/FootballForecast/issues/182"
         target="_blank" rel="noopener noreferrer">Отслеживать M2 ↗</a>
       <EmptyState title="Нет утверждённой production-модели"
