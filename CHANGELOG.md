@@ -1,3 +1,10 @@
+## M2 research exit: owner accepted two full audits and documented risks — 2026-11-09
+
+- [#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182) ACCEPTED 8/8 and closed. M2 research accepted, not model or publication approval. M3 not authorized.
+- One-use immutable 2025/26 study: 182 evaluated/58 abstentions, non-strict retrospective, no original CSV archive, no bookmaker superiority, numeric scores private; no repeat holdout use.
+- Owner/public statuses and milestone docs synchronized with the sign-off.
+- Vercel stale-build prevention [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains open; #267 only adds read-only alerting.
+
 ## M2 one-use private first retrospective score and provenance — 2026-11-09
 
 - PR #262 MERGED: protected pre-read study claim, exact 2024/25 fixed Poisson escrow, protected owner-only workflow, single external source, sealed 2025/26 one-shot research label fetch, aggregate-only immutable private result. Run #42590191735 SUCCESS; 182 eligible/58 abstentions on 240 finished fixtures. Public SHA-only attestation added; numerical scores remain in Supabase.
