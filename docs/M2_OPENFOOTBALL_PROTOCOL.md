@@ -379,3 +379,54 @@ or both unseen clubs (240 − 182). This assumes a valid double round robin;
 the protected evaluator must abort or apply only an already frozen exclusion
 policy if statuses, rights, club mappings or coverage differ. The numbers
 were computed from the pre-kickoff roster, never from sealed 2025/26 results.
+
+
+## Provider-independent frozen official-roster identity, 2026-11-09
+
+The earlier owner-only 2024 TRAIN preflight and digest
+`99ad249ceae34aa8fd12d77be8e4b58ad8b80ec87b169021b5ca962d176080b2`
+bind **legacy TRAIN-provider IDs only** to the immutable 2024/25 OpenFootball
+Poisson model. They do NOT bind the IDs of a different 2025/26 publisher.
+Do not demand that a new provider reuse those IDs, or silently treat a same
+numeric ID as the same club.
+
+`prepare_provider_independent_name_policy` is a separate pure, fail-closed
+candidate derived from the **pre-kickoff official 2025/26 club names**,
+the reviewed 16-name 2024/25 OpenFootball training map and the already-pinned
+model alias-set SHA `3f10e2bd77f348b570036efc8827f0571a26cae55c7dcb4ad93b5a39710e631b`.
+It fixes 14 known `S_` aliases, two unseen `U_` aliases, and the purely
+combinatorial 182/58 theoretical coverage, with no source, results, I/O or
+fit. An independent 2025/26 source must first supply a separately verified
+16-club **roster metadata** map to exact official names, documented and
+SHA-anchored in a trusted pre-label protected study. A source-specific
+candidate digest then binds its provider IDs to the official names and fixed
+model aliases; this is **not** a licence, publication-time certificate,
+study approval, or permission to read match outcomes. Unknown, duplicate
+or ambiguous provider identities fail closed.
+
+[2025/26 source eligibility review](M2_2025_HOLDOUT_SOURCE_REVIEW.json)
+documents the evidence without retrieving score-bearing 2025/26 records.
+The official OpenFoot RPL competition catalogue was independently queried
+on 2026-11-09 in
+[protected run #42580084123](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42580084123);
+it reported upstream **FotMob / Unlicensed-Beta** for the current RPL
+competition. OpenFoot permits retained internal research under its
+[terms](https://openfootapi.com/terms), but this does not license the
+underlying unlicensed feed; the old historical archive and this current
+catalogue must NOT authorize a new 2025/26 result source.
+The exact OpenFootball/europe Git tree at `63df627f3c87ce71708f016522ea236cf74332c3`
+has a 2024/25 training file but **no** Russian 2025/26 file.
+Football-Data.co.uk explicitly offers Russia 2025/26 as its final season
+for **private individual research**, subject to
+[restrictive fair-use terms](https://www.football-data.co.uk/contact.php)
+that exclude commercial or heavy automated AI/data-training projects;
+a one-time personal *scoring-only* use has not been approved here.
+RSSSF can inform manual corroboration, not presumed bulk re-licensing.
+Per owner direction, Footbolno is not a new source dependency.
+
+No source is selected or downloaded; no source bytes/2025/26 identities,
+match results, timestamps, corrections or heldout labels were read from
+the protected research database. M2 still **5/8 OPEN**. The next trusted
+step is source-specific rights and metadata proof plus an opaque exact
+byte commitment; only after a separate immutable lock and one-use runner
+can actual 2025/26 results be opened for an honest non-strict benchmark.

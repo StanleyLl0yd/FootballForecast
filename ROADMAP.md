@@ -1,3 +1,7 @@
+## M2 2025/26 label-source eligibility and cross-provider identity — 2026-11-09
+
+Independent pre-kickoff name-to-model aliases now have a pure provider-agnostic candidate, distinct from the legacy 2024 provider-ID commitment. Live OpenFoot RPL catalogue identifies FotMob/Unlicensed-Beta upstream, OpenFootball has no Russian 2025/26 archive at its pinned revision, and private-only Football-Data.co.uk remains a restricted **unapproved** alternative. [Source review](docs/M2_2025_HOLDOUT_SOURCE_REVIEW.json) and [protocol](docs/M2_OPENFOOTBALL_PROTOCOL.md#provider-independent-frozen-official-roster-identity-2026-11-09). No heldout data or source bytes read, no source approved, no immutable study lock or evaluation. **M2 5/8 OPEN.**
+
 ## M2 public dashboard accuracy and source attribution — 2026-11-05
 
 Public dashboard now displays active M2 5/8 instead of stale M1, distinguishes the existing 2024/25–2026/27 public catalog from the private seven-season historical archive, and labels Poisson train-only and 2025/26 performance unmeasured. Existing CC BY attribution on public match data remains unchanged. No private content exposed, OAuth/RLS unchanged, no holdout labels or model predictions touched.
