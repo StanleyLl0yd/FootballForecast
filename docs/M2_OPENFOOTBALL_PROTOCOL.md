@@ -417,10 +417,9 @@ catalogue must NOT authorize a new 2025/26 result source.
 The exact OpenFootball/europe Git tree at `63df627f3c87ce71708f016522ea236cf74332c3`
 has a 2024/25 training file but **no** Russian 2025/26 file.
 Football-Data.co.uk explicitly offers Russia 2025/26 as its final season
-for **private individual research**, subject to
-[restrictive fair-use terms](https://www.football-data.co.uk/contact.php)
-that exclude commercial or heavy automated AI/data-training projects;
-a one-time personal *scoring-only* use has not been approved here.
+for **private individual research**, subject to its private-individual use conditions. Owner explicitly
+approved a **single personal scoring-only evaluation** on 2026-11-09,
+not bulk source redistribution or heavy automated training.
 RSSSF can inform manual corroboration, not presumed bulk re-licensing.
 Per owner direction, Footbolno is not a new source dependency.
 
@@ -461,3 +460,31 @@ trusted one-use runner, source snapshot byte commitment, issuer validation,
 private report, reproducibility and owner acceptance still need completion.
 Until then 2025/26 remains sealed and the first metrics are **not measured**.
 M2 is **5/8 OPEN**, M3 forbidden.
+
+## Protected one-use private execution contract — 2026-11-09
+
+The separate `m2-private-first-fixed-evaluation.yml` workflow only reacts
+to the exact owner-authored issue #182 comment
+`/m2-private-fixed-first-score-2025-26` on protected `main`, revalidates the
+owner GitHub numeric ID and run attempt, and uses the pre-existing privileged
+`m1-source-import` environment. It requires previously installed
+`database/migrations/0014_m2_private_one_use_fixed_evaluation.sql`.
+
+The runner verifies the fixed 2024/25 private model escrow, the Git-anchored
+prior 2025/26 source/mapping/scoring declaration, and a bounded HTTPS HEAD
+request (without labels). It then **commits** an immutable UNIQUE claim to the
+private PostgreSQL database **before the first result-bearing GET**.
+A second attempt, even after an error, is rejected. Once claimed, the source
+is fetched only once, the cohort must pass the complete day-only 240-match,
+16-team, 182-scored/58-abstained validation, and aggregate results are stored
+in a separate immutable private table. Log output contains only hashes,
+counts and confirmation of private storage, **never** the 240 source rows,
+per-match scores, model coefficients or numerical performance metrics.
+
+A successful run does not certify pre-match-as-of predictions, bookmaker
+superiority or production readiness. Failure after the claim is **INCONCLUSIVE
+and irreversible for this study**; any later experiment needs a separately
+preregistered protocol and truly independent evaluation. No M3 permission.
+
+Prior to the first owner-triggered action, this is **prepared but NOT executed**;
+source identities/labels are not downloaded by CI or the synthetic unit tests.
