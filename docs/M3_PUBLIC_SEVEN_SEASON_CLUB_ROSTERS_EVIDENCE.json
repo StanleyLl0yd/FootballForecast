@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "kind": "M3_PUBLIC_RETROSPECTIVE_SEVEN_SEASON_ROSTER_NAME_CANDIDATE",
+  "observedOn": "2026-11-09",
+  "league": "Russian Premier League",
+  "role": "Independent PUBLIC retrospective final-table name aliases, not original pre-match rosters or private provider IDs",
+  "seasonReferences": [
+    {
+      "season": "2018/19",
+      "sourcePage": "https://www.rsssf.org/tablesr/rus2019.html",
+      "publicNameAliasesInFinalTableOrder": [
+        "zenit",
+        "lokomotiv",
+        "krasnodar",
+        "cska",
+        "spartak",
+        "arsenal_tula",
+        "orenburg",
+        "akhmat",
+        "rostov",
+        "ural",
+        "rubin",
+        "dinamo_moscow",
+        "krylia",
+        "ufa",
+        "anji",
+        "enisey"
+      ],
+      "leagueGamesPerClubReported": 30
+    },
+    {
+      "season": "2019/20",
+      "sourcePage": "https://www.rsssf.org/tablesr/rus2020.html",
+      "publicNameAliasesInFinalTableOrder": [
+        "zenit",
+        "lokomotiv",
+        "krasnodar",
+        "cska",
+        "rostov",
+        "dinamo_moscow",
+        "spartak",
+        "arsenal_tula",
+        "ufa",
+        "rubin",
+        "ural",
+        "sochi",
+        "akhmat",
+        "tambov",
+        "krylia",
+        "orenburg"
+      ],
+      "leagueGamesPerClubReported": 30
+    },
+    {
+      "season": "2020/21",
+      "sourcePage": "https://www.rsssf.org/tablesr/rus2021.html",
+      "publicNameAliasesInFinalTableOrder": [
+        "zenit",
+        "spartak",
+        "lokomotiv",
+        "rubin",
+        "sochi",
+        "cska",
+        "dinamo_moscow",
+        "khimki",
+        "rostov",
+        "krasnodar",
+        "akhmat",
+        "ural",
+        "ufa",
+        "arsenal_tula",
+        "rotor",
+        "tambov"
+      ],
+      "leagueGamesPerClubReported": 30
+    },
+    {
+      "season": "2021/22",
+      "sourcePage": "https://www.rsssf.org/tablesr/rus2022.html",
+      "publicNameAliasesInFinalTableOrder": [
+        "zenit",
+        "sochi",
+        "dinamo_moscow",
+        "krasnodar",
+        "cska",
+        "lokomotiv",
+        "akhmat",
+        "krylia",
+        "rostov",
+        "spartak",
+        "nizhny_novgorod",
+        "ural",
+        "khimki",
+        "ufa",
+        "rubin",
+        "arsenal_tula"
+      ],
+      "leagueGamesPerClubReported": 30
+    },
+    {
+      "season": "2022/23",
+      "sourcePage": "https://www.rsssf.org/tablesr/rus2023.html",
+      "publicNameAliasesInFinalTableOrder": [
+        "zenit",
+        "cska",
+        "spartak",
+        "rostov",
+        "akhmat",
+        "krasnodar",
+        "orenburg",
+        "lokomotiv",
+        "dinamo_moscow",
+        "sochi",
+        "ural",
+        "krylia",
+        "nizhny_novgorod",
+        "fakel",
+        "khimki",
+        "torpedo"
+      ],
+      "leagueGamesPerClubReported": 30
+    },
+    {
+      "season": "2023/24",
+      "sourcePage": "https://rsssf.org/tablesr/rus2024.html",
+      "publicNameAliasesInFinalTableOrder": [
+        "zenit",
+        "krasnodar",
+        "dinamo_moscow",
+        "lokomotiv",
+        "spartak",
+        "cska",
+        "rostov",
+        "rubin",
+        "krylia",
+        "akhmat",
+        "fakel",
+        "orenburg",
+        "nizhny_novgorod",
+        "ural",
+        "baltika",
+        "sochi"
+      ],
+      "leagueGamesPerClubReported": 30
+    },
+    {
+      "season": "2024/25",
+      "sourcePage": "https://www.rsssf.org/tablesr/rus2025.html",
+      "publicNameAliasesInFinalTableOrder": [
+        "krasnodar",
+        "zenit",
+        "cska",
+        "spartak",
+        "dinamo_moscow",
+        "lokomotiv",
+        "rubin",
+        "rostov",
+        "akron",
+        "krylia",
+        "dinamo_makhachkala",
+        "khimki",
+        "nizhny_novgorod",
+        "akhmat",
+        "orenburg",
+        "fakel"
+      ],
+      "leagueGamesPerClubReported": 30
+    }
+  ],
+  "aggregate": {
+    "leagueSeasons": 7,
+    "clubAppearances": 112,
+    "uniquePublicNameAliases": 26,
+    "adjacentSeasonSharedPublicNameAliases": [
+      14,
+      14,
+      14,
+      13,
+      14,
+      13
+    ],
+    "totalAdjacentSharedPublicNameAliases": 82,
+    "privateProviderSourceSampleUniqueIds": 26,
+    "privateProviderSourceSampleAdjacentSharedIds": 82
+  },
+  "knownNameCaveats": [
+    "Nizhniy Novgorod is labeled Pari NN by 2022/23; the shared normalized alias is a retrospective name candidate, NOT independent legal club-continuity proof",
+    "Public source aliases are hand-normalized from separate final tables; no name-to-private-ID mapping has been performed",
+    "2023/24 final table includes ONLY 30-round RPL season, not separate promotion/relegation play-off fixtures",
+    "2019/20 and 2020/21 retrospective final tables include unplayed technical awards; 2022/23 includes later official score revision",
+    "RSSSF pages are retrospective reports without certified first-serving/UTC kickoff timestamps"
+  ],
+  "limitations": {
+    "privateDatabaseMatchRowsRead": false,
+    "privateProviderIdsIncluded": false,
+    "independentLegalClubContinuityVerified": false,
+    "privateProviderIdToPublicNameApproved": false,
+    "independentOriginalSourcePublicationTimesVerified": false,
+    "officialPlayedGoalScoreCrosswalkVerified": false,
+    "publicRosterAggregateEqualitiesEstablishPerFixtureIdentity": false,
+    "realModelTrainingAuthorized": false,
+    "sealed2025_26HoldoutRead": false,
+    "publicForecastsWritten": false
+  },
+  "livePrivateArchiveReadOnlyEvidence": {
+    "kind": "M3_DEVELOPMENT_ONLY_POSTGRES17_READ_ONLY_FULL_ARCHIVE_TEAM_TOPOLOGY",
+    "observedOn": "2026-11-09",
+    "queryScope": "FF_PRIVATE_2018_19_TO_2024_25_AGGREGATE_SELECT_ONLY",
+    "uniqueProviderClubIds": 26,
+    "perSeason": [
+      {
+        "season": "2018/19",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 14
+      },
+      {
+        "season": "2019/20",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 14
+      },
+      {
+        "season": "2020/21",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 14
+      },
+      {
+        "season": "2021/22",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 13
+      },
+      {
+        "season": "2022/23",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 14
+      },
+      {
+        "season": "2023/24",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": 13
+      },
+      {
+        "season": "2024/25",
+        "distinctProviderClubIds": 16,
+        "sharedProviderIdsWithNextSeason": null
+      }
+    ],
+    "adjacentSharedProviderClubIds": [
+      14,
+      14,
+      14,
+      13,
+      14,
+      13
+    ],
+    "totalAdjacentSharedProviderClubIds": 82,
+    "providerIdsExported": false,
+    "privateFixtureRowsExported": false,
+    "sealedHoldoutRead": false,
+    "independentProviderIdToOfficialClubNameVerified": false,
+    "historicalFirstPublicationVerified": false,
+    "realTrainingApproved": false
+  }
+}
