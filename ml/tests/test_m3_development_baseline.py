@@ -2,6 +2,7 @@
 from dataclasses import replace
 
 import pytest
+from test_rpl_development_folds import synthetic_corpus
 
 from football_forecast.data.contracts import DataError
 from football_forecast.research.m3_development_baseline import (
@@ -9,7 +10,6 @@ from football_forecast.research.m3_development_baseline import (
     evaluate_synthetic_hda_baseline,
 )
 from football_forecast.research.rpl_development_folds import PLAN, VALIDATION_SEASONS
-from test_rpl_development_folds import synthetic_corpus
 
 
 @pytest.fixture(scope="module")
