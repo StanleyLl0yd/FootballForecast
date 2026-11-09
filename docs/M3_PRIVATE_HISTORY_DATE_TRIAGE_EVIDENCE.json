@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "kind": "M3_PRIVATE_DEVELOPMENT_AGGREGATE_ONLY_SOURCE_DIAGNOSTIC",
+  "observedDate": "2026-11-09",
+  "databaseProject": "FootballForecast",
+  "region": "eu-central-1",
+  "postgresMajor": 17,
+  "queryType": "READ_ONLY_SELECT_EXISTING_FF_PRIVATE_DEVELOPMENT_TABLES",
+  "eligibleDevelopmentSeasons": [
+    "2018/19",
+    "2019/20",
+    "2020/21",
+    "2021/22",
+    "2022/23",
+    "2023/24",
+    "2024/25"
+  ],
+  "matchesPerSeason": 240,
+  "totalSourceFinishedRecords": 1680,
+  "allSeasonClubCounts": 16,
+  "perSeason": [
+    {
+      "season": "2018/19",
+      "records": 240,
+      "home3_away0": 9,
+      "home0_away3": 6,
+      "sourceFirstPublicationCount": 0,
+      "historicalPrematchVerifiedCount": 0
+    },
+    {
+      "season": "2019/20",
+      "records": 240,
+      "home3_away0": 12,
+      "home0_away3": 5,
+      "sourceFirstPublicationCount": 0,
+      "historicalPrematchVerifiedCount": 0
+    },
+    {
+      "season": "2020/21",
+      "records": 240,
+      "home3_away0": 4,
+      "home0_away3": 7,
+      "sourceFirstPublicationCount": 0,
+      "historicalPrematchVerifiedCount": 0
+    },
+    {
+      "season": "2021/22",
+      "records": 240,
+      "home3_away0": 7,
+      "home0_away3": 3,
+      "sourceFirstPublicationCount": 0,
+      "historicalPrematchVerifiedCount": 0
+    },
+    {
+      "season": "2022/23",
+      "records": 240,
+      "home3_away0": 15,
+      "home0_away3": 6,
+      "sourceFirstPublicationCount": 0,
+      "historicalPrematchVerifiedCount": 0
+    },
+    {
+      "season": "2023/24",
+      "records": 240,
+      "home3_away0": 7,
+      "home0_away3": 1,
+      "sourceFirstPublicationCount": 0,
+      "historicalPrematchVerifiedCount": 0
+    },
+    {
+      "season": "2024/25",
+      "records": 240,
+      "home3_away0": 10,
+      "home0_away3": 7,
+      "sourceFirstPublicationCount": 0,
+      "historicalPrematchVerifiedCount": 0
+    }
+  ],
+  "publicAnomalyDayCalendarCandidateCounts": [
+    {
+      "day": "2020-06-27",
+      "publicEvidenceCategory": "TECHNICAL_AWARD",
+      "privateMatchesOnSameUtcDay": 5,
+      "threeZeroOrZeroThreePrivateScorelines": 1
+    },
+    {
+      "day": "2020-07-01",
+      "publicEvidenceCategory": "TECHNICAL_AWARD",
+      "privateMatchesOnSameUtcDay": 6,
+      "threeZeroOrZeroThreePrivateScorelines": 1
+    },
+    {
+      "day": "2020-07-16",
+      "publicEvidenceCategory": "TECHNICAL_AWARD",
+      "privateMatchesOnSameUtcDay": 4,
+      "threeZeroOrZeroThreePrivateScorelines": 1
+    },
+    {
+      "day": "2020-07-22",
+      "publicEvidenceCategory": "TECHNICAL_AWARD",
+      "privateMatchesOnSameUtcDay": 8,
+      "threeZeroOrZeroThreePrivateScorelines": 1
+    },
+    {
+      "day": "2020-09-13",
+      "publicEvidenceCategory": "TECHNICAL_AWARD",
+      "privateMatchesOnSameUtcDay": 3,
+      "threeZeroOrZeroThreePrivateScorelines": 1
+    },
+    {
+      "day": "2020-09-19",
+      "publicEvidenceCategory": "TECHNICAL_AWARD",
+      "privateMatchesOnSameUtcDay": 2,
+      "threeZeroOrZeroThreePrivateScorelines": 1
+    },
+    {
+      "day": "2023-03-19",
+      "publicEvidenceCategory": "OFFICIAL_RESULT_REVISION",
+      "privateMatchesOnSameUtcDay": 4,
+      "threeZeroOrZeroThreePrivateScorelines": 1
+    },
+    {
+      "day": "2023-09-16",
+      "publicEvidenceCategory": "PUBLIC_HOME_AWAY_DIRECTION_ANOMALY",
+      "privateMatchesOnSameUtcDay": 4,
+      "threeZeroOrZeroThreePrivateScorelines": 0
+    },
+    {
+      "day": "2024-04-13",
+      "publicEvidenceCategory": "PUBLIC_VENUE_SWAP",
+      "privateMatchesOnSameUtcDay": 4,
+      "threeZeroOrZeroThreePrivateScorelines": 0
+    }
+  ],
+  "databaseSecurity": {
+    "snapshots": {
+      "rlsEnabled": true,
+      "forceRls": true,
+      "anonSelect": false,
+      "authenticatedSelect": false,
+      "serviceRoleSelect": false
+    },
+    "matches": {
+      "rlsEnabled": true,
+      "forceRls": true,
+      "anonSelect": false,
+      "authenticatedSelect": false,
+      "serviceRoleSelect": false
+    }
+  },
+  "limitations": {
+    "sixPublicTechAwardDaysUniquelyAlignOnPrivateDateAndScoreline": true,
+    "matchSpecificTeamAndSourceIdsCompared": false,
+    "sixDatesYieldSixIndependentlyVerifiedPrivateTechnicalAwards": false,
+    "timeZonesCrossSourceIndependentlyValidated": false,
+    "privateStatusPlayedVersusAwardedVerified": false,
+    "databaseRowsReadIndividually": false,
+    "privateMatchIdentifiersExported": false,
+    "automaticQuarantineApplied": false,
+    "privateSnapshotMutated": false,
+    "protectedRealModelTrainingAuthorized": false,
+    "historicalFirstPublicationVerified": false,
+    "sealedHoldout2025_26Read": false,
+    "publicPredictionsWritten": false
+  }
+}
