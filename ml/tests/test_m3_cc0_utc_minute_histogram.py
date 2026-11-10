@@ -140,3 +140,21 @@ def test_extra_private_identifiers_refused():
     v["sourceRows"][0]["privateClubId"] = "BLOCKED"
     with pytest.raises(DataError):
         audit_public_minute_histogram_receipt(v)
+
+def test_wrong_year_and_disguised_holdout_dates_refused():
+    raw = json.dumps({"matches": [
+        {"date": "2025-07-25", "time": "13:00", "score": {"ft": [0, 0]}}
+        for _ in range(240)
+    ]})
+    with pytest.raises(DataError):
+        public_utc_minute_histogram(raw, "JSON", "2018/19")
+
+
+def test_covid_extended_2019_20_july_remains_in_bounds():
+    raw = json.dumps({"matches": [
+        {"date": "2020-07-20", "time": "15:00", "score": {"ft": [0, 0]}}
+        for _ in range(240)
+    ]})
+    got = public_utc_minute_histogram(raw, "JSON", "2019/20")
+    assert got.available_clocks == 240
+    assert got.minutes == {datetime(2020, 7, 20, 12, 0, tzinfo=UTC): 240}
