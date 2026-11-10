@@ -17,6 +17,13 @@ const SEASON_RECEIPTS = Object.freeze([
 // Six first-party retrospective spot anchors; dates are NOT verified as-of timestamps.
 // [event code, season, UTC under Moscow interpretation, home mask, away mask,
 //  retrospective goals H/A, number of same-day provider matches, revised official result]
+const PINNED_PUBLIC = Object.freeze([
+  ['openfootball/football.json','2018-19/ru.1.json','7ae2641d5504dac76f0ecbb84ca723ca36d03f82'],
+  ['openfootball/football.json','2019-20/ru.1.json','25a5738b595d9b6d074208e4e5df47f2c2a9bcc3'],
+  ['openfootball/football.json','2020-21/ru.1.json','48f77704081ac4405b98341c81b02b4664536733'],
+  ['openfootball/europe','russia/2023-24_ru1.txt','3ea6829a971d1cbdf56552be0519cc125707bd99'],
+  ['openfootball/europe','russia/2024-25_ru1.txt','6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc']
+]);
 const RFS_ANCHORS = Object.freeze([
   ['khimki_zenit_open_2021','2021/22','2021-07-24T14:30:00Z',92,127,1,3,3,false],
   ['krylia_nizhny_2021','2021/22','2021-10-17T13:30:00Z',123,120,2,0,4,false],
@@ -91,6 +98,36 @@ export function inspectM3SourceCrosschecks(graph, clocks, anchors) {
         'uniqueDayMaskDirectionCandidates','exactUtcMinuteCandidates',
         'officialScoreAgreements','publicRevisedOfficialResultsAmongEvents',
         'independentlyCertifiedPrivatePlayedRows']) ||
+      !keys(anchors.sourceOfficialCalendars,['2021/22','2022/23']) ||
+      anchors.sourceOfficialCalendars['2021/22']!==
+        'https://www.rfs.ru/tournament/1349/calendar?round_id=18268' ||
+      anchors.sourceOfficialCalendars['2022/23']!==
+        'https://www.rfs.ru/tournament/1395/calendar?round_id=18419' ||
+      anchors.sourceRfsTechnicalRevision!=='https://www.rfs.ru/news/217736' ||
+      anchors.calendarKind!==
+        'CURRENT_RETROSPECTIVE_RFS_OFFICIAL_CALENDAR_NOT_ORIGINAL_SERVING_TIMELINE' ||
+      !keys(anchors.crossEventIdEqualityAnonymous,[
+        'kryliaTwo2021_22','torpedoThree2022_23','privateIdsExported']) ||
+      !keys(anchors.crossEventIdEqualityAnonymous.kryliaTwo2021_22,[
+        'eventCount','internalDistinctProviderIds']) ||
+      !keys(anchors.crossEventIdEqualityAnonymous.torpedoThree2022_23,[
+        'eventCount','internalDistinctProviderIds']) ||
+      anchors.crossEventIdEqualityAnonymous.kryliaTwo2021_22.eventCount!==2 ||
+      anchors.crossEventIdEqualityAnonymous.kryliaTwo2021_22.internalDistinctProviderIds!==1 ||
+      anchors.crossEventIdEqualityAnonymous.torpedoThree2022_23.eventCount!==3 ||
+      anchors.crossEventIdEqualityAnonymous.torpedoThree2022_23.internalDistinctProviderIds!==1 ||
+      anchors.crossEventIdEqualityAnonymous.privateIdsExported!==false ||
+      !keys(graph.public2023_24OneFixtureDirectionCorrection,[
+        'archivedFixtureDay','archivedPublicHome','archivedPublicAway',
+        'archivedReportedScore','hypotheticalPublicHome','hypotheticalPublicAway',
+        'hypotheticalScore','sourceFileLine','publicRecordsCorrectedInMemory',
+        'publicArchiveModified','privateArchiveModified',
+        'originalRfsKickoffUtcAttested',
+        'correctionGroundedInPreviouslyRecordedIndependentClubAndRfsReferences']) ||
+      graph.public2023_24OneFixtureDirectionCorrection.publicArchiveModified!==false ||
+      graph.public2023_24OneFixtureDirectionCorrection.privateArchiveModified!==false ||
+      graph.public2023_24OneFixtureDirectionCorrection.originalRfsKickoffUtcAttested!==false ||
+      graph.public2023_24OneFixtureDirectionCorrection.publicRecordsCorrectedInMemory!==1 ||
       !keys(anchors.administrativeResultWarning,['eventCode','date','onFieldHomeGoals',
         'onFieldAwayGoals','laterOfficialHomeGoals','laterOfficialAwayGoals',
         'independentSource','providerArchiveMatchesLaterOfficialResult',
@@ -147,6 +184,7 @@ export function inspectM3SourceCrosschecks(graph, clocks, anchors) {
   for (let i=0;i<YEARS.length;i++) {
     const season=YEARS[i], gr=graph.seasons[i], src=graph.sourceFiles[i],
       cr=clocks.sourceRows[i];
+    const [pinnedRepo,pinnedPath,pinnedBlob]=PINNED_PUBLIC[i];
     if (!keys(gr,['season','publicFixtures','privateProviderFinishedFixtures',
         'unmatchedByDateMaskDirection','reciprocalSeedSingletons','initialAmbiguous',
         'postConsistencyResolved','postConsistencyUnresolvedPublic',
@@ -163,6 +201,8 @@ export function inspectM3SourceCrosschecks(graph, clocks, anchors) {
           'privateFixtureIdentityVerified']) ||
         !plain(gr) || !plain(src) || !plain(cr) ||
         gr.season !== season || src.season !== season || cr.season !== season ||
+        src.blobSha !== pinnedBlob || src.repository !== pinnedRepo ||
+        src.path !== pinnedPath ||
         src.blobSha !== cr.pinnedPublicBlob || src.repository !== cr.publisherRepo ||
         gr.publicFixtures !== 240 || gr.privateProviderFinishedFixtures !== 240 ||
         gr.unmatchedByDateMaskDirection !== 0 ||
