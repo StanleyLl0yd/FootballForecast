@@ -68,6 +68,9 @@ def test_exactly_240_public_fixtures_and_aggregate_only_receipt(season):
     assert (audit.fixtures,audit.clubs,audit.directed_pairs,audit.rounds)==(240,16,240,30)
     assert (audit.home_goals,audit.away_goals)==SEASONS[season]["goals"]
     assert audit.revised_official_scores==(season=="2022/23")
+    assert sum(n for _,_,n in audit.scoreline_histogram)==240
+    assert sum(h*n for h,_,n in audit.scoreline_histogram)==audit.home_goals
+    assert sum(a*n for _,a,n in audit.scoreline_histogram)==audit.away_goals
     assert len(audit.source_sha256)==64
     assert len(audit.fixture_graph_sha256)==64
     assert audit==audit_rsssf_rpl(raw,season)
