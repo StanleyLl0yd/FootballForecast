@@ -248,7 +248,7 @@ jobs:
       - name: Validate local-only M2 aggregate attestation viewer
         run: node --test apps/web/tests/m2-lock-viewer.test.mjs
       - name: Verify protected real escrow evidence and read-only owner research UI
-        run: node --test apps/web/tests/m2-private-escrow-evidence.test.mjs apps/web/tests/m2-openfootball-evidence.test.mjs apps/web/tests/m2-owner-research.test.mjs apps/web/tests/m2-public-source-evidence.test.mjs apps/web/tests/m2-first-eval-evidence.test.mjs apps/web/tests/m3-source-readiness-ui.test.mjs apps/web/tests/m3-source-rights.test.mjs
+        run: node --test apps/web/tests/m2-private-escrow-evidence.test.mjs apps/web/tests/m2-openfootball-evidence.test.mjs apps/web/tests/m2-owner-research.test.mjs apps/web/tests/m2-public-source-evidence.test.mjs apps/web/tests/m2-first-eval-evidence.test.mjs apps/web/tests/m3-source-readiness-ui.test.mjs apps/web/tests/m3-source-rights.test.mjs apps/web/tests/m3-public-missing-seasons.test.mjs
       - name: Reject forged or oversized public M2 GitHub research run metadata
         run: node --experimental-strip-types --test apps/web/tests/m2-run-status.test.mjs
       - name: Verify safe M1 protected GitHub Environment setup
