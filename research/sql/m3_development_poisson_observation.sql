@@ -21,20 +21,21 @@ WITH seasons(season,season_order) AS (
  JOIN ff_private.ff_rpl_history_matches m ON m.snapshot_id=s.id
 ), tagged AS (
  SELECT r.*,e.reason FROM raw r LEFT JOIN exclusions e
- ON r.season=e.season AND r.kickoff_at::date=e.day
+ ON r.season=e.season AND (r.kickoff_at AT TIME ZONE 'UTC')::date=e.day
  AND r.hg=e.hg AND r.ag=e.ag
 ), season_check AS (
  SELECT season,count(*) n,count(DISTINCT home_team_id) h,
  count(DISTINCT away_team_id) a,
  count(DISTINCT (home_team_id,away_team_id)) pairs,
- count(*) FILTER (WHERE status<>'finished' OR kickoff_at IS NULL
- OR hg<0 OR ag<0 OR hg>20 OR ag>20) invalid FROM raw GROUP BY season
+ count(*) FILTER (WHERE status IS DISTINCT FROM 'finished' OR kickoff_at IS NULL
+ OR source_match_id IS NULL OR home_team_id IS NULL OR away_team_id IS NULL
+ OR hg IS NULL OR ag IS NULL OR hg<0 OR ag<0 OR hg>20 OR ag>20) invalid FROM raw GROUP BY season
 ), gate AS (
  SELECT count(*)=7 AND min(n)=240 AND max(n)=240
  AND min(h)=16 AND max(h)=16 AND min(a)=16 AND max(a)=16
  AND min(pairs)=240 AND max(pairs)=240 AND sum(invalid)=0
  AND (SELECT count(*)=7 FROM tagged WHERE reason IS NOT NULL)
- AND (SELECT count(DISTINCT (season,kickoff_at::date,hg,ag))=7
+ AND (SELECT count(DISTINCT (season,(kickoff_at AT TIME ZONE 'UTC')::date,hg,ag))=7
       FROM tagged WHERE reason IS NOT NULL) AS ok FROM season_check
 ), eligible AS (
  SELECT *,CASE WHEN hg>ag THEN 0 WHEN hg=ag THEN 1 ELSE 2 END label
