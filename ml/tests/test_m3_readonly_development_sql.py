@@ -4,8 +4,8 @@ Static checks are defence-in-depth, not a SQL sandbox or permission to publish.
 The real SQL has been run separately against the seven development snapshots;
 holdout 2025/26 is never read.
 """
-from pathlib import Path
 import re
+from pathlib import Path
 
 import pytest
 
