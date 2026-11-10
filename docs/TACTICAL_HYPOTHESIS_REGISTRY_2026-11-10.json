@@ -1,0 +1,438 @@
+{
+  "schema_version": 1,
+  "created_utc_date": "2026-11-10",
+  "research_status": "RESEARCH_ONLY_NOT_MODEL_ELIGIBLE",
+  "owner_brief_source": "2026-11-10 owner-provided tactical analysis handoff",
+  "channel_source": {
+    "url": "https://t.me/s/sbganalitica",
+    "exact_permalinks_for_2026_examples": "NOT_INDEPENDENTLY_VERIFIED",
+    "scope": "selected available posts and owner-provided historical notes; not a full-channel review",
+    "use": "hypothesis formulation only, not labels or proof of match facts"
+  },
+  "independent_match_context": [
+    {
+      "date": "2026-11-08",
+      "fixture": "Zenit vs Rostov",
+      "result": "2:2",
+      "url": "https://www.championat.com/football/_russiapl/tournament/7096/match/1318698/",
+      "source_scope": "match result/lineup; no validation of tactical attribution"
+    },
+    {
+      "date": "2026-11-02",
+      "fixture": "Krylya Sovetov vs Zenit",
+      "result": "0:3",
+      "url": "https://www.championat.com/football/_russiapl/tournament/7096/match/1318660/",
+      "source_scope": "match result; not proof of analytic interpretation"
+    }
+  ],
+  "m3_boundaries": {
+    "issue": "https://github.com/StanleyLl0yd/FootballForecast/issues/271",
+    "acceptance": "OPEN_2_OF_8_A3_PENDING",
+    "development_seasons": [
+      "2018/19",
+      "2019/20",
+      "2020/21",
+      "2021/22",
+      "2022/23",
+      "2023/24",
+      "2024/25"
+    ],
+    "validation_seasons": [
+      "2020/21",
+      "2021/22",
+      "2022/23",
+      "2023/24",
+      "2024/25"
+    ],
+    "forbidden": "Never use consumed 2025/26 holdout or 2026/27 example matches for development selection; no production fitting/publishing."
+  },
+  "existing_data_observation": {
+    "private_history": "1680 provider-finished rows, not 1680 proven eligible",
+    "first_page_sample": "0 of 350 rows contained populated sampled candidate fields across players, lineups, shots, xG, coaches, venues, weather and odds; sample only",
+    "in_code": "Prior-day score-derived team-scoped counts, goals form, rest days and fixed chronological folds; pending A3 identity and played-score rights",
+    "not_proven": "player-level event, lineup, tracking, xG, reliable original as-of timestamps for seven seasons"
+  },
+  "general_invariants": [
+    "No subjective numerical compatibility scores",
+    "No post-match inputs for target pre-match forecast",
+    "Fail closed when missing publication/observation rights/identity",
+    "No mixing provider xG definitions",
+    "Per-fold coverage, abstention and uncertainty are mandatory",
+    "No causal claims from substitution observational contrasts",
+    "No new paid provider or production changes without owner approval"
+  ],
+  "hypotheses": [
+    {
+      "id": "TACT-01",
+      "name": "Player-pair compatibility",
+      "hypothesis": "Role-complementary player pairs may improve ball progression or defensive stability beyond additive individual performance.",
+      "example": "Zenit: Douglas Santos + Pedro versus Roman Vega + John John (owner-provided author interpretation).",
+      "candidate": [
+        "same-minute lineup overlap",
+        "passes between pair",
+        "progressive passes between pair",
+        "chance creation",
+        "turnovers",
+        "opponent-adjusted open-play xG"
+      ],
+      "requires": [
+        "historical verified lineups and substitutions",
+        "timestamped player-level event data",
+        "opponent quality"
+      ],
+      "method": "Within-club, opponent/score-state/role-adjusted paired-segment contrasts, minimum-minute gate, uncertainty intervals; do not infer causal effect.",
+      "availability": "not_in_verified_development_sources",
+      "cost": "high",
+      "priority": "P3",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": false,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Zenit: Douglas Santos + Pedro versus Roman Vega + John John (owner-provided author interpretation).",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-02",
+      "name": "Role fit versus nominal position and attack tempo",
+      "hypothesis": "Player role and decision speed can affect team attack tempo independently of individual pace.",
+      "example": "Luis Enrique: receiving to feet and pausing before dribble (author hypothesis).",
+      "candidate": [
+        "receiving zone",
+        "touches per possession",
+        "ball progression time",
+        "off-ball running",
+        "role-specific sequence duration"
+      ],
+      "requires": [
+        "player positional events",
+        "receiving and carry coordinates",
+        "role annotations"
+      ],
+      "method": "Compare predefined role-context distributions against match/opponent/score-state controls; require blinded annotations where derived from video.",
+      "availability": "needs_event_tracking",
+      "cost": "high",
+      "priority": "P3",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": false,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Luis Enrique: receiving to feet and pausing before dribble (author hypothesis).",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-03",
+      "name": "Between-lines playmaker access",
+      "hypothesis": "A playmaker's effect depends on between-line reception and forward passing options, not merely touch totals.",
+      "example": "Maxim Glushenkov: between-lines access under centre-versus-wing deployment (author hypothesis).",
+      "candidate": [
+        "receptions between lines",
+        "progressive passes after receipt",
+        "forward teammates",
+        "xA from open play",
+        "box entries"
+      ],
+      "requires": [
+        "event positions",
+        "opponent line tracking or audited video",
+        "player-match role records"
+      ],
+      "method": "Evaluate predeclared opportunity-normalized metrics by role, opponent and score state.",
+      "availability": "needs_event_tracking",
+      "cost": "high",
+      "priority": "P3",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": false,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Maxim Glushenkov: between-lines access under centre-versus-wing deployment (author hypothesis).",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-04",
+      "name": "Striker contribution without a goal",
+      "hypothesis": "A striker may create space, suppress build-up and facilitate other scorers without directly scoring.",
+      "example": "Alexander Sobolev: centre-back occupation, layoffs, high press and central combination play.",
+      "candidate": [
+        "pressured defender actions",
+        "layoffs",
+        "second balls won",
+        "teammate chances in adjacent phases"
+      ],
+      "requires": [
+        "event data",
+        "off-ball movement or video",
+        "verified substitutions and opponent roles"
+      ],
+      "method": "Compare time-on-pitch segments with matched opponent and tactical context; no arbitrary contribution points.",
+      "availability": "needs_event_tracking",
+      "cost": "high",
+      "priority": "P3",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": false,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Alexander Sobolev: centre-back occupation, layoffs, high press and central combination play.",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-05",
+      "name": "Receivers ahead of ball and vertical structure",
+      "hypothesis": "Excessive build-up support behind the ball may reduce forward passing options and chance quality.",
+      "example": "Zenit–Rostov 2026-11-08: structural changes after substitutions described by author, not independently established causal explanation.",
+      "candidate": [
+        "players ahead of ball",
+        "eligible forward receivers",
+        "team depth and width",
+        "between-lines occupancy",
+        "open-play shot quality after changes"
+      ],
+      "requires": [
+        "high-frequency tracking",
+        "verified event ball coordinates",
+        "lineup substitutions and video"
+      ],
+      "method": "Time-segment spatial analysis of build-up phases, controlling game state and opposition reaction.",
+      "availability": "tracking_required",
+      "cost": "very_high",
+      "priority": "P4",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": true,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Zenit–Rostov 2026-11-08: structural changes after substitutions described by author, not independently established causal explanation.",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-06",
+      "name": "Coordinated pressing rather than individual duel",
+      "hypothesis": "Pressing succeeds when first and second lines act together; isolated pressure may expose transitions.",
+      "example": "Zenit–Rostov 2026-11-08: author interpretation of pressure sequence preceding opposition transition.",
+      "candidate": [
+        "pressing-line spacing",
+        "opponent press escapes",
+        "PPDA from one consistent provider",
+        "dangerous transitions conceded",
+        "ball regain latency"
+      ],
+      "requires": [
+        "consistent event pressure definitions",
+        "tracking or audited video",
+        "event timing"
+      ],
+      "method": "Compare pressure episodes and second-line response; separate individual duel from systematic failure.",
+      "availability": "needs_event_tracking",
+      "cost": "high",
+      "priority": "P3",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": true,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Zenit–Rostov 2026-11-08: author interpretation of pressure sequence preceding opposition transition.",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-07",
+      "name": "Centre-back complementary roles",
+      "hypothesis": "Complementary aggressiveness/cover tendencies of centre-back pairs may matter beyond goals conceded.",
+      "example": "Nino / Kevin Andrade / Alip / Diveev pairing alternatives (author hypothesis).",
+      "candidate": [
+        "defender step-outs",
+        "covering movements",
+        "interceptions",
+        "progression starts",
+        "transition opportunities"
+      ],
+      "requires": [
+        "verified centre-back pairing minutes",
+        "event or tracking data",
+        "opposition strength"
+      ],
+      "method": "Minute-weighted, season-stratified partial pooling with confidence intervals and opponent/context control.",
+      "availability": "needs_event_tracking",
+      "cost": "high",
+      "priority": "P3",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": false,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Nino / Kevin Andrade / Alip / Diveev pairing alternatives (author hypothesis).",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-08",
+      "name": "Midfielder role-specific contribution",
+      "hypothesis": "A midfielder may improve progression beside a defensive specialist while retaining weaknesses defending deeper zones.",
+      "example": "Artyom Karpukas beside Wilmar Barrios (author hypothesis).",
+      "candidate": [
+        "progressive actions by role",
+        "press-support actions",
+        "positioning errors from audited video",
+        "turnovers under pressure"
+      ],
+      "requires": [
+        "player role and pairing minutes",
+        "event coordinates",
+        "pressing data"
+      ],
+      "method": "Separate offensive and defensive facets; reject inference from short goal-involvement streaks.",
+      "availability": "needs_event_tracking",
+      "cost": "high",
+      "priority": "P3",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": false,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Artyom Karpukas beside Wilmar Barrios (author hypothesis).",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-09",
+      "name": "Goalkeeper participation in build-up",
+      "hypothesis": "Keeper distribution and space coverage can alter attack transition without changes in save rate.",
+      "example": "Bogdan Moskvichev versus Denis Adamov (author comparison).",
+      "candidate": [
+        "passes under pressure",
+        "distribution length and completion",
+        "actions outside box",
+        "transition prevention"
+      ],
+      "requires": [
+        "keeper events and coordinates",
+        "pressure context",
+        "historical starter records"
+      ],
+      "method": "Opponent/pressing-adjusted keeper-role comparison with sample sufficiency.",
+      "availability": "needs_event_tracking",
+      "cost": "high",
+      "priority": "P3",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": false,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Bogdan Moskvichev versus Denis Adamov (author comparison).",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-10",
+      "name": "Score-state bias",
+      "hypothesis": "Aggregate match performance conflates equal-score attack with counters in the lead and game-state-dependent opponent choices.",
+      "example": "Krylya Sovetov–Zenit 2026-11-02 (0:3): goals/penalties change the game context; illustrative only.",
+      "candidate": [
+        "shots and xG at 0:0",
+        "open-play xG while leading/trailing",
+        "score-state possession and passes",
+        "time elapsed in state"
+      ],
+      "requires": [
+        "verified goal event minutes",
+        "penalty and set-piece tags",
+        "timestamped event/xG product"
+      ],
+      "method": "Within-match time-at-risk denominators and causal caveats; as-of lag for any pregame feature; stratify by opponent/time.",
+      "availability": "needs_event_data",
+      "cost": "medium",
+      "priority": "P1",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": true,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Krylya Sovetov–Zenit 2026-11-02 (0:3): goals/penalties change the game context; illustrative only.",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-11",
+      "name": "Open play, penalties and set pieces",
+      "hypothesis": "Total xG hides material distinctions between open-play and dead-ball creation.",
+      "example": "Zenit–Krylya 2026-11-02 (0:3) context in owner brief; source match score independently verified.",
+      "candidate": [
+        "non-penalty xG",
+        "open-play xG",
+        "set-piece xG",
+        "shots and box entries by phase"
+      ],
+      "requires": [
+        "licensed timestamped event/xG data",
+        "provider-stable phase and xG definitions",
+        "first availability proof"
+      ],
+      "method": "Train only on prior matches with verified provenance; separate providers; compare per-season ablation on locked folds.",
+      "availability": "needs_event_data",
+      "cost": "medium",
+      "priority": "P1",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": true,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Zenit–Krylya 2026-11-02 (0:3) context in owner brief; source match score independently verified.",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-12",
+      "name": "Substitution and team-structure changes",
+      "hypothesis": "Post-substitution change depends on whole-team structure rather than an outgoing player's isolated output.",
+      "example": "Zenit–Rostov 2026-11-08: changes involving Wendel, Diveev and injury to Mantuan are author-supplied context pending independent event audit.",
+      "candidate": [
+        "minute of substitution",
+        "score at intervention",
+        "pre/post positional structure",
+        "progression and transition outcomes"
+      ],
+      "requires": [
+        "verified substitution clock",
+        "historical team formation changes",
+        "event/tracking data",
+        "injury source if claimed"
+      ],
+      "method": "Compare matched pre/post windows with opponent reaction and regression-to-mean caveats, never infer coach intent.",
+      "availability": "needs_event_tracking",
+      "cost": "high",
+      "priority": "P3",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": true,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Zenit–Rostov 2026-11-08: changes involving Wendel, Diveev and injury to Mantuan are author-supplied context pending independent event audit.",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    },
+    {
+      "id": "TACT-13",
+      "name": "Opponent-specific tactical interaction",
+      "hypothesis": "Tactical style effectiveness may depend on opponent press/block structure and formation interactions.",
+      "example": "Zenit position/line balance changes in response to opponent (author-generalized hypothesis).",
+      "candidate": [
+        "opponent-press category",
+        "attack entries against low block",
+        "transition opportunities against high line",
+        "opponent-adjusted progression"
+      ],
+      "requires": [
+        "consistent opponent scheme annotations",
+        "event or tracking data",
+        "pre-kickoff availability for target opponent"
+      ],
+      "method": "Pre-register interactions with regularization; compare pooled walk-forward per season; disallow post-match scouting notes as pregame truth.",
+      "availability": "needs_event_tracking",
+      "cost": "high",
+      "priority": "P3",
+      "source_reference": "https://t.me/s/sbganalitica",
+      "original_post_permalink": null,
+      "post_permalink_verified": false,
+      "example_only_2026_27": false,
+      "confirmed_observation": "No hypothesis-specific match-sequence observation independently established in this registry",
+      "author_interpretation": "Zenit position/line balance changes in response to opponent (author-generalized hypothesis).",
+      "testing_status": "UNTESTED_NO_ELIGIBLE_HISTORICAL_TACTICAL_ROWS"
+    }
+  ]
+}
