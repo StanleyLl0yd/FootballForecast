@@ -13,6 +13,8 @@ FootballForecast currently provides **public, anonymous, read-only** non-commerc
 
 ## Withdrawn dev-only advisory: resolved 2026-11-10
 
+M0 was accepted on 2026-10-29; M1 was accepted on 2026-11-02. Their accepted status is unchanged by the subsequent advisory withdrawal.
+
 The owner accepted a narrowly scoped temporary dev-only exception on 2026-10-22 while the `braces@3.0.3` high-severity advisory remained active and had no patched release. GitHub [withdrew GHSA-vfj7-8cjw-p6xm on 2026-10-23](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), stating that it was **not a practically exploitable vulnerability**. Withdrawal, **not** a package patch, is why the special audit exception can be removed.
 
 A genuine GitHub Actions security job on 2026-11-10 already reported **zero HIGH/CRITICAL findings in the full npm audit**. The production audit also found zero vulnerabilities. The CI now runs `npm audit --omit=dev --audit-level=high` **and** `npm audit --audit-level=high` directly after `npm ci`; both fail on new HIGH/CRITICAL findings. Gitleaks, CodeQL, locked dependencies and protected PR gates remain in force.
