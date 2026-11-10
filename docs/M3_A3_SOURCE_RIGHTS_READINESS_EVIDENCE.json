@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "kind": "M3_A3_PUBLIC_SOURCE_RIGHTS_READINESS",
+  "observedOn": "2026-11-10",
+  "scope": "PUBLIC_REFERENCE_METADATA_ONLY_NO_PRIVATE_READ",
+  "provider": {
+    "name": "OpenFoot Starter",
+    "termsUrl": "https://openfootapi.com/terms",
+    "termsEffective": "2026-09-07",
+    "internalModelTrainingOnLawfullyObtainedDataPermitted": true,
+    "actualRplHistoricalUpstreamLicenseAuthenticated": false,
+    "originalPerResponseSourceLicenseRetainedInPrivateArchive": false
+  },
+  "externalReferences": [
+    {
+      "key": "openfootball",
+      "url": "https://github.com/openfootball/europe",
+      "copyrightClass": "REPO_DECLARED_CC0",
+      "fullSevenSeasonCc0Coverage": false,
+      "authoritativePlayedResultsCertified": false
+    },
+    {
+      "key": "rsssf",
+      "url": "https://www.rsssf.org/charter.html",
+      "copyrightClass": "COPYRIGHTED_RETROSPECTIVE_REFERENCE",
+      "bulkMachineReuseApproved": false,
+      "originalFirstServingUtcVerified": false
+    },
+    {
+      "key": "football-data",
+      "url": "https://football-data.co.uk/contact.php",
+      "copyrightClass": "PERSONAL_ACADEMIC_LIMITED",
+      "heavyAutomatedTrainingApproved": false,
+      "originalQuoteCutoffVerified": false
+    }
+  ],
+  "seasons": [
+    {
+      "season": "2018/19",
+      "privateProviderFinishedRows": 240,
+      "pinnedPublicCc0StructuralRows": 240,
+      "alternativeReference": "NOT_REQUIRED_FOR_CC0_STRUCTURE",
+      "realPrivateEligibleRowsAttested": 0,
+      "sourceRightsDecision": "RIGHTS_UNVERIFIED"
+    },
+    {
+      "season": "2019/20",
+      "privateProviderFinishedRows": 240,
+      "pinnedPublicCc0StructuralRows": 240,
+      "alternativeReference": "NOT_REQUIRED_FOR_CC0_STRUCTURE",
+      "realPrivateEligibleRowsAttested": 0,
+      "sourceRightsDecision": "RIGHTS_UNVERIFIED"
+    },
+    {
+      "season": "2020/21",
+      "privateProviderFinishedRows": 240,
+      "pinnedPublicCc0StructuralRows": 240,
+      "alternativeReference": "NOT_REQUIRED_FOR_CC0_STRUCTURE",
+      "realPrivateEligibleRowsAttested": 0,
+      "sourceRightsDecision": "RIGHTS_UNVERIFIED"
+    },
+    {
+      "season": "2021/22",
+      "privateProviderFinishedRows": 240,
+      "pinnedPublicCc0StructuralRows": null,
+      "alternativeReference": "RFS_RSSSF_SPOT_REFERENCE_ONLY",
+      "realPrivateEligibleRowsAttested": 0,
+      "sourceRightsDecision": "RIGHTS_UNVERIFIED"
+    },
+    {
+      "season": "2022/23",
+      "privateProviderFinishedRows": 240,
+      "pinnedPublicCc0StructuralRows": null,
+      "alternativeReference": "RFS_RSSSF_SPOT_REFERENCE_ONLY",
+      "realPrivateEligibleRowsAttested": 0,
+      "sourceRightsDecision": "RIGHTS_UNVERIFIED"
+    },
+    {
+      "season": "2023/24",
+      "privateProviderFinishedRows": 240,
+      "pinnedPublicCc0StructuralRows": 240,
+      "alternativeReference": "NOT_REQUIRED_FOR_CC0_STRUCTURE",
+      "realPrivateEligibleRowsAttested": 0,
+      "sourceRightsDecision": "RIGHTS_UNVERIFIED"
+    },
+    {
+      "season": "2024/25",
+      "privateProviderFinishedRows": 240,
+      "pinnedPublicCc0StructuralRows": 240,
+      "alternativeReference": "NOT_REQUIRED_FOR_CC0_STRUCTURE",
+      "realPrivateEligibleRowsAttested": 0,
+      "sourceRightsDecision": "RIGHTS_UNVERIFIED"
+    }
+  ],
+  "gates": {
+    "actualPrivateFeedUpstreamLicenseAuthenticated": false,
+    "fullSeasonIndependentNamedIdentityVerified": false,
+    "fullSeasonPlayedGoalResultsVerified": false,
+    "originalHistoricalFirstServingUtcVerified": false,
+    "restrictedPrivateRowCorrelationAuthorized": false,
+    "realTrainingAuthorized": false,
+    "sealed2025_26Read": false
+  }
+}
