@@ -1,10 +1,10 @@
-# Hosting and deployment — M0/M1/M2 accepted; production release integrity pending
+# Hosting and deployment — M0/M1/M2 accepted; production release integrity bounded acceptance
 
 **Historical M2 authorization 2026-11-02; owner acceptance 2026-11-09:** the research implementation is initially offline/synthetic-only; no new database migration, privileged production training worker or public forecast publisher has been deployed. Keep accepted M1 source history, zero-cost protections and browser RLS unchanged. Since the owner decision 2026-11-03, legacy Footbolno schedules/push imports are disabled; the separate OpenFootball calendar-only train-only workflow has no database or holdout access. See [M2 #182](https://github.com/StanleyLl0yd/FootballForecast/issues/182).
 
 **M1 was accepted on 2026-11-02** ([closed #124](https://github.com/StanleyLl0yd/FootballForecast/issues/124)) after full internal technical audits and exact-main Frankfurt production verification. The protected importer ran before the 2026-11-03 Footbolno-free source transition; it is now manual-only. M1 acceptance did not itself enable M2 model publication. The deployment and database counts below are dated operational observations.
 
-**Current 2026-11-09 production baseline:** M2 [#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182) ACCEPTED 8/8 for bounded retrospective research only; M3 and production forecasts not authorized. Protected `main=56e85202456a71777be875def3512b98b6a15ab5` passed post-merge exact-main 9/9; Vercel `dpl_28TBD9mVdnZ97wwppm3SkWoM3bcg` READY / `fra1` with all three production domains mapping to the matching SHA. Vercel production-domain auto-assignment was subsequently disabled to require an explicit reviewed promotion for future releases. [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains OPEN until this preventive setting and the read-only monitor are validated on a later staged release. Below are dated M0/M1 operational observations, not fresh Supabase counts.
+**Current 2026-11-09 production baseline:** M2 [#182](https://github.com/StanleyLl0yd/FootballForecast/issues/182) ACCEPTED 8/8 for bounded retrospective research only; M3 and production forecasts not authorized. Protected `main=56e85202456a71777be875def3512b98b6a15ab5` passed post-merge exact-main 9/9; Vercel `dpl_28TBD9mVdnZ97wwppm3SkWoM3bcg` READY / `fra1` with all three production domains mapping to the matching SHA. Vercel production-domain auto-assignment was subsequently disabled to require an explicit reviewed promotion for future releases. [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) was subsequently verified in a controlled late-old production redeploy test on 2026-11-10. See [bounded acceptance evidence](RELEASE_INTEGRITY_ACCEPTANCE_2026-11-10.md); historic observations below remain dated. Below are dated M0/M1 operational observations, not fresh Supabase counts.
 
 ## Verified infrastructure
 
@@ -67,8 +67,13 @@ workflow's failed runs/notification settings. Investigate any failure with the
 Vercel deployment API, verifying alias deployment IDs, Git SHA and `fra1` before
 a separately reviewed manual promotion. Do not promote a build just because its
 self-reported health metadata matches; verify independent Vercel metadata and
-protected exact-main checks first. Issue #266 stays open until live observability
-and a prevention policy are accepted. This neither closes M2 nor authorizes M3.
+protected exact-main checks first. The controlled 2026-11-10 [late-old deployment regression](RELEASE_INTEGRITY_ACCEPTANCE_2026-11-10.md)
+confirmed the two stable domains stayed current despite the new old-SHA READY build.
+The generated `git-main` alias did drift, was detected by authenticated alias reads,
+and required explicit alias reassignment. The original Git trigger remains unknown;
+the project does not have an atomic promotion compare-and-swap and scheduled monitoring
+is only read-only detection. #266 is closed as **bounded stable-domain protection acceptance**,
+not as a claim of complete immunity to privileged mistakes. This neither closes M2 nor authorizes M3.
 
 ### Production release control (Vercel Hobby; 2026-11-09)
 
@@ -107,6 +112,13 @@ guide](https://vercel.com/docs/deployments/promoting-a-deployment).
    [read-only workflow](../.github/workflows/production-release-integrity.yml).
    Missing HTTP evidence, system variables, failed monitor runs, or mismatched
    aliases are **unverified**, never a PASS; investigate before accepting.
+   **Special case confirmed 2026-11-10:** if both stable domains still map to the
+   independently verified current deployment but only the generated `git-main`
+   alias followed a stale build, `request_promote` can return HTTP **409** because
+   the correct deployment is already the project's current production deployment.
+   Do not retry promotion blindly. Use authenticated alias assignment of only
+   the generated branch alias back to the verified current deployment ID,
+   then independently re-read all three aliases.
 5. If release verification fails, keep issue #266 open, identify the current
    deployment from authenticated metadata, and use a deliberate Vercel rollback
    to a separately verified known-good deployment as needed. A rollback is not
@@ -116,10 +128,15 @@ The hourly monitor is **detection**, not automatic remediation, and GitHub
 scheduled runs may be delayed. The release setting prevents ordinary
 auto-promotion of staged builds, but it does not provide an atomic SHA check
 inside Vercel's promotion API, nor prevent a privileged operator or API client
-from explicitly promoting the wrong deployment. Avoid claims of proven
-end-to-end prevention until a real staged build and monitor run have been
-observed. No additional permanent Vercel token, paid tier or GitHub secret
-is required for this procedure.
+from explicitly promoting the wrong deployment. Live staged Git-build/explicit promotion tests and a real late old-SHA
+production-target `redeploy` regression were observed. The two stable domains
+remained on the audited main release, while the generated branch alias was
+briefly stale. Independent authenticated alias checks and manual branch-alias
+repair returned all three to exact main; see [acceptance record](RELEASE_INTEGRITY_ACCEPTANCE_2026-11-10.md).
+**Not guaranteed:** atomic GitHub/Vercel release promotion, protection against
+privileged promotion of an incorrect old SHA, strict cron punctuality, or
+attribution of the original late Git trigger. No additional permanent
+Vercel token, paid tier or GitHub secret is required for this procedure.
 
 
 ## Reproducible build and verification
