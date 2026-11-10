@@ -38,6 +38,18 @@ test('one secondary alias drifting is not masked by healthy primary',async()=>{
     /PRODUCTION DRIFT.*footballforecast-stanleylloyd/);
 });
 
+test('live regression: old redeploy can drift only generated git-main, and monitor must reject it',async()=>{
+  // 2026-11-10 provider test: two stable public aliases remained on NEW,
+  // but the generated branch alias auto-followed the late old-SHA READY build.
+  // Read-only monitor is intentionally stricter than stable-domain protection.
+  const aliases=Object.fromEntries(PRODUCTION_ORIGINS.map(s=>[s,NEW]));
+  aliases[PRODUCTION_ORIGINS[2]]=OLD;
+  await assert.rejects(
+    verifyProductionRelease({fetchImpl:mockFetch({aliases}),githubToken:''}),
+    /PRODUCTION DRIFT.*footballforecast-git-main/
+  );
+});
+
 test('pre-feature deployment or missing system env fails closed',async()=>{
   await assert.rejects(verifyProductionRelease({fetchImpl:mockFetch({omitSha:true}),githubToken:''}),
     /Missing or invalid releaseCommitSha/);
