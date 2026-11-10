@@ -26,12 +26,15 @@ import m3MinuteEvidence from '../../../../../../docs/M3_FIVE_CC0_UTC_MINUTE_HIST
 import m3SixRfsAnchors from '../../../../../../docs/M3_TWO_SEASON_SIX_RFS_ANCHORS_EVIDENCE.json';
 import {inspectM3SourceCrosschecks} from '@/lib/m3-source-crosschecks.mjs';
 import {inspectM3Topology} from '@/lib/m3-source-topology-evidence.mjs';
+import {inspectM3SourceRights} from '@/lib/m3-source-rights.mjs';
+import m3RightsEvidence from '../../../../../../docs/M3_A3_SOURCE_RIGHTS_READINESS_EVIDENCE.json';
 
 export const dynamic='force-dynamic';
 
 export default async function Page(){
   // Authorize before inspecting any further state; redirect is fail-closed.
   await requireOwner();
+  const m3Rights=inspectM3SourceRights(m3RightsEvidence);
   const m3References=m3PublicCc0Shape.developmentSeasonsObserved;
   const m3Archive=m3HistoricalArchive.databaseVerification;
   const m3Triage=m3PrivateReadOnlyEvidence.independentPublicAndPrivateStructuralCrosschecks;
@@ -94,6 +97,17 @@ export default async function Page(){
     </div>
     <section className="panel informative">
       <h2>M3 · Семилетний архив · проверка пригодности данных</h2>
+      <p className="source-lab-note">Лицензирование исторических данных:
+        {m3Rights.state==='recorded_unapproved'?
+          <> <strong>RIGHTS_UNVERIFIED</strong> для {m3Rights.seasons.length}/7 сезонов,
+            подтверждённых для обучения строк <strong>{m3Rights.eligibleRowsAttested}</strong>.
+            Условия OpenFoot разрешают внутреннее обучение на правомерно полученных данных,
+            но лицензии конкретного исходного RPL-потока не установлены.
+            RSSSF используется только как справочный источник, а не как готовый CC0-архив.</>:
+          <> <strong>Недействительное свидетельство</strong>: источник и права не подтверждены,
+            исследовательская подготовка заблокирована.</>}
+        {' '}Никаких приватных выборок, автоматического импорта или обучения.
+      </p>
       {m3EvidenceConsistent?<div>
         <p><strong>1 680</strong> приватных записей источника за 2018/19–2024/25,
           но <strong>0 независимо подтверждённых пригодных строк</strong> для нового обучения.
