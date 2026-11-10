@@ -4,13 +4,13 @@ Consumes exactly two season-specific public pages, not a multi-year feed.
 No network, database, filesystem, private IDs, model or holdout access here.
 Output is an in-memory public reference; public workflows print aggregates only.
 """
+import re
 from collections import Counter
 from dataclasses import dataclass
 from datetime import date
 from hashlib import sha256
 from html.parser import HTMLParser
 from json import dumps
-import re
 
 from football_forecast.data.contracts import DataError
 
