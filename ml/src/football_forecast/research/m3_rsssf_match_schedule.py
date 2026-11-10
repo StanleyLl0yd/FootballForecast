@@ -91,6 +91,7 @@ class PublicSourceAudit:
     source_sha256: str
     fixture_graph_sha256: str
     scoreline_histogram_sha256: str
+    scoreline_histogram: tuple[tuple[int, int, int], ...]
     fixtures: int
     clubs: int
     directed_pairs: int
@@ -197,6 +198,7 @@ def audit_rsssf_rpl(source: bytes, season: str) -> PublicSourceAudit:
         for x in sorted(fixtures,key=lambda x:(x.day,x.round,x.home,x.away))
     ]
     histogram=sorted(Counter((x.home_goals,x.away_goals) for x in fixtures).items())
+    bins=tuple((h,a,n) for (h,a),n in histogram)
     def checksum(value: object) -> str:
         return sha256(dumps(value,ensure_ascii=True,separators=(",",":")).encode()).hexdigest()
     return PublicSourceAudit(
@@ -204,6 +206,7 @@ def audit_rsssf_rpl(source: bytes, season: str) -> PublicSourceAudit:
         source_sha256=sha256(source).hexdigest(),
         fixture_graph_sha256=checksum(graph),
         scoreline_histogram_sha256=checksum(histogram),
+        scoreline_histogram=bins,
         fixtures=240,clubs=16,directed_pairs=240,rounds=30,
         home_goals=sum(x.home_goals for x in fixtures),
         away_goals=sum(x.away_goals for x in fixtures),
