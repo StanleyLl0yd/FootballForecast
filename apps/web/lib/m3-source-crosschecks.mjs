@@ -44,7 +44,37 @@ const blocked = () => Object.freeze({
 });
 
 export function inspectM3SourceCrosschecks(graph, clocks, anchors) {
-  if (!plain(graph) || !plain(clocks) || !plain(anchors) ||
+  if (!keys(graph,['schemaVersion','kind','observedOn','scope','sourceInventory',
+        'publicRosterSource','sourceFiles','method',
+        'public2023_24OneFixtureDirectionCorrection','seasons','graphTotals',
+        'gateStatus','limitations']) ||
+      !keys(clocks,['schemaVersion','kind','observedOn','scope','sourceInventory',
+        'sourceRows','aggregate','interpretation','limitations']) ||
+      !keys(anchors,['schemaVersion','kind','observedOn','scope',
+        'sourceOfficialCalendars','sourceRfsTechnicalRevision','calendarKind',
+        'events','crossEventIdEqualityAnonymous','administrativeResultWarning',
+        'summary','limitations']) ||
+      !keys(graph.graphTotals,['publicFixtureRows','privateProviderFinishedRows',
+        'initialReciprocalSeedSingletons','initialAmbiguousPublicFixtures',
+        'postConsistencyResolvedPublicFixtures','postConsistencyUnresolvedPublicFixtures',
+        'postConsistencyUnresolvedPrivateFixtures','postLinkScoreDisagreements',
+        'distinctPublicAliasesObserved','internalPublicAliasesHavingMultipleProviderIds',
+        'internalProviderIdsHavingMultiplePublicAliases','independentlyCertifiedEligiblePrivateRows']) ||
+      !keys(graph.gateStatus,['m3AcceptedCriteria','m3ExitCriteria','m3A3Accepted',
+        'realM3TrainingAuthorized','holdout2025_26Read','productionForecastChanged']) ||
+      !keys(clocks.aggregate,['publicFixtureRows','publicClockedRows',
+        'publicWithoutClock','privateProviderFinishedRows','exactUtcMinuteOverlapCount',
+        'publicClockedRowsNotOverlapping','privateRowsNotOverlapping',
+        'minuteHistogramL1','independentlyCertifiedFixtureKickoffs']) ||
+      !keys(anchors.summary,['events','season2021_22Events','season2022_23Events',
+        'uniqueDayMaskDirectionCandidates','exactUtcMinuteCandidates',
+        'officialScoreAgreements','publicRevisedOfficialResultsAmongEvents',
+        'independentlyCertifiedPrivatePlayedRows']) ||
+      !keys(anchors.administrativeResultWarning,['eventCode','date','onFieldHomeGoals',
+        'onFieldAwayGoals','laterOfficialHomeGoals','laterOfficialAwayGoals',
+        'independentSource','providerArchiveMatchesLaterOfficialResult',
+        'privateProviderOnFieldGoalsVerified','privateRowCertifiedPlayedScore']) ||
+      !plain(graph) || !plain(clocks) || !plain(anchors) ||
       graph.kind !== 'M3_FIVE_SEASON_SCORE_FREE_ANONYMOUS_FIXTURE_CORRESPONDENCE' ||
       clocks.kind !== 'M3_FIVE_CC0_PUBLIC_RETROSPECTIVE_UTC_MINUTE_HISTOGRAM' ||
       anchors.kind !== 'M3_TWO_MISSING_CC0_SEASONS_SIX_OFFICIAL_RFS_AGGREGATE_ANCHORS' ||
@@ -96,7 +126,21 @@ export function inspectM3SourceCrosschecks(graph, clocks, anchors) {
   for (let i=0;i<YEARS.length;i++) {
     const season=YEARS[i], gr=graph.seasons[i], src=graph.sourceFiles[i],
       cr=clocks.sourceRows[i];
-    if (!plain(gr) || !plain(src) || !plain(cr) ||
+    if (!keys(gr,['season','publicFixtures','privateProviderFinishedFixtures',
+        'unmatchedByDateMaskDirection','reciprocalSeedSingletons','initialAmbiguous',
+        'postConsistencyResolved','postConsistencyUnresolvedPublic',
+        'postConsistencyUnresolvedPrivate','postLinkScoreDisagreements',
+        'certifiedPlayedGoalPrivateRows']) ||
+        !keys(src,['season','repository','path','blobSha']) ||
+        !keys(cr,['season','publisherRepo','pinnedPublicBlob','format',
+          'publicFixtureRows','publicClockedRows','publicWithoutClock',
+          'publicDistinctUtcMinuteBins','privateProviderFinishedRows',
+          'exactUtcMinuteOverlapCount','utcMinuteHistogramL1',
+          'differingUtcMinuteBins','conversionAssumption',
+          'originalSourceTimeZoneIndependentlyVerified',
+          'sourceFirstPublicationVerified','actualOnFieldKickoffVerified',
+          'privateFixtureIdentityVerified']) ||
+        !plain(gr) || !plain(src) || !plain(cr) ||
         gr.season !== season || src.season !== season || cr.season !== season ||
         src.blobSha !== cr.pinnedPublicBlob || src.repository !== cr.publisherRepo ||
         gr.publicFixtures !== 240 || gr.privateProviderFinishedFixtures !== 240 ||
@@ -134,7 +178,14 @@ export function inspectM3SourceCrosschecks(graph, clocks, anchors) {
   const years=new Map([['2021/22',0],['2022/23',0]]);
   let revised=0;
   for (const event of anchors.events) {
-    if (!plain(event) || !years.has(event.season) ||
+    if (!keys(event,['eventCode','season','publicHomeAlias','publicAwayAlias',
+          'scheduledMoscowLocal','scheduledUtcFromMoscow','homeMask','awayMask',
+          'retrospectiveOfficialHomeGoals','retrospectiveOfficialAwayGoals',
+          'sameUtcDayPrivateMatches','maskDirectionDayCandidates',
+          'exactMinuteCandidates','exactMinuteOfficialScoreAgreements',
+          'officialResultRevisedAfterPlay','preMatchRfsNoticeUrl',
+          'rfsPostMatchRecapUrl']) ||
+        !plain(event) || !years.has(event.season) ||
         event.maskDirectionDayCandidates !== 1 ||
         event.exactMinuteCandidates !== 1 ||
         event.exactMinuteOfficialScoreAgreements !== 1 ||
