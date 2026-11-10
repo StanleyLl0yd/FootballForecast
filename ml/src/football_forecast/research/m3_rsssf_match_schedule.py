@@ -152,6 +152,11 @@ def parse_rsssf_rpl(source: bytes, season: str) -> tuple[PublicFixture, ...]:
                 _invalid("unexpected league club alias")
             if current_day is None:
                 _invalid("match lacks retrospective date")
+            if round_number == 1 and (current_day.year != years or current_day.month != 7):
+                _invalid("first round must be in July of season start year")
+            if round_number == 30 and (current_day.year != years + 1
+                                       or current_day.month not in (5, 6)):
+                _invalid("last round must be in May or June of final year")
             gh,ga = int(hg),int(ag)
             if home == away or gh > 20 or ga > 20:
                 _invalid("impossible fixture identity or score")
