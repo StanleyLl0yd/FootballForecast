@@ -1,6 +1,6 @@
 """No-live-input guards for the RFS official score-shape receipt."""
-from copy import deepcopy
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
