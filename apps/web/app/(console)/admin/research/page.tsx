@@ -21,6 +21,10 @@ import m3PrivateReadOnlyEvidence from '../../../../../../docs/M3_PRIVATE_HISTORY
 import m3PublicRosters from '../../../../../../docs/M3_PUBLIC_SEVEN_SEASON_CLUB_ROSTERS_EVIDENCE.json';
 import m3SignatureEvidence from '../../../../../../docs/M3_SEVEN_SEASON_MEMBERSHIP_SIGNATURE_EVIDENCE.json';
 import m3CalendarEvidence from '../../../../../../docs/M3_PRIVATE_CALENDAR_MASK_TRIAGE_EVIDENCE.json';
+import m3GraphEvidence from '../../../../../../docs/M3_SCORE_FREE_FIXTURE_GRAPH_EVIDENCE.json';
+import m3MinuteEvidence from '../../../../../../docs/M3_FIVE_CC0_UTC_MINUTE_HISTOGRAM_EVIDENCE.json';
+import m3SixRfsAnchors from '../../../../../../docs/M3_TWO_SEASON_SIX_RFS_ANCHORS_EVIDENCE.json';
+import {inspectM3SourceCrosschecks} from '@/lib/m3-source-crosschecks.mjs';
 import {inspectM3Topology} from '@/lib/m3-source-topology-evidence.mjs';
 
 export const dynamic='force-dynamic';
@@ -34,6 +38,8 @@ export default async function Page(){
   const m3TriageLimits=m3PrivateReadOnlyEvidence.limitations;
   const m3Topology=inspectM3Topology(m3PublicRosters,m3SignatureEvidence,m3CalendarEvidence,
     m3PrivateReadOnlyEvidence);
+  const m3Crosschecks=inspectM3SourceCrosschecks(m3GraphEvidence,m3MinuteEvidence,
+    m3SixRfsAnchors);
   const m3EvidenceConsistent=m3Topology.state==='corroborated' &&
     m3Archive.matchCount===1680 &&
     m3Archive.snapshotCount===7 && m3Archive.sealedHoldoutRead===false &&
@@ -110,6 +116,43 @@ export default async function Page(){
             </tr>;
           })}</tbody>
         </table></div>
+        {m3Crosschecks.state==='corroborated'?<div>
+          <h3>M3-A3 · Новые независимые сопоставления источников</h3>
+          <div className="stat-grid">
+            <div className="stat"><span>Структурные соответствия матчей · пять сезонов</span>
+              <strong>{m3Crosschecks.structurallyLinked}/1200</strong>
+              <small>Дата, направление и анонимные профили; не подтверждение сыгранных голов.</small></div>
+            <div className="stat"><span>Совпадения UTC-минут · только распределения</span>
+              <strong>{m3Crosschecks.anonymousMinuteOverlaps}/{m3Crosschecks.publicClocked}</strong>
+              <small>Совпадения минутных корзин, не установленные пары отдельных матчей.</small></div>
+            <div className="stat"><span>Отсутствующий час в открытом источнике</span>
+              <strong>{m3Crosschecks.missingPublicClocks}</strong>
+              <small>Не заменён выдуманным временем 00:00.</small></div>
+            <div className="stat"><span>Примеры РФС · два сезона без CC0</span>
+              <strong>{m3Crosschecks.officialSpotAnchors}/6</strong>
+              <small>Проверки ретроспективных минут и итоговых результатов, не 480 матчей.</small></div>
+            <div className="stat"><span>Допуск приватных записей к обучению</span>
+              <strong>{m3Crosschecks.independentlyEligiblePrivateRows}</strong>
+              <small>M3-A3 остаётся открытым. Недостаточно подтверждений, не отсутствие матчей.</small></div>
+          </div>
+          <p className="source-lab-warning">Совпадение источников не удостоверяет
+            оригинальное историческое время публикации и начала матча, права
+            приватного провайдера, юридическую идентичность клубов или голы на поле.
+            Из шести проверочных матчей один имеет поздний технический результат
+            0:3 вместо сыгранных 1:1. Данные 2025/26 не открывались; никакая
+            реальная модель не переобучалась.</p>
+          <p><a className="sources-method"
+            href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M3_SCORE_FREE_FIXTURE_GRAPH_REPRODUCTION_2026-11-10.md"
+            target="_blank" rel="noopener noreferrer">Граф соответствий ↗</a>
+            {' '}<a className="sources-method"
+            href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M3_FIVE_CC0_UTC_MINUTE_HISTOGRAM_REPRODUCTION_2026-11-10.md"
+            target="_blank" rel="noopener noreferrer">Временные корзины ↗</a>
+            {' '}<a className="sources-method"
+            href="https://github.com/StanleyLl0yd/FootballForecast/blob/main/docs/M3_TWO_SEASON_SIX_RFS_ANCHORS_REPRODUCTION_2026-11-10.md"
+            target="_blank" rel="noopener noreferrer">Шесть сверок РФС ↗</a></p>
+        </div>:<p role="alert" className="source-lab-error">Новые агрегированные
+          подтверждения не прошли проверку целостности. Нельзя считать
+          исторические матчи или UTC-время подтверждёнными.</p>}
         <h3>Проверка с живой базой · кандидаты на ручное подтверждение</h3>
         <div className="stat-grid">
           <div className="stat"><span>Технические результаты · совпадение даты и счёта</span>
