@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "kind": "M3_SIX_FIRST_PARTY_NOTICE_AND_ANONYMOUS_SCORE_SHAPE",
+  "observedOn": "2026-11-10",
+  "scope": "RPL_2023_24_DEV_ONLY_ANONYMOUS_SQL_SELECT",
+  "previousAnchorReceipt": "M3_MASK127_OFFICIAL_FIXTURE_ANCHOR_EVIDENCE.json",
+  "retrospectiveOfficialCalendarUrl": "https://www.rfs.ru/tournament/1434/calendar?round_id=18568",
+  "originalRfsNoticeTimestampIntegrity": "NOT_INDEPENDENTLY_AUTHENTICATED",
+  "scoreSourceNature": "RFS_RETROSPECTIVE_OFFICIAL_RESULT_NOT_PROOF_OF_PLAYED_GOALS",
+  "events": [
+    {
+      "eventCode": "spartak_sochi_sep16",
+      "displayedNoticeDate": "2023-09-14",
+      "preMatchNoticeUrl": "https://www.rfs.ru/news/218948",
+      "scoreSourceUrl": "https://www.rfs.ru/tournament/1434/calendar?round_id=18568",
+      "homeOfficialGoals": 1,
+      "awayOfficialGoals": 0,
+      "privateExactMinuteAndMaskCandidates": 1,
+      "privateScoreShapeAgreementCount": 1
+    },
+    {
+      "eventCode": "sochi_spartak_apr13",
+      "displayedNoticeDate": "2024-04-12",
+      "preMatchNoticeUrl": "https://www.rfs.ru/news/220209",
+      "scoreSourceUrl": "https://www.rfs.ru/tournament/1434/calendar?round_id=18568",
+      "homeOfficialGoals": 1,
+      "awayOfficialGoals": 0,
+      "privateExactMinuteAndMaskCandidates": 1,
+      "privateScoreShapeAgreementCount": 1
+    },
+    {
+      "eventCode": "sochi_zenit_oct07",
+      "displayedNoticeDate": "2023-10-06",
+      "preMatchNoticeUrl": "https://www.rfs.ru/news/219089",
+      "scoreSourceUrl": "https://www.rfs.ru/tournament/1434/calendar?round_id=18568",
+      "homeOfficialGoals": 0,
+      "awayOfficialGoals": 2,
+      "privateExactMinuteAndMaskCandidates": 1,
+      "privateScoreShapeAgreementCount": 1
+    },
+    {
+      "eventCode": "rubin_zenit_sep17",
+      "displayedNoticeDate": "2023-09-14",
+      "preMatchNoticeUrl": "https://www.rfs.ru/news/218948",
+      "scoreSourceUrl": "https://www.rfs.ru/tournament/1434/calendar?round_id=18568",
+      "homeOfficialGoals": 0,
+      "awayOfficialGoals": 3,
+      "privateExactMinuteAndMaskCandidates": 1,
+      "privateScoreShapeAgreementCount": 1
+    },
+    {
+      "eventCode": "sochi_dinamo_nov06",
+      "displayedNoticeDate": "2023-11-03",
+      "preMatchNoticeUrl": "https://www.rfs.ru/news/219310",
+      "scoreSourceUrl": "https://www.rfs.ru/tournament/1434/calendar?round_id=18568",
+      "homeOfficialGoals": 3,
+      "awayOfficialGoals": 3,
+      "privateExactMinuteAndMaskCandidates": 1,
+      "privateScoreShapeAgreementCount": 1
+    },
+    {
+      "eventCode": "dinamo_pari_sep15",
+      "displayedNoticeDate": "2023-09-14",
+      "preMatchNoticeUrl": "https://www.rfs.ru/news/218948",
+      "scoreSourceUrl": "https://www.rfs.ru/tournament/1434/calendar?round_id=18568",
+      "homeOfficialGoals": 1,
+      "awayOfficialGoals": 1,
+      "privateExactMinuteAndMaskCandidates": 1,
+      "privateScoreShapeAgreementCount": 1
+    }
+  ],
+  "aggregatePrivateSelect": {
+    "expectedEvents": 6,
+    "anonymousExactMinuteMatches": 6,
+    "officialScoreAgreements": 6,
+    "officialScoreDisagreements": 0,
+    "nonuniqueEventCount": 0,
+    "eventsFound": 6,
+    "missingEvents": 0,
+    "seasonSnapshotCount": 1,
+    "certifiedEligiblePrivateRows": 0
+  },
+  "limitations": {
+    "publicOfficialScoresOnlyInEvidence": true,
+    "privateGoalColumnsComparedInternally": true,
+    "privateScoreValuesExported": false,
+    "privateIdsExported": false,
+    "privateMatchRowsExported": false,
+    "privateClubIdToOfficialClubNameCertifiable": false,
+    "playedGoalStatusIndependentlyVerified": false,
+    "actualHistoricalKickoffUtcAuthenticated": false,
+    "originalNoticeFirstServingUtcAuthenticated": false,
+    "sourceTrainingRightsVerified": false,
+    "realM3TrainingAuthorized": false,
+    "holdout2025_26Read": false,
+    "productionModelChanged": false,
+    "publicForecastsWritten": false
+  }
+}
