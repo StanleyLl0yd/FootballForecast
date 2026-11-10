@@ -28,6 +28,8 @@ import {inspectM3SourceCrosschecks} from '@/lib/m3-source-crosschecks.mjs';
 import {inspectM3Topology} from '@/lib/m3-source-topology-evidence.mjs';
 import {inspectM3SourceRights} from '@/lib/m3-source-rights.mjs';
 import m3RightsEvidence from '../../../../../../docs/M3_A3_SOURCE_RIGHTS_READINESS_EVIDENCE.json';
+import {inspectM3MissingCc0PublicTotals} from '@/lib/m3-public-missing-seasons.mjs';
+import m3MissingCc0Evidence from '../../../../../../docs/M3_TWO_MISSING_CC0_SEASONS_PUBLIC_TOTALS_EVIDENCE.json';
 
 export const dynamic='force-dynamic';
 
@@ -35,6 +37,7 @@ export default async function Page(){
   // Authorize before inspecting any further state; redirect is fail-closed.
   await requireOwner();
   const m3Rights=inspectM3SourceRights(m3RightsEvidence);
+  const m3MissingCc0=inspectM3MissingCc0PublicTotals(m3MissingCc0Evidence);
   const m3References=m3PublicCc0Shape.developmentSeasonsObserved;
   const m3Archive=m3HistoricalArchive.databaseVerification;
   const m3Triage=m3PrivateReadOnlyEvidence.independentPublicAndPrivateStructuralCrosschecks;
@@ -108,6 +111,20 @@ export default async function Page(){
             исследовательская подготовка заблокирована.</>}
         {' '}Никаких приватных выборок, автоматического импорта или обучения.
       </p>
+      <div className="source-lab-note">
+        <strong>Проверка двух отсутствующих сезонов CC0:</strong>{' '}
+        {m3MissingCc0.state==='public_aggregate_concordance_unapproved'?
+          <>совпадение общих сумм голов {m3MissingCc0.publicTotalsAgreementCount}/2
+            (2021/22: 639, 2022/23: 730) между ранее сохранённым
+            Footbolno и ретроспективными таблицами RSSSF.
+            Проверена только публичная сумма; <strong>отдельных матчей не проверено</strong>.
+            Результат 2022/23 включает административную коррекцию 1:1 → 0:3.
+            Footbolno публикует по CC BY 4.0 с <a
+              href="https://footbolno.ru/otkrytye-dannye" target="_blank"
+              rel="noopener noreferrer">обязательной атрибуцией</a>.
+            Это не разрешение на обучение из приватного OpenFoot.</>:
+          <>свидетельство недействительно: сопоставление публичных сумм отклонено.</>}
+      </div>
       {m3EvidenceConsistent?<div>
         <p><strong>1 680</strong> приватных записей источника за 2018/19–2024/25,
           но <strong>0 независимо подтверждённых пригодных строк</strong> для нового обучения.
