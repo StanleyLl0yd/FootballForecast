@@ -71,6 +71,50 @@ rights status with positive evidence will require an independent review,
 revised code/contract and protected PR; changing JSON alone cannot authorize
 a private DB read, model training or release.
 
+## Missing two checked-CC0 seasons: publisher-licensed public total-goal crosscheck (2026-11-10)
+
+The two seasons absent from our *checked pinned OpenFootball CC0 paths* are
+**not** missing from public archives. The earlier publisher-documented
+[Footbolno aggregate receipt](M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json)
+already pins a **2026-10-20** 542,363-byte `235-matches.csv` response
+(SHA-256 `dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1191d19513c214`).
+Without repeating its collection or reading any private table, we compared
+only these *already committed source-only aggregates* with manually summed
+**16-club final-table goals-for columns** in the two retrospective RSSSF pages:
+
+| Season | Footbolno finished / clubs / directed pairs | Footbolno home + away source goals | RSSSF final-table total GF | Difference |
+| --- | --- | --- | --- | --- |
+| 2021/22 | 240 / 16 / 240 | 359 + 280 = **639** | [639](https://www.rsssf.org/tablesr/rus2022.html) | 0 |
+| 2022/23 | 240 / 16 / 240 | 411 + 319 = **730** | [730](https://www.rsssf.org/tablesr/rus2023.html) | 0 |
+
+These are **two annual numerical marginal equalities, not 480 authenticated
+matches**, not club/fixture equivalences and not proof of source independence
+(shared original data is possible). Neither an old Footbolno `finished`
+label nor RSSSF's final table certifies on-field rather than administrative
+goal versions: **Pari NN–Torpedo 2023-03-19 was played 1:1 and later officially
+awarded 0:3**. The published `season` for Footbolno is determined by date;
+no immutable original match-report first-serving timestamp is available.
+
+[Footbolno publishes its datasets under CC BY 4.0](https://footbolno.ru/otkrytye-dannye),
+requiring attribution and hyperlink. That is the **publisher's own declaration**
+for its open datasets, not independent rights clearance of all upstream
+matches and **not a licence for the separate private OpenFoot source**.
+The pinned 2026-10-20 research receipt itself explicitly recorded
+`providerRightsApproved=false`. RSSSF remains a copyright-protected
+*manual retrospective reference*, not a new CC0 dataset or imported training
+corpus. No raw RSSSF or Footbolno fixture source was bulk-fetched here.
+
+[Closed-schema JSON evidence](M3_TWO_MISSING_CC0_SEASONS_PUBLIC_TOTALS_EVIDENCE.json)
+and [no-I/O web inspector](../apps/web/lib/m3-public-missing-seasons.mjs)
+expose only two source-only totals, original evidence provenance and
+**fail-closed non-training/non-identity flags** in authenticated owner
+research. New adversarial tests are executed by protected CI.
+Original source/provider data, RLS, escrow and holdout unchanged.
+**A3 OPEN / M3 2/8 / zero attested eligible private rows.** The next blocker
+is still actual per-fixture legal identity, played score, source rights and
+historically authentic UTC timeline, followed by separately owner-approved
+restricted SELECT-only aggregate correlation.
+
 ## Required work before A3 can be checked off
 
 1. Independently pin and evaluate *full* 2018/19–2024/25 source/reference bytes and actual reuse scope without touching the consumed 2025/26 holdout. No bulk import from a public reference merely because its season table is online.
