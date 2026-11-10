@@ -1,5 +1,4 @@
 """Synthetic RSSSF parser tests: no network and no holdout access."""
-from dataclasses import replace
 from datetime import date
 
 import pytest
