@@ -57,7 +57,7 @@ SELECT season,sum(public_n)::int public_explicit_clock_rows,
 FROM joined GROUP BY season ORDER BY season;
 ~~~
 
-Two real SELECT-only operations were performed: the first checked 2018/19, the second 2019/20 and 2020/21 together, the third 2023/24 and 2024/25 together. Each returned only a season-aggregate result. No private bucket values or labels were exported. The original public text and private snapshots were not modified; synthetic tests check the pure parser and denial of invalid dates, unknown season, fabricated clocks, leaked identifiers and claim of authenticated original time.
+Three real SELECT-only operations were performed: the first checked 2018/19, the second 2019/20 and 2020/21 together, the third 2023/24 and 2024/25 together. Each returned only a season-aggregate result. No private bucket values or labels were exported. The original public text and private snapshots were not modified; synthetic tests check the pure parser and denial of invalid dates, unknown season, fabricated clocks, leaked identifiers and claim of authenticated original time.
 
 The JSON validator checks a **public-safe claimed evidence receipt**, not a cryptographic proof of SQL execution or of historical first-serving time. Rows without clocks cannot become exact-minute matches by inventing time values.
 
