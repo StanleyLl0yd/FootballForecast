@@ -33,6 +33,12 @@ test('source mismatch, receipt forgery and public-clock fabrication fail closed'
     a=>{a[1].sourceRows[4].sourceFirstPublicationVerified=true;},
     a=>{a[2].summary.exactUtcMinuteCandidates=7;},
     a=>{a[2].events[5].exactMinuteOfficialScoreAgreements=0;},
+    a=>{a[2].events[0].scheduledUtcFromMoscow='2021-07-24T15:30:00Z';},
+    a=>{a[2].events[1].retrospectiveOfficialHomeGoals=3;},
+    a=>{a[0].seasons[0].reciprocalSeedSingletons=208;
+      a[0].seasons[0].initialAmbiguous=32;
+      a[0].seasons[1].reciprocalSeedSingletons=220;
+      a[0].seasons[1].initialAmbiguous=20;},
     a=>{a[2].administrativeResultWarning.privateRowCertifiedPlayedScore=true;}
   ];
   for(const change of cases){
