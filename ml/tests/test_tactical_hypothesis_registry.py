@@ -6,6 +6,7 @@ REGISTRY = Path(__file__).resolve().parents[2] / "docs" / (
     "TACTICAL_HYPOTHESIS_REGISTRY_2026-11-10.json"
 )
 
+
 def test_registry_hypotheses_have_provenance_and_fail_closed_status():
     data = json.loads(REGISTRY.read_text(encoding="utf-8"))
     assert data["research_status"] == "RESEARCH_ONLY_NOT_MODEL_ELIGIBLE"
