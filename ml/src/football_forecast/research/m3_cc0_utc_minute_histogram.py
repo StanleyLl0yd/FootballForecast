@@ -131,15 +131,21 @@ def public_utc_minute_histogram(raw: str, fmt: str, season: str) -> PublicClockH
         _deny("unsupported public format")
     if len(dates_and_times) != 240:
         _deny("season has missing or excess fixtures")
+    year = int(season[:4])
+    start = datetime(year, 7, 1).date()
+    stop = (datetime(2020, 8, 1).date() if season == "2019/20"
+            else datetime(year + 1, 7, 1).date())
     histogram = Counter()
     for day, local_clock in dates_and_times:
+        if type(day) is not str:
+            _deny("missing fixture date")
+        try:
+            event_date = datetime.strptime(day, "%Y-%m-%d").date()
+        except ValueError:
+            _deny("invalid fixture date")
+        if not start <= event_date < stop:
+            _deny("public fixture date outside source development season")
         if local_clock is None:
-            if type(day) is not str:
-                _deny("missing public date even where clock absent")
-            try:
-                datetime.strptime(day, "%Y-%m-%d")
-            except ValueError:
-                _deny("invalid public date-only fixture")
             continue
         histogram[_instant(day, local_clock)] += 1
     available = sum(histogram.values())
