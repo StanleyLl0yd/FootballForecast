@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "kind": "M3_A3_TWO_MISSING_CC0_SEASONS_PUBLIC_GOAL_TOTALS",
+  "observedOn": "2026-11-10",
+  "scope": "EXISTING_PINNED_PUBLIC_AGGREGATES_ONLY_NO_FETCH_NO_PRIVATE_ACCESS",
+  "sourceFootbolno": {
+    "sourceUrl": "https://footbolno.ru/data/league/235-matches.csv",
+    "publishedLicenseUrl": "https://footbolno.ru/otkrytye-dannye",
+    "publisherDeclaredLicense": "CC-BY-4.0-ATTRIBUTION",
+    "snapshotEvidencePath": "docs/M0_FOOTBOLNO_RPL_AGGREGATE_EVIDENCE.json",
+    "originalSnapshotReviewedAtUtc": "2026-10-20T08:08:30Z",
+    "originalSourceSha256": "dab9b30d69d2c2f7fe2fcadde2aff636552362c08ed7eaa9fe1191d19513c214",
+    "originalSourceBytes": 542363,
+    "privateOpenFootRightsInferredFromFootbolno": false,
+    "originalOnFieldResultsCertified": false,
+    "historicalFirstPublicationAuthenticated": false
+  },
+  "seasons": [
+    {
+      "season": "2021/22",
+      "footbolnoSourceSeason": "2021/2022",
+      "rsssfFinalTableUrl": "https://www.rsssf.org/tablesr/rus2022.html",
+      "footbolnoFinishedProviderRows": 240,
+      "footbolnoClubs": 16,
+      "footbolnoUniqueDirectedPairs": 240,
+      "footbolnoHomeGoals": 359,
+      "footbolnoAwayGoals": 280,
+      "rsssfOfficialFinalTableGoalsForSum": 639,
+      "knownAdministrativeResultRevision": false,
+      "independentlyCertifiedPrivateMatches": 0
+    },
+    {
+      "season": "2022/23",
+      "footbolnoSourceSeason": "2022/2023",
+      "rsssfFinalTableUrl": "https://www.rsssf.org/tablesr/rus2023.html",
+      "footbolnoFinishedProviderRows": 240,
+      "footbolnoClubs": 16,
+      "footbolnoUniqueDirectedPairs": 240,
+      "footbolnoHomeGoals": 411,
+      "footbolnoAwayGoals": 319,
+      "rsssfOfficialFinalTableGoalsForSum": 730,
+      "knownAdministrativeResultRevision": true,
+      "independentlyCertifiedPrivateMatches": 0
+    }
+  ],
+  "limits": {
+    "noPublicRawFixtureRowsRead": true,
+    "noSupabaseDataAccess": true,
+    "totalGoalsEqualityProvesIndividualFixtures": false,
+    "equalGoalsProveUpstreamSourceIndependence": false,
+    "publishedLicenseEstablishesPrivateOpenFootRights": false,
+    "technicalOrRevisedOfficialScoresProvenPlayed": false,
+    "historicalAsOfVerified": false,
+    "privateTeamIdentityIndependentlyCertified": false,
+    "modelTrainingAuthorized": false,
+    "heldout2025_26Read": false
+  }
+}
