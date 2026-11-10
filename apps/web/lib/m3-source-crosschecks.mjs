@@ -4,6 +4,27 @@
  * approval, individual fixture matching or real model eligibility.
  */
 const YEARS = Object.freeze(['2018/19','2019/20','2020/21','2023/24','2024/25']);
+// Pinned, public-safe receipt values, not a claim of independent real-world truth.
+// [public seeds, ambiguous fixtures, explicit clocks, distinct minutes,
+//  histogram overlaps, L1, differing bins]
+const SEASON_RECEIPTS = Object.freeze([
+  [209,31,240,229,221,38,38],
+  [219,21,238,212,221,36,36],
+  [202,38,238,197,237,4,4],
+  [217,23,221,221,221,19,13],
+  [216,24,216,216,216,24,18]
+]);
+// Six first-party retrospective spot anchors; dates are NOT verified as-of timestamps.
+// [event code, season, UTC under Moscow interpretation, home mask, away mask,
+//  retrospective goals H/A, number of same-day provider matches, revised official result]
+const RFS_ANCHORS = Object.freeze([
+  ['khimki_zenit_open_2021','2021/22','2021-07-24T14:30:00Z',92,127,1,3,3,false],
+  ['krylia_nizhny_2021','2021/22','2021-10-17T13:30:00Z',123,120,2,0,4,false],
+  ['sochi_krylia_2022','2021/22','2022-03-20T13:30:00Z',62,123,2,3,4,false],
+  ['torpedo_sochi_open_2022','2022/23','2022-07-17T12:00:00Z',16,62,1,3,4,false],
+  ['torpedo_zenit_2022','2022/23','2022-11-12T13:30:00Z',16,127,0,2,4,false],
+  ['pari_torpedo_revised_2023','2022/23','2023-03-19T13:30:00Z',120,16,0,3,4,true]
+]);
 const GRAPH_DENIALS = [
   'privateIdsExported','privateRowsExported','privateSourceMatchIdsExported',
   'privateIndividualScoreValuesExported','publicMatchRecordsCommitted',
@@ -163,6 +184,15 @@ export function inspectM3SourceCrosschecks(graph, clocks, anchors) {
         cr.utcMinuteHistogramL1 !==
           cr.publicClockedRows + cr.privateProviderFinishedRows -
           2*cr.exactUtcMinuteOverlapCount) return blocked();
+    const [expectedSeeds,expectedAmbiguous,expectedClocked,expectedBins,
+      expectedOverlap,expectedL1,expectedChangedBins]=SEASON_RECEIPTS[i];
+    if (gr.reciprocalSeedSingletons!==expectedSeeds ||
+        gr.initialAmbiguous!==expectedAmbiguous ||
+        cr.publicClockedRows!==expectedClocked ||
+        cr.publicDistinctUtcMinuteBins!==expectedBins ||
+        cr.exactUtcMinuteOverlapCount!==expectedOverlap ||
+        cr.utcMinuteHistogramL1!==expectedL1 ||
+        cr.differingUtcMinuteBins!==expectedChangedBins) return blocked();
     seeds+=gr.reciprocalSeedSingletons;
     ambiguous+=gr.initialAmbiguous;
     linked+=gr.postConsistencyResolved;
@@ -177,7 +207,9 @@ export function inspectM3SourceCrosschecks(graph, clocks, anchors) {
 
   const years=new Map([['2021/22',0],['2022/23',0]]);
   let revised=0;
-  for (const event of anchors.events) {
+  for (const [index,event] of anchors.events.entries()) {
+    const [code,season,utc,home,away,goalsH,goalsA,dayMatches,wasRevised]=
+      RFS_ANCHORS[index];
     if (!keys(event,['eventCode','season','publicHomeAlias','publicAwayAlias',
           'scheduledMoscowLocal','scheduledUtcFromMoscow','homeMask','awayMask',
           'retrospectiveOfficialHomeGoals','retrospectiveOfficialAwayGoals',
@@ -186,6 +218,13 @@ export function inspectM3SourceCrosschecks(graph, clocks, anchors) {
           'officialResultRevisedAfterPlay','preMatchRfsNoticeUrl',
           'rfsPostMatchRecapUrl']) ||
         !plain(event) || !years.has(event.season) ||
+        event.eventCode!==code || event.season!==season ||
+        event.scheduledUtcFromMoscow!==utc ||
+        event.homeMask!==home || event.awayMask!==away ||
+        event.retrospectiveOfficialHomeGoals!==goalsH ||
+        event.retrospectiveOfficialAwayGoals!==goalsA ||
+        event.sameUtcDayPrivateMatches!==dayMatches ||
+        event.officialResultRevisedAfterPlay!==wasRevised ||
         event.maskDirectionDayCandidates !== 1 ||
         event.exactMinuteCandidates !== 1 ||
         event.exactMinuteOfficialScoreAgreements !== 1 ||
