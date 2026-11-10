@@ -88,19 +88,36 @@ WITH seasons(season,season_order) AS (
  FROM pmf GROUP BY validation_season,train_n,source_match_id,label,unseen
 ), p AS (
  SELECT *,wh/total ph,wd/total pd,wa/total pa FROM outcome
+), baseline AS (
+ SELECT f.season AS validation_season,
+ (count(*) FILTER(WHERE t.label=0)+1)::float8/(count(*)+3) bh,
+ (count(*) FILTER(WHERE t.label=1)+1)::float8/(count(*)+3) bd,
+ (count(*) FILTER(WHERE t.label=2)+1)::float8/(count(*)+3) ba
+ FROM fold f JOIN training t ON t.fold=f.season_order
+ GROUP BY f.season
 ), metrics AS (
- SELECT validation_season,train_n,unseen,
+ SELECT p.validation_season,p.train_n,p.unseen,
  -ln(CASE label WHEN 0 THEN ph WHEN 1 THEN pd ELSE pa END) ll,
  power(ph-(label=0)::int,2) + power(pd-(label=1)::int,2)
    + power(pa-(label=2)::int,2) brier,
- power(ph-(label=0)::int,2) + power(ph+pd-(label<2)::int,2) rps
- FROM p
+ power(ph-(label=0)::int,2) + power(ph+pd-(label<2)::int,2) rps,
+ -ln(CASE label WHEN 0 THEN bh WHEN 1 THEN bd ELSE ba END) baseline_ll,
+ power(bh-(label=0)::int,2)+power(bd-(label=1)::int,2)
+   +power(ba-(label=2)::int,2) baseline_brier,
+ power(bh-(label=0)::int,2)+power(bh+bd-(label<2)::int,2) baseline_rps
+ FROM p JOIN baseline b ON b.validation_season=p.validation_season
 )
 SELECT validation_season,max(train_n)::int train_n,
  count(*)::int scored_n, (240-count(*))::int abstained_n,
  count(*) FILTER (WHERE unseen)::int unseen_n,
- round(avg(ll)::numeric,6) log_loss,
- round(avg(brier)::numeric,6) brier,
- round(avg(rps)::numeric,6) rps
+ round(avg(baseline_ll)::numeric,6) baseline_log_loss,
+ round(avg(ll)::numeric,6) poisson_log_loss,
+ round(avg(baseline_ll-ll)::numeric,6) paired_log_loss_gain,
+ round((1.96*stddev_samp(baseline_ll-ll)/sqrt(count(*)))::numeric,6)
+   AS paired_gain_approx_95pct_halfwidth,
+ round(avg(baseline_brier)::numeric,6) baseline_brier,
+ round(avg(brier)::numeric,6) poisson_brier,
+ round(avg(baseline_rps)::numeric,6) baseline_rps,
+ round(avg(rps)::numeric,6) poisson_rps
 FROM metrics WHERE (SELECT ok FROM gate)
 GROUP BY validation_season ORDER BY validation_season;
