@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "kind": "M3_FIVE_SEASON_SCORE_FREE_ANONYMOUS_FIXTURE_CORRESPONDENCE",
+  "observedOn": "2026-11-10",
+  "scope": "FIVE_PINNED_CC0_DEVELOPMENT_SEASONS_SELECT_ONLY_NO_PRIVATE_ID_EXPORT",
+  "sourceInventory": "M3_FIVE_SEASON_DATE_SCORE_HISTOGRAM_EVIDENCE.json",
+  "publicRosterSource": "M3_PUBLIC_SEVEN_SEASON_CLUB_ROSTERS_EVIDENCE.json",
+  "sourceFiles": [
+    {
+      "season": "2018/19",
+      "repository": "openfootball/football.json",
+      "path": "2018-19/ru.1.json",
+      "blobSha": "7ae2641d5504dac76f0ecbb84ca723ca36d03f82"
+    },
+    {
+      "season": "2019/20",
+      "repository": "openfootball/football.json",
+      "path": "2019-20/ru.1.json",
+      "blobSha": "25a5738b595d9b6d074208e4e5df47f2c2a9bcc3"
+    },
+    {
+      "season": "2020/21",
+      "repository": "openfootball/football.json",
+      "path": "2020-21/ru.1.json",
+      "blobSha": "48f77704081ac4405b98341c81b02b4664536733"
+    },
+    {
+      "season": "2023/24",
+      "repository": "openfootball/europe",
+      "path": "russia/2023-24_ru1.txt",
+      "blobSha": "3ea6829a971d1cbdf56552be0519cc125707bd99"
+    },
+    {
+      "season": "2024/25",
+      "repository": "openfootball/europe",
+      "path": "russia/2024-25_ru1.txt",
+      "blobSha": "6d8b62e4345df9ccd00e98c3bf6a91757b7dc8bc"
+    }
+  ],
+  "method": "Public season/date/home-away seven-season participation masks matched to private provider UTC-date/home-away masks WITHOUT USING GOALS; reciprocal seed singletons induce consistency-only alias-to-private-ID links inside SQL; all candidates then filtered by those links; only after resolution compare scores as an aggregate.",
+  "public2023_24OneFixtureDirectionCorrection": {
+    "archivedFixtureDay": "2023-09-16",
+    "archivedPublicHome": "FK Sochi",
+    "archivedPublicAway": "Spartak Moskva",
+    "archivedReportedScore": "0:1",
+    "hypotheticalPublicHome": "Spartak Moskva",
+    "hypotheticalPublicAway": "FK Sochi",
+    "hypotheticalScore": "1:0",
+    "sourceFileLine": 113,
+    "publicRecordsCorrectedInMemory": 1,
+    "publicArchiveModified": false,
+    "privateArchiveModified": false,
+    "originalRfsKickoffUtcAttested": false,
+    "correctionGroundedInPreviouslyRecordedIndependentClubAndRfsReferences": true
+  },
+  "seasons": [
+    {
+      "season": "2018/19",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "unmatchedByDateMaskDirection": 0,
+      "reciprocalSeedSingletons": 209,
+      "initialAmbiguous": 31,
+      "postConsistencyResolved": 240,
+      "postConsistencyUnresolvedPublic": 0,
+      "postConsistencyUnresolvedPrivate": 0,
+      "postLinkScoreDisagreements": 0,
+      "certifiedPlayedGoalPrivateRows": 0
+    },
+    {
+      "season": "2019/20",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "unmatchedByDateMaskDirection": 0,
+      "reciprocalSeedSingletons": 219,
+      "initialAmbiguous": 21,
+      "postConsistencyResolved": 240,
+      "postConsistencyUnresolvedPublic": 0,
+      "postConsistencyUnresolvedPrivate": 0,
+      "postLinkScoreDisagreements": 0,
+      "certifiedPlayedGoalPrivateRows": 0
+    },
+    {
+      "season": "2020/21",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "unmatchedByDateMaskDirection": 0,
+      "reciprocalSeedSingletons": 202,
+      "initialAmbiguous": 38,
+      "postConsistencyResolved": 240,
+      "postConsistencyUnresolvedPublic": 0,
+      "postConsistencyUnresolvedPrivate": 0,
+      "postLinkScoreDisagreements": 0,
+      "certifiedPlayedGoalPrivateRows": 0
+    },
+    {
+      "season": "2023/24",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "unmatchedByDateMaskDirection": 0,
+      "reciprocalSeedSingletons": 217,
+      "initialAmbiguous": 23,
+      "postConsistencyResolved": 240,
+      "postConsistencyUnresolvedPublic": 0,
+      "postConsistencyUnresolvedPrivate": 0,
+      "postLinkScoreDisagreements": 0,
+      "certifiedPlayedGoalPrivateRows": 0
+    },
+    {
+      "season": "2024/25",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "unmatchedByDateMaskDirection": 0,
+      "reciprocalSeedSingletons": 216,
+      "initialAmbiguous": 24,
+      "postConsistencyResolved": 240,
+      "postConsistencyUnresolvedPublic": 0,
+      "postConsistencyUnresolvedPrivate": 0,
+      "postLinkScoreDisagreements": 0,
+      "certifiedPlayedGoalPrivateRows": 0
+    }
+  ],
+  "graphTotals": {
+    "publicFixtureRows": 1200,
+    "privateProviderFinishedRows": 1200,
+    "initialReciprocalSeedSingletons": 1063,
+    "initialAmbiguousPublicFixtures": 137,
+    "postConsistencyResolvedPublicFixtures": 1200,
+    "postConsistencyUnresolvedPublicFixtures": 0,
+    "postConsistencyUnresolvedPrivateFixtures": 0,
+    "postLinkScoreDisagreements": 0,
+    "distinctPublicAliasesObserved": 25,
+    "internalPublicAliasesHavingMultipleProviderIds": 0,
+    "internalProviderIdsHavingMultiplePublicAliases": 0,
+    "independentlyCertifiedEligiblePrivateRows": 0
+  },
+  "gateStatus": {
+    "m3AcceptedCriteria": 2,
+    "m3ExitCriteria": 8,
+    "m3A3Accepted": false,
+    "realM3TrainingAuthorized": false,
+    "holdout2025_26Read": false,
+    "productionForecastChanged": false
+  },
+  "limitations": {
+    "privateIdsExported": false,
+    "privateRowsExported": false,
+    "privateSourceMatchIdsExported": false,
+    "privateIndividualScoreValuesExported": false,
+    "publicMatchRecordsCommitted": false,
+    "sourceClubLegalIdentityIndependentlyCertified": false,
+    "crossSourceIndependentOriginalFeedVerified": false,
+    "actualKickoffUtcVerified": false,
+    "originalFirstServingUtcVerified": false,
+    "playedVsAwardedGoalStatusVerified": false,
+    "sourceTrainingRightsVerified": false,
+    "originalSourceLicenseForDerivedModelVerified": false,
+    "allSevenSeasonsCovered": false,
+    "independentlyEligiblePrivateRowsCertified": false,
+    "heldoutDataRead": false,
+    "realModelFitted": false,
+    "supabaseTablesMutated": false,
+    "rlsModified": false,
+    "productionModelChanged": false,
+    "modelEscrowChanged": false
+  }
+}
