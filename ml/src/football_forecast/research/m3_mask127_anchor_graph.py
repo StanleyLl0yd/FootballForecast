@@ -4,7 +4,7 @@ Pure aggregate receipt validation. Never reads a private source, model, result,
 real club identifier, 2025/26 holdout, network, or database. It cannot grant A3.
 """
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
 
 from football_forecast.data.contracts import DataError
@@ -132,7 +132,7 @@ def audit_mask127_anchor_graph(current: dict, previous_nine: dict) -> Mask127Anc
             _deny("altered event, UTC minute, role, source, or aggregate count")
         observed_utc = datetime.fromisoformat(local).replace(
             tzinfo=ZoneInfo("Europe/Moscow")
-        ).astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+        ).astimezone(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
         if observed_utc != utc:
             _deny("retrospective Moscow-to-UTC conversion differs")
         if prior_code:
