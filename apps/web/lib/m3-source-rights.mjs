@@ -1,6 +1,4 @@
 /** M3-A3 public metadata triage. No I/O, no authorization for private rows or model fitting. */
-import {createHash} from 'node:crypto';
-
 const years=['2018/19','2019/20','2020/21','2021/22',
   '2022/23','2023/24','2024/25'];
 const expectedCc0=[240,240,240,null,null,240,240];
