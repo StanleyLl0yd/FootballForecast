@@ -47,6 +47,30 @@ This is a **bounded public-document review**, not a third-party dataset ingestio
 
 **Effect on acceptance: none.** A3 remains OPEN, M3 2/8; independently certified eligible private rows remain **zero attested, not zero existing**. A4 real fitting and A5 evaluation remain blocked. The consumed 2025/26 holdout, seven private snapshots, M2 escrow, production and RLS are unchanged.
 
+## Owner-visible seven-season rights refusal (2026-11-10, no database access)
+
+[Public-only source-rights evidence](M3_A3_SOURCE_RIGHTS_READINESS_EVIDENCE.json)
+records all seven private source seasons as `RIGHTS_UNVERIFIED`, not
+`RIGHTS_BLOCKED` or licensed/eligible; the zero attested eligible count is
+**an evidentiary gap, not a finding that no historical matches are usable**.
+The provider TOS permits internal lawful research, but neither the immutable
+private snapshot nor the discarded source response pages retain their actual
+per-season upstream source licence. OpenFootball's repository-declared CC0
+does not license the *private OpenFoot feed* by implication. RSSSF and
+Football-Data.co.uk remain explicitly limited retrospective reference candidates.
+
+The no-I/O [closed-schema inspector](../apps/web/lib/m3-source-rights.mjs)
+rejects malformed source classifications, any attempt to assert a verified
+upstream licence, a positive training/correlation gate, 2025/26 access,
+additional private rows, or altered season counts. The existing authenticated
+`/admin/research` view displays either this conservative seven-season
+status or a **fail-closed invalid-evidence message**. Tests mutate the
+evidence adversarially. This is a guard on *public metadata only* and **cannot
+by itself validate legal source rights or sign off A3**. Replacing an unknown
+rights status with positive evidence will require an independent review,
+revised code/contract and protected PR; changing JSON alone cannot authorize
+a private DB read, model training or release.
+
 ## Required work before A3 can be checked off
 
 1. Independently pin and evaluate *full* 2018/19–2024/25 source/reference bytes and actual reuse scope without touching the consumed 2025/26 holdout. No bulk import from a public reference merely because its season table is online.
