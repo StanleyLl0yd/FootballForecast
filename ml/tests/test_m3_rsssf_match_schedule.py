@@ -100,8 +100,8 @@ def test_bad_top_flight_rounds_and_noop_metadata(old,new):
 def test_missing_score_and_wrong_teams_are_denied():
     source=synthetic_source("2021/22").decode()
     for mutated in (
-        source.replace("  Ahmat", "  Fictional",1),
-        source.replace("0-2", "5-2",1),
+        source.replace("Ahmat", "Fictional",1),
+        source.replace("1-1", "9-9",1),
         source.replace("Round 30 [May 21.", "Round 29 [May 21.",1),
         source.replace("Round 1 [Jul 24.", "Round 1 [Jun 24.",1),
     ):
