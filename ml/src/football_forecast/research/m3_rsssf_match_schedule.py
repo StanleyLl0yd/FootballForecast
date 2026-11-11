@@ -106,13 +106,15 @@ def parse_rsssf_rpl(source: bytes, season: str) -> tuple[PublicFixture, ...]:
     """Reject incomplete/ambiguous pages; never silently pad missing fixtures."""
     if season not in SEASONS or type(source) is not bytes or not 100 <= len(source) <= 3_000_000:
         _invalid("untrusted season or source envelope")
-    # RSSSF's historical pages contain legacy Latin-1 bytes. Decode without
-    # replacement, then rely on all 240 fixtures / identities / goals gates.
-    # This is a deterministic compatibility fallback, not permissive scraping.
-    try:
-        decoded = source.decode("utf-8")
-    except UnicodeDecodeError:
-        decoded = source.decode("latin-1")
+    # RSSSF currently serves the source with a UTF-16 BOM. Decode declared
+    # bytes strictly (never with replacement) before validating 240 fixtures.
+    if source.startswith((b"\xff\xfe", b"\xfe\xff")):
+        decoded = source.decode("utf-16")
+    else:
+        try:
+            decoded = source.decode("utf-8")
+        except UnicodeDecodeError:
+            decoded = source.decode("latin-1")
     html = _Text()
     html.feed(decoded)
     lines = "".join(html.segments).splitlines()
