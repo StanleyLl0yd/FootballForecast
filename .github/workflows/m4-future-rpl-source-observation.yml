@@ -1,0 +1,98 @@
+name: M4 owner-only future RPL fixture source observation (read-only)
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'M4_FUTURE_RPL_SOURCE_READONLY only'
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+permissions: {contents: read}
+concurrency:
+  group: m4-future-source-observe
+  cancel-in-progress: false
+jobs:
+  source-observe:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.confirmation == 'M4_FUTURE_RPL_SOURCE_READONLY') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 304 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.id == 131160519 &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m4-future-rpl-source-readonly')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    environment: m1-source-import
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6 pinned
+        with: {python-version: '3.13'}
+      - name: Read-only three-day future source probe, no database
+        shell: bash
+        env:
+          OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
+          M4_FUTURE_READONLY_GATE: 'true'
+          PYTHONPATH: ml/src
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONNOUSERSITE: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REPOSITORY" == 'StanleyLl0yd/FootballForecast' ]]
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$GITHUB_ACTOR" == 'StanleyLl0yd' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          [[ -n "$OPENFOOT_API_KEY" ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          python scripts/m4-owner-future-source-observe.py > "$work/receipt.json"
+          python - "$work/receipt.json" <<'PY'
+          import json, re, sys
+          from datetime import datetime, timezone
+          from pathlib import Path
+          raw = Path(sys.argv[1]).read_bytes()
+          if not 250 <= len(raw) <= 1100:
+              raise SystemExit('FAIL: unbounded future source receipt')
+          row = json.loads(raw)
+          fields = {'source','classification','observation_completed_utc',
+                    'source_envelopes_sha256','days','fixtures','club_identities',
+                    'private_shadow_only','independent_source_confirmed',
+                    'genuine_as_of_attested','model_approved','forecast_written',
+                    'public_forecasts_written','holdout_2025_26_read'}
+          now = datetime.fromisoformat(row['observation_completed_utc'].replace(
+              'Z', '+00:00'))
+          if (set(row)!=fields or row['source'] !=
+              'OpenFoot Starter (private source only)' or row['classification'] !=
+              'UNAPPROVED_PRIVATE_FUTURE_SOURCE_OBSERVATION' or
+              row['days']!=3 or row['fixtures']!=8 or row['club_identities']!=16 or
+              not re.fullmatch(r'[0-9a-f]{64}',row['source_envelopes_sha256']) or
+              row['private_shadow_only'] is not True or
+              any(row[k] is not False for k in (
+                  'independent_source_confirmed','genuine_as_of_attested',
+                  'model_approved','forecast_written','public_forecasts_written',
+                  'holdout_2025_26_read')) or
+              now.tzinfo != timezone.utc or
+              not datetime(2026,11,11,11,4,56,tzinfo=timezone.utc) < now <
+                  datetime(2026,11,20,16,15,tzinfo=timezone.utc)):
+              raise SystemExit('FAIL: future source evidence is not admissible')
+          print('M4_FUTURE_RPL_SOURCE_OBSERVED=8_SCHEDULED_UNAPPROVED')
+          print('M4_SOURCE_ENVELOPES_SHA256='+row['source_envelopes_sha256'])
+          with open(__import__('os').environ['GITHUB_STEP_SUMMARY'],
+                    'a',encoding='utf-8') as out:
+              out.write('## M4 private future fixture source probe, not forecasts\n')
+              out.write('2026/27 RPL, 15th round, three future dates; '
+                        '8 sources observed but no prediction/DB write.\n')
+              out.write('Envelope SHA: `'+row['source_envelopes_sha256']+'`\n')
+              out.write('Independent provider/time provenance remains A5 OPEN.\n')
+          PY
