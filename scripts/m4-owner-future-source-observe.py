@@ -11,7 +11,7 @@ import sys
 from dataclasses import asdict
 from datetime import UTC, datetime
 from json import dumps
-from urllib.error import HTTPError, URLError
+from urllib.error import URLError
 from urllib.request import HTTPRedirectHandler, Request, build_opener, HTTPSHandler
 
 from football_forecast.research.m4_future_rpl_source import (
