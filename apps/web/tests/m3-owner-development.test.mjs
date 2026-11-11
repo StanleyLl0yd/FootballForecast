@@ -13,7 +13,7 @@ const viewer=readFileSync(new URL('../components/m3-development-workbench.tsx',i
 test('M3 owner viewer uses independently verified real aggregate-only results',()=>{
   const result=inspectM3OwnerDevelopment(...copy());
   assert.equal(result.state,'verified_retrospective');
-  assert.equal(result.acceptedTechnicalGates,6);
+  assert.equal(result.acceptedTechnicalGates,7);
   assert.equal(result.totalCorrespondences,1680);
   assert.equal(result.playedCandidates,1673);
   assert.equal(result.excluded,7);

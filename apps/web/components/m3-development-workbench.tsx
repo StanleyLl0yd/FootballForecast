@@ -32,10 +32,10 @@ export function M3DevelopmentWorkbench({summary}:{summary:Summary}){
   const fmt=(x:number)=>x.toFixed(4);
   return <section className="panel informative" aria-label="M3 owner-only development workbench">
     <h2>M3 · Исследование на реальных исторических данных</h2>
-    <p className="source-lab-note"><strong>Технически принято A1–A6: 6/8.</strong>{' '}
+    <p className="source-lab-note"><strong>Технически принято A1–A7: 7/8.</strong>{' '}
       Режим NON_STRICT_RETROSPECTIVE: обучение строго по прошлым завершённым
       сезонам, без оригинального предматчевого as-of и без новой оценки holdout.
-      A7 и A8 ещё открыты до отдельной приёмки.</p>
+      A8 открыт до двух repository-wide аудитов и явной приёмки владельцем.</p>
     <div className="stat-grid">
       <div className="stat"><span>Независимые соответствия матчей</span>
         <strong>{summary.totalCorrespondences}/1680</strong>

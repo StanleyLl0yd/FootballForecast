@@ -1,0 +1,39 @@
+name: M3 A8 whole-repository audits
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: m3-a8-whole-repo-audit
+  cancel-in-progress: false
+jobs:
+  technical:
+    name: A8 technical full-repo
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Audit every tracked file, source JSON, model boundaries and CI coverage
+        run: |
+          set -euo pipefail
+          node --test tests/m3-repository-wide-audit.test.mjs
+          node scripts/m3-repository-wide-audit.mjs --pass=technical
+  security:
+    name: A8 security full-repo
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with: {node-version: '22'}
+      - name: Independently audit every tracked file for exposure and workflow risks
+        run: |
+          set -euo pipefail
+          node --test tests/m3-repository-wide-audit.test.mjs
+          node scripts/m3-repository-wide-audit.mjs --pass=security
