@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "kind": "M3_A3_SEVEN_SEASON_NON_STRICT_RETROSPECTIVE_DEVELOPMENT_COHORT",
+  "status": "PROPOSED_A3_TECHNICAL_ACCEPTANCE_NOT_STRICT_AS_OF",
+  "observedOn": "2026-11-11",
+  "ownerSourceUseDirective": "https://github.com/StanleyLl0yd/FootballForecast/issues/271#issuecomment-6777156574",
+  "milestoneIssue": "https://github.com/StanleyLl0yd/FootballForecast/issues/271",
+  "sourceRecord": "ff_private.ff_rpl_history_snapshots+ff_private.ff_rpl_history_matches, immutable private development only",
+  "references": [
+    {
+      "kind": "five_season_public_private_score_free",
+      "repoFile": "docs/M3_SCORE_FREE_FIXTURE_GRAPH_EVIDENCE.json",
+      "publicFixtures": 1200,
+      "privateFixtures": 1200,
+      "matched": 1200,
+      "scoreDisagreements": 0
+    },
+    {
+      "kind": "two_season_RSSSF_verified_public",
+      "githubRun": "https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42993521149",
+      "publicFixtures": 480,
+      "publicSourceSha256": {
+        "2021/22": "0e2dc276f111176188c0de4ac1bfeef262d9a9815c152e516c334de2af9e0102",
+        "2022/23": "3adcc69df55675ae8314c55a111068fcc56dada6f7f3c7736af447fc83928dfe"
+      }
+    },
+    {
+      "kind": "two_season_private_public_owner_verified",
+      "githubRun": "https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42995967341",
+      "matched": 480,
+      "stableSharedClubIds": 13,
+      "possibleSharedClubIds": 13,
+      "playedScoreCandidates": 479,
+      "officialScoreDisagreements": 0,
+      "aggregateSha256": "e3032565aa0332b03b39b1860f33179dbd003dd19224474a2418bd497e1d331d"
+    },
+    {
+      "kind": "real_development_five_fold_owner_study",
+      "githubRun": "https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42994112402",
+      "resultsSha256": "c9ef3e4bb37f70a451aa6c4bcb41dbe8d1a5c941543705b8c700d8e2514c2c98",
+      "class": "NON_STRICT_RETROSPECTIVE_PROVISIONAL"
+    }
+  ],
+  "exclusions": [
+    {
+      "season": "2019/20",
+      "dateUtc": "2020-06-27",
+      "officialScore": "0:3",
+      "reason": "UNPLAYED_TECHNICAL_AWARD"
+    },
+    {
+      "season": "2019/20",
+      "dateUtc": "2020-07-01",
+      "officialScore": "0:3",
+      "reason": "UNPLAYED_TECHNICAL_AWARD"
+    },
+    {
+      "season": "2019/20",
+      "dateUtc": "2020-07-16",
+      "officialScore": "3:0",
+      "reason": "UNPLAYED_TECHNICAL_AWARD"
+    },
+    {
+      "season": "2019/20",
+      "dateUtc": "2020-07-22",
+      "officialScore": "3:0",
+      "reason": "UNPLAYED_TECHNICAL_AWARD"
+    },
+    {
+      "season": "2020/21",
+      "dateUtc": "2020-09-13",
+      "officialScore": "0:3",
+      "reason": "UNPLAYED_TECHNICAL_AWARD"
+    },
+    {
+      "season": "2020/21",
+      "dateUtc": "2020-09-19",
+      "officialScore": "3:0",
+      "reason": "UNPLAYED_TECHNICAL_AWARD"
+    },
+    {
+      "season": "2022/23",
+      "dateUtc": "2023-03-19",
+      "officialScore": "0:3",
+      "playedScore": "1:1",
+      "reason": "OFFICIAL_SCORE_REVISED_AFTER_PLAY"
+    }
+  ],
+  "perSeason": [
+    {
+      "season": "2018/19",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "scoreFreeGraphMatches": 240,
+      "officialResultDisagreements": 0,
+      "knownAdministrativeOrRevisedExcluded": 0,
+      "retrospectivePlayedScoreCandidates": 240
+    },
+    {
+      "season": "2019/20",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "scoreFreeGraphMatches": 240,
+      "officialResultDisagreements": 0,
+      "knownAdministrativeOrRevisedExcluded": 4,
+      "retrospectivePlayedScoreCandidates": 236
+    },
+    {
+      "season": "2020/21",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "scoreFreeGraphMatches": 240,
+      "officialResultDisagreements": 0,
+      "knownAdministrativeOrRevisedExcluded": 2,
+      "retrospectivePlayedScoreCandidates": 238
+    },
+    {
+      "season": "2021/22",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "scoreFreeGraphMatches": 240,
+      "officialResultDisagreements": 0,
+      "knownAdministrativeOrRevisedExcluded": 0,
+      "retrospectivePlayedScoreCandidates": 240
+    },
+    {
+      "season": "2022/23",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "scoreFreeGraphMatches": 240,
+      "officialResultDisagreements": 0,
+      "knownAdministrativeOrRevisedExcluded": 1,
+      "retrospectivePlayedScoreCandidates": 239
+    },
+    {
+      "season": "2023/24",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "scoreFreeGraphMatches": 240,
+      "officialResultDisagreements": 0,
+      "knownAdministrativeOrRevisedExcluded": 0,
+      "retrospectivePlayedScoreCandidates": 240
+    },
+    {
+      "season": "2024/25",
+      "publicFixtures": 240,
+      "privateProviderFinishedFixtures": 240,
+      "scoreFreeGraphMatches": 240,
+      "officialResultDisagreements": 0,
+      "knownAdministrativeOrRevisedExcluded": 0,
+      "retrospectivePlayedScoreCandidates": 240
+    }
+  ],
+  "totals": {
+    "publicFixtures": 1680,
+    "privateProviderFinishedFixtures": 1680,
+    "scoreFreeGraphMatches": 1680,
+    "unmatchedPublicFixtures": 0,
+    "unmatchedPrivateFixtures": 0,
+    "officialResultDisagreements": 0,
+    "knownTechnicalAwardsExcluded": 6,
+    "knownRevisedOfficialScoresExcluded": 1,
+    "excludedFromPlayedGoalLabels": 7,
+    "retrospectivePlayedScoreCandidates": 1673
+  },
+  "expandingFolds": [
+    {
+      "validationSeason": "2020/21",
+      "trainingCandidates": 476,
+      "validationScoredCandidates": 238,
+      "validationAbstained": 2
+    },
+    {
+      "validationSeason": "2021/22",
+      "trainingCandidates": 714,
+      "validationScoredCandidates": 240,
+      "validationAbstained": 0
+    },
+    {
+      "validationSeason": "2022/23",
+      "trainingCandidates": 954,
+      "validationScoredCandidates": 239,
+      "validationAbstained": 1
+    },
+    {
+      "validationSeason": "2023/24",
+      "trainingCandidates": 1193,
+      "validationScoredCandidates": 240,
+      "validationAbstained": 0
+    },
+    {
+      "validationSeason": "2024/25",
+      "trainingCandidates": 1433,
+      "validationScoredCandidates": 240,
+      "validationAbstained": 0
+    }
+  ],
+  "scope": {
+    "allModelsFitOnPriorCompletedSeasonsOnly": true,
+    "sameValidationSeasonTraining": false,
+    "retrospectiveProviderResultAgreementNotOriginalMatchPublicationAttestation": true,
+    "originalFirstServingTimeAuthenticated": false,
+    "originalKickoffMinuteAuthenticated": false,
+    "historicalStrictAsOfClaim": false,
+    "privateRowsExported": false,
+    "privateIdsExported": false,
+    "sourceTablesMutated": false,
+    "holdout2025_26Read": false,
+    "publicForecastsPublished": false,
+    "m2FixedModelChanged": false,
+    "existingForceRlsChanged": false
+  },
+  "classification": "M3_NON_STRICT_RETROSPECTIVE_PLAYED_GOAL_CANDIDATE_COHORT",
+  "gates": {
+    "licenseAttestationNotA3EngineeringBlocker": true,
+    "sourceAttributionRetained": true,
+    "actualThirdPartyLimitsNotWaived": true,
+    "sevenSeasonFixtureCoverageEvidenceComplete": true,
+    "knownAdministrativeQuarantineAppliedInDevelopmentStudy": true,
+    "scoreAndTimeReviewBeyondRetrospectiveScopeRequiredBeforeStrictAsOf": true,
+    "productionModelApproval": false,
+    "fullM3Accepted": false
+  }
+}
