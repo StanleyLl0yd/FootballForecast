@@ -143,7 +143,7 @@ begin
      or new.kickoff_observed_at > v_now
      or v_now > new.source_observed_at + interval '2 hours'
      or v_now > new.kickoff_observed_at + interval '2 hours'
-     or v_now + interval '15 minutes' >= new.kickoff_at then
+     or v_now + interval '15 minutes' > new.kickoff_at then
     raise exception 'M4 capture requires fresh independently signed future sources';
   end if;
   return new;
@@ -172,7 +172,7 @@ begin
   end if;
   new.committed_at := clock_timestamp();
   if v_capture > new.committed_at
-     or new.committed_at + interval '15 minutes' >= v_kickoff then
+     or new.committed_at + interval '15 minutes' > v_kickoff then
     raise exception 'M4 forecast must be committed with real pre-kickoff lead';
   end if;
   if new.revision=1 then
