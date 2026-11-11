@@ -8,7 +8,6 @@ No 2025/26 input, bookmaker claims, auto model selection or forecast publication
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from hashlib import sha256
 from math import fsum, isfinite, sqrt
 
 from football_forecast.data.contracts import DataError
@@ -108,7 +107,8 @@ def summarize_private_shadow(
     for row in versions:
         if not isinstance(row, ShadowVersion):
             _deny("untrusted forecast row")
-        if (not row.fixture_key.startswith("rpl-") or
+        if (type(row.fixture_key) is not str or
+                not row.fixture_key.startswith("rpl-") or
                 len(row.fixture_key) > 100 or not _sha(row.model_sha256) or
                 not _sha(row.input_sha256) or row.state !=
                 "PRIVATE_SHADOW_UNAPPROVED" or
