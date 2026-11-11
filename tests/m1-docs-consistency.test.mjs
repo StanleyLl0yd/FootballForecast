@@ -35,14 +35,15 @@ test('accepted M1 docs do not claim live RPL database is empty or M1 blocked',()
     assert.doesNotMatch(doc,/M0 remains OPEN|M1 stays blocked|The real database is empty/);
 });
 
-test('accepted M2 preserves sealed-holdout and preregistration boundaries',()=>{
+test('accepted M2/M3 and private-only M4 preserve sealed holdout and preregistration',()=>{
   assert.match(roadmap,/M2 - Statistical Baselines \(ACCEPTED 2026-11-09/);
   assert.match(m2Protocol,/Protocol version: \`m2-independent-poisson-v1\`/);
   assert.match(m2Protocol,/2025\/26.*sealed/i);
   assert.match(m2Protocol,/No production model, database write or public forecast/);
-  assert.match(agents,/M3 OPEN for private development research only/);
-  assert.match(roadmap,/M3 - Calibration & Evaluation \(OPEN, owner-authorized 2026-11-09\)/);
-  assert.match(agents,/no real protected model fitting, public forecasts/);
+  assert.match(agents,/M0\/M1\/M2\/M3 ACCEPTED; M4 OPEN for PRIVATE prospective preparation only/);
+  assert.match(roadmap,/M3 - Calibration & Evaluation \(ACCEPTED 8\/8, 2026-11-11/);
+  assert.match(agents,/no trusted live capture, production model, private ledger or public forecasts/);
+  assert.match(roadmap,/Consumed 2025\/26 holdout is permanently off limits/);
   assert.match(operations,/M2 opened 2026-11-02; accepted 2026-11-09/);
 });
 
