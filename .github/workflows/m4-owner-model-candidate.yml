@@ -1,0 +1,113 @@
+name: M4 owner-only private candidate fit (SELECT-only)
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'M4_PRIVATE_CANDIDATE_READONLY, no holdout or publication'
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+permissions: {contents: read}
+concurrency:
+  group: m4-owner-private-candidate
+  cancel-in-progress: false
+jobs:
+  private-candidate:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.confirmation == 'M4_PRIVATE_CANDIDATE_READONLY') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 304 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.id == 131160519 &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m4-model-candidate-readonly')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: m1-source-import
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6 pinned
+        with: {python-version: '3.13'}
+      - name: Install pinned PostgreSQL client
+        run: python -m pip install -e ./ml 'psycopg[binary]==3.3.6'
+      - name: Validate and fit protected development-only candidate
+        shell: bash
+        env:
+          PGHOST: ${{ secrets.M1_PGHOST }}
+          PGUSER: ${{ secrets.M1_PGUSER }}
+          PGDATABASE: ${{ secrets.M1_PGDATABASE }}
+          PGPASSWORD: ${{ secrets.M1_PGPASSWORD }}
+          M1_PGROOTCERT_B64: ${{ secrets.M1_PGROOTCERT_B64 }}
+          PYTHONPATH: ml/src
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONNOUSERSITE: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REPOSITORY" == 'StanleyLl0yd/FootballForecast' ]]
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$GITHUB_ACTOR" == 'StanleyLl0yd' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          for name in PGHOST PGUSER PGDATABASE PGPASSWORD; do
+            [[ -n "${!name:-}" ]] || { echo 'FAIL: private credentials not available'; exit 2; }
+          done
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          if [[ -n "${M1_PGROOTCERT_B64:-}" ]]; then
+            printf '%s' "$M1_PGROOTCERT_B64" | base64 --decode > "$work/ca.crt"
+          else
+            cp security/certs/supabase-root-2021-ca.crt "$work/ca.crt"
+          fi
+          fingerprint="$(openssl x509 -in "$work/ca.crt" -outform DER | sha256sum | cut -d ' ' -f1)"
+          [[ "$fingerprint" == '807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa' ]] || {
+            echo 'FAIL: untrusted database root certificate'; exit 2;
+          }
+          openssl x509 -in "$work/ca.crt" -noout -checkend 86400 > /dev/null
+          export PGSSLROOTCERT="$work/ca.crt"
+          python scripts/m4-owner-model-candidate.py > "$work/receipt.json"
+          python - "$work/receipt.json" <<'PY'
+          import json, os, re, sys
+          from pathlib import Path
+          content = Path(sys.argv[1]).read_bytes()
+          if not 300 <= len(content) <= 1300:
+              raise SystemExit('FAIL: invalid bounded candidate receipt')
+          info = json.loads(content)
+          keys = {'schemaVersion','kind','codeSha','sourceManifestSha256',
+                  'eligibleRowsSha256','modelArtifactSha256','historicalSeasons',
+                  'eligibleMatches','excluded','distinctClubs','classification',
+                  'artifactPersisted','modelApproved','holdoutRead',
+                  'publicForecastsWritten'}
+          if set(info) != keys or info['schemaVersion'] != 1 or (
+              info['kind'] != 'M4_PRIVATE_SHADOW_CANDIDATE_SELECT_ONLY' or
+              info['codeSha'] != os.environ['GITHUB_SHA'] or
+              info['historicalSeasons'] != 7 or info['eligibleMatches'] != 1673 or
+              info['excluded'] != 7 or info['distinctClubs'] != 26 or
+              info['classification'] != 'NON_STRICT_RETROSPECTIVE' or
+              any(info[k] is not False for k in
+                  ('artifactPersisted','modelApproved','holdoutRead',
+                   'publicForecastsWritten')) or
+              any(not isinstance(info[k],str) or
+                  not re.fullmatch(r'[0-9a-f]{64}', info[k]) for k in
+                  ('sourceManifestSha256','eligibleRowsSha256','modelArtifactSha256'))
+          ):
+              raise SystemExit('FAIL: private candidate attestation mismatch')
+          print('M4_PRIVATE_MODEL_ARTIFACT_SHA256=' + info['modelArtifactSha256'])
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as out:
+              out.write('## M4 private read-only model candidate (not production)\n')
+              out.write('Seven historical development seasons, 1,673 selected played-score '
+                        'candidates, seven explicit exclusions; no 2025/26.\n')
+              out.write('Private candidate artifact SHA-256: `' +
+                        info['modelArtifactSha256'] + '`\n')
+              out.write('Artifact discarded in memory; no persistence, public forecast, '
+                        'external private rows or model approval.\n')
+          PY
