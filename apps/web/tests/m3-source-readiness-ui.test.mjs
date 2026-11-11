@@ -16,7 +16,9 @@ test('M3 owner UI remains authenticated and source-only, without training or dat
   const review=owner.indexOf('const m3References=');
   assert.ok(auth>=0 && review>auth);
   assert.match(owner,/export const dynamic='force-dynamic'/);
-  assert.match(owner,/Этап M3 · калибровка<\/span><strong>2\/8<\/strong>/);
+  assert.match(owner,/Этап M3 · ретроспективное исследование/);
+  assert.match(owner,/m3Development.state==='verified_retrospective'/);
+  assert.match(owner,/M3DevelopmentWorkbench summary=\{m3Development\}/);
   assert.match(owner,/М3-A3|M3-A3/);
   assert.match(owner,/0 независимо подтверждённых пригодных строк/);
   const start=owner.indexOf('<h2>M3 · Семилетний архив');
@@ -70,8 +72,8 @@ test('M2 accepted and M3 open are no longer contradicted on three product pages'
   for(const page of [owner,models,admin]){
     assert.doesNotMatch(page,/M3 (?:не разрешён|не разрешены|не разрешено|остаётся запрещён)/i);
   }
-  assert.match(models,/M3 открыт, 2\/8 критериев выполнены/);
-  assert.match(models,/исключительно из синтетических матчей/);
+  assert.match(models,/M3: 6\/8 технически приняты, A7–A8 открыты/);
+  assert.match(models,/Пять хронологических folds проверены на реальных исторических матчах/);
   assert.match(models,/Защищённый контроль M3/);
   assert.match(admin,/M3 отдельно открыт для приватной исследовательской разработки/);
   assert.match(owner,/M2 · принятое и оставшиеся ограничения/);
