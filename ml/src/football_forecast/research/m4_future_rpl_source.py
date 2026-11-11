@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from hashlib import sha256
 from json import dumps, loads
-from math import isfinite
 
 from football_forecast.data.contracts import DataError
 
@@ -30,7 +29,7 @@ MAX_BYTES_PER_DAY = 150_000
 class FutureSourceReceipt:
     source: str
     classification: str
-    first_observed_utc: str
+    observation_completed_utc: str
     source_envelopes_sha256: str
     days: int
     fixtures: int
@@ -152,7 +151,7 @@ def inspect_future_rpl_source(
     return FutureSourceReceipt(
         source="OpenFoot Starter (private source only)",
         classification="UNAPPROVED_PRIVATE_FUTURE_SOURCE_OBSERVATION",
-        first_observed_utc=observed_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        observation_completed_utc=observed_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
         source_envelopes_sha256=digest,
         days=3, fixtures=8, club_identities=16,
     )
