@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Download ONLY two historical RSSSF season pages and print public-safe audit."""
 import json
+import sys
 from dataclasses import asdict
 from urllib.request import Request, urlopen
 
 from football_forecast.data.contracts import DataError
 
-from football_forecast.research.m3_rsssf_match_schedule import audit_rsssf_rpl
+from football_forecast.research.m3_rsssf_match_schedule import SEASONS, audit_rsssf_rpl
 
 SOURCE_URLS = (
     ("2021/22", "https://www.rsssf.org/tablesr/rus2022.html"),
@@ -24,6 +25,9 @@ def main() -> None:
             data=response.read(3_000_001)
         if len(data)>3_000_000:
             raise ValueError("oversized source")
+        print(f"RSSSF public-only source probe: {season} bytes={len(data)} "
+              f"heading_in_raw={SEASONS[season]['anchor'].encode() in data} "
+              f"html_prefix={b'<html' in data[:4096].lower()}", file=sys.stderr)
         audits.append(asdict(audit_rsssf_rpl(data,season)))
     if sum(x["fixtures"] for x in audits)!=480:
         raise ValueError("incomplete two-season sample")
