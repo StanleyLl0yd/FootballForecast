@@ -1,0 +1,13 @@
+# M3-A4/A5/A6 — real bounded five-fold development evidence
+
+**Status: PROPOSED for protected technical acceptance**, dependent on the seven-season A3 retrospective candidate record, not automatic production release.
+
+All five development seasons were evaluated in one fixed SELECT-only SQL against all completed **prior seasons**; never the season being validated and never the once-consumed 2025/26 holdout. The deterministic home/away team Poisson candidate uses only season-resolved team identities and previously finished goals. It has fixed synthetic-stage hyperparameters (12 pseudo-fixtures for team rates, 20 for league, prior 1.35/1.05, clamped lambda 0.05–6), no tuning against the sealed holdout and an explicit prior-only fallback with counts for promoted clubs.
+
+The protected owner-only real study [Actions #42994112402](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/42994112402) returned its **aggregate-only digest** `c9ef3e4bb37f70a451aa6c4bcb41dbe8d1a5c941543705b8c700d8e2514c2c98` and completed the five retrospective folds. The exact runnable SQL is `research/sql/m3_development_poisson_observation.sql`, with numerical parity and mutation tests. There is no training artifact, persisted fitted model, raw private match leakage or new public forecast.
+
+The fixed H/D/A Dirichlet(1,1,1) baseline was scored on the **same 1,197 validation candidates**. Team Poisson's Log Loss was lower on all five folds (1.030784, 1.035650, 1.003942, 1.030825, 0.985644) versus the H/D/A baseline (1.061906, 1.072530, 1.056410, 1.066596, 1.078744). The same is true for Brier and RPS, but the confidence intervals are **approximate per-fixture normal** and do not correct for repeated teams, serial dependence or post-hoc researcher degrees of freedom. Several single-fold intervals include zero; no universal statistical superiority claim is made.
+
+**Bookmaker odds comparator is unavailable:** no independently authentic same-cutoff quote collection exists. Do not present this as bookmaker outperformance. There is no independent sealed test performance reported: the 2025/26 holdout was previously consumed and must remain untouched. These are `NON_STRICT_RETROSPECTIVE` development estimates, not original pre-match-as-of live performance.
+
+A4 requires deterministic code and refusal on malformed/unknown identity, A5 requires the protected actual owner execution and SHA, and A6 requires honest identical-row per-fold comparison with abstentions and uncertainty. This PR pins each boundary with mutation tests and the A3 dependency. A7 owner GUI and A8 repository-wide audits/release acceptance remain separate.
