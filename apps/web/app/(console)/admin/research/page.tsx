@@ -81,14 +81,14 @@ export default async function Page(){
     readM2TrainOnlyRun(),readM2PublicSourcesRun(),readM2OpenFootballTrainRun()
   ]);
   return <>
-    <PageHeading eyebrow="OWNER · M2 / M3" title="Контроль исследования"
-      subtitle="Защищённый, только для чтения: первое измерение 2025/26, происхождение данных и ограничения после принятия M2 владельцем. M3 открыт для исследования, публикация прогнозов запрещена."/>
+    <PageHeading eyebrow="OWNER · M2 / M3 / M4" title="Контроль исследования"
+      subtitle="Защищённый, только для чтения: первое измерение 2025/26, происхождение данных и ограничения после принятия M2 владельцем. M3 принят 8/8; M4 открыт для закрытой проспективной подготовки. Публикация прогнозов запрещена."/>
     <div className="stat-grid">
       <div className="stat"><span>Общий этап M2</span><strong>8/8</strong>
-        <small>Два полных аудита приняты владельцем 09.11.2026; M3 открыт отдельно.</small></div>
+        <small>Два полных аудита приняты владельцем 09.11.2026; M3 принят 11.11.2026.</small></div>
       <div className="stat"><span>Этап M3 · ретроспективное исследование</span>
-        <strong>{m3Development.state==='verified_retrospective'?'7/8':'—'}</strong>
-        <small>A1–A7 технически приняты; A8 открыт. Без допуска к прогнозам.</small></div>
+        <strong>{m3Development.state==='verified_retrospective'?'8/8':'—'}</strong>
+        <small>A1–A8 приняты 11.11.2026. M4 готовится отдельно; публичных прогнозов нет.</small></div>
       <div className="stat"><span>Вход владельца · GitHub OAuth</span><strong>Принят</strong>
         <small>Реальный вход и анонимный отказ подтверждены 05.11.2026; вход под чужим GitHub не проверялся в браузере.</small></div>
       <div className="stat"><span>Архивные train-only запуски v1</span>

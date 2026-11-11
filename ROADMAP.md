@@ -1,4 +1,6 @@
-## CURRENT · 2026-11-09 · M2 ACCEPTED 8/8; M3 OPEN (owner authorized)
+## CURRENT · 2026-11-11 · M0/M1/M2/M3 ACCEPTED; M4 OPEN (owner authorized, private only)
+
+M3 [#271](https://github.com/StanleyLl0yd/FootballForecast/issues/271) CLOSED 2026-11-11, A1–A8 accepted 8/8 after two independent full repository-wide audits, exact-main 11/11 PASS, Vercel exact-main promotion and explicit owner residual-risk acceptance. Its A3–A6 evidence is NON_STRICT_RETROSPECTIVE, never strict historical as-of. M4 [#304](https://github.com/StanleyLl0yd/FootballForecast/issues/304) is OPEN for private prospective-only RPL shadow preparation; **no public forecasts or production model approval**. Consumed 2025/26 holdout is permanently off limits. Dated statuses below are archival, not reopening M3.
 
 M3-A3 2026-11-10 gaps 2021/22+2022/23: [six hand-chosen official RFS match anchors](docs/M3_TWO_SEASON_SIX_RFS_ANCHORS_REPRODUCTION_2026-11-10.md) matched existing private anonymous seven-season club masks, direction, retrospectively published UTC-minute schedules and official scores **6/6** in SELECT-only aggregate. Krylia across 2 events and Torpedo across 3 reuse one opaque private ID each, without exporting IDs. **Pari NN–Torpedo 2023-03-19 played 1:1 but later officially awarded 0:3**, which the source mirrors: mandatory played-versus-awarded gate. This is **not 480 newly certified RPL matches** and does not clear source rights, original UTC/first-serving, club legal identity or eligible training. [Public-safe receipt](docs/M3_TWO_SEASON_SIX_RFS_ANCHORS_EVIDENCE.json). A3 OPEN, M3 2/8.
 
@@ -236,7 +238,7 @@ Licensed adapters, provenance, normalized seasons and teams, timestamp checks, d
 
 **M3 private development-only authorization: 2026-11-09, [#271](https://github.com/StanleyLl0yd/FootballForecast/issues/271). No production forecast approval.** The consumed 2025/26 holdout must never be used again. Release integrity [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains open.
 
-## M3 - Calibration & Evaluation (OPEN, owner-authorized 2026-11-09)
+## M3 - Calibration & Evaluation (ACCEPTED 8/8, 2026-11-11; historical checklist below)
 
 Private RPL development workbench; [frozen M3 protocol](docs/M3_PRIVATE_RESEARCH_PROTOCOL.md), [eight explicit acceptance gates #271](https://github.com/StanleyLl0yd/FootballForecast/issues/271). Keep M2 frozen and **never replay 2025/26 holdout**. Begin with 2018/19–2024/25 synthetic-only five-fold expanding validation, fixed Dirichlet-smoothed H/D/A baseline and Log Loss/Brier/RPS; it is not a measured real-RPL result.
 
@@ -255,8 +257,9 @@ Private RPL development workbench; [frozen M3 protocol](docs/M3_PRIVATE_RESEARCH
 - [ ] A7: owner-facing private research GUI, secure non-owner denial and no public prediction publication.
 - [ ] A8: two full repository-wide audits, exact-head/main CI, Vercel and owner acceptance.
 
-## M4 - Production Forecasting
-Immutable revisions, scheduled match updates, browser-triggered jobs, Zenit reports only for corresponding RPL fixtures, reliable monitoring.
+## M4 - Production Forecasting (OPEN, private only; #304)
+
+First focus: trusted future-only 2026/27 RPL **private shadow** forecasts with immutable revisions, scheduled updates, secure owner-only dispatch, Zenit reports solely for RPL fixtures and monitoring. No backdated played fixtures, no consumed 2025/26 re-use, no public forecast publication. [Eight gates](https://github.com/StanleyLl0yd/FootballForecast/issues/304) and [prospective protocol](docs/M4_PROSPECTIVE_PROTOCOL.md). First PR implements only a synthetic fail-closed metadata preflight and current milestone UI; no actual forecast/model/source capture/write authorization.
 
 ## M5 - Advanced Models
 CatBoost, validated ensembles, champion/challenger and market comparison if data and rights permit.
