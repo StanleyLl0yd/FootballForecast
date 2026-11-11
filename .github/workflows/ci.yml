@@ -161,6 +161,13 @@ jobs:
           docker exec -i "${{ job.services.postgres.id }}" psql -X -v ON_ERROR_STOP=1 -v expected_forecasts="$pre_forecasts" -U postgres -d postgres \
             < database/tests/0019_m1_compact_current_refresh.sql
 
+      - name: Parallel private M4 first-writer clash on disposable PostgreSQL 17
+        shell: bash
+        run: |
+          bash -n scripts/m4-private-ledger-concurrency-ci.sh
+          bash scripts/m4-private-ledger-concurrency-ci.sh "${{ job.services.postgres.id }}"
+
+
   web:
     runs-on: ubuntu-latest
     timeout-minutes: 15
