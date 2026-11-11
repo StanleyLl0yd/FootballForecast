@@ -32,10 +32,10 @@ export function M3DevelopmentWorkbench({summary}:{summary:Summary}){
   const fmt=(x:number)=>x.toFixed(4);
   return <section className="panel informative" aria-label="M3 owner-only development workbench">
     <h2>M3 · Исследование на реальных исторических данных</h2>
-    <p className="source-lab-note"><strong>Технически принято A1–A7: 7/8.</strong>{' '}
+    <p className="source-lab-note"><strong>M3 принят владельцем: A1–A8, 8/8.</strong>{' '}
       Режим NON_STRICT_RETROSPECTIVE: обучение строго по прошлым завершённым
       сезонам, без оригинального предматчевого as-of и без новой оценки holdout.
-      A8 открыт до двух repository-wide аудитов и явной приёмки владельцем.</p>
+      Два полных аудита и явная приёмка A8 завершены 11.11.2026. Публичные прогнозы запрещены.</p>
     <div className="stat-grid">
       <div className="stat"><span>Независимые соответствия матчей</span>
         <strong>{summary.totalCorrespondences}/1680</strong>

@@ -1,4 +1,6 @@
-## CURRENT · 2026-11-09 · M2 ACCEPTED 8/8; M3 OPEN (owner authorized)
+## CURRENT · 2026-11-11 · M0/M1/M2/M3 ACCEPTED; M4 OPEN (owner authorized, private only)
+
+M3 [#271](https://github.com/StanleyLl0yd/FootballForecast/issues/271) CLOSED 2026-11-11, A1–A8 accepted 8/8 after two independent full repository-wide audits, exact-main 11/11 PASS, Vercel exact-main promotion and explicit owner residual-risk acceptance. Its A3–A6 evidence is NON_STRICT_RETROSPECTIVE, never strict historical as-of. M4 [#304](https://github.com/StanleyLl0yd/FootballForecast/issues/304) is OPEN for private prospective-only RPL shadow preparation; **no public forecasts or production model approval**. Consumed 2025/26 holdout is permanently off limits. Dated statuses below are archival, not reopening M3.
 
 M3-A3 2026-11-10 gaps 2021/22+2022/23: [six hand-chosen official RFS match anchors](docs/M3_TWO_SEASON_SIX_RFS_ANCHORS_REPRODUCTION_2026-11-10.md) matched existing private anonymous seven-season club masks, direction, retrospectively published UTC-minute schedules and official scores **6/6** in SELECT-only aggregate. Krylia across 2 events and Torpedo across 3 reuse one opaque private ID each, without exporting IDs. **Pari NN–Torpedo 2023-03-19 played 1:1 but later officially awarded 0:3**, which the source mirrors: mandatory played-versus-awarded gate. This is **not 480 newly certified RPL matches** and does not clear source rights, original UTC/first-serving, club legal identity or eligible training. [Public-safe receipt](docs/M3_TWO_SEASON_SIX_RFS_ANCHORS_EVIDENCE.json). A3 OPEN, M3 2/8.
 
@@ -236,27 +238,30 @@ Licensed adapters, provenance, normalized seasons and teams, timestamp checks, d
 
 **M3 private development-only authorization: 2026-11-09, [#271](https://github.com/StanleyLl0yd/FootballForecast/issues/271). No production forecast approval.** The consumed 2025/26 holdout must never be used again. Release integrity [#266](https://github.com/StanleyLl0yd/FootballForecast/issues/266) remains open.
 
-## M3 - Calibration & Evaluation (OPEN, owner-authorized 2026-11-09)
+## M3 - Calibration & Evaluation (ACCEPTED 8/8, 2026-11-11; historical checklist below)
 
 Private RPL development workbench; [frozen M3 protocol](docs/M3_PRIVATE_RESEARCH_PROTOCOL.md), [eight explicit acceptance gates #271](https://github.com/StanleyLl0yd/FootballForecast/issues/271). Keep M2 frozen and **never replay 2025/26 holdout**. Begin with 2018/19–2024/25 synthetic-only five-fold expanding validation, fixed Dirichlet-smoothed H/D/A baseline and Log Loss/Brier/RPS; it is not a measured real-RPL result.
 
 - [x] A1: reviewed M3 protocol, eligibility and research/publication boundaries.
 - [x] A2: synthetic-only five-fold baseline, positive/negative tests and per-fold honest metrics.
-- [ ] A3: independent played-score, team-identity, kickoff, rights and as-of eligibility for real development data.
+
+**Archived 09–10 November A3 investigation notes below** are retained as historical checkpoints; their statements of unfinished identity/eligibility were superseded by reviewed [#271](https://github.com/StanleyLl0yd/FootballForecast/issues/271) retrospective-only A3 acceptance on 11 November.
+- [x] A3: seven-season 1,680/1,680 public/private fixture correspondences, 1,673 played-score candidates with seven exclusions; retrospective-only chronology, not authenticated original as-of.
   - Aggregate-only public evidence inventory and six-source fail-closed gate prepared: [M3-A3 readiness review](docs/M3_SOURCE_READINESS_2026-11-09.md). No per-fixture private crosswalk or verified eligible training count; A3 remains OPEN. Six CC0 technical awards and a 2023/24 schedule-direction anomaly must not be silently applied to private source rows.
   - Live read-only PostgreSQL 17 aggregate inspection (7x240, 6 strong technical-result *date+3:0 scoreline candidates* but **zero per-fixture identity proof**); verified RLS/FORCE RLS and no public/role SELECT. [Live aggregate receipt](docs/M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json), [protocol](docs/M3_FIXTURE_ELIGIBILITY_TRIAGE_PROTOCOL.md).
   - Independently documented seven anomaly events now cross-check live private UTC **date + exact score direction + recurring provider club-ID constraints** (6 technical-award candidates, 2022/23 annulled 1:1→0:3, 2023/24 two reversed-venue 1:0 matches). Private identity map still not independently attested; [A3 evidence and caveats](docs/M3_FIXTURE_ELIGIBILITY_TRIAGE_PROTOCOL.md). Owner-only `/admin/research` surfaces only aggregate candidate counts; no automatic correction or training.
   - Synthetic-tested **per-fixture** source comparison now classifies explicit identity/score/date/direction/technical/revision conflicts into aggregate-only refusal counts. No real private per-row crosswalk executed; not training authorization. A3 remains OPEN.
   - Seven independent retrospective public RPL club rosters assembled (112 club-season appearances, 26 distinct public names, 82 adjacent overlap instances), matching **both the private source-ID sample and a new full 1,680-row live read-only PostgreSQL aggregate** (26 IDs, 82 adjacent repeats), but **not** a club-ID crosswalk. [Public roster evidence](docs/M3_PUBLIC_SEVEN_SEASON_CLUB_ROSTERS_EVIDENCE.json). Name continuity/rights/UTC still unverified; A3 OPEN.
-- [ ] A4: preregistered separate multi-season model with deterministic fit, refused missing data and no M2 retuning.
+- [x] A4: frozen deterministic team-Poisson prior-seasons-only development challenger; no M2 retuning.
   - Pure synthetic multi-season team Poisson candidate with fixed 12-game club smoothing and 20-game league prior, 5 expanding folds, proper scores and future-label leakage refusals: [frozen M3 candidate contract](docs/M3_PRIVATE_RESEARCH_PROTOCOL.md#a4-candidate-preparation-synthetic-multi-season-team-poisson-not-a4-acceptance). Real fit remains gated by A3.
-- [ ] A5: protected, aggregate-only development evaluation on eligible real historical 2018/19–2024/25, no 2025/26.
-- [ ] A6: uncertainty, abstentions, coverage and matched benchmark only if authentic market snapshots exist.
-- [ ] A7: owner-facing private research GUI, secure non-owner denial and no public prediction publication.
-- [ ] A8: two full repository-wide audits, exact-head/main CI, Vercel and owner acceptance.
+- [x] A5: actual protected aggregate-only five-fold real development evaluation on 2018/19–2024/25, no 2025/26 access.
+- [x] A6: per-fold Log Loss/Brier/RPS, abstentions/coverage and approximate uncertainty; bookmaker comparison unavailable, not claimed.
+- [x] A7: protected owner-only GUI, fail-closed source/evidence checks and anonymous redirect; manual non-owner OAuth browser check remains accepted unobserved risk.
+- [x] A8: two full repository-wide audits, exact-main 11/11, Vercel exact-SHA release and explicit owner acceptance on 2026-11-11.
 
-## M4 - Production Forecasting
-Immutable revisions, scheduled match updates, browser-triggered jobs, Zenit reports only for corresponding RPL fixtures, reliable monitoring.
+## M4 - Production Forecasting (OPEN, private only; #304)
+
+First focus: trusted future-only 2026/27 RPL **private shadow** forecasts with immutable revisions, scheduled updates, secure owner-only dispatch, Zenit reports solely for RPL fixtures and monitoring. No backdated played fixtures, no consumed 2025/26 re-use, no public forecast publication. [Eight gates](https://github.com/StanleyLl0yd/FootballForecast/issues/304) and [prospective protocol](docs/M4_PROSPECTIVE_PROTOCOL.md). First PR implements only a synthetic fail-closed metadata preflight and current milestone UI; no actual forecast/model/source capture/write authorization.
 
 ## M5 - Advanced Models
 CatBoost, validated ensembles, champion/challenger and market comparison if data and rights permit.

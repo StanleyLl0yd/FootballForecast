@@ -121,7 +121,7 @@ export function inspectM3OwnerDevelopment(a3,dev){
        dev.gates.publicReleaseAuthorized!==false||
        dev.gates.fullM3Accepted!==false)return fail;
     return Object.freeze({state:'verified_retrospective',
-      acceptedTechnicalGates:7,totalCorrespondences:1680,
+      acceptedTechnicalGates:8,totalCorrespondences:1680,
       playedCandidates:1673,excluded:7,
       seasons:Object.freeze(seasons),folds:Object.freeze(folds),
       model:Object.freeze({name:'Team Poisson · shrinkage 12',baseline:'H/D/A · Dirichlet(1,1,1)'}),

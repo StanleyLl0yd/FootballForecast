@@ -68,15 +68,18 @@ test('UI receives only already public source-summary JSON with correct boundarie
   assert.equal(live.limitations.protectedRealModelTrainingAuthorized,false);
 });
 
-test('M2 accepted and M3 open are no longer contradicted on three product pages',()=>{
+test('M3 accepted 8/8 and M4 private-only open are consistent on three product pages',()=>{
   for(const page of [owner,models,admin]){
     assert.doesNotMatch(page,/M3 (?:не разрешён|не разрешены|не разрешено|остаётся запрещён)/i);
   }
-  assert.match(models,/M3: 7\/8 технически приняты, A8 открыт/);
+  assert.match(models,/M3 принят 8\/8 \(11\.11\.2026\); M4 открыт/);
   assert.match(models,/Пять хронологических folds проверены на реальных исторических матчах/);
   assert.match(models,/Защищённый контроль M3/);
-  assert.match(admin,/M3 отдельно открыт для приватной исследовательской разработки/);
+  assert.match(admin,/M3 принят 11\.11\.2026 как закрытое ретроспективное исследование/);
   assert.match(owner,/M2 · принятое и оставшиеся ограничения/);
+  assert.match(owner,/M3 принят 8\/8/);
+  assert.match(models,/Публичная публикация запрещена/);
+  assert.match(admin,/M4 отдельно открыт для будущих приватных shadow-прогнозов/);
   assert.match(owner,/Повторное использование 2025\/26 запрещено/);
 });
 
