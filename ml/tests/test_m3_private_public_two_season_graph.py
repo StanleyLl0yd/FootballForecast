@@ -14,6 +14,7 @@ from football_forecast.research.m3_rsssf_match_schedule import (
     parse_rsssf_rpl,
 )
 
+
 def sources():
     public = tuple(
         row
