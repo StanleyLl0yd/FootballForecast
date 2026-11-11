@@ -1,5 +1,5 @@
 """Synthetic RSSSF parser tests: no network and no holdout access."""
-from datetime import date
+from datetime import date, timedelta
 
 import pytest
 
@@ -47,11 +47,16 @@ def synthetic_source(season: str) -> bytes:
             away_extra-=1
     assert home_extra==away_extra==0
     lines=["<html><body><pre>",spec["anchor"],"Final Table:", "Other metadata"]
+    first_day=date(int(season[:4]),7,24)
     for index,(ri,home,away) in enumerate(fixtures):
         if index%8==0:
-            is_revised_round=revised_idx is not None and ri==fixtures[revised_idx][0]
-            which="Mar 19" if is_revised_round else ("Jul 24" if ri<=15 else "May 21")
-            lines.append(f"Round {ri} [{which}. Total Att: 1]")
+            lines.append(f"Round {ri} [Total Att: 1]")
+        # Spread rounds across the season, matching the structural variation
+        # of real schedules; uniform July dates made club masks ambiguous.
+        day=first_day+timedelta(days=(ri-1)*10+(index%8)//2)
+        if index==revised_idx:
+            day=date(2023,3,19)
+        lines.append(f"[{day:%b} {day.day}]")
         h,a=goals[index]
         lines.append(f"  {home:<10} {h}-{a} {away}")
         lines.append("    [Att: 99]")
@@ -87,8 +92,8 @@ def test_revision_kept_separate_from_2022_on_field_score():
 
 
 @pytest.mark.parametrize(("old","new"),[
-    ("Round 2 [Jul 24.","Round 99 [Jul 24."),
-    ("Round 10 [Jul 24.","Round 9 [Jul 24."),
+    ("Round 2 [Total Att: 1]","Round 99 [Total Att: 1]"),
+    ("Round 10 [Total Att: 1]","Round 9 [Total Att: 1]"),
     ("Att: 99","Att: 99"), # reference: same-source harmless comments
 ])
 def test_bad_top_flight_rounds_and_noop_metadata(old,new):
@@ -105,8 +110,8 @@ def test_missing_score_and_wrong_teams_are_denied():
     for mutated in (
         source.replace("Ahmat", "Fictional",1),
         source.replace("1-1", "9-9",1),
-        source.replace("Round 30 [May 21.", "Round 29 [May 21.",1),
-        source.replace("Round 1 [Jul 24.", "Round 1 [Jun 24.",1),
+        source.replace("Round 30 [Total Att: 1]", "Round 29 [Total Att: 1]",1),
+        source.replace("[Jul 24]", "[Jun 24]",1),
     ):
         if mutated==source:
             continue
