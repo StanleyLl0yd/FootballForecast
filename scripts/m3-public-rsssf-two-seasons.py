@@ -4,6 +4,8 @@ import json
 from dataclasses import asdict
 from urllib.request import Request, urlopen
 
+from football_forecast.data.contracts import DataError
+
 from football_forecast.research.m3_rsssf_match_schedule import audit_rsssf_rpl
 
 SOURCE_URLS = (
@@ -36,5 +38,8 @@ def main() -> None:
 if __name__=="__main__":
     try:
         main()
-    except Exception:
-        raise SystemExit("FAIL: bounded 2021/22–2022/23 public fixture audit inconclusive")
+    except DataError as exc:
+        # This parser generates only static, non-sensitive error categories.
+        raise SystemExit(f"FAIL: public-only source parser: {exc}") from None
+    except Exception as exc:
+        raise SystemExit(f"FAIL: public-only source retrieval: {type(exc).__name__}") from None
