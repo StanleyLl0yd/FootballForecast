@@ -10,7 +10,7 @@ export default async function Page(){
     <PageHeading eyebrow="M2 ПРИНЯТ · M3 ИССЛЕДОВАНИЕ" title="Лаборатория моделей"
       subtitle="Протокол, подготовка обучения и контроль исследовательских доказательств. Отчёты не равны опубликованным прогнозам."/>
     <div className="stat-grid">
-      <div className="stat"><span>План M2</span><strong>8/8</strong><small>M2 принят 09.11.2026; M3: 6/8 технически приняты, A7–A8 открыты</small></div>
+      <div className="stat"><span>План M2</span><strong>8/8</strong><small>M2 принят 09.11.2026; M3: 7/8 технически приняты, A8 открыт</small></div>
       <div className="stat"><span>Обучающая выборка</span><strong>240</strong><small>2024/25 · 16 клубов · read-only</small></div>
       <div className="stat"><span>Утверждённых моделей</span><strong>0</strong><small>Один private escrow Poisson, TRAIN_ONLY_UNAPPROVED; production-модель не утверждена</small></div>
       <div className="stat"><span>Публикация прогнозов</span><strong>0</strong><small>Holdout 2025/26 использован ровно один раз; повтор запрещён</small></div>
@@ -84,8 +84,8 @@ export default async function Page(){
         В ретроспективном эксперименте Poisson и H/D/A baseline оценены на одинаковых
         1 197 матчах; Poisson показал меньшие Log Loss, Brier и RPS.
         Это результаты ограниченного исследования, не утверждённая production-модель.</p>
-      <p className="source-lab-warning">M3-A3–A6 технически приняты только для
-        NON_STRICT_RETROSPECTIVE, A7–A8 открыты. Оригинальные предматчевые
+      <p className="source-lab-warning">M3-A3–A7 технически приняты только для
+        NON_STRICT_RETROSPECTIVE, A8 открыт. Оригинальные предматчевые
         временные метки не удостоверены; 2025/26 нельзя использовать повторно,
         публикация прогнозов не разрешена.</p>
       <a className="sources-method" href="/admin/research">Защищённый контроль M3 ↗</a>

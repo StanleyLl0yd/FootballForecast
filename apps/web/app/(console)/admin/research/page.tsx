@@ -87,8 +87,8 @@ export default async function Page(){
       <div className="stat"><span>Общий этап M2</span><strong>8/8</strong>
         <small>Два полных аудита приняты владельцем 09.11.2026; M3 открыт отдельно.</small></div>
       <div className="stat"><span>Этап M3 · ретроспективное исследование</span>
-        <strong>{m3Development.state==='verified_retrospective'?'6/8':'—'}</strong>
-        <small>A1–A6 технически приняты; A7–A8 открыты. Без допуска к прогнозам.</small></div>
+        <strong>{m3Development.state==='verified_retrospective'?'7/8':'—'}</strong>
+        <small>A1–A7 технически приняты; A8 открыт. Без допуска к прогнозам.</small></div>
       <div className="stat"><span>Вход владельца · GitHub OAuth</span><strong>Принят</strong>
         <small>Реальный вход и анонимный отказ подтверждены 05.11.2026; вход под чужим GitHub не проверялся в браузере.</small></div>
       <div className="stat"><span>Архивные train-only запуски v1</span>

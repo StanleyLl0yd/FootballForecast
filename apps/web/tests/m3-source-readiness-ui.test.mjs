@@ -72,7 +72,7 @@ test('M2 accepted and M3 open are no longer contradicted on three product pages'
   for(const page of [owner,models,admin]){
     assert.doesNotMatch(page,/M3 (?:не разрешён|не разрешены|не разрешено|остаётся запрещён)/i);
   }
-  assert.match(models,/M3: 6\/8 технически приняты, A7–A8 открыты/);
+  assert.match(models,/M3: 7\/8 технически приняты, A8 открыт/);
   assert.match(models,/Пять хронологических folds проверены на реальных исторических матчах/);
   assert.match(models,/Защищённый контроль M3/);
   assert.match(admin,/M3 отдельно открыт для приватной исследовательской разработки/);
