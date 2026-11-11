@@ -30,12 +30,17 @@ import {inspectM3SourceRights} from '@/lib/m3-source-rights.mjs';
 import m3RightsEvidence from '../../../../../../docs/M3_A3_SOURCE_RIGHTS_READINESS_EVIDENCE.json';
 import {inspectM3MissingCc0PublicTotals} from '@/lib/m3-public-missing-seasons.mjs';
 import m3MissingCc0Evidence from '../../../../../../docs/M3_TWO_MISSING_CC0_SEASONS_PUBLIC_TOTALS_EVIDENCE.json';
+import m3A3Evidence from '../../../../../../docs/M3_A3_SEVEN_SEASON_RETROSPECTIVE_READINESS_2026-11-11.json';
+import m3DevelopmentEvidence from '../../../../../../docs/M3_A4_A5_A6_REAL_DEVELOPMENT_2026-11-11.json';
+import {inspectM3OwnerDevelopment} from '@/lib/m3-owner-development.mjs';
+import {M3DevelopmentWorkbench} from '@/components/m3-development-workbench';
 
 export const dynamic='force-dynamic';
 
 export default async function Page(){
   // Authorize before inspecting any further state; redirect is fail-closed.
   await requireOwner();
+  const m3Development=inspectM3OwnerDevelopment(m3A3Evidence,m3DevelopmentEvidence);
   const m3Rights=inspectM3SourceRights(m3RightsEvidence);
   const m3MissingCc0=inspectM3MissingCc0PublicTotals(m3MissingCc0Evidence);
   const m3References=m3PublicCc0Shape.developmentSeasonsObserved;
@@ -81,8 +86,9 @@ export default async function Page(){
     <div className="stat-grid">
       <div className="stat"><span>Общий этап M2</span><strong>8/8</strong>
         <small>Два полных аудита приняты владельцем 09.11.2026; M3 открыт отдельно.</small></div>
-      <div className="stat"><span>Этап M3 · калибровка</span><strong>2/8</strong>
-        <small>Исследование открыто; пригодность данных A3 ещё не доказана.</small></div>
+      <div className="stat"><span>Этап M3 · ретроспективное исследование</span>
+        <strong>{m3Development.state==='verified_retrospective'?'6/8':'—'}</strong>
+        <small>A1–A6 технически приняты; A7–A8 открыты. Без допуска к прогнозам.</small></div>
       <div className="stat"><span>Вход владельца · GitHub OAuth</span><strong>Принят</strong>
         <small>Реальный вход и анонимный отказ подтверждены 05.11.2026; вход под чужим GitHub не проверялся в браузере.</small></div>
       <div className="stat"><span>Архивные train-only запуски v1</span>
@@ -98,6 +104,12 @@ export default async function Page(){
         <small>{firstEvaluation.state==='recorded'?'182/240 матчей, 58 отказов; метрики приватные':
           'Подтверждение первого теста не прошло проверку SHA'}</small></div>
     </div>
+    <M3DevelopmentWorkbench summary={m3Development}/>
+    <details className="panel informative">
+      <summary>Архив диагностики M3 · состояние до 11.11.2026</summary>
+      <p className="source-lab-note">Ниже — исторические промежуточные результаты 09–10.11.
+        Утверждения «0 подтверждённых» и «A3 открыто» относятся только к тому
+        моменту и заменены текущим исследовательским свидетельством выше.</p>
     <section className="panel informative">
       <h2>M3 · Семилетний архив · проверка пригодности данных</h2>
       <p className="source-lab-note">Лицензирование исторических данных:
@@ -223,6 +235,7 @@ export default async function Page(){
         Агрегированные свидетельства не прошли проверку согласованности.
         Нельзя считать историю РПЛ пригодной для обучения.</p>}
     </section>
+    </details>
     <section className="panel informative">
       <h2>Контроль M2 · принятое и оставшиеся ограничения</h2>
       <div className="source-lab-table-wrapper"><table className="source-lab-table">

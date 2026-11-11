@@ -10,7 +10,7 @@ export default async function Page(){
     <PageHeading eyebrow="M2 ПРИНЯТ · M3 ИССЛЕДОВАНИЕ" title="Лаборатория моделей"
       subtitle="Протокол, подготовка обучения и контроль исследовательских доказательств. Отчёты не равны опубликованным прогнозам."/>
     <div className="stat-grid">
-      <div className="stat"><span>План M2</span><strong>8/8</strong><small>M2 принят 09.11.2026; M3 открыт, 2/8 критериев выполнены</small></div>
+      <div className="stat"><span>План M2</span><strong>8/8</strong><small>M2 принят 09.11.2026; M3: 6/8 технически приняты, A7–A8 открыты</small></div>
       <div className="stat"><span>Обучающая выборка</span><strong>240</strong><small>2024/25 · 16 клубов · read-only</small></div>
       <div className="stat"><span>Утверждённых моделей</span><strong>0</strong><small>Один private escrow Poisson, TRAIN_ONLY_UNAPPROVED; production-модель не утверждена</small></div>
       <div className="stat"><span>Публикация прогнозов</span><strong>0</strong><small>Holdout 2025/26 использован ровно один раз; повтор запрещён</small></div>
@@ -78,14 +78,16 @@ export default async function Page(){
     </section>
     <section className="panel informative">
       <h2>M3 · Новый этап оценки и калибровки</h2>
-      <p>Первый baseline проверен на пяти хронологических выборках
-        <strong> исключительно из синтетических матчей</strong>.
-        Реальная точность РПЛ этим не измерена.
-        Семилетний приватный источник содержит 1 680 записей,
-        но число подтверждённых сыгранных матчей для нового обучения неизвестно.</p>
-      <p className="source-lab-warning">Прежде чем обучать многосезонную модель,
-        нужны независимая сверка технических результатов, клубов и исторического времени.
-        M3-A3 открыт, а контрольный сезон 2025/26 нельзя использовать повторно.</p>
+      <p>Пять хронологических folds проверены на реальных исторических матчах РПЛ.
+        <strong> 1 680/1 680</strong> календарных сопоставлений по семи сезонам,
+        семь технических/пересмотренных результатов исключены.
+        В ретроспективном эксперименте Poisson и H/D/A baseline оценены на одинаковых
+        1 197 матчах; Poisson показал меньшие Log Loss, Brier и RPS.
+        Это результаты ограниченного исследования, не утверждённая production-модель.</p>
+      <p className="source-lab-warning">M3-A3–A6 технически приняты только для
+        NON_STRICT_RETROSPECTIVE, A7–A8 открыты. Оригинальные предматчевые
+        временные метки не удостоверены; 2025/26 нельзя использовать повторно,
+        публикация прогнозов не разрешена.</p>
       <a className="sources-method" href="/admin/research">Защищённый контроль M3 ↗</a>
     </section>
     <M2CandidateReplay/>
