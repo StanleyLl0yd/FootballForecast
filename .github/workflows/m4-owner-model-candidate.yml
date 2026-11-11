@@ -1,9 +1,9 @@
-name: M4 owner-only private candidate fit (SELECT-only)
+name: M4 owner-only private model candidate (read or store)
 on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: 'M4_PRIVATE_CANDIDATE_READONLY, no holdout or publication'
+        description: 'M4_PRIVATE_CANDIDATE_READONLY or M4_PRIVATE_MODEL_STORE'
         required: true
         type: string
   issue_comment:
@@ -20,7 +20,8 @@ jobs:
       github.actor == 'StanleyLl0yd' &&
       (
         (github.event_name == 'workflow_dispatch' &&
-         inputs.confirmation == 'M4_PRIVATE_CANDIDATE_READONLY') ||
+         (inputs.confirmation == 'M4_PRIVATE_CANDIDATE_READONLY' ||
+          inputs.confirmation == 'M4_PRIVATE_MODEL_STORE')) ||
         (github.event_name == 'issue_comment' &&
          github.event.action == 'created' &&
          github.event.issue.number == 304 &&
@@ -28,7 +29,8 @@ jobs:
          github.event.comment.user.id == 131160519 &&
          github.event.comment.user.login == 'StanleyLl0yd' &&
          github.event.comment.author_association == 'OWNER' &&
-         github.event.comment.body == '/m4-model-candidate-readonly')
+         (github.event.comment.body == '/m4-model-candidate-readonly' ||
+          github.event.comment.body == '/m4-model-store-private'))
       )
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -40,9 +42,11 @@ jobs:
         with: {python-version: '3.13'}
       - name: Install pinned PostgreSQL client
         run: python -m pip install -e ./ml 'psycopg[binary]==3.3.6'
-      - name: Validate and fit protected development-only candidate
+      - name: Validate and fit protected development-only candidate (optional private escrow)
         shell: bash
         env:
+          # Only boolean GitHub expression after the exact owner event gate.
+          M4_STORE_GATED: ${{ (github.event_name == 'issue_comment' && github.event.comment.body == '/m4-model-store-private') || (github.event_name == 'workflow_dispatch' && inputs.confirmation == 'M4_PRIVATE_MODEL_STORE') }}
           PGHOST: ${{ secrets.M1_PGHOST }}
           PGUSER: ${{ secrets.M1_PGUSER }}
           PGDATABASE: ${{ secrets.M1_PGDATABASE }}
@@ -74,6 +78,11 @@ jobs:
           }
           openssl x509 -in "$work/ca.crt" -noout -checkend 86400 > /dev/null
           export PGSSLROOTCERT="$work/ca.crt"
+          if [[ "$M4_STORE_GATED" == 'true' ]]; then
+            export M4_PRIVATE_MODEL_STORE='M4_PRIVATE_MODEL_STORE_EXPLICIT'
+          elif [[ "$M4_STORE_GATED" != 'false' ]]; then
+            echo 'FAIL: invalid private operation gate'; exit 2
+          fi
           python scripts/m4-owner-model-candidate.py > "$work/receipt.json"
           python - "$work/receipt.json" <<'PY'
           import json, os, re, sys
@@ -87,27 +96,36 @@ jobs:
                   'eligibleMatches','excluded','distinctClubs','classification',
                   'artifactPersisted','modelApproved','holdoutRead',
                   'publicForecastsWritten'}
+          store = os.environ['M4_STORE_GATED'] == 'true'
+          expected_kind = ('M4_PRIVATE_SHADOW_CANDIDATE_ESCROW' if store
+                           else 'M4_PRIVATE_SHADOW_CANDIDATE_SELECT_ONLY')
           if set(info) != keys or info['schemaVersion'] != 1 or (
-              info['kind'] != 'M4_PRIVATE_SHADOW_CANDIDATE_SELECT_ONLY' or
+              info['kind'] != expected_kind or
               info['codeSha'] != os.environ['GITHUB_SHA'] or
               info['historicalSeasons'] != 7 or info['eligibleMatches'] != 1673 or
               info['excluded'] != 7 or info['distinctClubs'] != 26 or
               info['classification'] != 'NON_STRICT_RETROSPECTIVE' or
+              info['artifactPersisted'] is not store or
               any(info[k] is not False for k in
-                  ('artifactPersisted','modelApproved','holdoutRead',
-                   'publicForecastsWritten')) or
+                  ('modelApproved','holdoutRead','publicForecastsWritten')) or
               any(not isinstance(info[k],str) or
                   not re.fullmatch(r'[0-9a-f]{64}', info[k]) for k in
                   ('sourceManifestSha256','eligibleRowsSha256','modelArtifactSha256'))
           ):
               raise SystemExit('FAIL: private candidate attestation mismatch')
+          if info['modelArtifactSha256'] != (
+              'b3eeb4cf950c38507572c6c6b4e3db7f133cf7cc2ee0593b2d940c66394b0a0c'
+          ):
+              raise SystemExit('FAIL: frozen artifact changed')
           print('M4_PRIVATE_MODEL_ARTIFACT_SHA256=' + info['modelArtifactSha256'])
+          print('M4_PRIVATE_MODEL_PERSISTED=' + str(info['artifactPersisted']).lower())
           with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as out:
               out.write('## M4 private read-only model candidate (not production)\n')
               out.write('Seven historical development seasons, 1,673 selected played-score '
                         'candidates, seven explicit exclusions; no 2025/26.\n')
               out.write('Private candidate artifact SHA-256: `' +
                         info['modelArtifactSha256'] + '`\n')
-              out.write('Artifact discarded in memory; no persistence, public forecast, '
-                        'external private rows or model approval.\n')
+              out.write('Model stored only in protected ff_private escrow.\n' if store
+                        else 'Artifact discarded in memory.\n')
+              out.write('No public forecast, private rows exported or model approval.\n')
           PY

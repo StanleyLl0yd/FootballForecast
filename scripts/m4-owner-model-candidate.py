@@ -7,9 +7,15 @@ reviewed private model storage is available and independently authorized.
 """
 import os
 import sys
+import re
 from collections import Counter
 from datetime import timezone
 from json import dumps
+
+# Authenticated owner-only write is a distinct explicit operation.
+# Hash previously observed by the original 2026-11-11 SELECT-only owner run.
+FROZEN_M4_ARTIFACT_SHA256 = "b3eeb4cf950c38507572c6c6b4e3db7f133cf7cc2ee0593b2d940c66394b0a0c"
+STORE_MARKER = "M4_PRIVATE_MODEL_STORE_EXPLICIT"
 
 from football_forecast.data.contracts import DataError
 from football_forecast.research.m4_private_candidate import (
@@ -95,6 +101,49 @@ def inspect_private_cohort(snapshot_rows, match_rows):
     return model
 
 
+
+def persist_private_candidate(cursor, candidate, *, run_id: int, code_sha: str) -> bool:
+    """One irreversible owner-only private model insert. No artifact export."""
+    if candidate.artifact_sha256 != FROZEN_M4_ARTIFACT_SHA256:
+        raise DataError("M4: source/model artifact differs from frozen original")
+    if type(run_id) is not int or not 0 < run_id < 2**63:
+        raise DataError("M4: invalid owner workflow run identifier")
+    if type(code_sha) is not str or re.fullmatch(r"[0-9a-f]{40}", code_sha) is None:
+        raise DataError("M4: untrusted owner workflow source revision")
+    cursor.execute(
+        """INSERT INTO ff_private.ff_m4_candidate_models
+           (model_version,training_scope,training_matches,distinct_clubs,
+            source_manifest_sha256,eligible_rows_sha256,model_sha256,
+            model_bytes,code_sha,github_run_id)
+           VALUES (%s,'2018/19-2024/25-development-only',%s,%s,%s,%s,%s,%s,%s,%s)
+           ON CONFLICT (model_sha256) DO NOTHING
+           RETURNING id""",
+        (candidate.model_version, candidate.eligible_matches, candidate.distinct_clubs,
+         candidate.source_manifest_sha256, candidate.eligible_rows_sha256,
+         candidate.artifact_sha256, candidate.artifact_bytes, code_sha, run_id),
+    )
+    inserted = cursor.fetchone() is not None
+    # A retry may find the exact frozen model, but must not modify or reinsert it.
+    cursor.execute(
+        """SELECT source_manifest_sha256,eligible_rows_sha256,model_sha256,
+                  model_version,training_matches,distinct_clubs,
+                  production_approved,public_release_allowed,holdout_2025_26_read,
+                  octet_length(model_bytes),encode(sha256(model_bytes),'hex')
+           FROM ff_private.ff_m4_candidate_models
+           WHERE model_sha256=%s""", (candidate.artifact_sha256,),
+    )
+    row = cursor.fetchone()
+    if row != (
+        candidate.source_manifest_sha256, candidate.eligible_rows_sha256,
+        candidate.artifact_sha256, candidate.model_version,
+        candidate.eligible_matches, candidate.distinct_clubs,
+        False, False, False,
+        len(candidate.artifact_bytes), candidate.artifact_sha256,
+    ):
+        raise DataError("M4: private persisted artifact mismatch")
+    return inserted
+
+
 def main() -> None:
     if (
         os.environ.get("GITHUB_REPOSITORY") != "StanleyLl0yd/FootballForecast"
@@ -102,6 +151,18 @@ def main() -> None:
         or os.environ.get("GITHUB_ACTOR") != "StanleyLl0yd"
     ):
         raise RuntimeError("unauthorized repository/ref/actor")
+    mode = os.environ.get("M4_PRIVATE_MODEL_STORE")
+    if mode is not None and mode != STORE_MARKER:
+        raise RuntimeError("M4: unrecognized private operation")
+    persist = mode == STORE_MARKER
+    if persist and os.environ.get("GITHUB_EVENT_NAME") not in (
+        "workflow_dispatch", "issue_comment",
+    ):
+        raise RuntimeError("M4: storage requires owner-triggered authenticated event")
+    if persist and os.environ.get("M4_STORE_GATED") != "true":
+        raise RuntimeError("M4: missing owner workflow storage gate")
+    if persist and os.environ.get("GITHUB_SHA", "").lower() == "":
+        raise RuntimeError("M4: source SHA missing")
     import psycopg  # Only within protected workflow; never imported in pure tests.
 
     with psycopg.connect(
@@ -109,21 +170,36 @@ def main() -> None:
         password=os.environ["PGPASSWORD"], dbname=os.environ["PGDATABASE"],
         sslmode="verify-full", sslrootcert=os.environ["PGSSLROOTCERT"],
         connect_timeout=10,
-        options="-c default_transaction_read_only=on -c statement_timeout=120000",
+        options=("-c statement_timeout=120000" if persist else
+                 "-c default_transaction_read_only=on -c statement_timeout=120000"),
     ) as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+            cursor.execute(
+                "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ" +
+                ("" if persist else " READ ONLY")
+            )
             cursor.execute(SNAPSHOTS_SQL)
             snapshots = cursor.fetchall()
             cursor.execute(MATCHES_SQL)
             matches = cursor.fetchall()
-            connection.rollback()
-    candidate = inspect_private_cohort(snapshots, matches)
+            candidate = inspect_private_cohort(snapshots, matches)
+            if candidate.artifact_sha256 != FROZEN_M4_ARTIFACT_SHA256:
+                raise DataError("M4: source differs from previously locked SHA")
+            if persist:
+                persist_private_candidate(
+                    cursor, candidate,
+                    run_id=int(os.environ["GITHUB_RUN_ID"]),
+                    code_sha=os.environ["GITHUB_SHA"],
+                )
+                connection.commit()
+            else:
+                connection.rollback()
     # Bound to the protected HEAD and do not print model bytes, coefficients,
     # IDs, exact scores, any per-match data or secrets.
     receipt = {
         "schemaVersion": 1,
-        "kind": "M4_PRIVATE_SHADOW_CANDIDATE_SELECT_ONLY",
+        "kind": ("M4_PRIVATE_SHADOW_CANDIDATE_ESCROW" if persist else
+                 "M4_PRIVATE_SHADOW_CANDIDATE_SELECT_ONLY"),
         "codeSha": os.environ["GITHUB_SHA"],
         "sourceManifestSha256": candidate.source_manifest_sha256,
         "eligibleRowsSha256": candidate.eligible_rows_sha256,
@@ -133,7 +209,7 @@ def main() -> None:
         "excluded": 7,
         "distinctClubs": candidate.distinct_clubs,
         "classification": candidate.classification,
-        "artifactPersisted": False,
+        "artifactPersisted": persist,
         "modelApproved": False,
         "holdoutRead": False,
         "publicForecastsWritten": False,
