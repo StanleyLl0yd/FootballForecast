@@ -19,6 +19,13 @@ Start M4 only with genuinely **future 2026/27 RPL fixtures**, frozen model prove
 7. **A7** owner-only monitoring, match revisions and Zenit pre/post-match reports only for applicable RPL fixtures; no user-visible published forecast.
 8. **A8** two complete repository-wide audits, live RLS/auth/browser, exact-main CI/Security/CodeQL and Vercel release integrity, with owner acceptance. **Publishing still requires a separate explicit authorization.**
 
+
+## A2 signed metadata preflight (synthetic proof, no real capture)
+
+`apps/web/lib/m4-signed-metadata.mjs` adds **two independent domain-separated HMAC-SHA256 attestations** on top of the A1 structural preflight: an owner-controlled source observation and a separately configured independent kickoff corroboration. Each signer binds the exact prospective fixture identity, UTC kickoff, relevant evidence digests and its own observed/recorded UTC times. The two issuer IDs, signing keys, source IDs and canonical signed fields must remain distinct; extra fields, unknown seasons, mismatched fixture IDs, swapped clubs, stale/tampered signatures, backdating and missing/out-of-order timestamps fail closed. All metadata is synthetic in tests.
+
+A valid test returns `authenticated_candidate_only`, **not** `genuineAsOfAttested`, `modelApproved`, `writeAuthorized` or `publicationAuthorized`. HMAC proves only that a configured issuer attested a string; it cannot prove the server's real clock, which third party supplied a kickoff, that independent data sources are truly independent, or append-only actual source capture. Such verification and storage must be established in A5 with live, independently reviewed evidence. The private signing secrets must be provided solely by reviewed, protected server-side code; never by a browser, source API or untrusted request. No keys are committed. This is a **pure, no-I/O verifier**, not an API or source collection workflow.
+
 ## Initial code boundary
 
 `apps/web/lib/m4-prospective-preflight.mjs` accepts only a tight metadata envelope and an **untrusted caller-supplied evaluation timestamp**. It performs deterministic structural checks, returning `blocked` or `candidate_only`. Even a positive candidate explicitly reports **`genuineAsOfAttested:false`, `modelApproved:false`, `writeAuthorized:false`, `publicationAuthorized:false`**. Digests are format-tested, not authenticated. **No code may treat this function alone as an authorization to run a model, write to the database, claim an authentic pre-match forecast or release predictions.** A3–A5 must establish actual server-trusted attestation, append-only persistence and private execution. This first gate does not use real source data.
