@@ -244,18 +244,20 @@ Private RPL development workbench; [frozen M3 protocol](docs/M3_PRIVATE_RESEARCH
 
 - [x] A1: reviewed M3 protocol, eligibility and research/publication boundaries.
 - [x] A2: synthetic-only five-fold baseline, positive/negative tests and per-fold honest metrics.
-- [ ] A3: independent played-score, team-identity, kickoff, rights and as-of eligibility for real development data.
+
+**Archived 09–10 November A3 investigation notes below** are retained as historical checkpoints; their statements of unfinished identity/eligibility were superseded by reviewed [#271](https://github.com/StanleyLl0yd/FootballForecast/issues/271) retrospective-only A3 acceptance on 11 November.
+- [x] A3: seven-season 1,680/1,680 public/private fixture correspondences, 1,673 played-score candidates with seven exclusions; retrospective-only chronology, not authenticated original as-of.
   - Aggregate-only public evidence inventory and six-source fail-closed gate prepared: [M3-A3 readiness review](docs/M3_SOURCE_READINESS_2026-11-09.md). No per-fixture private crosswalk or verified eligible training count; A3 remains OPEN. Six CC0 technical awards and a 2023/24 schedule-direction anomaly must not be silently applied to private source rows.
   - Live read-only PostgreSQL 17 aggregate inspection (7x240, 6 strong technical-result *date+3:0 scoreline candidates* but **zero per-fixture identity proof**); verified RLS/FORCE RLS and no public/role SELECT. [Live aggregate receipt](docs/M3_PRIVATE_HISTORY_DATE_TRIAGE_EVIDENCE.json), [protocol](docs/M3_FIXTURE_ELIGIBILITY_TRIAGE_PROTOCOL.md).
   - Independently documented seven anomaly events now cross-check live private UTC **date + exact score direction + recurring provider club-ID constraints** (6 technical-award candidates, 2022/23 annulled 1:1→0:3, 2023/24 two reversed-venue 1:0 matches). Private identity map still not independently attested; [A3 evidence and caveats](docs/M3_FIXTURE_ELIGIBILITY_TRIAGE_PROTOCOL.md). Owner-only `/admin/research` surfaces only aggregate candidate counts; no automatic correction or training.
   - Synthetic-tested **per-fixture** source comparison now classifies explicit identity/score/date/direction/technical/revision conflicts into aggregate-only refusal counts. No real private per-row crosswalk executed; not training authorization. A3 remains OPEN.
   - Seven independent retrospective public RPL club rosters assembled (112 club-season appearances, 26 distinct public names, 82 adjacent overlap instances), matching **both the private source-ID sample and a new full 1,680-row live read-only PostgreSQL aggregate** (26 IDs, 82 adjacent repeats), but **not** a club-ID crosswalk. [Public roster evidence](docs/M3_PUBLIC_SEVEN_SEASON_CLUB_ROSTERS_EVIDENCE.json). Name continuity/rights/UTC still unverified; A3 OPEN.
-- [ ] A4: preregistered separate multi-season model with deterministic fit, refused missing data and no M2 retuning.
+- [x] A4: frozen deterministic team-Poisson prior-seasons-only development challenger; no M2 retuning.
   - Pure synthetic multi-season team Poisson candidate with fixed 12-game club smoothing and 20-game league prior, 5 expanding folds, proper scores and future-label leakage refusals: [frozen M3 candidate contract](docs/M3_PRIVATE_RESEARCH_PROTOCOL.md#a4-candidate-preparation-synthetic-multi-season-team-poisson-not-a4-acceptance). Real fit remains gated by A3.
-- [ ] A5: protected, aggregate-only development evaluation on eligible real historical 2018/19–2024/25, no 2025/26.
-- [ ] A6: uncertainty, abstentions, coverage and matched benchmark only if authentic market snapshots exist.
-- [ ] A7: owner-facing private research GUI, secure non-owner denial and no public prediction publication.
-- [ ] A8: two full repository-wide audits, exact-head/main CI, Vercel and owner acceptance.
+- [x] A5: actual protected aggregate-only five-fold real development evaluation on 2018/19–2024/25, no 2025/26 access.
+- [x] A6: per-fold Log Loss/Brier/RPS, abstentions/coverage and approximate uncertainty; bookmaker comparison unavailable, not claimed.
+- [x] A7: protected owner-only GUI, fail-closed source/evidence checks and anonymous redirect; manual non-owner OAuth browser check remains accepted unobserved risk.
+- [x] A8: two full repository-wide audits, exact-main 11/11, Vercel exact-SHA release and explicit owner acceptance on 2026-11-11.
 
 ## M4 - Production Forecasting (OPEN, private only; #304)
 

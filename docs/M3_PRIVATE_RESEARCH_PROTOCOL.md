@@ -1,6 +1,6 @@
 # M3 private calibration and evaluation protocol — v1
 
-**Authorized for development by the owner 2026-11-09** after accepting M2 on the same day. [M3 tracking and eight exit gates](https://github.com/StanleyLl0yd/FootballForecast/issues/271). M3 is **OPEN / IN PROGRESS**, not ACCEPTED. Previous pre-authorization statements in older M2 research and audit documents are dated history. This document does not supersede the fixed M2 model or the one-use 2025/26 study evidence.
+**ACCEPTED 8/8 on 2026-11-11** by explicit owner sign-off after two full repository audits; [M3 #271 CLOSED](https://github.com/StanleyLl0yd/FootballForecast/issues/271). The protocol and partial-readiness paragraphs below preserve earlier research-stage statements as **dated historical checkpoints**, not today's blockers. Acceptance is for **private NON_STRICT_RETROSPECTIVE research only**. It does not establish historical as-of, release a production model, reopen consumed 2025/26 or permit public forecasts. M4 [#304](https://github.com/StanleyLl0yd/FootballForecast/issues/304) is separately open for prospective-only private preparation.
 
 ## Intended product
 
