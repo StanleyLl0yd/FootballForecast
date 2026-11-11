@@ -252,7 +252,7 @@ jobs:
       - name: Verify accepted M3 status and future-only M4 structural preflight
         run: |
           node --check apps/web/lib/m4-prospective-preflight.mjs
-          node --test apps/web/tests/m3-owner-development.test.mjs apps/web/tests/m4-prospective-preflight.test.mjs
+          node --test apps/web/tests/m3-owner-development.test.mjs apps/web/tests/m4-prospective-preflight.test.mjs apps/web/tests/m4-signed-metadata.test.mjs
       - name: Reject forged or oversized public M2 GitHub research run metadata
         run: node --experimental-strip-types --test apps/web/tests/m2-run-status.test.mjs
       - name: Verify safe M1 protected GitHub Environment setup
