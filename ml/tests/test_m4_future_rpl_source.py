@@ -1,6 +1,6 @@
 """Synthetic-only M4 future fixture source: fail-closed read-only contract."""
 from datetime import UTC, datetime, timedelta
-from json import dumps, loads
+from json import dumps
 
 import pytest
 
