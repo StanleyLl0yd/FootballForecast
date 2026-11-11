@@ -27,7 +27,11 @@ def main() -> None:
             raise ValueError("oversized source")
         print(f"RSSSF public-only source probe: {season} bytes={len(data)} "
               f"heading_in_raw={SEASONS[season]['anchor'].encode() in data} "
-              f"html_prefix={b'<html' in data[:4096].lower()}", file=sys.stderr)
+              f"html_prefix={b'<html' in data[:4096].lower()} "
+              f"prefix_hex={data[:16].hex()} "
+              f"has_round1={b'Round 1' in data} "
+              f"has_tinkoff={b'TINKOFF' in data} "
+              f"has_2021={b'2021/22' in data}", file=sys.stderr)
         audits.append(asdict(audit_rsssf_rpl(data,season)))
     if sum(x["fixtures"] for x in audits)!=480:
         raise ValueError("incomplete two-season sample")
