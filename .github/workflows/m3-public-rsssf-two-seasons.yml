@@ -1,0 +1,33 @@
+name: M3 two RPL public-source 240+240 fixture audit
+on:
+  pull_request:
+    paths:
+      - 'ml/src/football_forecast/research/m3_rsssf_match_schedule.py'
+      - 'ml/tests/test_m3_rsssf_match_schedule.py'
+      - 'scripts/m3-public-rsssf-two-seasons.py'
+      - '.github/workflows/m3-public-rsssf-two-seasons.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ml/src/football_forecast/research/m3_rsssf_match_schedule.py'
+      - 'ml/tests/test_m3_rsssf_match_schedule.py'
+      - 'scripts/m3-public-rsssf-two-seasons.py'
+      - '.github/workflows/m3-public-rsssf-two-seasons.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  public-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with: {python-version: '3.13'}
+      - name: Bounded RSSSF retrospective two-season source audit
+        env:
+          PYTHONPATH: ml/src
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          set -euo pipefail
+          python scripts/m3-public-rsssf-two-seasons.py
