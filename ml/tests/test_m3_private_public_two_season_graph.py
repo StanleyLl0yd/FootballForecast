@@ -3,6 +3,7 @@ from dataclasses import replace
 from datetime import UTC, datetime
 
 import pytest
+from test_m3_rsssf_match_schedule import synthetic_source
 
 from football_forecast.data.contracts import DataError
 from football_forecast.research.m3_private_public_two_season_graph import (
@@ -12,8 +13,6 @@ from football_forecast.research.m3_private_public_two_season_graph import (
 from football_forecast.research.m3_rsssf_match_schedule import (
     parse_rsssf_rpl,
 )
-from test_m3_rsssf_match_schedule import synthetic_source
-
 
 def sources():
     public = tuple(
