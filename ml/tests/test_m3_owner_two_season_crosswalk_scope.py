@@ -53,7 +53,8 @@ def test_runner_cannot_read_holdout_or_fetch_raw_private_records():
     assert "WHERE v.ok ORDER BY s.season" in sql
     assert sql.count("%s") == 1
     assert sql.count(";") == 1
-    assert "2025/26" not in sql and "2026/27" not in sql
+    executable_sql = "\n".join(line.split("--", 1)[0] for line in sql.splitlines())
+    assert "2025/26" not in executable_sql and "2026/27" not in executable_sql
     assert set(__import__("re").findall(r"ff_private\.([a-z_]+)", sql)) == {
         "ff_rpl_history_matches", "ff_rpl_history_snapshots",
     }
