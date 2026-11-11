@@ -30,13 +30,17 @@ def validate(data: dict) -> None:
     assert data["kind"] == "M3_A3_SEVEN_SEASON_NON_STRICT_RETROSPECTIVE_DEVELOPMENT_COHORT"
     assert data["status"] == "PROPOSED_A3_TECHNICAL_ACCEPTANCE_NOT_STRICT_AS_OF"
     assert tuple(row["season"] for row in data["perSeason"]) == SEASONS
-    assert tuple(row["knownAdministrativeOrRevisedExcluded"] for row in data["perSeason"]) == EXCLUDED
+    assert tuple(
+        row["knownAdministrativeOrRevisedExcluded"] for row in data["perSeason"]
+    ) == EXCLUDED
     assert len(data["perSeason"]) == 7
     for row in data["perSeason"]:
         assert row["publicFixtures"] == row["privateProviderFinishedFixtures"] == 240
         assert row["scoreFreeGraphMatches"] == 240
         assert row["officialResultDisagreements"] == 0
-        assert row["retrospectivePlayedScoreCandidates"] == 240 - row["knownAdministrativeOrRevisedExcluded"]
+        assert row["retrospectivePlayedScoreCandidates"] == (
+            240 - row["knownAdministrativeOrRevisedExcluded"]
+        )
     exclusions = data["exclusions"]
     assert len(exclusions) == 7
     assert len({(x["season"], x["dateUtc"], x["officialScore"]) for x in exclusions}) == 7
@@ -45,7 +49,10 @@ def validate(data: dict) -> None:
     assert sum(x["reason"] == "UNPLAYED_TECHNICAL_AWARD" for x in exclusions) == 6
     assert sum(x["reason"] == "OFFICIAL_SCORE_REVISED_AFTER_PLAY" for x in exclusions) == 1
     revised = next(x for x in exclusions if x["reason"] == "OFFICIAL_SCORE_REVISED_AFTER_PLAY")
-    assert (revised["season"], revised["dateUtc"], revised["playedScore"], revised["officialScore"]) == (
+    assert (
+        revised["season"], revised["dateUtc"],
+        revised["playedScore"], revised["officialScore"],
+    ) == (
         "2022/23", "2023-03-19", "1:1", "0:3")
     totals = data["totals"]
     for field in ("publicFixtures", "privateProviderFinishedFixtures", "scoreFreeGraphMatches"):
