@@ -71,7 +71,7 @@ def _deny():
 
 def _club(name):
     if (type(name) is not str or not 2 <= len(name) <= 120
-            or any(ord(ch) < 32 or ord(ch) == 127 for ch in name)):
+            or any(unicodedata.category(ch).startswith("C") for ch in name)):
         _deny()
     value = unicodedata.normalize("NFKC", name).casefold().replace("ё", "е")
     value = re.sub(r"[^\w]+", " ", value, flags=re.UNICODE).strip()
