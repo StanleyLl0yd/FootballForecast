@@ -12,7 +12,9 @@ from math import fsum, isfinite, sqrt
 
 from football_forecast.data.contracts import DataError
 from football_forecast.evaluation.scoring import (
-    brier_score, log_loss, ranked_probability_score,
+    brier_score,
+    log_loss,
+    ranked_probability_score,
 )
 
 M4_START = datetime(2026, 11, 11, 11, 4, 56, tzinfo=UTC)
@@ -146,7 +148,7 @@ def summarize_private_shadow(
                        r.model_sha256 != first.model_sha256
                        for r in revisions)
                 or any(a.committed_at > b.committed_at
-                       for a,b in zip(revisions,revisions[1:]))):
+                       for a,b in zip(revisions,revisions[1:], strict=False))):
             _deny("incomplete or inconsistent append-only revisions")
         finals[fixture] = revisions[-1]
 
@@ -200,7 +202,7 @@ def summarize_private_shadow(
     paired_halfwidth = None
     if baseline_valid and score_n >= 30:
         differences = [prior[0]-model[0] for prior,model in
-                       zip(baseline_scores,scored)]
+                       zip(baseline_scores,scored, strict=True)]
         avg = fsum(differences)/score_n
         variance = fsum((x-avg)**2 for x in differences)/(score_n-1)
         paired_halfwidth = 1.96*sqrt(variance/score_n)

@@ -7,7 +7,9 @@ import pytest
 
 from football_forecast.data.contracts import DataError
 from football_forecast.evaluation.m4_private_prospective import (
-    IndependentPlayedResult, ShadowVersion, summarize_private_shadow,
+    IndependentPlayedResult,
+    ShadowVersion,
+    summarize_private_shadow,
 )
 
 
