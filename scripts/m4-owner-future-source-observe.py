@@ -14,6 +14,9 @@ from json import dumps
 from urllib.error import URLError
 from urllib.request import HTTPRedirectHandler, Request, build_opener, HTTPSHandler
 
+from football_forecast.research.m4_future_rpl_identity import (
+    verify_directed_future_identities,
+)
 from football_forecast.research.m4_future_rpl_source import (
     CALENDAR, COMPETITION, MAX_BYTES_PER_DAY, inspect_future_rpl_source,
 )
@@ -57,6 +60,9 @@ def main() -> None:
                 raise RuntimeError("M4: oversized or empty source")
             data[day] = body
     receipt = inspect_future_rpl_source(data, datetime.now(UTC))
+    # A second fail-closed, source-only comparison with two pinned independent
+    # public schedules. This is not a trusted live second-source signature.
+    verify_directed_future_identities(data)
     if (receipt.forecast_written or receipt.public_forecasts_written or
             receipt.model_approved or receipt.holdout_2025_26_read or
             receipt.genuine_as_of_attested or
