@@ -6,7 +6,9 @@ import pytest
 from football_forecast.data.contracts import DataError
 from football_forecast.research.m4_future_rpl_identity import DIRECTED
 from football_forecast.research.m4_future_rpl_independent import (
-    PUBLIC_NAMES, MAX_CALENDAR_BYTES, verify_live_independent_calendar,
+    MAX_CALENDAR_BYTES,
+    PUBLIC_NAMES,
+    verify_live_independent_calendar,
 )
 
 AT = datetime(2026, 11, 12, 14, 35, tzinfo=UTC)
