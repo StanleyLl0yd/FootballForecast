@@ -9,7 +9,6 @@ import os
 import ssl
 import sys
 from dataclasses import asdict
-from hashlib import sha256
 from datetime import UTC, datetime
 from json import dumps
 from urllib.error import URLError
