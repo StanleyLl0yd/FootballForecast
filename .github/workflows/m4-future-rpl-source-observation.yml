@@ -1,4 +1,4 @@
-name: M4 owner-only future RPL fixture source observation (read-only)
+name: M4 owner-only future RPL source and independent schedule observation (read-only)
 on:
   workflow_dispatch:
     inputs:
@@ -38,7 +38,7 @@ jobs:
         with: {persist-credentials: false}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6 pinned
         with: {python-version: '3.13'}
-      - name: Read-only three-day future source probe, no database
+      - name: Read-only three-day source and live independent calendar check, no database
         shell: bash
         env:
           OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
@@ -62,20 +62,31 @@ jobs:
           from datetime import datetime, timezone
           from pathlib import Path
           raw = Path(sys.argv[1]).read_bytes()
-          if not 250 <= len(raw) <= 1100:
+          if not 300 <= len(raw) <= 1500:
               raise SystemExit('FAIL: unbounded future source receipt')
           row = json.loads(raw)
           fields = {'source','classification','observation_completed_utc',
                     'source_envelopes_sha256','days','fixtures','club_identities',
                     'private_shadow_only','independent_source_confirmed',
                     'genuine_as_of_attested','model_approved','forecast_written',
-                    'public_forecasts_written','holdout_2025_26_read'}
+                    'public_forecasts_written','holdout_2025_26_read',
+                    'live_independent_calendar_observed_utc',
+                    'live_independent_calendar_sha256',
+                    'live_independent_calendar_verified'}
           now = datetime.fromisoformat(row['observation_completed_utc'].replace(
               'Z', '+00:00'))
+          corroborated = datetime.fromisoformat(
+              row['live_independent_calendar_observed_utc'].replace('Z', '+00:00'))
           if (set(row)!=fields or row['source'] !=
               'OpenFoot Starter (private source only)' or row['classification'] !=
               'UNAPPROVED_PRIVATE_FUTURE_SOURCE_OBSERVATION' or
               row['days']!=3 or row['fixtures']!=8 or row['club_identities']!=16 or
+              row['live_independent_calendar_verified'] is not True or
+              not re.fullmatch(r'[0-9a-f]{64}',
+                  row['live_independent_calendar_sha256']) or
+              corroborated.tzinfo != timezone.utc or
+              not now <= corroborated <
+                  datetime(2026,11,20,16,15,tzinfo=timezone.utc) or
               not re.fullmatch(r'[0-9a-f]{64}',row['source_envelopes_sha256']) or
               row['private_shadow_only'] is not True or
               any(row[k] is not False for k in (
@@ -88,11 +99,17 @@ jobs:
               raise SystemExit('FAIL: future source evidence is not admissible')
           print('M4_FUTURE_RPL_SOURCE_OBSERVED=8_SCHEDULED_UNAPPROVED')
           print('M4_SOURCE_ENVELOPES_SHA256='+row['source_envelopes_sha256'])
+          print('M4_INDEPENDENT_CALENDAR_SHA256='+
+                row['live_independent_calendar_sha256'])
           with open(__import__('os').environ['GITHUB_STEP_SUMMARY'],
                     'a',encoding='utf-8') as out:
               out.write('## M4 private future fixture source probe, not forecasts\n')
               out.write('2026/27 RPL, 15th round, three future dates; '
-                        '8 sources observed but no prediction/DB write.\n')
+                        '8 source fixtures and live external schedule independently observed; '
+                        'no prediction/DB write.\n')
               out.write('Envelope SHA: `'+row['source_envelopes_sha256']+'`\n')
-              out.write('Independent provider/time provenance remains A5 OPEN.\n')
+              out.write('Independent calendar SHA: `'+
+                        row['live_independent_calendar_sha256']+'`\n')
+              out.write('Database capture / cryptographic time attestation '
+                        'remain A5 OPEN.\n')
           PY
