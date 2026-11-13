@@ -10,21 +10,21 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "16.4.5",
+    "next": "16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.119.0",
-    "lucide-react": "1.70.0"
+    "lucide-react": "1.71.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@tailwindcss/postcss": "4.3.4",
-    "tailwindcss": "4.3.4",
+    "@tailwindcss/postcss": "4.3.5",
+    "tailwindcss": "4.3.5",
     "typescript": "^5.9.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "16.4.5"
+    "eslint-config-next": "16.4.6"
   }
 }
