@@ -76,7 +76,7 @@ def verify_live_independent_calendar(raw: bytes, observed_at: datetime) -> str:
         raise DataError("M4: calendar invalid HTML/UTF8") from exc
     # A literal static fixture list or a predeclared digest is insufficient:
     # all eight pairs must occur in this newly fetched *visible* response.
-    for slot, (home, away) in DIRECTED.items():
+    for slot_number, (slot, (home, away)) in enumerate(DIRECTED.items(), start=1):
         dt = datetime.fromisoformat(slot.replace("Z", "+00:00"))
         msk = dt + timedelta(hours=3)
         expected = (msk.strftime("%d.%m.%Y"), msk.strftime("%H:%M"))
@@ -93,5 +93,15 @@ def verify_live_independent_calendar(raw: bytes, observed_at: datetime) -> str:
         if len(matches) != 1 or (
             matches[0].group("date"), matches[0].group("time")
         ) != expected:
-            raise DataError("M4: live publisher pair/time/status diverged")
+            # Public-safe diagnostics: only slot index, bounded hit count and
+            # presence flags. No body, URL fragments, names, IDs, or snippets.
+            markers = "".join(str(int(bool(found))) for found in (
+                expected[0] in visible, expected[1] in visible,
+                re.search(PUBLIC_NAMES[home], visible) is not None,
+                re.search(PUBLIC_NAMES[away], visible) is not None,
+            ))
+            raise DataError(
+                f"M4_CALENDAR_SLOT_{slot_number}_REJECT_COUNT_"
+                f"{min(len(matches), 9)}_MARKERS_{markers}"
+            )
     return sha256(raw).hexdigest()
