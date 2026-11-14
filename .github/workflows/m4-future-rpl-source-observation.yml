@@ -30,6 +30,7 @@ jobs:
          github.event.comment.author_association == 'OWNER' &&
          github.event.comment.body == '/m4-future-rpl-source-readonly')
       )
+    permissions: {contents: read, id-token: write}
     runs-on: ubuntu-latest
     timeout-minutes: 6
     environment: m1-source-import
@@ -38,7 +39,9 @@ jobs:
         with: {persist-credentials: false}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6 pinned
         with: {python-version: '3.13'}
-      - name: Read-only three-day source and live independent calendar check, no database
+      - name: Install pinned GitHub OIDC cryptographic verifier
+        run: python -m pip install -e './ml[oidc]'
+      - name: Read-only source, independent calendar and GitHub signed-time checks
         shell: bash
         env:
           OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
@@ -62,7 +65,7 @@ jobs:
           from datetime import datetime, timezone
           from pathlib import Path
           raw = Path(sys.argv[1]).read_bytes()
-          if not 300 <= len(raw) <= 1500:
+          if not 400 <= len(raw) <= 2000:
               raise SystemExit('FAIL: unbounded future source receipt')
           row = json.loads(raw)
           fields = {'source','classification','observation_completed_utc',
@@ -73,17 +76,36 @@ jobs:
                     'live_independent_calendar_observed_utc',
                     'live_independent_calendar_sha256',
                     'live_independent_calendar_verified',
-                    'live_independent_calendar_source'}
+                    'live_independent_calendar_source',
+                    'github_oidc_time_verified','github_oidc_issuer',
+                    'source_oidc_issued_utc','kickoff_oidc_issued_utc',
+                    'source_oidc_jwt_sha256','kickoff_oidc_jwt_sha256',
+                    'immutable_pg_capture'}
           now = datetime.fromisoformat(row['observation_completed_utc'].replace(
               'Z', '+00:00'))
           corroborated = datetime.fromisoformat(
               row['live_independent_calendar_observed_utc'].replace('Z', '+00:00'))
+          token1 = datetime.fromisoformat(
+              row['source_oidc_issued_utc'].replace('Z', '+00:00'))
+          token2 = datetime.fromisoformat(
+              row['kickoff_oidc_issued_utc'].replace('Z', '+00:00'))
+          from datetime import timedelta
           if (set(row)!=fields or row['source'] !=
               'OpenFoot Starter (private source only)' or row['classification'] !=
               'UNAPPROVED_PRIVATE_FUTURE_SOURCE_OBSERVATION' or
               row['days']!=3 or row['fixtures']!=8 or row['club_identities']!=16 or
               row['live_independent_calendar_verified'] is not True or
               row['live_independent_calendar_source'] != 'MATCHTV_LIVE' or
+              row['github_oidc_time_verified'] is not True or
+              row['github_oidc_issuer'] !=
+                  'https://token.actions.githubusercontent.com' or
+              row['immutable_pg_capture'] is not False or
+              not re.fullmatch(r'[a-f0-9]{64}',row['source_oidc_jwt_sha256']) or
+              not re.fullmatch(r'[a-f0-9]{64}',row['kickoff_oidc_jwt_sha256']) or
+              row['source_oidc_jwt_sha256']==row['kickoff_oidc_jwt_sha256'] or
+              token1.tzinfo != timezone.utc or token2.tzinfo != timezone.utc or
+              not corroborated-timedelta(seconds=2) <= token1 <= token2 <
+                  datetime(2026,11,20,16,15,tzinfo=timezone.utc) or
               not re.fullmatch(r'[0-9a-f]{64}',
                   row['live_independent_calendar_sha256']) or
               corroborated.tzinfo != timezone.utc or
@@ -103,6 +125,9 @@ jobs:
           print('M4_SOURCE_ENVELOPES_SHA256='+row['source_envelopes_sha256'])
           print('M4_INDEPENDENT_CALENDAR_SHA256='+
                 row['live_independent_calendar_sha256'])
+          print('M4_GITHUB_OIDC_SOURCE_PROOF_SHA256='+row['source_oidc_jwt_sha256'])
+          print('M4_GITHUB_OIDC_KICKOFF_PROOF_SHA256='+
+                row['kickoff_oidc_jwt_sha256'])
           with open(__import__('os').environ['GITHUB_STEP_SUMMARY'],
                     'a',encoding='utf-8') as out:
               out.write('## M4 private future fixture source probe, not forecasts\n')
@@ -113,6 +138,9 @@ jobs:
               out.write('Live independent publisher: MatchTV (not time attestation).\n')
               out.write('Independent calendar SHA: `'+
                         row['live_independent_calendar_sha256']+'`\n')
-              out.write('Database capture / cryptographic time attestation '
-                        'remain A5 OPEN.\n')
+              out.write('GitHub OIDC signed digest/time proof: source '+
+                        row['source_oidc_jwt_sha256']+'; independent calendar '+
+                        row['kickoff_oidc_jwt_sha256']+'; same GitHub issuer.\n')
+              out.write('No publisher-signed original-serving proof. Database capture '
+                        'and forecast remain A5 OPEN.\n')
           PY

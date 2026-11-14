@@ -24,6 +24,12 @@ def test_future_probe_is_exact_owner_only_nonautomatic_and_no_db_write():
         "cancel-in-progress: false",
         "OPENFOOT_API_KEY: $" + "{{ secrets.OPENFOOT_API_KEY }}",
         "M4_FUTURE_READONLY_GATE: 'true'",
+        "id-token: write",
+        "python -m pip install -e './ml[oidc]'",
+        "github_oidc_time_verified",
+        "source_oidc_jwt_sha256",
+        "kickoff_oidc_jwt_sha256",
+        "M4_GITHUB_OIDC_SOURCE_PROOF_SHA256=",
         "live_independent_calendar_verified",
         "live_independent_calendar_source",
         "M4_INDEPENDENT_CALENDAR_SHA256=",
@@ -45,6 +51,8 @@ def test_future_probe_is_exact_owner_only_nonautomatic_and_no_db_write():
         ).read_text(encoding="utf-8"))
     assert "verify_live_matchtv_calendar" in runner
     assert "MATCHTV_URL" in runner
+    assert "attest_future_source_digests" in runner
+    assert "GITHUB_SIGNED_TIME" in runner
     assert "M4_UNAPPROVED_FUTURE_SOURCE_STAGE=" in runner
     assert "M4_UNAPPROVED_CALENDAR_REASON=" in runner
     for step in ("OPENFOOT_REQUEST", "OPENFOOT_VALIDATE",
