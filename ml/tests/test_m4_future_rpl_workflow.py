@@ -24,6 +24,8 @@ def test_future_probe_is_exact_owner_only_nonautomatic_and_no_db_write():
         "cancel-in-progress: false",
         "OPENFOOT_API_KEY: $" + "{{ secrets.OPENFOOT_API_KEY }}",
         "M4_FUTURE_READONLY_GATE: 'true'",
+        "live_independent_calendar_verified",
+        "M4_INDEPENDENT_CALENDAR_SHA256=",
     ):
         assert snippet in yaml, snippet
     for forbidden in (
@@ -40,6 +42,8 @@ def test_future_probe_is_exact_owner_only_nonautomatic_and_no_db_write():
         assert snippet in (runner + (
             ROOT / "ml/src/football_forecast/research/m4_future_rpl_source.py"
         ).read_text(encoding="utf-8"))
+    assert "verify_live_independent_calendar" in runner
+    assert "CALENDAR_URL" in runner
     for forbidden in (
         "psycopg", "supabase", "open(", "write_bytes", "write_text",
         "public.ff_forecasts",
