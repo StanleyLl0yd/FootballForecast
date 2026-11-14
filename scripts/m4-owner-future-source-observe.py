@@ -20,7 +20,7 @@ from football_forecast.research.m4_future_rpl_identity import (
     verify_directed_future_identities,
 )
 from football_forecast.research.m4_future_rpl_independent import (
-    CALENDAR_URL, MAX_CALENDAR_BYTES, verify_live_independent_calendar,
+    MATCHTV_URL, MAX_CALENDAR_BYTES, verify_live_matchtv_calendar,
 )
 from football_forecast.research.m4_future_rpl_source import (
     CALENDAR, COMPETITION, MAX_BYTES_PER_DAY, inspect_future_rpl_source,
@@ -77,7 +77,7 @@ def main() -> None:
     # One genuinely NEW separate HTTPS publisher observation, not the static
     # predeclared dates/teams. Missing/changed/blocked publisher => fail closed.
     STAGE = "INDEPENDENT_CALENDAR_REQUEST"
-    request = Request(CALENDAR_URL, headers={
+    request = Request(MATCHTV_URL, headers={
         "Accept": "text/html",
         "User-Agent": "FootballForecast-M4-Private-Schedule-Corroboration/1",
     }, method="GET")
@@ -88,7 +88,7 @@ def main() -> None:
         calendar = response.read(MAX_CALENDAR_BYTES + 1)
     calendar_observed = datetime.now(UTC)
     STAGE = "INDEPENDENT_CALENDAR_VALIDATE"
-    calendar_digest = verify_live_independent_calendar(calendar, calendar_observed)
+    calendar_digest = verify_live_matchtv_calendar(calendar, calendar_observed)
     if (receipt.forecast_written or receipt.public_forecasts_written or
             receipt.model_approved or receipt.holdout_2025_26_read or
             receipt.genuine_as_of_attested or
@@ -102,6 +102,7 @@ def main() -> None:
         "%Y-%m-%dT%H:%M:%SZ")
     report["live_independent_calendar_sha256"] = calendar_digest
     report["live_independent_calendar_verified"] = True
+    report["live_independent_calendar_source"] = "MATCHTV_LIVE"
     print(dumps(report, sort_keys=True, separators=(",", ":")))
 
 
@@ -114,8 +115,10 @@ if __name__ == "__main__":
         print("M4_UNAPPROVED_FUTURE_SOURCE_STAGE=" + STAGE, file=sys.stderr)
         code = str(exc) if isinstance(exc, DataError) else ""
         if STAGE == "INDEPENDENT_CALENDAR_VALIDATE" and re.fullmatch(
-            r"M4_CALENDAR_(?:BOUND_(?:SMALL|LARGE)|CLOCK|UTF8|"
-            r"SLOT_[1-8]_REJECT_COUNT_[0-9]_MARKERS_[01]{4})", code,
+            r"M4_(?:CALENDAR_(?:BOUND_(?:SMALL|LARGE)|CLOCK|UTF8|"
+            r"SLOT_[1-8]_REJECT_COUNT_[0-9]_MARKERS_[01]{4})|"
+            r"MATCHTV_(?:BOUND_(?:SMALL|LARGE)|CLOCK|UTF8|ROUND|DAYS|DAY_ORDER|"
+            r"SLOT_[1-8]_UNVERIFIED))", code,
         ):
             print("M4_UNAPPROVED_CALENDAR_REASON=" + code, file=sys.stderr)
         sys.exit(2)
