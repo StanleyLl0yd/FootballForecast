@@ -150,11 +150,11 @@ def verify_live_matchtv_calendar(raw: bytes, observed_at: datetime) -> str:
         parser.feed(raw.decode("utf-8", errors="strict"))
     except (UnicodeError, ValueError) as exc:
         raise DataError("M4_MATCHTV_UTF8") from exc
-    visible = re.sub(r"\\s+", " ", " ".join(parser.fragments))
-    section = re.search(r"\\bТур\\s+15\\b(.*?)\\bТур\\s+16\\b", visible,
+    visible = re.sub(r"\s+", " ", " ".join(parser.fragments))
+    section = re.search(r"\bТур\s+15\b(.*?)\bТур\s+16\b", visible,
                         re.IGNORECASE)
     if section is None or len(re.findall(
-        r"\\bТур\\s+15\\b", visible, re.IGNORECASE
+        r"\bТур\s+15\b", visible, re.IGNORECASE
     )) != 1:
         raise DataError("M4_MATCHTV_ROUND")
     round_text = section.group(1)
@@ -174,9 +174,9 @@ def verify_live_matchtv_calendar(raw: bytes, observed_at: datetime) -> str:
         local = datetime.fromisoformat(slot.replace("Z", "+00:00")) + timedelta(hours=3)
         day_text = day_segments.get(local.strftime("%Y-%m-%d"), "")
         pattern = re.compile(
-            r"(?<!\\w)" + re.escape(MATCHTV_NAMES[home]) + r"\\s+" +
-            re.escape(MATCHTV_NAMES[away]) + r"\\s+" +
-            re.escape(local.strftime("%H:%M")) + r"(?!\\d)",
+            r"(?<!\w)" + re.escape(MATCHTV_NAMES[home]) + r"\s+" +
+            re.escape(MATCHTV_NAMES[away]) + r"\s+" +
+            re.escape(local.strftime("%H:%M")) + r"(?!\d)",
             re.IGNORECASE,
         )
         if len(pattern.findall(day_text)) != 1:
