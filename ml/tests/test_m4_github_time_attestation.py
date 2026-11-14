@@ -9,7 +9,13 @@ from jwt.algorithms import RSAAlgorithm
 
 from football_forecast.data.contracts import DataError
 from football_forecast.research.m4_github_time_attestation import (
-    ACTOR, ACTOR_ID, ENVIRONMENT, ISSUER, REPO, REPO_ID, WORKFLOW,
+    ACTOR,
+    ACTOR_ID,
+    ENVIRONMENT,
+    ISSUER,
+    REPO,
+    REPO_ID,
+    WORKFLOW,
     verify_github_time_jwt,
 )
 
