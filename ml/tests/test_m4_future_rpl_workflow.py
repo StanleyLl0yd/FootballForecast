@@ -53,6 +53,7 @@ def test_future_probe_is_exact_owner_only_nonautomatic_and_no_db_write():
     assert "MATCHTV_URL" in runner
     assert "attest_future_source_digests" in runner
     assert "GITHUB_SIGNED_TIME" in runner
+    assert "M4_UNAPPROVED_OIDC_PHASE=" in runner
     assert "M4_UNAPPROVED_FUTURE_SOURCE_STAGE=" in runner
     assert "M4_UNAPPROVED_CALENDAR_REASON=" in runner
     for step in ("OPENFOOT_REQUEST", "OPENFOOT_VALIDATE",
