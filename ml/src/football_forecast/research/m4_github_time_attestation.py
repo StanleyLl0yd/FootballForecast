@@ -42,6 +42,17 @@ COMMIT = re.compile(r"^[a-f0-9]{40}$")
 MAX_JWT = 10000
 MAX_JWKS = 100000
 MAX_PROOF_AGE = 300
+OIDC_PHASE = "PREREQUISITE"
+
+
+def _stage(value: str):
+    global OIDC_PHASE
+    OIDC_PHASE = value
+
+
+def safe_oidc_phase() -> str:
+    """Allowlisted stage label only, never a JWT/claim/URL/data value."""
+    return OIDC_PHASE
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -96,12 +107,16 @@ def _https_json(url: str, *, headers=None, limit=MAX_JWKS):
 
 
 def _keys_from_github() -> tuple[dict, ...]:
+    _stage("DISCOVERY_FETCH")
     metadata = _https_json(DISCOVERY, limit=16000)
+    _stage("DISCOVERY_CHECK")
     if (type(metadata) is not dict or metadata.get("issuer") != ISSUER or
             metadata.get("jwks_uri") != JWKS or
             "RS256" not in metadata.get("id_token_signing_alg_values_supported", [])):
         _deny()
+    _stage("JWKS_FETCH")
     response = _https_json(JWKS)
+    _stage("JWKS_CHECK")
     keys = response.get("keys") if type(response) is dict else None
     if type(keys) is not list or not 1 <= len(keys) <= 40:
         _deny()
@@ -175,15 +190,21 @@ def verify_github_time_jwt(
         )
     except (ValueError, TypeError, jwt.PyJWTError) as exc:
         raise DataError("M4: invalid cryptographic time signature") from exc
+    _stage("JWT_IDENTITY")
     exact = {
         "repository": REPO, "repository_id": REPO_ID, "actor": ACTOR,
         "actor_id": ACTOR_ID, "ref": "refs/heads/main",
         "sha": env["GITHUB_SHA"], "run_id": env["GITHUB_RUN_ID"],
         "run_attempt": env["GITHUB_RUN_ATTEMPT"], "environment": ENVIRONMENT,
         "workflow_ref": WORKFLOW, "event_name": env["GITHUB_EVENT_NAME"],
-        "sub": f"repo:{REPO}:environment:{ENVIRONMENT}",
+    }
+    allowed_subjects = {
+        f"repo:{REPO}:environment:{ENVIRONMENT}",
+        ("repo:StanleyLl0yd@131160519/FootballForecast@1422508335"
+         f":environment:{ENVIRONMENT}"),
     }
     if (any(claims.get(k) != v for k, v in exact.items()) or
+            claims.get("sub") not in allowed_subjects or
             claims.get("aud") != audience or
             type(claims.get("jti")) is not str or
             not 12 <= len(claims["jti"]) <= 512):
@@ -207,8 +228,9 @@ def _token_for_audience(audience: str, env: dict[str, str]) -> str:
     token = env.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN", "")
     parsed = urlsplit(base)
     if (parsed.scheme != "https" or
-            parsed.hostname not in {"pipelines.actions.githubusercontent.com",
-                                   "token.actions.githubusercontent.com"} or
+            (parsed.hostname != "token.actions.githubusercontent.com" and
+         (not parsed.hostname or not re.fullmatch(
+             r"[a-z0-9-]+\.actions\.githubusercontent\.com", parsed.hostname))) or
             parsed.username is not None or parsed.password is not None or
             parsed.port not in (None, 443) or not token or len(token) > 6000 or
             len(base) > 2000):
@@ -220,9 +242,11 @@ def _token_for_audience(audience: str, env: dict[str, str]) -> str:
         parsed.scheme, parsed.netloc, parsed.path,
         urlencode([*values, ("audience", audience)]), "",
     ))
+    _stage("TOKEN_FETCH")
     doc = _https_json(url, headers={
         "Accept": "application/json", "Authorization": "Bearer " + token,
     }, limit=16000)
+    _stage("TOKEN_RESPONSE")
     result = doc.get("value") if type(doc) is dict else None
     if type(result) is not str:
         _deny()
@@ -236,6 +260,7 @@ def attest_future_source_digests(
     """Both publisher bytes must already have been fetched and checked LIVE."""
     if env is None:
         env = dict(os.environ)
+    _stage("PREREQUISITE")
     _expected_identity(env)
     if (type(source_sha) is not str or not SHA.fullmatch(source_sha)
             or type(kickoff_sha) is not str or not SHA.fullmatch(kickoff_sha)
@@ -249,14 +274,19 @@ def attest_future_source_digests(
     audience_kickoff = "ff-m4-2026-27-matchtv-sha256-" + kickoff_sha
     # Independent provider observations. Two GitHub-signed audiences, not
     # two independent OIDC issuers. Never call these third-party-signed.
+    _stage("SOURCE_TOKEN")
     source_jwt = _token_for_audience(audience_source, env)
+    _stage("KICKOFF_TOKEN")
     kickoff_jwt = _token_for_audience(audience_kickoff, env)
     jwks = _keys_from_github()
     verified_at = datetime.now(UTC)
+    _stage("SOURCE_SIGNATURE")
     a_utc, a_jwk = verify_github_time_jwt(
         source_jwt, audience_source, jwks, env, kickoff_observed, verified_at)
+    _stage("KICKOFF_SIGNATURE")
     b_utc, b_jwk = verify_github_time_jwt(
         kickoff_jwt, audience_kickoff, jwks, env, kickoff_observed, verified_at)
+    _stage("SIGNATURE_PAIR")
     if source_jwt == kickoff_jwt or a_utc > b_utc:
         _deny()
     return ProtectedTimeProof(
