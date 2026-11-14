@@ -72,7 +72,8 @@ jobs:
                     'public_forecasts_written','holdout_2025_26_read',
                     'live_independent_calendar_observed_utc',
                     'live_independent_calendar_sha256',
-                    'live_independent_calendar_verified'}
+                    'live_independent_calendar_verified',
+                    'live_independent_calendar_source'}
           now = datetime.fromisoformat(row['observation_completed_utc'].replace(
               'Z', '+00:00'))
           corroborated = datetime.fromisoformat(
@@ -82,6 +83,7 @@ jobs:
               'UNAPPROVED_PRIVATE_FUTURE_SOURCE_OBSERVATION' or
               row['days']!=3 or row['fixtures']!=8 or row['club_identities']!=16 or
               row['live_independent_calendar_verified'] is not True or
+              row['live_independent_calendar_source'] != 'MATCHTV_LIVE' or
               not re.fullmatch(r'[0-9a-f]{64}',
                   row['live_independent_calendar_sha256']) or
               corroborated.tzinfo != timezone.utc or
@@ -108,6 +110,7 @@ jobs:
                         '8 source fixtures and live external schedule independently observed; '
                         'no prediction/DB write.\n')
               out.write('Envelope SHA: `'+row['source_envelopes_sha256']+'`\n')
+              out.write('Live independent publisher: MatchTV (not time attestation).\n')
               out.write('Independent calendar SHA: `'+
                         row['live_independent_calendar_sha256']+'`\n')
               out.write('Database capture / cryptographic time attestation '
