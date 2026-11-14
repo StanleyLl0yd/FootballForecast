@@ -89,8 +89,9 @@ def verify_live_independent_calendar(raw: bytes, observed_at: datetime) -> str:
             PUBLIC_NAMES[away] + r"\s*[–—-]\s*:\s*[–—-]",
             re.IGNORECASE,
         )
-        times = {(match.group("date"), match.group("time"))
-                 for match in pattern.finditer(visible)}
-        if times != {expected}:
+        matches = list(pattern.finditer(visible))
+        if len(matches) != 1 or (
+            matches[0].group("date"), matches[0].group("time")
+        ) != expected:
             raise DataError("M4: live publisher pair/time/status diverged")
     return sha256(raw).hexdigest()
