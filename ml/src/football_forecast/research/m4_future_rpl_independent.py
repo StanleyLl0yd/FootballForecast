@@ -112,7 +112,8 @@ def verify_live_independent_calendar(raw: bytes, observed_at: datetime) -> str:
 # Alternative independent editorial source: full RPL calendar at MatchTV.
 # It must be fetched LIVE after the provider's response, never substituted
 # with the old fixed calendar or an archival article.
-MATCHTV_URL = "https://matchtv.ru/football/rpl/calendar/2026-27"
+MATCHTV_URL = ("https://matchtv.ru/football/rpl/calendar?tour="
+               "f3c3dfaf-1c3a-5d5b-86f2-d9fc9eb059db")
 MATCHTV_NAMES = {
     "rostov": "Ростов", "krylya": "Крылья Советов",
     "orenburg": "Оренбург", "baltika": "Балтика",
