@@ -56,6 +56,31 @@ An exact-owner, protected-main, environment-gated one-off read-only job `.github
 
 **A5 stays OPEN after this first read-only probe** until a separately corroborated source/kickoff/club mapping is captured with verifiable server clocks into the immutable `ff_m4_future_captures` table and an `ff_m4_shadow_entries` FORECAST/ABSTAIN is committed **before kickoff**. The OpenFoot feed alone cannot substitute for independent kickoff corroboration or first-serving proof. Do not backdate anything.
 
+### A5 GitHub-issued signed-time observation (still no database write)
+
+The protected-main owner-only workflow now requests two **distinct-purpose
+GitHub Actions OIDC JWTs** after live authenticated OpenFoot and separately
+corroborated MatchTV observations. The first token's custom signed audience
+commits to the aggregate OpenFoot envelope SHA-256; the second commits to
+the independently fetched MatchTV response SHA-256. The runner verifies
+RS256 signatures using public keys from GitHub's **fixed** HTTPS OIDC discovery
+and JWKS endpoints, checking repository ID/name, owner ID, protected main
+ref and commit, workflow path, environment, run ID/attempt, event kind,
+issuance/expiration and digest-specific audiences. No untrusted JWT header
+can select a verification endpoint. Tamper/claims/time tests are mandatory.
+Private JWTs/JWKs stay in protected worker memory; only SHA-256 and the
+GitHub-issued second-precision times enter the bounded read-only receipt.
+
+**Limitations:** both JWTs have **the same signing authority, GitHub**;
+only the **underlying football sources** are independent. The publishers'
+original first-serving times are NOT independently signed. The GitHub tokens
+authenticate that the reviewed worker committed to those digests at GitHub's
+issuance time, not an original publisher timestamp. There is still **no
+write authorization, PostgreSQL server-clock capture, prospective model
+FORECAST/ABSTAIN, or public release**. A5 requires a separate immutable
+pre-kickoff DB admission with verified signed-time receipts. The 2025/26
+consumed holdout stays sealed.
+
 ## Initial code boundary
 
 `apps/web/lib/m4-prospective-preflight.mjs` accepts only a tight metadata envelope and an **untrusted caller-supplied evaluation timestamp**. It performs deterministic structural checks, returning `blocked` or `candidate_only`. Even a positive candidate explicitly reports **`genuineAsOfAttested:false`, `modelApproved:false`, `writeAuthorized:false`, `publicationAuthorized:false`**. Digests are format-tested, not authenticated. **No code may treat this function alone as an authorization to run a model, write to the database, claim an authentic pre-match forecast or release predictions.** A3–A5 must establish actual server-trusted attestation, append-only persistence and private execution. This first gate does not use real source data.
