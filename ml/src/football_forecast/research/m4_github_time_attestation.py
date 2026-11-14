@@ -16,7 +16,10 @@ from hashlib import sha256
 from json import dumps, loads
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from urllib.request import (
-    HTTPRedirectHandler, HTTPSHandler, Request, build_opener,
+    HTTPRedirectHandler,
+    HTTPSHandler,
+    Request,
+    build_opener,
 )
 
 import jwt
