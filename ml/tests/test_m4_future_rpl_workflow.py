@@ -45,6 +45,7 @@ def test_future_probe_is_exact_owner_only_nonautomatic_and_no_db_write():
     assert "verify_live_independent_calendar" in runner
     assert "CALENDAR_URL" in runner
     assert "M4_UNAPPROVED_FUTURE_SOURCE_STAGE=" in runner
+    assert "M4_UNAPPROVED_CALENDAR_REASON=" in runner
     for step in ("OPENFOOT_REQUEST", "OPENFOOT_VALIDATE",
                  "INDEPENDENT_CALENDAR_REQUEST", "INDEPENDENT_CALENDAR_VALIDATE"):
         assert step in runner

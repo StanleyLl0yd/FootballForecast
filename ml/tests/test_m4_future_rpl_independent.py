@@ -1,4 +1,5 @@
 """Synthetic-only regression for live independent schedule parsing (no network)."""
+import re
 from datetime import UTC, datetime, timedelta
 
 import pytest
@@ -63,6 +64,17 @@ def test_duplicate_live_fixture_is_not_an_independent_calendar():
     first = raw[raw.index("<p>"):raw.index("</p>") + 4]
     with pytest.raises(DataError):
         verify_live_independent_calendar(raw.replace("</body>", first + "</body>").encode(), AT)
+
+
+def test_rejection_is_redacted_public_slot_metadata_only():
+    page = html_rows().decode().replace("Рубин – Зенит", "Рубин – неверно")
+    with pytest.raises(DataError) as error:
+        verify_live_independent_calendar(page.encode(), AT)
+    assert re.fullmatch(
+        r"M4_CALENDAR_SLOT_[1-8]_REJECT_COUNT_[0-9]_MARKERS_[01]{4}",
+        str(error.value),
+    )
+    assert "Зенит" not in str(error.value)
 
 
 def test_hidden_script_is_not_a_schedule():

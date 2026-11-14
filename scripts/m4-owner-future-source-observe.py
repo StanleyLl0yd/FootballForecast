@@ -6,6 +6,7 @@ unavailable privately and refuse to treat the cohort as an actual observation.
 This probe does not separately corroborate club mapping or persist receipts.
 """
 import os
+import re
 import ssl
 import sys
 from dataclasses import asdict
@@ -14,6 +15,7 @@ from json import dumps
 from urllib.error import URLError
 from urllib.request import HTTPRedirectHandler, Request, build_opener, HTTPSHandler
 
+from football_forecast.data.contracts import DataError
 from football_forecast.research.m4_future_rpl_identity import (
     verify_directed_future_identities,
 )
@@ -106,8 +108,14 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except Exception:
-        # Safe allowlisted stage only: never expose URLs, response bodies, source
-        # IDs, credentials, data-provider error messages or individual fixtures.
+    except Exception as exc:
+        # Safe allowlisted stage and numeric indicators only. Never source body,
+        # URL, provider error, team name/ID, match ID, token or private response.
         print("M4_UNAPPROVED_FUTURE_SOURCE_STAGE=" + STAGE, file=sys.stderr)
+        code = str(exc) if isinstance(exc, DataError) else ""
+        if STAGE == "INDEPENDENT_CALENDAR_VALIDATE" and re.fullmatch(
+            r"M4_CALENDAR_(?:BOUND|CLOCK|UTF8|"
+            r"SLOT_[1-8]_REJECT_COUNT_[0-9]_MARKERS_[01]{4})", code,
+        ):
+            print("M4_UNAPPROVED_CALENDAR_REASON=" + code, file=sys.stderr)
         sys.exit(2)
