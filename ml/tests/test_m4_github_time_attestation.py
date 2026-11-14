@@ -94,6 +94,20 @@ def test_fail_closed_on_claim_or_time_change(changed, value):
         validate(token, keys)
 
 
+def test_new_repository_immutable_oidc_subject_is_validated_by_ids():
+    token, keys = signed_case(changes={
+        "sub": ("repo:StanleyLl0yd@131160519/FootballForecast@1422508335"
+                ":environment:m1-source-import"),
+    })
+    assert validate(token, keys)[0] == NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+    changed, changed_keys = signed_case(changes={
+        "sub": ("repo:StanleyLl0yd@131160519/FootballForecast@9"
+                ":environment:m1-source-import"),
+    })
+    with pytest.raises(DataError):
+        validate(changed, changed_keys)
+
+
 def test_forged_or_mismatched_signer_fails():
     token, jwks = signed_case(other_signer=True)
     with pytest.raises(DataError):

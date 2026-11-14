@@ -18,6 +18,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener, HTTPSHand
 from football_forecast.data.contracts import DataError
 from football_forecast.research.m4_github_time_attestation import (
     attest_future_source_digests,
+    safe_oidc_phase,
 )
 from football_forecast.research.m4_future_rpl_identity import (
     verify_directed_future_identities,
@@ -135,6 +136,11 @@ if __name__ == "__main__":
         # Safe allowlisted stage and numeric indicators only. Never source body,
         # URL, provider error, team name/ID, match ID, token or private response.
         print("M4_UNAPPROVED_FUTURE_SOURCE_STAGE=" + STAGE, file=sys.stderr)
+        if STAGE == "GITHUB_SIGNED_TIME":
+            # Only an internally predetermined stage; never emit a JWT,
+            # claim, signing key, provider body, request URL, or exception.
+            print("M4_UNAPPROVED_OIDC_PHASE=" + safe_oidc_phase(),
+                  file=sys.stderr)
         code = str(exc) if isinstance(exc, DataError) else ""
         if STAGE == "INDEPENDENT_CALENDAR_VALIDATE" and re.fullmatch(
             r"M4_(?:CALENDAR_(?:BOUND_(?:SMALL|LARGE)|CLOCK|UTF8|"
