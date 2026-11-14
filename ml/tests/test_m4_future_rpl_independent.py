@@ -58,6 +58,13 @@ def test_refuse_schedule_revisions_or_unknowns(old, new):
         )
 
 
+def test_duplicate_live_fixture_is_not_an_independent_calendar():
+    raw = html_rows().decode()
+    first = raw[raw.index("<p>"):raw.index("</p>") + 4]
+    with pytest.raises(DataError):
+        verify_live_independent_calendar(raw.replace("</body>", first + "</body>").encode(), AT)
+
+
 def test_hidden_script_is_not_a_schedule():
     raw = html_rows().decode()
     rows = raw[raw.index("<p>"):raw.index("X" * 20)]
