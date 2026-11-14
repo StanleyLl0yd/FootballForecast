@@ -107,3 +107,78 @@ def verify_live_independent_calendar(raw: bytes, observed_at: datetime) -> str:
                 f"{min(len(matches), 9)}_MARKERS_{markers}"
             )
     return sha256(raw).hexdigest()
+
+
+# Alternative independent editorial source: full RPL calendar at MatchTV.
+# It must be fetched LIVE after the provider's response, never substituted
+# with the old fixed calendar or an archival article.
+MATCHTV_URL = "https://matchtv.ru/football/rpl/calendar/2026-27"
+MATCHTV_NAMES = {
+    "rostov": "Ростов", "krylya": "Крылья Советов",
+    "orenburg": "Оренбург", "baltika": "Балтика",
+    "akron": "Акрон", "fakel": "Факел",
+    "rubin": "Рубин", "zenit": "Зенит",
+    "cska": "ЦСКА", "akhmat": "Ахмат",
+    "dynamo_moscow": "Динамо М", "krasnodar": "Краснодар",
+    "dynamo_makhachkala": "Динамо Мх", "spartak": "Спартак",
+    "rodina": "Родина", "lokomotiv": "Локомотив",
+}
+assert set(MATCHTV_NAMES) == set(PUBLIC_NAMES)
+MATCHTV_DAYS = (
+    ("20 ноября пятница", "2026-11-20"),
+    ("21 ноября суббота", "2026-11-21"),
+    ("22 ноября воскресенье", "2026-11-22"),
+)
+
+
+def verify_live_matchtv_calendar(raw: bytes, observed_at: datetime) -> str:
+    """Require every directed match with exact Moscow local time in LIVE round 15.
+
+    No results, historical scores, odds, news, or bookmaker data are parsed.
+    Absence, duplicate fixtures, TBA instead of time, revised kickoff,
+    awarded/played displays, and unknown pairs fail closed.
+    """
+    if type(raw) is not bytes or len(raw) < 512:
+        raise DataError("M4_MATCHTV_BOUND_SMALL")
+    if len(raw) > MAX_CALENDAR_BYTES:
+        raise DataError("M4_MATCHTV_BOUND_LARGE")
+    if (not isinstance(observed_at, datetime) or observed_at.tzinfo != UTC or
+            not M4_START < observed_at < FIRST_KICKOFF - timedelta(minutes=15)):
+        raise DataError("M4_MATCHTV_CLOCK")
+    parser = VisibleText()
+    try:
+        parser.feed(raw.decode("utf-8", errors="strict"))
+    except (UnicodeError, ValueError) as exc:
+        raise DataError("M4_MATCHTV_UTF8") from exc
+    visible = re.sub(r"\\s+", " ", " ".join(parser.fragments))
+    section = re.search(r"\\bТур\\s+15\\b(.*?)\\bТур\\s+16\\b", visible,
+                        re.IGNORECASE)
+    if section is None or len(re.findall(
+        r"\\bТур\\s+15\\b", visible, re.IGNORECASE
+    )) != 1:
+        raise DataError("M4_MATCHTV_ROUND")
+    round_text = section.group(1)
+    markers = [day[0] for day in MATCHTV_DAYS]
+    if any(round_text.count(marker) != 1 for marker in markers):
+        raise DataError("M4_MATCHTV_DAYS")
+    day_segments = {}
+    starts = [round_text.index(marker) for marker in markers]
+    if starts != sorted(starts):
+        raise DataError("M4_MATCHTV_DAY_ORDER")
+    for index, (_, day) in enumerate(MATCHTV_DAYS):
+        day_segments[day] = round_text[
+            starts[index] + len(markers[index]):
+            starts[index + 1] if index + 1 < len(starts) else len(round_text)
+        ]
+    for slot_index, (slot, (home, away)) in enumerate(DIRECTED.items(), start=1):
+        local = datetime.fromisoformat(slot.replace("Z", "+00:00")) + timedelta(hours=3)
+        day_text = day_segments.get(local.strftime("%Y-%m-%d"), "")
+        pattern = re.compile(
+            r"(?<!\\w)" + re.escape(MATCHTV_NAMES[home]) + r"\\s+" +
+            re.escape(MATCHTV_NAMES[away]) + r"\\s+" +
+            re.escape(local.strftime("%H:%M")) + r"(?!\\d)",
+            re.IGNORECASE,
+        )
+        if len(pattern.findall(day_text)) != 1:
+            raise DataError(f"M4_MATCHTV_SLOT_{slot_index}_UNVERIFIED")
+    return sha256(raw).hexdigest()
