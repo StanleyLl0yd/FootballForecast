@@ -15,7 +15,7 @@ from football_forecast.research.m4_future_rpl_identity import DIRECTED
 from football_forecast.research.m4_future_rpl_source import FIRST_KICKOFF, M4_START
 
 CALENDAR_URL = "https://www.championat.com/football/_russiapl/tournament/7096/calendar/"
-MAX_CALENDAR_BYTES = 2_000_000
+MAX_CALENDAR_BYTES = 8_000_000
 # Publisher's *visible* Moscow-time fixture names (not OpenFoot team IDs).
 PUBLIC_NAMES = {
     "rostov": r"Ростов",
@@ -63,8 +63,10 @@ def verify_live_independent_calendar(raw: bytes, observed_at: datetime) -> str:
     Return a source-byte SHA-256 only. An HTML page with one missing, revised,
     duplicate or wrong-direction fixture refuses the ENTIRE batch.
     """
-    if type(raw) is not bytes or not 2048 <= len(raw) <= MAX_CALENDAR_BYTES:
-        raise DataError("M4_CALENDAR_BOUND")
+    if type(raw) is not bytes or len(raw) < 512:
+        raise DataError("M4_CALENDAR_BOUND_SMALL")
+    if len(raw) > MAX_CALENDAR_BYTES:
+        raise DataError("M4_CALENDAR_BOUND_LARGE")
     if (not isinstance(observed_at, datetime) or observed_at.tzinfo != UTC or
             not M4_START < observed_at < FIRST_KICKOFF - timedelta(minutes=15)):
         raise DataError("M4_CALENDAR_CLOCK")
