@@ -16,6 +16,9 @@ from urllib.error import URLError
 from urllib.request import HTTPRedirectHandler, Request, build_opener, HTTPSHandler
 
 from football_forecast.data.contracts import DataError
+from football_forecast.research.m4_github_time_attestation import (
+    attest_future_source_digests,
+)
 from football_forecast.research.m4_future_rpl_identity import (
     verify_directed_future_identities,
 )
@@ -97,7 +100,26 @@ def main() -> None:
     # No team names, IDs, match scores, source bytes, API keys or predictions
     # are ever emitted to the workflow logs or stored in GitHub artifacts.
     STAGE = "RECEIPT_FINALIZE"
+    STAGE = "GITHUB_SIGNED_TIME"
+    # The GitHub OIDC service signs the exact two independently observed
+    # source digests after both bounded HTTPS reads, against runner identity.
+    from datetime import datetime as _datetime
+
+    source_observed = _datetime.fromisoformat(
+        receipt.observation_completed_utc.replace("Z", "+00:00"))
+    proof = attest_future_source_digests(
+        receipt.source_envelopes_sha256, calendar_digest,
+        source_observed, calendar_observed,
+    )
+    STAGE = "RECEIPT_FINALIZE"
     report = asdict(receipt)
+    report["github_oidc_time_verified"] = True
+    report["github_oidc_issuer"] = "https://token.actions.githubusercontent.com"
+    report["source_oidc_issued_utc"] = proof.source_issued_utc
+    report["kickoff_oidc_issued_utc"] = proof.kickoff_issued_utc
+    report["source_oidc_jwt_sha256"] = proof.source_token_sha256
+    report["kickoff_oidc_jwt_sha256"] = proof.kickoff_token_sha256
+    report["immutable_pg_capture"] = False
     report["live_independent_calendar_observed_utc"] = calendar_observed.strftime(
         "%Y-%m-%dT%H:%M:%SZ")
     report["live_independent_calendar_sha256"] = calendar_digest
