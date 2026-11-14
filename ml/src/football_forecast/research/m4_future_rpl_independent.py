@@ -64,16 +64,16 @@ def verify_live_independent_calendar(raw: bytes, observed_at: datetime) -> str:
     duplicate or wrong-direction fixture refuses the ENTIRE batch.
     """
     if type(raw) is not bytes or not 2048 <= len(raw) <= MAX_CALENDAR_BYTES:
-        raise DataError("M4: independent calendar missing/oversized")
+        raise DataError("M4_CALENDAR_BOUND")
     if (not isinstance(observed_at, datetime) or observed_at.tzinfo != UTC or
             not M4_START < observed_at < FIRST_KICKOFF - timedelta(minutes=15)):
-        raise DataError("M4: independent calendar was not prospectively observed")
+        raise DataError("M4_CALENDAR_CLOCK")
     try:
         text = VisibleText()
         text.feed(raw.decode("utf-8", errors="strict"))
         visible = re.sub(r"\s+", " ", " ".join(text.fragments))
     except (UnicodeError, ValueError) as exc:
-        raise DataError("M4: calendar invalid HTML/UTF8") from exc
+        raise DataError("M4_CALENDAR_UTF8") from exc
     # A literal static fixture list or a predeclared digest is insufficient:
     # all eight pairs must occur in this newly fetched *visible* response.
     for slot_number, (slot, (home, away)) in enumerate(DIRECTED.items(), start=1):
