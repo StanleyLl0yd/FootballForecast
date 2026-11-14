@@ -6,12 +6,12 @@ unavailable privately and refuse to treat the cohort as an actual observation.
 This probe does not separately corroborate club mapping or persist receipts.
 """
 import os
+import re
 import ssl
 import sys
 from dataclasses import asdict
 from datetime import UTC, datetime
 from json import dumps
-import re
 from urllib.error import URLError
 from urllib.request import HTTPRedirectHandler, Request, build_opener, HTTPSHandler
 
