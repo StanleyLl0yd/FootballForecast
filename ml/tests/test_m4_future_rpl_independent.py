@@ -97,6 +97,12 @@ def test_wrong_or_forged_observation_window():
             verify_live_independent_calendar(html_rows(), when)
 
 
+def test_large_but_bounded_public_calendar_still_requires_real_pairs():
+    raw = html_rows().replace(b"X" * 2100, b"X" * 2_200_000)
+    assert len(raw) > 2_000_000
+    assert len(verify_live_independent_calendar(raw, AT)) == 64
+
+
 def test_bound_and_malformed_unicode():
     for raw in (b"", b"x" * (MAX_CALENDAR_BYTES + 1),
                 b"\xff" * 2048):
