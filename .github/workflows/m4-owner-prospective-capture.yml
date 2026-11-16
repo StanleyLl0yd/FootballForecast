@@ -1,0 +1,131 @@
+name: M4 owner-only genuine prospective private shadow capture
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'M4_PRIVATE_CAPTURE_DRY_RUN or M4_PRIVATE_CAPTURE_COMMIT'
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+permissions: {contents: read}
+concurrency:
+  group: m4-one-time-prospective-capture
+  cancel-in-progress: false
+jobs:
+  protected-private-shadow:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         (inputs.confirmation == 'M4_PRIVATE_CAPTURE_DRY_RUN' ||
+          inputs.confirmation == 'M4_PRIVATE_CAPTURE_COMMIT')) ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 304 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.id == 131160519 &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         (github.event.comment.body == '/m4-private-capture-dry-run' ||
+          github.event.comment.body == '/m4-private-capture-once'))
+      )
+    permissions: {contents: read, id-token: write}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: m1-source-import
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6 pinned
+        with: {python-version: '3.13'}
+      - name: Install pinned PostgreSQL and GitHub OIDC verifier
+        run: python -m pip install -e './ml[oidc]' 'psycopg[binary]==3.3.6'
+      - name: Live independent source, GitHub signatures, frozen model and PG capture
+        shell: bash
+        env:
+          M4_CAPTURE_GATED: ${{ (github.event_name == 'issue_comment' && github.event.comment.body == '/m4-private-capture-once') || (github.event_name == 'workflow_dispatch' && inputs.confirmation == 'M4_PRIVATE_CAPTURE_COMMIT') }}
+          OPENFOOT_API_KEY: ${{ secrets.OPENFOOT_API_KEY }}
+          PGHOST: ${{ secrets.M1_PGHOST }}
+          PGUSER: ${{ secrets.M1_PGUSER }}
+          PGDATABASE: ${{ secrets.M1_PGDATABASE }}
+          PGPASSWORD: ${{ secrets.M1_PGPASSWORD }}
+          M1_PGROOTCERT_B64: ${{ secrets.M1_PGROOTCERT_B64 }}
+          PYTHONPATH: ml/src
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONNOUSERSITE: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REPOSITORY" == 'StanleyLl0yd/FootballForecast' ]]
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$GITHUB_ACTOR" == 'StanleyLl0yd' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          [[ "$M4_CAPTURE_GATED" == true || "$M4_CAPTURE_GATED" == false ]]
+          [[ -n "$OPENFOOT_API_KEY" ]]
+          for name in PGHOST PGUSER PGDATABASE PGPASSWORD; do
+            [[ -n "${!name:-}" ]] || { echo 'FAIL: missing protected DB credential'; exit 2; }
+          done
+          if [[ "$M4_CAPTURE_GATED" == true ]]; then
+            export M4_PROSPECTIVE_MODE='M4_PRIVATE_CAPTURE_COMMIT'
+          else
+            export M4_PROSPECTIVE_MODE='M4_PRIVATE_CAPTURE_DRY_RUN'
+          fi
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          if [[ -n "${M1_PGROOTCERT_B64:-}" ]]; then
+            printf '%s' "$M1_PGROOTCERT_B64" | base64 --decode > "$work/ca.crt"
+          else
+            cp security/certs/supabase-root-2021-ca.crt "$work/ca.crt"
+          fi
+          fingerprint="$(openssl x509 -in "$work/ca.crt" -outform DER | sha256sum | cut -d ' ' -f1)"
+          [[ "$fingerprint" == '807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa' ]] || {
+            echo 'FAIL: untrusted private database root CA'; exit 2;
+          }
+          openssl x509 -in "$work/ca.crt" -noout -checkend 86400 >/dev/null
+          export PGSSLROOTCERT="$work/ca.crt"
+          python scripts/m4-owner-prospective-capture.py > "$work/private-receipt.json"
+          python - "$work/private-receipt.json" <<'PY'
+          import json,os,re,sys
+          from pathlib import Path
+          raw=Path(sys.argv[1]).read_bytes()
+          if not 450<=len(raw)<=1200:
+              raise SystemExit('FAIL: invalid prospective private summary size')
+          row=json.loads(raw)
+          exact={'kind','runId','codeSha','sourceSha256','calendarSha256',
+                 'sourceOidcTokenSha256','kickoffOidcTokenSha256','modelSha256',
+                 'fixtures','forecasts','abstentions','persisted',
+                 'publicForecastsWritten','modelApproved','holdoutRead'}
+          store=os.environ['M4_CAPTURE_GATED']=='true'
+          kind=('M4_PRIVATE_PROSPECTIVE_COMMITTED' if store
+                else 'M4_PRIVATE_PROSPECTIVE_DRY_RUN')
+          if (set(row)!=exact or row['kind']!=kind or
+              row['runId']!=os.environ['GITHUB_RUN_ID'] or
+              row['codeSha']!=os.environ['GITHUB_SHA'] or
+              row['modelSha256']!=
+                'b3eeb4cf950c38507572c6c6b4e3db7f133cf7cc2ee0593b2d940c66394b0a0c' or
+              row['fixtures']!=8 or type(row['forecasts']) is not int or
+              type(row['abstentions']) is not int or
+              row['forecasts']+row['abstentions']!=8 or
+              row['persisted'] is not store or
+              any(row[k] is not False for k in
+                  ('publicForecastsWritten','modelApproved','holdoutRead')) or
+              any(not re.fullmatch(r'[a-f0-9]{64}',row[k]) for k in
+                  ('sourceSha256','calendarSha256','sourceOidcTokenSha256',
+                   'kickoffOidcTokenSha256'))):
+              raise SystemExit('FAIL: refused private prospective summary')
+          print('M4_PRIVATE_PROSPECTIVE_STATE='+row['kind'])
+          print('M4_PRIVATE_PROSPECTIVE_SOURCE_SHA256='+row['sourceSha256'])
+          print('M4_PRIVATE_PROSPECTIVE_CALENDAR_SHA256='+row['calendarSha256'])
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as out:
+              out.write('## M4 future private shadow; no public forecasts\n')
+              out.write('2026/27 RPL round 15: '+str(row['fixtures'])+
+                        ' prospective fixtures; '+str(row['forecasts'])+
+                        ' private forecasts, '+str(row['abstentions'])+
+                        ' identity abstentions.\n')
+              out.write('Owner-only immutable PG receipt: '+
+                        ('COMMITTED.\n' if store else 'DRY RUN ONLY.\n'))
+              out.write('No 2025/26 holdout access, no approved/public model.\n')
+          PY
