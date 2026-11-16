@@ -36,16 +36,20 @@ begin
   values
     ('rpl-synthetic-a5-proof','RPL','2026/27','zenit','rubin',
      clock_timestamp()+interval '3 days','scheduled','none',
-     repeat('1',64),repeat('2',64),repeat('3',64),'openfoot',
+     repeat('1',64),repeat('2',64),encode(sha256(convert_to(concat_ws(E'\n',
+       'rpl-synthetic-a5-proof','match-synthetic','zenit','team-zenit',
+       'rubin','team-rubin') || E'\n','UTF8')),'hex'),'openfoot',
      'matchtv',v_source_sha,v_kickoff_sha,v_source_at,v_kickoff_at)
   returning id into v_capture;
 
   insert into ff_private.ff_m4_time_proofs (
-    capture_id,github_run_id,github_run_attempt,code_sha,source_oidc_jwt,
+    capture_id,github_run_id,github_run_attempt,code_sha,
+    source_match_id,home_provider_team_id,away_provider_team_id,source_oidc_jwt,
     kickoff_oidc_jwt,source_jwk,kickoff_jwk,source_token_sha256,
     kickoff_token_sha256,source_issued_at,kickoff_issued_at
   ) values (
-    v_capture,900000,1,repeat('4',40),v_source,v_kickoff,
+    v_capture,900000,1,repeat('4',40),
+    'match-synthetic','team-zenit','team-rubin',v_source,v_kickoff,
     '{"kid":"a","kty":"RSA"}'::jsonb,'{"kid":"b","kty":"RSA"}'::jsonb,
     v_source_sha,v_kickoff_sha,v_source_at,v_kickoff_at
   ) returning id into v_proof;
@@ -63,10 +67,12 @@ begin
   begin
     insert into ff_private.ff_m4_time_proofs (
       capture_id,github_run_id,github_run_attempt,code_sha,
+      source_match_id,home_provider_team_id,away_provider_team_id,
       source_oidc_jwt,kickoff_oidc_jwt,source_jwk,kickoff_jwk,
       source_token_sha256,kickoff_token_sha256,source_issued_at,kickoff_issued_at
     ) values (
-      v_capture,900001,1,repeat('4',40),v_source,v_kickoff,
+      v_capture,900001,1,repeat('4',40),
+      'match-synthetic','team-zenit','team-rubin',v_source,v_kickoff,
       '{}'::jsonb,'{}'::jsonb,
       repeat('f',64),v_kickoff_sha,v_source_at,v_kickoff_at
     );
