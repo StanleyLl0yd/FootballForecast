@@ -13,6 +13,8 @@ def test_write_is_separate_explicit_owner_only_dispatch():
         "github.repository == 'StanleyLl0yd/FootballForecast'",
         "github.ref == 'refs/heads/main'",
         "github.actor == 'StanleyLl0yd'",
+        "github.actor_id == '131160519'",
+        "github.triggering_actor == 'StanleyLl0yd'",
         "github.event.issue.number == 304",
         "github.event.comment.user.id == 131160519",
         "github.event.comment.author_association == 'OWNER'",
@@ -39,6 +41,8 @@ def test_write_is_separate_explicit_owner_only_dispatch():
     ):
         assert forbidden not in workflow
     assert "M4_PROSPECTIVE_MODE" in workflow
+    assert '"GITHUB_ACTOR_ID"' in runner
+    assert '"GITHUB_TRIGGERING_ACTOR"' in runner
     assert "PGSSLROOTCERT" in workflow
     assert "SERIALIZABLE" in runner
     assert "REPEATABLE READ READ ONLY" in runner
@@ -87,3 +91,35 @@ def test_new_private_escrow_has_no_anon_or_service_role_grants():
     ci = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     assert "database/migrations/0016_m4_private_signed_time_proofs.sql" in ci
     assert "database/tests/0027_m4_private_signed_time_proofs.sql" in ci
+
+
+def test_rerun_by_non_owner_and_actor_id_mismatch_refused(monkeypatch):
+    from runpy import run_path
+
+    import pytest
+    from football_forecast.data.contracts import DataError
+
+    gate = run_path(str(ROOT / "scripts/m4-owner-prospective-capture.py"))["_gate"]
+    env = {
+        "GITHUB_REPOSITORY": "StanleyLl0yd/FootballForecast",
+        "GITHUB_REF": "refs/heads/main",
+        "GITHUB_ACTOR": "StanleyLl0yd",
+        "GITHUB_ACTOR_ID": "131160519",
+        "GITHUB_TRIGGERING_ACTOR": "StanleyLl0yd",
+        "GITHUB_EVENT_NAME": "issue_comment",
+        "GITHUB_RUN_ID": "90000000001",
+        "GITHUB_RUN_ATTEMPT": "1",
+        "GITHUB_SHA": "a" * 40,
+        "M4_CAPTURE_GATED": "false",
+        "M4_PROSPECTIVE_MODE": "M4_PRIVATE_CAPTURE_DRY_RUN",
+    }
+    for name, value in env.items():
+        monkeypatch.setenv(name, value)
+    assert gate() is False
+    monkeypatch.setenv("GITHUB_TRIGGERING_ACTOR", "other_writer")
+    with pytest.raises(DataError):
+        gate()
+    monkeypatch.setenv("GITHUB_TRIGGERING_ACTOR", "StanleyLl0yd")
+    monkeypatch.setenv("GITHUB_ACTOR_ID", "42")
+    with pytest.raises(DataError):
+        gate()

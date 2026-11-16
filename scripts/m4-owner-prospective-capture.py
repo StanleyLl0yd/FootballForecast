@@ -54,6 +54,8 @@ def _gate() -> bool:
         os.getenv("GITHUB_REPOSITORY") != "StanleyLl0yd/FootballForecast"
         or os.getenv("GITHUB_REF") != "refs/heads/main"
         or os.getenv("GITHUB_ACTOR") != "StanleyLl0yd"
+        or os.getenv("GITHUB_ACTOR_ID") != "131160519"
+        or os.getenv("GITHUB_TRIGGERING_ACTOR") != "StanleyLl0yd"
         or os.getenv("GITHUB_EVENT_NAME") not in ("issue_comment", "workflow_dispatch")
         or not os.getenv("GITHUB_RUN_ID", "").isdigit()
         or not os.getenv("GITHUB_RUN_ATTEMPT", "").isdigit()
