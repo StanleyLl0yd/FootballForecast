@@ -36,9 +36,9 @@ begin
   values
     ('rpl-synthetic-a5-proof','RPL','2026/27','zenit','rubin',
      clock_timestamp()+interval '3 days','scheduled','none',
-     repeat('1',64),repeat('2',64),encode(sha256(convert_to(concat_ws(E'\n',
+     repeat('1',64),repeat('2',64),encode(sha256(convert_to(concat_ws(chr(10),
        'rpl-synthetic-a5-proof','match-synthetic','zenit','team-zenit',
-       'rubin','team-rubin') || E'\n','UTF8')),'hex'),'openfoot',
+       'rubin','team-rubin') || chr(10),'UTF8')),'hex'),'openfoot',
      'matchtv',v_source_sha,v_kickoff_sha,v_source_at,v_kickoff_at)
   returning id into v_capture;
 
