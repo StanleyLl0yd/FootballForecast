@@ -95,6 +95,7 @@ def test_latest_append_only_revision_controls_outcome_and_abstention():
     {"fixture_key":31337},
     {"model_sha256":"z"*64},
     {"kind":"PUBLIC"},
+    {"prior":(.8,.1,.1)},  # Outcome-fitted comparison must never be accepted.
     {"state":"PUBLISHED"},
     {"probs":(.6,.3,.3)},
     {"probs":(float("nan"),.1,.9)},
@@ -109,6 +110,7 @@ def test_invalid_forged_or_nonprematch_versions_rejected(alter):
     {"status":"awarded"},
     {"result_kind":"technical"},
     {"reviewed_at":datetime(2026,11,20,16,25,tzinfo=UTC)},
+    {"reviewed_at":datetime(2026,11,20,17,59,tzinfo=UTC)},  # 89 minutes.
     {"home_goals":-1},
     {"away_goals":21},
     {"corroboration_sha256":"c"*64},
