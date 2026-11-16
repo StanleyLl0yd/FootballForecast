@@ -13,6 +13,7 @@ from football_forecast.research.m4_github_time_attestation import (
     ACTOR_ID,
     ENVIRONMENT,
     ISSUER,
+    PROSPECTIVE_WORKFLOW,
     REPO,
     REPO_ID,
     WORKFLOW,
@@ -106,6 +107,21 @@ def test_new_repository_immutable_oidc_subject_is_validated_by_ids():
     })
     with pytest.raises(DataError):
         validate(changed, changed_keys)
+
+
+def test_second_pinned_prospective_workflow_is_accepted_but_no_arbitrary_one():
+    token, keys = signed_case(changes={"workflow_ref": PROSPECTIVE_WORKFLOW})
+    assert verify_github_time_jwt(
+        token, AUD, keys, ENV, NOW - timedelta(seconds=2),
+        NOW + timedelta(seconds=2), workflow_ref=PROSPECTIVE_WORKFLOW,
+    )[0] == NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+    with pytest.raises(DataError):
+        validate(token, keys)
+    with pytest.raises(DataError):
+        verify_github_time_jwt(
+            token, AUD, keys, ENV, NOW - timedelta(seconds=2),
+            NOW + timedelta(seconds=2), workflow_ref="repo:other/untrusted",
+        )
 
 
 def test_forged_or_mismatched_signer_fails():
