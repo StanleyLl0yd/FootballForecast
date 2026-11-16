@@ -36,6 +36,10 @@ ACTOR = "StanleyLl0yd"
 ACTOR_ID = "131160519"
 WORKFLOW = (REPO +
             "/.github/workflows/m4-future-rpl-source-observation.yml@refs/heads/main")
+PROSPECTIVE_WORKFLOW = (
+    REPO + "/.github/workflows/m4-owner-prospective-capture.yml@refs/heads/main"
+)
+WORKFLOW_ALLOWLIST = frozenset((WORKFLOW, PROSPECTIVE_WORKFLOW))
 ENVIRONMENT = "m1-source-import"
 SHA = re.compile(r"^[a-f0-9]{64}$")
 COMMIT = re.compile(r"^[a-f0-9]{40}$")
@@ -147,6 +151,7 @@ def _claims_time(value):
 def verify_github_time_jwt(
     token: str, audience: str, jwks: tuple[dict, ...],
     env: dict[str, str], observed_at: datetime, verified_at: datetime,
+    *, workflow_ref: str = WORKFLOW,
 ) -> tuple[str, str]:
     """Pure detached-signature validation against already verified issuer keys.
 
@@ -154,6 +159,8 @@ def verify_github_time_jwt(
     writes by itself. Runtime JWKS MUST come from fixed HTTPS issuer discovery.
     """
     _expected_identity(env)
+    if workflow_ref not in WORKFLOW_ALLOWLIST:
+        _deny()
     if (type(token) is not str or not 400 <= len(token) <= MAX_JWT or
             type(audience) is not str or len(audience) > 256 or
             not audience.startswith("ff-m4-2026-27-") or
@@ -196,7 +203,7 @@ def verify_github_time_jwt(
         "actor_id": ACTOR_ID, "ref": "refs/heads/main",
         "sha": env["GITHUB_SHA"], "run_id": env["GITHUB_RUN_ID"],
         "run_attempt": env["GITHUB_RUN_ATTEMPT"], "environment": ENVIRONMENT,
-        "workflow_ref": WORKFLOW, "event_name": env["GITHUB_EVENT_NAME"],
+        "workflow_ref": workflow_ref, "event_name": env["GITHUB_EVENT_NAME"],
     }
     allowed_subjects = {
         f"repo:{REPO}:environment:{ENVIRONMENT}",
@@ -256,12 +263,15 @@ def _token_for_audience(audience: str, env: dict[str, str]) -> str:
 def attest_future_source_digests(
     source_sha: str, kickoff_sha: str, source_observed: datetime,
     kickoff_observed: datetime, *, env: dict[str, str] | None = None,
+    workflow_ref: str = WORKFLOW,
 ) -> ProtectedTimeProof:
     """Both publisher bytes must already have been fetched and checked LIVE."""
     if env is None:
         env = dict(os.environ)
     _stage("PREREQUISITE")
     _expected_identity(env)
+    if workflow_ref not in WORKFLOW_ALLOWLIST:
+        _deny()
     if (type(source_sha) is not str or not SHA.fullmatch(source_sha)
             or type(kickoff_sha) is not str or not SHA.fullmatch(kickoff_sha)
             or source_sha == kickoff_sha
@@ -282,10 +292,12 @@ def attest_future_source_digests(
     verified_at = datetime.now(UTC)
     _stage("SOURCE_SIGNATURE")
     a_utc, a_jwk = verify_github_time_jwt(
-        source_jwt, audience_source, jwks, env, kickoff_observed, verified_at)
+        source_jwt, audience_source, jwks, env, kickoff_observed, verified_at,
+        workflow_ref=workflow_ref)
     _stage("KICKOFF_SIGNATURE")
     b_utc, b_jwk = verify_github_time_jwt(
-        kickoff_jwt, audience_kickoff, jwks, env, kickoff_observed, verified_at)
+        kickoff_jwt, audience_kickoff, jwks, env, kickoff_observed, verified_at,
+        workflow_ref=workflow_ref)
     _stage("SIGNATURE_PAIR")
     if source_jwt == kickoff_jwt or a_utc > b_utc:
         _deny()
