@@ -97,6 +97,7 @@ def test_rerun_by_non_owner_and_actor_id_mismatch_refused(monkeypatch):
     from runpy import run_path
 
     import pytest
+
     from football_forecast.data.contracts import DataError
 
     gate = run_path(str(ROOT / "scripts/m4-owner-prospective-capture.py"))["_gate"]
