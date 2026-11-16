@@ -77,7 +77,10 @@ begin
       repeat('f',64),v_kickoff_sha,v_source_at,v_kickoff_at
     );
     raise exception 'Unexpected tampered proof accepted';
-  exception when check_violation then null; end;
+  exception when raise_exception then
+    if sqlerrm <> 'M4 cryptographic receipt does not match source capture'
+      then raise; end if;
+  end;
 
   -- Swapping provider IDs with otherwise valid JWT digests must be rejected
   -- by the server-side capture-to-provider directed mapping check.
