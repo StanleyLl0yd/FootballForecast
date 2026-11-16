@@ -35,7 +35,7 @@ def test_write_is_separate_explicit_owner_only_dispatch():
     for forbidden in (
         "schedule:\n", "pull_request:\n", "git push", "curl -L",
         "NEXT_PUBLIC_", "service_role", "upload-artifact",
-        "2025/26", "public.ff_forecasts",
+        "2025%2F26", "public.ff_forecasts",
     ):
         assert forbidden not in workflow
     assert "M4_PROSPECTIVE_MODE" in workflow
