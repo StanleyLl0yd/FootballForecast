@@ -90,3 +90,47 @@ Follow [the M4 milestone issue](https://github.com/StanleyLl0yd/FootballForecast
 ## A5 directed club-pair crosswalk (2026-11-12 technical hardening)
 
 Eight *directed* round-15 fixture pairs and exact kickoff UTC slots are predeclared from [Championat](https://www.championat.com/football/_russiapl/tournament/7096/calendar/) and [Sport-Express](https://www.sport-express.ru/football/rfpl/stories/rpl-15-y-tur-raspisanie-rezultaty-novosti-obzory-matchi-20-22-noyabrya-chempionat-rossii-2026-27-2459710/). The pure crosswalk requires each future OpenFoot `homeTeam.name` and `awayTeam.name` to match an explicit conservative canonical alias, both *in the correct direction*, and exactly one private provider ID per canonical club. Unknown aliases, swapped teams, duplicate provider IDs, cross-club collisions and an unexpected pair refuse the entire owner-only source probe. No names or IDs are logged. This is **independent published calendar corroboration of names and UTC kickoff only**, not yet independent live provider attestation, signed capture or DB-clock prospective forecast; A5 stays OPEN.
+
+## A5 prospective signed private transaction (implementation gate)
+
+The separate `m4-owner-prospective-capture.yml` workflow is **not automatic**:
+only the exact owner on protected `main` may dispatch a dry-run or an
+explicit, independent one-time commit command on issue #304. The old
+source-only workflow retains its stronger no-PostgreSQL-secret boundary.
+
+For each run, it newly retrieves three authenticated OpenFoot future-date
+envelopes, independently validates all eight directed scheduled fixtures and
+16 canonical clubs, fetches the live MatchTV round-15 calendar and checks the
+same exact Moscow kickoff minutes, then obtains **two new GitHub RS256 OIDC
+tokens** signed to the two distinct response hashes and the capture-workflow
+identity. The GitHub issuer is the **same signer** for both JWTs; we do not
+pretend this is two-issuer source attestation or original publisher time.
+
+The owner workflow reads only the **one frozen development model** from
+`ff_private.ff_m4_candidate_models`, strictly validates artifact bytes and
+SHA, uses only the provider's **exact previously trained club ID** as a match
+(no name heuristics), and chooses an untouched private `FORECAST` or
+`ABSTAIN/UNKNOWN_MODEL_CLUB_ID`. Any uncertain identity is never inferred.
+The entire eight-match first-revision batch, private model reference,
+timestamps, original provider match and club identifiers, two JWTs, two
+public GitHub signing JWKs and cryptographic SHA linkage are committed in a
+**single PostgreSQL SERIALIZABLE transaction**. PostgreSQL, not the runner,
+assigns capture, proof and entry timestamps and rejects captures within
+15 minutes of kickoff. All append-only `ff_private` objects have FORCE
+RLS and revoke all client access. No public forecast endpoints are touched.
+
+`/m4-private-capture-dry-run` is a read-only preparation gate.
+`/m4-private-capture-once` is the separately gated private write.
+Both command strings require the same pinned owner user ID, owner association,
+issue number and main SHA; the write job also verifies PostgreSQL's pinned TLS
+CA. Do not dispatch commit until exact-HEAD CI and disposable PG17 tests pass,
+the private migration has been applied and the owner dry-run succeeds.
+
+**Honest limitations:** the database verifies token hashes, source-club
+mapping digests and server-clock freshness, while the protected worker
+checks actual RS256 signatures. It does not independently replay GitHub's
+JWKS later without archived provenance, nor prove that either football
+provider originally served the data at the GitHub token issuance time.
+Post-match proper scores, paired baseline and prospective performance
+remain A6, never claims in A5.
+
