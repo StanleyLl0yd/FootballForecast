@@ -134,3 +134,22 @@ provider originally served the data at the GitHub token issuance time.
 Post-match proper scores, paired baseline and prospective performance
 remain A6, never claims in A5.
 
+## A6 pre-outcome null baseline lock (2026-11-16, before round-15 kickoffs)
+
+For the first genuinely prospective cohort, the *only* admissible paired
+comparator is the predeclared, outcome-independent three-way uniform 1X2
+distribution: `P(home)=P(draw)=P(away)=1/3` for every FORECAST. It is an
+intentionally simple **null baseline**, not a competitively tuned model and
+not a claim of predictive superiority. A missing baseline remains explicitly
+missing; the private reducer rejects any other supplied prior rather than
+allowing a post-result chosen comparator. ABSTAIN fixtures cannot be scored.
+
+A nominal `finished` flag is not enough: a synthetic result's reviewed
+timestamp must be at least 90 minutes after scheduled kickoff. This is a
+**minimum** temporal refusal, not evidence that the match actually finished.
+An A6 owner-only settlement must still independently corroborate a genuinely
+played final score from two separately observed sources, reject technical
+awards/abandonments/revisions/ambiguous identifiers, and verify linkage to
+the already immutable A5 capture/proof/forecast records. No 2025/26 access
+or public prediction/score release is authorized. Until verified post-match
+outcomes exist, A6 and all prospective performance estimates remain OPEN.

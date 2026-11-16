@@ -7,7 +7,7 @@ No 2025/26 input, bookmaker claims, auto model selection or forecast publication
 """
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from math import fsum, isfinite, sqrt
 
 from football_forecast.data.contracts import DataError
@@ -20,6 +20,8 @@ from football_forecast.evaluation.scoring import (
 M4_START = datetime(2026, 11, 11, 11, 4, 56, tzinfo=UTC)
 MIN_LEAD_SECONDS = 900
 SHA_CHARS = frozenset("0123456789abcdef")
+# Fixed BEFORE first 2026/27 prospective kickoff: no post-result baseline choice.
+UNIFORM_1X2_BASELINE = (1.0 / 3.0,) * 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -125,7 +127,9 @@ def summarize_private_shadow(
             _deny("nonprospective or untrusted forecast metadata")
         if row.kind == "FORECAST":
             if (row.abstention_reason is not None or not _probs(row.probs)
-                    or (row.prior is not None and not _probs(row.prior))):
+                    or (row.prior is not None and
+                        (not _probs(row.prior) or
+                         row.prior != UNIFORM_1X2_BASELINE))):
                 _deny("malformed forecast probabilities")
         elif row.kind == "ABSTAIN":
             if (row.probs is not None or row.prior is not None
@@ -160,7 +164,7 @@ def summarize_private_shadow(
                 or item.status != "finished" or item.result_kind != "played"
                 or not all(_utc(t) for t in (item.kickoff_at,item.reviewed_at))
                 or item.kickoff_at != finals[item.fixture_key].kickoff_at
-                or not item.reviewed_at > item.kickoff_at
+                or item.reviewed_at < item.kickoff_at + timedelta(minutes=90)
                 or item.reviewed_at > inspected_at
                 or type(item.home_goals) is not int or type(item.away_goals) is not int
                 or not 0 <= item.home_goals <= 20 or
