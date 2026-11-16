@@ -79,6 +79,26 @@ begin
     raise exception 'Unexpected tampered proof accepted';
   exception when check_violation then null; end;
 
+  -- Swapping provider IDs with otherwise valid JWT digests must be rejected
+  -- by the server-side capture-to-provider directed mapping check.
+  begin
+    insert into ff_private.ff_m4_time_proofs (
+      capture_id,github_run_id,github_run_attempt,code_sha,
+      source_match_id,home_provider_team_id,away_provider_team_id,
+      source_oidc_jwt,kickoff_oidc_jwt,source_jwk,kickoff_jwk,
+      source_token_sha256,kickoff_token_sha256,source_issued_at,kickoff_issued_at
+    ) values (
+      v_capture,900002,1,repeat('4',40),
+      'match-synthetic','team-rubin','team-zenit',v_source,v_kickoff,
+      '{"kid":"a","kty":"RSA"}'::jsonb,'{"kid":"b","kty":"RSA"}'::jsonb,
+      v_source_sha,v_kickoff_sha,v_source_at,v_kickoff_at
+    );
+    raise exception 'Unexpected swapped provider IDs accepted';
+  exception when raise_exception then
+    if sqlerrm <> 'M4 cryptographic receipt does not match source capture'
+      then raise; end if;
+  end;
+
   begin
     update ff_private.ff_m4_time_proofs set github_run_id=999999
     where id=v_proof;
