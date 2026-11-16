@@ -55,9 +55,9 @@ begin
   where id = new.capture_id for update;
   if not found
      or v_cap.team_mapping_sha256 <> encode(sha256(convert_to(
-          concat_ws(E'\n',v_cap.fixture_key,new.source_match_id,
+          concat_ws(chr(10),v_cap.fixture_key,new.source_match_id,
             v_cap.home_club_key,new.home_provider_team_id,
-            v_cap.away_club_key,new.away_provider_team_id) || E'\n','UTF8')),'hex')
+            v_cap.away_club_key,new.away_provider_team_id) || chr(10),'UTF8')),'hex')
      or v_cap.source_issuer <> 'openfoot'
      or v_cap.kickoff_issuer <> 'matchtv'
      or v_cap.source_mac_sha256 <> new.source_token_sha256
