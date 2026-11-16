@@ -132,7 +132,7 @@ def _read_model(cursor):
            model_sha256,model_bytes,model_state,production_approved,
            public_release_allowed,holdout_2025_26_read,github_run_id
            from ff_private.ff_m4_candidate_models
-           where model_sha256=%s for share""",
+           where model_sha256=%s""",
         (FROZEN_MODEL_SHA256,),
     )
     row = cursor.fetchone()
