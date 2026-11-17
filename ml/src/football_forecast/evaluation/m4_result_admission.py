@@ -19,8 +19,8 @@ PRIMARY_ISSUER = "openfoot"
 CORROBORATING_ISSUER = "matchtv"
 MIN_POST_KICKOFF = timedelta(minutes=90)
 SHA_PATTERN = re.compile(r"[a-f0-9]{64}\Z")
-SOURCE_REF_PATTERN = re.compile(r"[A-Za-z0-9_./:-]{1,160}\Z")
-CLUB_PATTERN = re.compile(r"[a-z][a-z0-9_]{1,63}\Z")
+SOURCE_REF_PATTERN = re.compile(r"[A-Za-z0-9_.:-]{2,160}\Z")
+CLUB_PATTERN = re.compile(r"[a-z0-9][a-z0-9_-]{0,63}\Z")
 M4_START = datetime(2026, 11, 11, 11, 4, 56, tzinfo=UTC)
 FIRST_ELIGIBLE = datetime(2026, 7, 1, tzinfo=UTC)
 LAST_ELIGIBLE = datetime(2027, 7, 1, tzinfo=UTC)
@@ -31,6 +31,7 @@ class FrozenFixtureIdentity:
     """Must ultimately originate from an immutable, verified A5 capture."""
 
     fixture_key: str
+    source_match_id: str
     kickoff_at: datetime
     home_club_key: str
     away_club_key: str
@@ -125,7 +126,9 @@ def compare_provisional_played_claims(
         or not FIRST_ELIGIBLE <= fixture.kickoff_at < LAST_ELIGIBLE
         or fixture.kickoff_at <= M4_START + timedelta(minutes=15)
         or type(fixture.fixture_key) is not str
-        or not re.fullmatch(r"rpl-[a-zA-Z0-9_-]{1,96}", fixture.fixture_key)
+        or not re.fullmatch(r"rpl-[a-z0-9][a-z0-9-]{0,94}", fixture.fixture_key)
+        or type(fixture.source_match_id) is not str
+        or SOURCE_REF_PATTERN.fullmatch(fixture.source_match_id) is None
         or not _clubs(fixture.home_club_key, fixture.away_club_key)
         or fixture.competition != "RPL"
         or fixture.season != "2026/27"
@@ -163,6 +166,8 @@ def compare_provisional_played_claims(
             or not 0 <= claim.away_goals <= 20
         ):
             _deny("unverified, premature, technical or identity-mismatched result")
+    if primary.source_fixture_ref != fixture.source_match_id:
+        _deny("primary result match ID does not match A5 immutable provider proof")
     if (
         primary.home_goals != corroboration.home_goals
         or primary.away_goals != corroboration.away_goals

@@ -167,7 +167,10 @@ Before the outcomes exist, the pure
 `ml/src/football_forecast/evaluation/m4_result_admission.py`
 pre-registers an **OpenFoot primary / MatchTV corroboration** candidate
 comparison. Only the exact same frozen RPL 2026/27 fixture identity, directed
-teams, UTC kickoff, independently declared provider records, two distinct
+teams, UTC kickoff, and the OpenFoot match ID stored in the original A5
+signed-time proof may be considered. Both source references must satisfy
+strict, path-free identifier bounds; they are never interpreted as URLs.
+Independently declared provider records, two distinct
 SHA-256 response digests, explicit **finished AND played** classifications,
 matching non-technical score and claimed observations at least 90 minutes
 after scheduled kickoff pass its *structural* checks. Missing status,
