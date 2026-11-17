@@ -209,3 +209,46 @@ superiority, calibrated-model or production-readiness claim is supportable.
 Later official result revisions must generate additional immutable provenance,
 never overwrite the original result evidence or private A5 predictions.
 No outcome is public and no public forecast is authorized.
+
+## A6 private result candidate escrow (pre-outcome preparation; NOT deployed)
+
+`database/migrations/0017_m4_private_postmatch_candidates.sql` defines two
+separate strictly private, immutable tables for **claimed** played results:
+source-specific `ff_m4_result_observations` and
+`ff_m4_result_candidate_settlements`. Neither table may be mistaken for an
+authenticated result, an accepted A6 score, a production evaluation, or a
+public result feed. Every row is marked unattested, owner-unapproved and
+publication-denied. Both tables have FORCE RLS, no client grants and
+UPDATE/DELETE/TRUNCATE denial triggers.
+
+Before an observation can be inserted, PostgreSQL must find the existing A5
+capture and GitHub time proof, verify fixture/directed club identity, and
+require the OpenFoot result match ID to equal the *original* A5 provider
+match ID. The result claim must be explicitly `finished` **and** `played`;
+any `awarded`, technical, revised or uncertain result is refused rather
+than assigned played goals. GitHub-issued source time must be no earlier
+than 90 minutes after scheduled kickoff and within the last 20 minutes of
+the PostgreSQL-assigned insertion time. An independent, currently reviewed
+owner-only runner is still needed to verify JWT RS256, exact audience,
+publisher response digests, issuer/fixture semantics and live fetch time;
+the database verifies only SHA integrity and relational/time constraints.
+A spoofed issuer name or fabricated JWT **is not independent proof**.
+
+The candidate-settlement trigger requires two separately claimed sources
+(OpenFoot first, MatchTV second), two different raw-response SHA hashes,
+two different JWT-token hashes, the same protected run/attempt/code SHA,
+identical played score, exact original A5 forecast identity, and real
+postgame PostgreSQL commit time. A mismatch fails the **whole** candidate.
+An abstained A5 fixture can have a result candidate but never obtains a
+retroactive forecast. Later corrected outcomes require newly observed
+provider evidence and a new sequential immutable revision; no original A5
+forecast or earlier result candidate may be modified.
+
+`database/tests/0028_m4_private_postmatch_candidates.sql` is **disposable
+PG17-only**, includes synthetic historical A5 setup using disabled A5
+insert-clock triggers *inside a transaction that rolls back*, and restores
+all triggers before actual A6 insert tests. This test must NEVER run on
+Supabase production. It verifies only database integrity semantics, not
+source authenticity. No live migration, result feed, owner write workflow,
+score release, public page or A6 acceptance is authorized by these files.
+A6 remains OPEN until actual post-match evidence is independently accepted.
