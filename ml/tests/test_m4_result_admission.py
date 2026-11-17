@@ -16,6 +16,7 @@ from football_forecast.evaluation.m4_result_admission import (
 def _fixture():
     return FrozenFixtureIdentity(
         fixture_key="rpl-" + "synthetic-a6-1",
+        source_match_id="provider:fixture.1",
         kickoff_at=datetime(2026, 11, 20, 16, 30, tzinfo=UTC),
         home_club_key="home_club",
         away_club_key="away_club",
@@ -37,13 +38,13 @@ def _claims():
     )
     first = ProviderResultClaim(
         issuer="openfoot",
-        source_fixture_ref="provider:fixture/1",
+        source_fixture_ref="provider:fixture.1",
         source_response_sha256="a" * 64,
         **common,
     )
     other = ProviderResultClaim(
         issuer="matchtv",
-        source_fixture_ref="independent:fixture/1",
+        source_fixture_ref="independent:fixture.1",
         source_response_sha256="b" * 64,
         **common,
     )
@@ -86,6 +87,8 @@ def test_synthetic_agreement_is_never_result_attestation_or_authorization():
         ("corroboration", {"source_response_sha256": "a" * 64}),
         ("primary", {"source_response_sha256": "Z" * 64}),
         ("primary", {"source_fixture_ref": "../../unsafe?x=1"}),
+        ("primary", {"source_fixture_ref": "../unsafe"}),
+        ("primary", {"source_fixture_ref": "wrong:match.id"}),
         ("primary", {"fixture_key": "rpl-synthetic-another"}),
         ("primary", {"kickoff_at": datetime(2026, 11, 20, 17, tzinfo=UTC)}),
         ("primary", {"home_club_key": "away_club"}),
@@ -125,6 +128,9 @@ def test_false_independence_technical_or_inconsistent_claims_refused(part, chang
     "changes",
     [
         {"fixture_key": "external"},
+        {"fixture_key": "rpl-" + "Synthetic-A6"},
+        {"source_match_id": "wrong:match.id"},
+        {"source_match_id": "../unsafe"},
         {"kickoff_at": datetime(2025, 11, 20, 16, 30, tzinfo=UTC)},
         {"kickoff_at": datetime(2026, 11, 10, 16, 30, tzinfo=UTC)},
         {"kickoff_at": datetime(2027, 7, 1, tzinfo=UTC)},
