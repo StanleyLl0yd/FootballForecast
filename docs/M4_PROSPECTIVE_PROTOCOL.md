@@ -153,3 +153,56 @@ awards/abandonments/revisions/ambiguous identifiers, and verify linkage to
 the already immutable A5 capture/proof/forecast records. No 2025/26 access
 or public prediction/score release is authorized. Until verified post-match
 outcomes exist, A6 and all prospective performance estimates remain OPEN.
+
+
+## A6 outcome-blind dual-source result admission (prepared 2026-11-17)
+
+The first eight immutable A5 fixtures kick off 20–22 November 2026.
+**No results are available as of this preparation; A6 remains OPEN.**
+The frozen first-cohort maximum is six scorable pre-match FORECASTs and
+two ABSTAINs. A prospective score/skill, calibration or model-approval
+claim cannot be inferred from the existing 8/8/8 A5 receipts.
+
+Before the outcomes exist, the pure
+`ml/src/football_forecast/evaluation/m4_result_admission.py`
+pre-registers an **OpenFoot primary / MatchTV corroboration** candidate
+comparison. Only the exact same frozen RPL 2026/27 fixture identity, directed
+teams, UTC kickoff, independently declared provider records, two distinct
+SHA-256 response digests, explicit **finished AND played** classifications,
+matching non-technical score and claimed observations at least 90 minutes
+after scheduled kickoff pass its *structural* checks. Missing status,
+revisions, abandonments, disciplinary/awarded results, different or reversed
+clubs, incompatible scores, early result claims or unreliable source
+availability **refuse** the candidate. Claims are synthetic in CI.
+The only output classification is
+`PRIVATE_RESULT_CANDIDATE_UNATTESTED`, with independent source-time
+attestation, played-final attestation, settlement and publication permissions
+**all false**. Distinct issuers or digests alone do not prove independent
+football reporting or actual first-observation time.
+
+A6 actual settlement requires a **separate reviewed owner-only execution**
+after each match is genuinely over. It must freshly retrieve only the eight
+A5 fixture identifiers (never a league-wide historical or 2025/26 listing),
+validate the publishers' actual result semantics and independence, establish
+real read/commit server UTC and signed-time receipts, bind both source claims
+to original immutable A5 capture/proof/forecast IDs and their frozen code,
+model and input digests, and persist an append-only private result ledger with
+RLS before calling the pure provisional scorer. MatchTV's ability to provide
+independent **played-vs-technical** evidence has **not yet been established**.
+If its score/status evidence is absent or ambiguous, **ABSTAIN on settlement**
+and require a newly reviewed source/protocol change *before* using a fallback.
+The provisional comparator never substitutes for those checks.
+
+For verified played outcomes only, score the pre-match immutable latest valid
+revision, preserving the original first-observation and forecast clocks.
+Record sample size, abstention reason counts, forecast coverage among all
+tracked fixtures, pending/technical/unverified outcomes separately, H/D/A
+Log Loss, unnormalized three-class Brier and two-threshold RPS. The
+uniform 1/3–1/3–1/3 paired baseline was frozen in PR #323 before kickoff;
+no later comparator selection, label-based tuning or reweighting is allowed.
+Uncertainty and calibration must disclose the *very small*, correlated
+matchday sample. With at most six first-cohort forecasts, no credible model
+superiority, calibrated-model or production-readiness claim is supportable.
+Later official result revisions must generate additional immutable provenance,
+never overwrite the original result evidence or private A5 predictions.
+No outcome is public and no public forecast is authorized.
