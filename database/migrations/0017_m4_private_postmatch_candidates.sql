@@ -128,7 +128,7 @@ begin
   select kickoff_at,fixture_key into v_cap
   from ff_private.ff_m4_future_captures
   where id=new.capture_id for update;
-  select capture_id,fixture_key,revision,model_id,committed_at
+  select capture_id,fixture_key,revision,model_id,entry_kind,committed_at
     into v_entry
   from ff_private.ff_m4_shadow_entries
   where id=new.shadow_entry_id for share;
@@ -152,6 +152,8 @@ begin
   if v_cap.fixture_key is null or v_entry.fixture_key is null
      or v_primary.source_issuer is null or v_other.source_issuer is null
      or v_entry.capture_id <> new.capture_id
+     -- An ABSTAIN has no 1X2 probabilities and can never be settled/scored.
+     or v_entry.entry_kind <> 'FORECAST'
      or v_entry.fixture_key <> v_cap.fixture_key
      or v_primary.capture_id <> new.capture_id
      or v_other.capture_id <> new.capture_id

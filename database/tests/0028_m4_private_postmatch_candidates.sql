@@ -178,6 +178,8 @@ declare
  v_entry uuid;
  v_primary uuid;
  v_other uuid;
+ v_abstain uuid;
+ v_existing_settlement uuid;
 begin
   select id into v_cap from ff_private.ff_m4_future_captures limit 1;
   select id into v_entry from ff_private.ff_m4_shadow_entries limit 1;
@@ -281,6 +283,38 @@ begin
     raise exception 'INVALID_REVISION_WAS_SETTLED';
   exception when raise_exception then
     if sqlerrm <> 'M4 result revision lineage invalid' then raise; end if;
+  end;
+
+  -- Disposable-only synthetic A4 revision: a later ABSTAIN invalidates
+  -- even a previously valid FORECAST for this fixture. The real A4 trigger
+  -- refuses past-time inserts; disable it ONLY within this rollback.
+  alter table ff_private.ff_m4_shadow_entries
+    disable trigger ff_m4_entry_pre_kickoff;
+  insert into ff_private.ff_m4_shadow_entries (
+    capture_id,model_id,fixture_key,revision,previous_entry_id,
+    idempotency_sha256,entry_kind,abstention_reason,committed_at
+  ) select e.capture_id,e.model_id,e.fixture_key,2,e.id,
+           repeat('e',64),'ABSTAIN','UNKNOWN_MODEL_CLUB_ID',
+           e.committed_at+interval '1 minute'
+    from ff_private.ff_m4_shadow_entries e where e.id=v_entry
+    returning id into v_abstain;
+  alter table ff_private.ff_m4_shadow_entries
+    enable trigger ff_m4_entry_pre_kickoff;
+  select id into v_existing_settlement
+    from ff_private.ff_m4_result_candidate_settlements
+    where capture_id=v_cap and revision=1;
+  begin
+    insert into ff_private.ff_m4_result_candidate_settlements (
+      capture_id,shadow_entry_id,primary_observation_id,
+      corroboration_observation_id,revision,previous_settlement_id,
+      home_goals,away_goals
+    ) values (
+      v_cap,v_abstain,v_primary,v_other,2,v_existing_settlement,2,1
+    );
+    raise exception 'ABSTAIN_WAS_SETTLED';
+  exception when raise_exception then
+    if sqlerrm <> 'M4 candidate settlement has no consistent A5/played evidence'
+    then raise; end if;
   end;
 
   begin
