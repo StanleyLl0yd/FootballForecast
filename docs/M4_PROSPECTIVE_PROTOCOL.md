@@ -168,7 +168,9 @@ Before the outcomes exist, the pure
 pre-registers an **OpenFoot primary / MatchTV corroboration** candidate
 comparison. Only the exact same frozen RPL 2026/27 fixture identity, directed
 teams, UTC kickoff, and the OpenFoot match ID stored in the original A5
-signed-time proof may be considered. Both source references must satisfy
+signed-time proof may be considered. The corroborating MatchTV reference
+must differ from the frozen OpenFoot provider match ID, consistently with
+the private PostgreSQL observation guard. Both source references must satisfy
 strict, path-free identifier bounds; they are never interpreted as URLs.
 Independently declared provider records, two distinct
 SHA-256 response digests, explicit **finished AND played** classifications,
@@ -239,10 +241,13 @@ The candidate-settlement trigger requires two separately claimed sources
 two different JWT-token hashes, the same protected run/attempt/code SHA,
 identical played score, exact original A5 forecast identity, and real
 postgame PostgreSQL commit time. A mismatch fails the **whole** candidate.
-An abstained A5 fixture can have a result candidate but never obtains a
-retroactive forecast. Later corrected outcomes require newly observed
-provider evidence and a new sequential immutable revision; no original A5
-forecast or earlier result candidate may be modified.
+An A5 `ABSTAIN` fixture may retain private source observations, but cannot
+create a candidate settlement against an `ABSTAIN` shadow entry. A prior
+`FORECAST` superseded by a later abstention also cannot be newly settled.
+No observation or settlement candidate creates a retroactive forecast.
+Later corrected outcomes require newly observed provider evidence and a new
+sequential immutable revision; no original A5 forecast or earlier result
+candidate may be modified.
 
 `database/tests/0028_m4_private_postmatch_candidates.sql` is **disposable
 PG17-only**, includes synthetic historical A5 setup using disabled A5

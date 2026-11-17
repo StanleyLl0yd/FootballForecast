@@ -317,6 +317,22 @@ begin
     then raise; end if;
   end;
 
+  -- An earlier FORECAST superseded by ABSTAIN cannot be settled either,
+  -- even when two independent source observations agree about the score.
+  begin
+    insert into ff_private.ff_m4_result_candidate_settlements (
+      capture_id,shadow_entry_id,primary_observation_id,
+      corroboration_observation_id,revision,previous_settlement_id,
+      home_goals,away_goals
+    ) values (
+      v_cap,v_entry,v_primary,v_other,2,v_existing_settlement,2,1
+    );
+    raise exception 'SUPERSEDED_FORECAST_WAS_SETTLED';
+  exception when raise_exception then
+    if sqlerrm <> 'M4 candidate settlement has no consistent A5/played evidence'
+    then raise; end if;
+  end;
+
   begin
     update ff_private.ff_m4_result_observations
     set source_issuer='matchtv' where id=v_primary;
