@@ -89,6 +89,7 @@ def test_synthetic_agreement_is_never_result_attestation_or_authorization():
         ("primary", {"source_fixture_ref": "../../unsafe?x=1"}),
         ("primary", {"source_fixture_ref": "../unsafe"}),
         ("primary", {"source_fixture_ref": "wrong:match.id"}),
+        ("corroboration", {"source_fixture_ref": "provider:fixture.1"}),
         ("primary", {"fixture_key": "rpl-synthetic-another"}),
         ("primary", {"kickoff_at": datetime(2026, 11, 20, 17, tzinfo=UTC)}),
         ("primary", {"home_club_key": "away_club"}),

@@ -136,7 +136,9 @@ begin
     if SQLERRM <> 'Source snapshot history is append-only' then raise; end if;
   end;
   begin
-    truncate ff_private.ff_m4_shadow_entries;
+    -- A6 has a legitimate FK to these entries; CASCADE reaches immutable
+    -- triggers on both tables, so the operation must still be refused.
+    truncate ff_private.ff_m4_shadow_entries cascade;
     raise exception 'Unexpected ledger truncate';
   exception when others then
     if SQLERRM <> 'Source snapshot history is append-only' then raise; end if;

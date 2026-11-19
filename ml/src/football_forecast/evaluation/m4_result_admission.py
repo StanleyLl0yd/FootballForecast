@@ -166,8 +166,9 @@ def compare_provisional_played_claims(
             or not 0 <= claim.away_goals <= 20
         ):
             _deny("unverified, premature, technical or identity-mismatched result")
-    if primary.source_fixture_ref != fixture.source_match_id:
-        _deny("primary result match ID does not match A5 immutable provider proof")
+    if (primary.source_fixture_ref != fixture.source_match_id or
+            corroboration.source_fixture_ref == fixture.source_match_id):
+        _deny("result references are not distinct and A5-anchored")
     if (
         primary.home_goals != corroboration.home_goals
         or primary.away_goals != corroboration.away_goals
