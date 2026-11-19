@@ -257,3 +257,12 @@ Supabase production. It verifies only database integrity semantics, not
 source authenticity. No live migration, result feed, owner write workflow,
 score release, public page or A6 acceptance is authorized by these files.
 A6 remains OPEN until actual post-match evidence is independently accepted.
+
+
+## A6 post-match GitHub signed byte-clock preflight (candidate only)
+
+The A6 candidate-only schema in migration 0017 and its rollback-only PG17 tests do not verify OIDC signatures, publisher ownership, the parsed response body, or played/technical semantics. They MUST NOT be interpreted as a result settlement or permission to compute performance. Migration 0017 remains **undeployed** to live Supabase until separately authorized and reviewed.
+
+The pure verifier in `ml/src/football_forecast/evaluation/m4_result_oidc.py` pins the separate future `m4-owner-postmatch-observe.yml` GitHub workflow identity and accepts only two independently collected, in-scope *candidate* response bodies whose raw SHA-256 matches the individually declared source claims. It verifies two distinct RS256 GitHub OIDC JWTs against the exact OpenFoot/MatchTV raw-body digest audiences, expected owner, repository ID, protected `main` SHA, run attempt, environment, workflow and short issuance windows. JWKs must come from GitHub's fixed HTTPS OIDC discovery and JWKS endpoint; headers, provider bodies, UI or user input must never select keys. Only GitHub-issued proof of digest commitment time is attested, not original publisher publication time.
+
+The module performs **no network, live parsing, PostgreSQL writes, scoring, model approval or publication**. Its returned evidence explicitly leaves publisher authenticity, independent played-final status and all settlement, scoring, publication and holdout permissions **false**. Tests use synthetic locally signed JWTs, scores and source bytes only. A subsequently reviewed owner-only workflow MUST authenticate each publisher response separately, parse both result semantics against the immutable A5 source match ID, verify two independent played-final observations, obtain new actual GitHub tokens from the trusted runner, and durably store the complete private evidence before anyone can consider A6 acceptance. Missing, ambiguous, awarded, abandoned, revised or stale results must fail closed. Nothing may be backfilled from the consumed 2025/26 holdout.

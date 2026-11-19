@@ -39,7 +39,10 @@ WORKFLOW = (REPO +
 PROSPECTIVE_WORKFLOW = (
     REPO + "/.github/workflows/m4-owner-prospective-capture.yml@refs/heads/main"
 )
-WORKFLOW_ALLOWLIST = frozenset((WORKFLOW, PROSPECTIVE_WORKFLOW))
+POSTMATCH_WORKFLOW = (
+    REPO + "/.github/workflows/m4-owner-postmatch-observe.yml@refs/heads/main"
+)
+WORKFLOW_ALLOWLIST = frozenset((WORKFLOW, PROSPECTIVE_WORKFLOW, POSTMATCH_WORKFLOW))
 ENVIRONMENT = "m1-source-import"
 SHA = re.compile(r"^[a-f0-9]{64}$")
 COMMIT = re.compile(r"^[a-f0-9]{40}$")
