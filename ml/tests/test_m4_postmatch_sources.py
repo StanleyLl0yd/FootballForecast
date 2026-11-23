@@ -99,7 +99,7 @@ def _parsed():
     )
 
 
-def test_two_realistic_synthetic_sources_agree_but_remain_unattested():
+def test_two_synthetic_score_claims_never_prove_independent_played_final():
     source, independent = _parsed()
     assert source.source_fixture_ref == _anchor().fixture.source_match_id
     assert independent.source_fixture_ref == "matchtv:552665047"
@@ -107,16 +107,15 @@ def test_two_realistic_synthetic_sources_agree_but_remain_unattested():
     assert (independent.home_goals, independent.away_goals) == (3, 1)
     assert source.source_response_sha256 == sha256(_openfoot_blob()).hexdigest()
     assert independent.source_response_sha256 == sha256(_matchtv_blob()).hexdigest()
-    candidate = compare_provisional_played_claims(
-        _anchor().fixture, source, independent, OBSERVED,
-    )
-    assert candidate.classification == "PRIVATE_RESULT_CANDIDATE_UNATTESTED"
-    assert candidate.source_time_attested is False
-    assert candidate.independent_played_final_attested is False
-    assert candidate.settlement_authorized is False
-    assert candidate.publication_authorized is False
-    assert candidate.holdout_2025_26_read is False
-
+    assert source.status == "finished"
+    assert source.result_kind == "played"
+    assert independent.status == "score_displayed_unverified"
+    assert independent.result_kind == "unknown"
+    # Identical scores are NEVER grounds to fabricate MatchTV played-final.
+    with pytest.raises(DataError):
+        compare_provisional_played_claims(
+            _anchor().fixture, source, independent, OBSERVED,
+        )
 
 @pytest.mark.parametrize("change", [
     {"id": "other-fixture"},
@@ -252,3 +251,11 @@ def test_independent_score_disagreement_is_denied_before_candidate_settlement():
     )
     with pytest.raises(DataError):
         compare_provisional_played_claims(_anchor().fixture, a, b, OBSERVED)
+
+
+
+def test_matchtv_calendar_score_stays_unverified_even_when_both_scores_agree():
+    matchtv = parse_matchtv_result_candidate(_matchtv_blob(), _anchor(), OBSERVED)
+    assert matchtv.status != "finished"
+    assert matchtv.result_kind != "played"
+    assert matchtv.home_goals == 3 and matchtv.away_goals == 1
