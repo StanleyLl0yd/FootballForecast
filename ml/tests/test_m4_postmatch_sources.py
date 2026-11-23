@@ -7,15 +7,15 @@ from json import dumps
 import pytest
 
 from football_forecast.data.contracts import DataError
+from football_forecast.evaluation.m4_postmatch_sources import (
+    MATCHTV_MATCH_IDS,
+    A5PostmatchAnchor,
+    parse_matchtv_result_candidate,
+    parse_openfoot_result_candidate,
+)
 from football_forecast.evaluation.m4_result_admission import (
     FrozenFixtureIdentity,
     compare_provisional_played_claims,
-)
-from football_forecast.evaluation.m4_postmatch_sources import (
-    A5PostmatchAnchor,
-    MATCHTV_MATCH_IDS,
-    parse_matchtv_result_candidate,
-    parse_openfoot_result_candidate,
 )
 from football_forecast.research.m4_future_rpl_identity import DIRECTED
 from football_forecast.research.m4_future_rpl_independent import (
