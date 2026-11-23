@@ -31,7 +31,7 @@ from football_forecast.research.m4_future_rpl_source import (
 MAX_MATCHTV_BYTES = 8_000_000
 MIN_RESULT_AGE = timedelta(minutes=90)
 # MatchTV fixture ID crosswalk identified in precommitted round-15 calendar;
-# URLs are NEVER taken from provider JSON, JWT headers or caller-supplied links.
+# The current-season calendar URL is fixed; never trust provider-supplied links.
 MATCHTV_MATCH_IDS = {
     "rpl-2026-27-r15-20261120-1630": "552665053",  # Rostov - Krylya
     "rpl-2026-27-r15-20261121-1000": "552665050",  # Orenburg - Baltika
@@ -42,7 +42,9 @@ MATCHTV_MATCH_IDS = {
     "rpl-2026-27-r15-20261122-1330": "552665052",  # Dinamo Mkh - Spartak
     "rpl-2026-27-r15-20261122-1600": "552665049",  # Rodina - Lokomotiv
 }
-# Individual MatchTV detail pages contain prior-season H2H rows and MUST\n# NOT be fetched. Only the current-season 2026/27 calendar is used.\n
+# Individual MatchTV detail pages contain prior-season H2H rows and MUST
+# NOT be fetched. Only the current-season 2026/27 calendar is used.
+
 
 @dataclass(frozen=True, slots=True)
 class A5PostmatchAnchor:
