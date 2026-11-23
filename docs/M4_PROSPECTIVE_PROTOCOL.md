@@ -374,3 +374,53 @@ or the A6 independent played-versus-technical proof requirement.
 Do not use this exploratory read-only source schema evidence to write the
 unapplied A6 tables, calculate private prospective scores, access the sealed
 2025/26 holdout, approve a model, or publish forecasts.
+
+
+## A6 independent club-operated 2026/27 on-field report candidates
+
+On 2026-11-23 a third class of source was located for **all eight** original
+2026/27 round-15 A5 fixtures, separate from OpenFoot's finished-score data and
+the MatchTV current-season calendar. Pinned **club-operated** post-match
+match reports or match-centre articles are enumerated in
+`ml/src/football_forecast/evaluation/m4_club_report_review.py`. They are
+**candidate locators only**, not yet authenticated or ingested by the protected
+owner worker. Each points to a current-season specific report, NEVER to
+2025/26 head-to-head history or generic club season archives.
+
+| A5 fixture | Reporting club | Current-season source |
+| --- | --- | --- |
+| Rostov – Krylya | Rostov | https://fc-rostov.ru/media/news/pobezhdaem-krylya-sovetov |
+| Orenburg – Baltika | Baltika | https://fc-baltika.ru/news/pobeda_v_orenburge/ |
+| Akron – Fakel | Akron | https://fcakron.ru/news/2534 |
+| Rubin – Zenit | Rubin | https://www.rubin-kazan.ru/news/rubin-zenit-3-1/ |
+| CSKA – Akhmat | CSKA | https://pfc-cska.com/ru/novosti/vse-novosti/32787-pfk-cska-ahmat-12/ |
+| Dynamo Moscow – Krasnodar | Krasnodar | https://www.fckrasnodar.ru/team/news/object/?object_id=154573 |
+| Dynamo Makhachkala – Spartak | Spartak | https://spartak.com/matches/5f5730c0-3698-4a75-a13a-158157ea11c7/broadcast |
+| Rodina – Lokomotiv | Lokomotiv | https://www.fclm.ru/news/n/rodina-lokomotiv-rpl-2026-27-match-summary/ |
+
+The official RFS prematch referee appointments published 2026-11-19:
+https://www.rfs.ru/news/225626. This is a fixture/officials corroboration
+source, **not** on-field completion evidence. RFS KDK archive:
+https://www.rfs.ru/archive?tags=16. An empty search or no article yet
+**cannot** certify that no technical award, match annulment or delayed
+administrative revision will happen.
+
+The pure review module checks exactly pinned third-party report URL, reporting
+club, original A5 directed fixture ID/kickoff, current season and round, bounded
+claimed result, strictly ordered on-field event *claims*, and consistency with
+the two existing UNKNOWN-played score observations. It rejects technical,
+annulled, abandoned, replay or revised KDK dispositions even when all three
+scores agree. Missing KDK evidence or an archive search returning nothing
+always yields **KDK_UNRESOLVED**. All claims are caller-controlled and have no
+publisher-authenticated first-serving timestamp. Its output has explicit
+`played_final_attested=false`, `kdk_clearance_attested=false`, and permanently
+false DB settlement, scoring, model-approval, publication and holdout flags.
+
+Next: verify actual live report-body shapes for current-season-only pages
+without reading any sealed 2025/26 content; add protected owner-only HTTPS
+fetch with exact source pins, bounded bytes, no redirects or historical H2H,
+raw-body hashes and GitHub OIDC time receipts, plus independent official
+league match-protocol/disciplinary decision status. A future official
+match-protocol *claim* is still not final until independently authenticated.
+NEVER infer affirmative clearance from KDK silence. No migration 0017 or A6
+write/scoring is authorized by this technical preparation.
