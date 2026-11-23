@@ -94,6 +94,9 @@ jobs:
           row=json.loads(raw)
           exact={'kind','runId','codeSha','fixtures','forecasts','abstentions',
                  'candidates','batchTokenDigestSha256',
+                 'openfootExplicitPlayedFieldCount',
+                 'openfootUnknownPlayedFieldCount',
+                 'matchtvUnknownPlayedFieldCount','sourceStatusSchemaOnly',
                  'githubDigestTimeVerified','publisherAuthenticityAttested',
                  'playedFinalAttested','databaseWrite','settlementAuthorized',
                  'scoringAuthorized','publicationAuthorized','holdout2025_26Read'}
@@ -105,6 +108,15 @@ jobs:
                   ('fixtures','forecasts','abstentions','candidates')) or
               (row['fixtures'],row['forecasts'],row['abstentions'],row['candidates'])
                   !=(8,6,2,8) or
+              any(type(row[k]) is not int for k in (
+                  'openfootExplicitPlayedFieldCount','openfootUnknownPlayedFieldCount',
+                  'matchtvUnknownPlayedFieldCount')) or
+              not 0 <= row['openfootExplicitPlayedFieldCount'] <= 8 or
+              not 0 <= row['openfootUnknownPlayedFieldCount'] <= 8 or
+              row['openfootExplicitPlayedFieldCount']+
+                  row['openfootUnknownPlayedFieldCount']!=8 or
+              row['matchtvUnknownPlayedFieldCount']!=8 or
+              row['sourceStatusSchemaOnly'] is not True or
               row['githubDigestTimeVerified'] is not True or
               not re.fullmatch(r'[a-f0-9]{64}',row['batchTokenDigestSha256']) or
               any(row[k] is not False for k in (
@@ -114,11 +126,21 @@ jobs:
               raise SystemExit('FAIL: postmatch readonly receipt had an unauthorized claim')
           print('M4_A6_POSTMATCH_STATE='+row['kind'])
           print('M4_A6_TOKEN_RECEIPT_SHA256='+row['batchTokenDigestSha256'])
+          print('M4_A6_OPENFOOT_EXPLICIT_PLAYED_FIELD_COUNT='+
+                str(row['openfootExplicitPlayedFieldCount']))
+          print('M4_A6_OPENFOOT_UNKNOWN_PLAYED_FIELD_COUNT='+
+                str(row['openfootUnknownPlayedFieldCount']))
           with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as out:
               out.write('## M4-A6 private read-only postmatch evidence\n')
               out.write('8 A5-anchored fixtures, 6 prospective FORECAST / 2 ABSTAIN; ')
               out.write('two distinct untrusted source bodies per fixture, ')
               out.write('GitHub-signed raw-response digest time.\n')
+              out.write('OpenFoot explicit played field on '+
+                        str(row['openfootExplicitPlayedFieldCount'])+
+                        '/8; missing/unverified on '+
+                        str(row['openfootUnknownPlayedFieldCount'])+
+                        '/8. All MatchTV calendar played statuses UNKNOWN.\n')
+              out.write('This is source-schema information, never certified truth.\n')
               out.write('No verified played-final truth, DB writes, scoring, ')
               out.write('holdout access or public forecasts.\n')
           PY
