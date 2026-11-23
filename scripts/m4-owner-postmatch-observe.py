@@ -2,7 +2,7 @@
 """Protected owner-only M4-A6 read-only 2026/27 post-match evidence probe.
 
 Read immutable A5 identity/forecast kind, then newly fetch bounded OpenFoot
-single-fixture responses and separately pinned MatchTV match pages. Validate
+single-fixture responses and fixed current-season MatchTV calendar. Validate
 source-specific *claims*, corroborate scores, and independently GitHub-sign
 each pair of freshly acquired raw-response digests. This is NOT played-final
 attestation or result settlement. No PostgreSQL INSERT/UPDATE/DELETE, no
@@ -181,6 +181,8 @@ def main():
     jwks = _keys_from_github()
     STAGE = "LIVE_POSTMATCH_CLAIMS"
     digests = []
+    openfoot_played_field_count = 0
+    openfoot_unknown_field_count = 0
     github_env = {name: os.environ[name] for name in GH_ENV_KEYS}
     for ordinal, anchor in enumerate(anchors, 1):
         fixture = anchor.fixture
@@ -201,6 +203,16 @@ def main():
         primary = parse_openfoot_score_observation(
             primary_body, anchor, primary_observed,
         )
+        # Aggregate ONLY the presence of the explicit source status field.
+        # This is NOT authentication of real played/technical final status.
+        if (primary.status, primary.result_kind) == ("finished", "played"):
+            openfoot_played_field_count += 1
+        elif (primary.status, primary.result_kind) == (
+            "score_displayed_unverified", "unknown"
+        ):
+            openfoot_unknown_field_count += 1
+        else:
+            _deny()
         STAGE = "POSTMATCH_INDEPENDENT_" + str(ordinal)
         # Only the current-season round-15 calendar. Individual MatchTV
         # detail pages embed the sealed 2025/26 H2H and MUST NOT be fetched.
@@ -241,6 +253,9 @@ def main():
              evidence.corroboration_token_sha256).encode()
         ).hexdigest())
     STAGE = "FINAL_READONLY_RECEIPT"
+    if (len(digests) != 8 or
+            openfoot_played_field_count + openfoot_unknown_field_count != 8):
+        _deny()
     print(dumps({
         "kind": "M4_PRIVATE_POSTMATCH_UNATTESTED_READONLY",
         "runId": os.environ["GITHUB_RUN_ID"],
@@ -249,6 +264,10 @@ def main():
         "forecasts": kinds.count("FORECAST"),
         "abstentions": kinds.count("ABSTAIN"),
         "candidates": len(digests),
+        "openfootExplicitPlayedFieldCount": openfoot_played_field_count,
+        "openfootUnknownPlayedFieldCount": openfoot_unknown_field_count,
+        "matchtvUnknownPlayedFieldCount": len(digests),
+        "sourceStatusSchemaOnly": True,
         "batchTokenDigestSha256": sha256("|".join(digests).encode()).hexdigest(),
         "githubDigestTimeVerified": True,
         "publisherAuthenticityAttested": False,
