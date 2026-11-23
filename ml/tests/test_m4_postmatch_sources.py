@@ -1,6 +1,6 @@
 """Synthetic-only A6 parsing and identity refusal; no HTTP/DB/live scores."""
 from dataclasses import replace
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 from hashlib import sha256
 from json import dumps
 
@@ -148,7 +148,6 @@ def test_openfoot_envelope_must_be_one_authenticated_exact_match(override):
     {"title": "Рубин — Динамо М"},
     {"title": "Рубин — Рубин"},
     {"score": "-:-"},
-    {"score": "3:0"},
     {"score": "30:1"},
     {"status": "Не начался"},
     {"status": "Отменён"},
@@ -199,11 +198,9 @@ def test_untrusted_local_clock_and_early_postgame_denied():
     for observed in (
         KICKOFF + timedelta(minutes=30),
         OBSERVED.replace(tzinfo=None),
-        OBSERVED.astimezone(timedelta(hours=3)),  # validated below for tz type
+        OBSERVED.astimezone(timezone(timedelta(hours=3))),
     ):
-        if not isinstance(observed, datetime):
-            continue
-        with pytest.raises((DataError, TypeError)):
+        with pytest.raises(DataError):
             parse_openfoot_result_candidate(_openfoot_blob(), _anchor(), observed)
 
 
@@ -223,3 +220,10 @@ def test_no_network_database_or_public_prediction_side_effects():
     for forbidden in ("psycopg.connect", "urllib.request", "requests.get",
                       "public.ff_forecasts", "openfootapi.com/v1", "2025/26 holdout"):
         assert forbidden not in source
+
+
+def test_independent_score_disagreement_is_denied_before_candidate_settlement():
+    a = parse_openfoot_result_candidate(_openfoot_blob(), _anchor(), OBSERVED)
+    b = parse_matchtv_result_candidate(_matchtv_blob(score="3:0"), _anchor(), OBSERVED)
+    with pytest.raises(DataError):
+        compare_provisional_played_claims(_anchor().fixture, a, b, OBSERVED)
