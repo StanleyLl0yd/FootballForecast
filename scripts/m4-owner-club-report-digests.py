@@ -14,7 +14,7 @@ import sys
 from datetime import UTC, datetime, timedelta
 from hashlib import sha256
 from json import dumps
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 
 from football_forecast.data.contracts import DataError
@@ -42,9 +42,26 @@ GH_ENV_KEYS = (
 )
 
 
+_SAFE_CAUSES = frozenset({
+    "REDIRECT", "HTTP_401", "HTTP_403", "HTTP_404", "HTTP_410",
+    "HTTP_429", "HTTP_5XX", "HTTP_OTHER", "MIME", "BODY_SIZE",
+    "TRANSPORT", "NON_200",
+})
+
+
+class _ClubSourceRefusal(DataError):
+    """Known-safe local code; untrusted response content never escapes."""
+
+    def __init__(self, cause: str):
+        if cause not in _SAFE_CAUSES:
+            cause = "HTTP_OTHER"
+        self.cause = cause
+        super().__init__("M4-A6 protected club source redirect/status refused")
+
+
 class _NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, request, fp, code, msg, headers, newurl):
-        raise URLError("M4-A6 unexpected club report redirect")
+        raise _ClubSourceRefusal("REDIRECT")
 
 
 def _deny():
@@ -78,25 +95,37 @@ def _fetch_html(opener, url: str) -> bytes:
         _deny()
     if not url.startswith("https://"):
         _deny()
-    with opener.open(
-        Request(
-            url,
-            headers={
-                "Accept": "text/html",
-                "User-Agent": "FootballForecast-M4-A6-Club-Readonly/1",
-            },
-            method="GET",
-        ),
-        timeout=15,
-    ) as response:
-        if (
-            response.status != 200
-            or "text/html" not in response.headers.get("Content-Type", "").lower()
-        ):
-            _deny()
-        body = response.read(MAX_HTML + 1)
+    try:
+        with opener.open(
+            Request(
+                url,
+                headers={
+                    "Accept": "text/html",
+                    "User-Agent": "FootballForecast-M4-A6-Club-Readonly/1",
+                },
+                method="GET",
+            ),
+            timeout=15,
+        ) as response:
+            if response.status != 200:
+                raise _ClubSourceRefusal("NON_200")
+            if "text/html" not in response.headers.get(
+                "Content-Type", ""
+            ).lower():
+                raise _ClubSourceRefusal("MIME")
+            body = response.read(MAX_HTML + 1)
+    except HTTPError as exc:
+        # Only allowlisted numeric status categories; NEVER include response
+        # headers, text, request URL, query string or exception messages.
+        if exc.code in (401, 403, 404, 410, 429):
+            raise _ClubSourceRefusal("HTTP_" + str(exc.code)) from None
+        if 500 <= exc.code <= 599:
+            raise _ClubSourceRefusal("HTTP_5XX") from None
+        raise _ClubSourceRefusal("HTTP_OTHER") from None
+    except URLError:
+        raise _ClubSourceRefusal("TRANSPORT") from None
     if not 512 <= len(body) <= MAX_HTML:
-        _deny()
+        raise _ClubSourceRefusal("BODY_SIZE")
     return body
 
 
@@ -170,7 +199,14 @@ def main():
 if __name__ == "__main__":
     try:
         main()
+    except _ClubSourceRefusal as exc:
+        # Only fixed stage/ordinal and hard-coded transport category, no URL,
+        # response, sensitive HTTP headers, JWT, body or dynamic error string.
+        print(
+            "M4_PRIVATE_CLUB_READONLY_REFUSED_AT=" + STAGE +
+            "_CAUSE_" + exc.cause, file=sys.stderr,
+        )
+        sys.exit(2)
     except Exception:
-        # A hard-coded stage and ordinal ONLY, no body, source link, JWT or key.
         print("M4_PRIVATE_CLUB_READONLY_REFUSED_AT=" + STAGE, file=sys.stderr)
         sys.exit(2)
