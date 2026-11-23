@@ -11,7 +11,6 @@ import re
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from hashlib import sha256
-from html.parser import HTMLParser
 
 from football_forecast.data.contracts import DataError
 from football_forecast.evaluation.m4_result_admission import (
@@ -19,6 +18,9 @@ from football_forecast.evaluation.m4_result_admission import (
     ProviderResultClaim,
 )
 from football_forecast.research.m4_future_rpl_identity import DIRECTED, _club
+from football_forecast.research.m4_future_rpl_independent import (
+    MATCHTV_DAYS, MATCHTV_NAMES, VisibleText,
+)
 from football_forecast.research.m4_future_rpl_source import (
     COMPETITION,
     SEASON,
@@ -40,20 +42,7 @@ MATCHTV_MATCH_IDS = {
     "rpl-2026-27-r15-20261122-1330": "552665052",  # Dinamo Mkh - Spartak
     "rpl-2026-27-r15-20261122-1600": "552665049",  # Rodina - Lokomotiv
 }
-# Date in MatchTV URL path can reflect initially scheduled editorial date,
-# not actual observed kickoff. The page's visible date/time MUST match A5.
-MATCHTV_PATHS = {
-    "552665047": "/football/rpl/552665047-rubin-zenit-21-11-2026",
-    "552665048": "/football/rpl/552665048-akron-fakel-21-11-2026",
-    "552665049": "/football/rpl/552665049-rodina-lokomotiv-21-11-2026",
-    "552665050": "/football/rpl/552665050-orenburg-baltika-21-11-2026",
-    "552665051": "/football/rpl/552665051-dinamo-krasnodar-21-11-2026",
-    "552665052": "/football/rpl/552665052-dinamo-spartak-21-11-2026",
-    "552665053": "/football/rpl/552665053-rostov-kryliasovetov-21-11-2026",
-    "552665054": "/football/rpl/552665054-tsska-akhmat-21-11-2026",
-}
-assert len(set(MATCHTV_MATCH_IDS.values())) == len(DIRECTED) == len(MATCHTV_PATHS)
-
+# Individual MatchTV detail pages contain prior-season H2H rows and MUST\n# NOT be fetched. Only the current-season 2026/27 calendar is used.\n
 
 @dataclass(frozen=True, slots=True)
 class A5PostmatchAnchor:
@@ -151,96 +140,70 @@ def parse_openfoot_result_candidate(
     )
 
 
-class _MatchTVHeader(HTMLParser):
-    """Extract ONLY visible top-of-page content, excluding old H2H scores."""
-
-    def __init__(self):
-        super().__init__(convert_charrefs=True)
-        self.parts: list[str] = []
-        self.h1_parts: list[str] = []
-        self.in_h1 = 0
-        self.skip = 0
-        self.closed = False
-
-    def handle_starttag(self, tag, attrs):
-        if tag in ("script", "style", "template", "noscript"):
-            self.skip += 1
-        if tag == "h1":
-            self.in_h1 += 1
-
-    def handle_endtag(self, tag):
-        if tag == "h1" and self.in_h1:
-            self.in_h1 -= 1
-        if tag in ("script", "style", "template", "noscript") and self.skip:
-            self.skip -= 1
-
-    def handle_data(self, data):
-        if self.skip or self.closed:
-            return
-        clean = data.strip()
-        if clean == "Прошлые матчи":
-            self.closed = True
-        if clean:
-            self.parts.append(clean)
-            if self.in_h1:
-                self.h1_parts.append(clean)
-
-
-def _club_from_matchtv_headline(name: str) -> str:
-    try:
-        return _club(name)
-    except DataError:
-        # The MatchTV heading often includes an extra city in parentheses:
-        # "Ростов (Ростов-на-Дону)"; only a *known* unambiguous alias may
-        # match after removing that parenthetical, no fuzzy team mapping.
-        return _club(re.sub(r"\s*\([^)]*\)", "", name))
-
-
 def parse_matchtv_result_candidate(
     body: bytes, anchor: A5PostmatchAnchor, observed_at: datetime,
 ) -> ProviderResultClaim:
-    """Require pinned fixture page's LIVE 15th-round finished-score header.
+    """Parse only the current 2026/27 round-15 calendar score *claims*.
 
-    Even a valid header does NOT authenticate a genuine played final result
-    versus technical/awarded revision. A6 human/source-specific review remains.
+    Individual MatchTV detail pages embed historical H2H matches from the
+    sealed 2025/26 season, so the protected worker MUST NOT fetch those pages.
+    A displayed score does not prove a played rather than an awarded final.
     """
     fixture = _verify_anchor(anchor, observed_at)
     if type(body) is not bytes or not 512 <= len(body) <= MAX_MATCHTV_BYTES:
         _deny()
-    parser = _MatchTVHeader()
     try:
+        parser = VisibleText()
         parser.feed(body.decode("utf-8", "strict"))
     except (UnicodeError, ValueError) as exc:
-        raise DataError("M4-A6: invalid MatchTV HTML") from exc
-    title = " ".join(parser.h1_parts)
-    headline = re.fullmatch(r"\s*(.*?)\s+[—–]\s+(.*?)\s*", title)
-    if (headline is None or
-            _club_from_matchtv_headline(headline.group(1)) != fixture.home_club_key
-            or _club_from_matchtv_headline(headline.group(2)) != fixture.away_club_key):
-        _deny()
-    visible = re.sub(r"\s+", " ", " ".join(parser.parts))
-    if (len(visible) > 80_000 or
-            not re.search(r"Российская Премьер-Лига,\s*Тур\s+15\b", visible)
+        raise DataError("M4-A6: invalid MatchTV current-season HTML") from exc
+    visible = re.sub(r"\s+", " ", " ".join(parser.fragments))
+    section = re.search(r"\bТур\s+15\b(.*?)\bТур\s+16\b",
+                        visible, re.IGNORECASE)
+    if (section is None
+            or len(re.findall(r"\bТур\s+15\b", visible, re.IGNORECASE)) != 1
+            or len(section.group(1)) > 80_000
             or re.search(
                 r"техническ|присужд|аннулир|не состоял|отмен[её]н|прерван",
-                visible, re.IGNORECASE,
+                section.group(1), re.IGNORECASE,
             )):
         _deny()
-    scores = list(re.finditer(
-        r"\bЗаверш[её]н\b\s+(\d{1,2}):(\d{1,2})\s+"
-        r"(\d{2})\s+нояб,\s+(\d{2}):(\d{2})\b",
-        visible, re.IGNORECASE,
-    ))
-    if len(scores) != 1:
+    round_text = section.group(1)
+    markers = [label for label, _ in MATCHTV_DAYS]
+    if any(round_text.count(marker) != 1 for marker in markers):
         _deny()
-    match = scores[0]
-    h, a = int(match.group(1)), int(match.group(2))
-    _score(h, a)
-    local = fixture.kickoff_at + timedelta(hours=3)
-    if (int(match.group(3)), int(match.group(4)), int(match.group(5))) != (
-        local.day, local.hour, local.minute
-    ):
+    starts = [round_text.index(marker) for marker in markers]
+    if starts != sorted(starts):
         _deny()
+    by_day = {}
+    for i, (_, day) in enumerate(MATCHTV_DAYS):
+        by_day[day] = round_text[
+            starts[i] + len(markers[i]):
+            starts[i + 1] if i + 1 < len(starts) else len(round_text)
+        ]
+    found = {}
+    for slot, (home, away) in DIRECTED.items():
+        expected = datetime.fromisoformat(slot.replace("Z", "+00:00"))
+        text = by_day.get(expected.date().isoformat(), "")
+        # Require scored-link ordering: HOME <home goals> AWAY <away goals>.
+        # Reject HOME AWAY HH:MM because even 10:00 could be a kickoff time.
+        pair = re.compile(
+            r"(?<!\w)" + re.escape(MATCHTV_NAMES[home]) +
+            r"\s+(\d{1,2})\s+" + re.escape(MATCHTV_NAMES[away]) +
+            r"\s+(\d{1,2})(?!\w)",
+            re.IGNORECASE,
+        )
+        matches = list(pair.finditer(text))
+        if len(matches) != 1:
+            _deny()
+        h, a = int(matches[0].group(1)), int(matches[0].group(2))
+        _score(h, a)
+        found[slot] = (h, a)
+    if set(found) != set(DIRECTED):
+        _deny()
+    home_goals, away_goals = found[
+        fixture.kickoff_at.strftime("%Y-%m-%dT%H:%M:%SZ")
+    ]
     return ProviderResultClaim(
         issuer="matchtv",
         source_fixture_ref="matchtv:" + MATCHTV_MATCH_IDS[fixture.fixture_key],
@@ -248,5 +211,5 @@ def parse_matchtv_result_candidate(
         home_club_key=fixture.home_club_key,
         away_club_key=fixture.away_club_key, observed_at=observed_at,
         source_response_sha256=sha256(body).hexdigest(), status="finished",
-        result_kind="played", home_goals=h, away_goals=a,
+        result_kind="played", home_goals=home_goals, away_goals=away_goals,
     )
