@@ -10,6 +10,7 @@ No 2025/26 historical H2H or sealed holdout is queried.
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from types import MappingProxyType
 
 from football_forecast.data.contracts import DataError
 from football_forecast.evaluation.m4_result_admission import (
@@ -22,7 +23,7 @@ from football_forecast.research.m4_future_rpl_identity import DIRECTED
 # Current-season, current-round CLUB-operated pages found on 2026-11-23.
 # Fixed URL strings only: provider-controlled URLs and redirect targets denied.
 # An article's publication date and visible scores are not cryptographic proof.
-CLUB_REPORTS = {
+CLUB_REPORTS = MappingProxyType({
     "rpl-2026-27-r15-20261120-1630": (
         "rostov", "https://fc-rostov.ru/media/news/pobezhdaem-krylya-sovetov",
     ),
@@ -48,8 +49,13 @@ CLUB_REPORTS = {
     "rpl-2026-27-r15-20261122-1600": (
         "lokomotiv", "https://www.fclm.ru/news/n/rodina-lokomotiv-rpl-2026-27-match-summary/",
     ),
-}
+})
 assert len(CLUB_REPORTS) == len(DIRECTED) == 8
+assert set(CLUB_REPORTS) == {
+    "rpl-2026-27-r15-" +
+    datetime.fromisoformat(slot.replace("Z", "+00:00")).strftime("%Y%m%d-%H%M")
+    for slot in DIRECTED
+}
 assert len({url for _, url in CLUB_REPORTS.values()}) == 8
 RFS_OFFICIAL_APPOINTMENTS = "https://www.rfs.ru/news/225626"
 RFS_KDK_ARCHIVE = "https://www.rfs.ru/archive?tags=16"
@@ -278,6 +284,7 @@ def assess_club_on_field_claim(
             )
             or not _utc(kdk.observed_at)
             or not club.observed_at <= kdk.observed_at <= inspected_at
+            or type(kdk.disposition) is not str
             or kdk.disposition not in (
                 "NONE_FOUND_UNVERIFIED", "REVIEW_PENDING", *_ADVERSE
             )
