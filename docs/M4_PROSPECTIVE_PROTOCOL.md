@@ -348,3 +348,29 @@ attested aggregate result and separately review final played-vs-technical
 semantics before authorizing future private A6 settlement.
 
 **Source-capability blocker (2026-11-23):** The public [OpenFoot API documentation](https://openfootapi.com/docs) describes `finished` and `score` but does not document an independent `resultKind=played` proof distinguishing on-field outcomes from administrative/technical awards. The parser deliberately **requires** explicit `played` and fails closed when missing. A successful public scoreboard is not authorization to manufacture that field or to score M4 forecasts. Before any protected live result evaluation, review actual newly fetched 2026/27 schema privately and obtain independent official played-versus-technical evidence; do not weaken the rule.
+
+
+## A6 OpenFoot played-field capability probe (aggregate-only)
+
+The exact-owner read-only A6 workflow optionally reports bounded `0..8`
+counts for explicit OpenFoot `resultKind=played` metadata versus absent or
+otherwise unverified played metadata. This is **not** permission to infer
+genuine played status from `status=finished`, score agreement, minute-by-minute
+reports or media headlines. The eight MatchTV calendar results always have
+`result_kind=unknown` and cannot independently attest on-field finality.
+
+The protected Python runner only classifies *already accepted source shapes*,
+and the workflow verifies strict integer types, count conservation to exactly
+eight, and mandatory `sourceStatusSchemaOnly=true`, while all DB-write,
+scoring, settlement, approval, holdout and publication flags remain false.
+It outputs only aggregate counts without fixture IDs, individual scores,
+private forecast probabilities, source bodies or JWTs. This diagnostic may
+establish whether an explicit source field actually exists in the freshly
+fetched 2026/27 API data, **not** whether the publisher's statement is
+independently true, official or immune to later disciplinary revisions.
+Even eight explicit OpenFoot fields would not lift the MatchTV `unknown`
+or the A6 independent played-versus-technical proof requirement.
+
+Do not use this exploratory read-only source schema evidence to write the
+unapplied A6 tables, calculate private prospective scores, access the sealed
+2025/26 holdout, approve a model, or publish forecasts.
