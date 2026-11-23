@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from json import loads
 from pathlib import Path
 from unittest.mock import MagicMock
+from urllib.error import HTTPError, URLError
 
 import pytest
 
@@ -301,3 +302,61 @@ def test_signed_token_issued_before_postgame_age_cannot_pass(
     )
     with pytest.raises(DataError):
         module.main()
+
+
+@pytest.mark.parametrize(("http_code", "reason"), [
+    (301, "HTTP_OTHER"),
+    (401, "HTTP_401"),
+    (403, "HTTP_403"),
+    (404, "HTTP_404"),
+    (410, "HTTP_410"),
+    (429, "HTTP_429"),
+    (500, "HTTP_5XX"),
+    (503, "HTTP_5XX"),
+])
+def test_http_failures_have_only_allowlisted_nonsecret_reason(http_code, reason):
+    module = _module()
+    opener = MagicMock()
+    opener.open.side_effect = HTTPError(
+        "https://untrusted.example/secret-path", http_code,
+        "request contained confidential header", {}, None,
+    )
+    url = CLUB_REPORTS["rpl-2026-27-r15-20261120-1630"][1]
+    with pytest.raises(DataError) as caught:
+        module._fetch_html(opener, url)
+    assert caught.value.cause == reason
+    assert caught.value.cause in module._SAFE_CAUSES
+    assert "confidential header" not in str(caught.value)
+    assert "secret-path" not in str(caught.value)
+
+
+def test_transport_failures_suppress_raw_exception_details():
+    module = _module()
+    opener = MagicMock()
+    opener.open.side_effect = URLError(
+        "network response carried private hostname"
+    )
+    url = CLUB_REPORTS["rpl-2026-27-r15-20261120-1630"][1]
+    with pytest.raises(DataError) as caught:
+        module._fetch_html(opener, url)
+    assert caught.value.cause == "TRANSPORT"
+    assert "private hostname" not in str(caught.value)
+
+
+def test_redirect_refusal_has_no_user_selected_redirect_target():
+    module = _module()
+    with pytest.raises(DataError) as caught:
+        module._NoRedirect().redirect_request(
+            MagicMock(), None, 302, "redirect",
+            {"Location": "https://untrusted.example/private"},
+            "https://untrusted.example/private",
+        )
+    assert caught.value.cause == "REDIRECT"
+    assert "untrusted.example" not in str(caught.value)
+
+
+def test_untrusted_reason_never_escapes_allowlisted_codes():
+    module = _module()
+    error = module._ClubSourceRefusal("Dynamic server error unknown input")
+    assert error.cause == "HTTP_OTHER"
+    assert "Dynamic server error" not in str(error)
