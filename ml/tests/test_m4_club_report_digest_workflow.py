@@ -394,3 +394,62 @@ def test_protocol_pdf_is_not_accepted_by_html_digest_worker():
     with pytest.raises(DataError):
         _module()._fetch_html(opener, pdf)
     opener.open.assert_not_called()
+
+
+@pytest.mark.parametrize("mime", [
+    "application/x-text/html",
+    "text/html-malformed",
+    "application/javascript; text/html",
+    "text/plain; something=text/html",
+    "application/xhtml+xml",
+    "",
+])
+def test_mime_is_exact_media_type_not_a_substring(mime):
+    module = _module()
+    opener = MagicMock()
+    response = MagicMock()
+    response.status = 200
+    response.headers = {"Content-Type": mime}
+    opener.open.return_value.__enter__.return_value = response
+    url = CLUB_REPORTS["rpl-2026-27-r15-20261120-1630"][1]
+    with pytest.raises(DataError) as caught:
+        module._fetch_html(opener, url)
+    assert caught.value.cause == "MIME"
+    response.read.assert_not_called()
+
+
+def test_valid_html_media_type_is_case_and_parameter_compatible():
+    module = _module()
+    opener = MagicMock()
+    response = MagicMock()
+    response.status = 200
+    response.headers = {"Content-Type": "TEXT/HTML; charset=UTF-8"}
+    response.read.return_value = b"synthetic HTML" * 70
+    opener.open.return_value.__enter__.return_value = response
+    url = CLUB_REPORTS["rpl-2026-27-r15-20261120-1630"][1]
+    assert module._fetch_html(opener, url) == response.read.return_value
+
+
+def test_identical_html_from_two_pinned_hosts_is_refused_before_second_jwt(monkeypatch):
+    # A fresh JWT per fetch gives unique token hashes even when bodies match.
+    # The previous combined token/body uniqueness check was insufficient.
+    _owner(monkeypatch)
+    module = _module()
+    monkeypatch.setattr(module, "datetime", _SyntheticUtc)
+    monkeypatch.setattr(module, "_keys_from_github", lambda: ({"kid": "test"},))
+    monkeypatch.setattr(module, "_fetch_html", lambda opener, url: b"same synthetic body" * 50)
+    calls = []
+
+    def token_for(audience, env):
+        calls.append(audience)
+        return "synthetic-token-" + str(len(calls))
+
+    monkeypatch.setattr(module, "_token_for_audience", token_for)
+    monkeypatch.setattr(
+        module, "verify_github_time_jwt",
+        lambda *args, **kwargs: ("2026-11-23T11:00:00Z", '{"kid":"test"}'),
+    )
+    with pytest.raises(DataError):
+        module.main()
+    assert len(calls) == 1
+    assert module.STAGE == "PINNED_CURRENT_SEASON_CLUB_2"

@@ -109,9 +109,12 @@ def _fetch_html(opener, url: str) -> bytes:
         ) as response:
             if response.status != 200:
                 raise _ClubSourceRefusal("NON_200")
-            if "text/html" not in response.headers.get(
+            # The media type must be exactly text/html, not a substring
+            # embedded in an unrelated or attacker-controlled MIME value.
+            media_type = response.headers.get(
                 "Content-Type", ""
-            ).lower():
+            ).split(";", 1)[0].strip().lower()
+            if media_type != "text/html":
                 raise _ClubSourceRefusal("MIME")
             body = response.read(MAX_HTML + 1)
     except HTTPError as exc:
@@ -141,6 +144,7 @@ def main():
         _NoRedirect(), HTTPSHandler(context=ssl.create_default_context())
     )
     digests: list[str] = []
+    body_digests: set[str] = set()
     for i, (fixture_key, (_publisher, url)) in enumerate(
         sorted(CLUB_REPORTS.items()), 1
     ):
@@ -152,6 +156,11 @@ def main():
         observed_at = datetime.now(UTC)
         primary_digest = sha256(body).hexdigest()
         del body
+        # A unique OIDC token per request cannot prove unique source bytes.
+        # Reject a repeated HTML body BEFORE timestamp-token issuance.
+        if primary_digest in body_digests:
+            _deny()
+        body_digests.add(primary_digest)
         STAGE = "GITHUB_CLUB_DIGEST_" + str(i)
         token = _token_for_audience(AUDIENCE + primary_digest, env)
         verified_at = datetime.now(UTC)
@@ -174,7 +183,7 @@ def main():
             (primary_digest + sha256(token.encode("ascii")).hexdigest()).encode()
         ).hexdigest())
     STAGE = "AGGREGATE_READONLY_RECEIPT"
-    if len(digests) != 8 or len(set(digests)) != 8:
+    if len(digests) != 8 or len(set(digests)) != 8 or len(body_digests) != 8:
         _deny()
     print(dumps({
         "kind": "M4_PRIVATE_CLUB_RAW_DIGESTS_UNATTESTED_READONLY",
