@@ -1,11 +1,13 @@
 """Synthetic-only M4-A6 owner read-only workflow authorization/side-effect tests."""
 import importlib.util
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
 
 from football_forecast.data.contracts import DataError
+from football_forecast.evaluation.m4_result_admission import ProviderResultClaim
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/m4-owner-postmatch-observe.py"
@@ -119,6 +121,70 @@ def test_owner_private_workflow_has_fixed_permissions_environment_and_no_writes(
         "public.ff_forecasts", "M4_PRIVATE_CAPTURE_COMMIT",
     ):
         assert forbidden.lower() not in script.lower()
+
+
+def _synthetic_openfoot_claim(*, kind: str, status: str) -> ProviderResultClaim:
+    instant = datetime(2026, 11, 23, 9, 0, tzinfo=UTC)
+    return ProviderResultClaim(
+        issuer="openfoot",
+        source_fixture_ref="synthetic:fixture.1",
+        fixture_key="rpl-" + "synthetic-readonly",
+        kickoff_at=instant,
+        home_club_key="test_home",
+        away_club_key="test_away",
+        observed_at=instant,
+        source_response_sha256="a" * 64,
+        status=status,
+        result_kind=kind,
+        home_goals=2,
+        away_goals=1,
+    )
+
+
+@pytest.mark.parametrize(("status", "kind", "expected"), [
+    ("finished", "played", "explicit_played_field"),
+    ("score_displayed_unverified", "unknown", "unknown_played_field"),
+])
+def test_source_capability_only_records_explicit_or_absent_field(
+    status, kind, expected,
+):
+    classification = _load()._source_status_capability(
+        _synthetic_openfoot_claim(status=status, kind=kind),
+    )
+    assert classification == expected
+
+
+@pytest.mark.parametrize(("status", "kind"), [
+    ("finished", "unknown"),
+    ("finished", "awarded"),
+    ("score_displayed_unverified", "played"),
+    ("awarded", "technical"),
+    ("live", "unknown"),
+])
+def test_source_capability_never_upgrades_technical_or_ambiguous_final(
+    status, kind,
+):
+    with pytest.raises(DataError):
+        _load()._source_status_capability(
+            _synthetic_openfoot_claim(status=status, kind=kind),
+        )
+
+
+def test_capability_receipt_is_aggregate_only_and_does_not_attest_truth():
+    source = SCRIPT.read_text(encoding="utf-8")
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    for field in (
+        "openfootExplicitPlayedFieldCount", "openfootUnknownPlayedFieldCount",
+        "matchtvUnknownPlayedFieldCount", "sourceStatusSchemaOnly",
+    ):
+        assert f'"{field}"' in source
+        assert f"'{field}'" in workflow
+    assert "openfoot_played_field_count + openfoot_unknown_field_count != 8" in source
+    assert "row['openfootExplicitPlayedFieldCount']+" in workflow
+    assert "row['matchtvUnknownPlayedFieldCount']!=8" in workflow
+    assert "row['sourceStatusSchemaOnly'] is not True" in workflow
+    assert "playedFinalAttested" in source
+    assert "row['githubDigestTimeVerified'] is not True" in workflow
 
 
 def test_result_fetch_cannot_follow_external_redirect():
