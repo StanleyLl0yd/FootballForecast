@@ -27,6 +27,7 @@ from football_forecast.evaluation.m4_postmatch_sources import (
 )
 from football_forecast.evaluation.m4_result_admission import (
     FrozenFixtureIdentity,
+    ProviderResultClaim,
 )
 from football_forecast.evaluation.m4_result_oidc import (
     CORROBORATION_AUDIENCE, PRIMARY_AUDIENCE,
@@ -171,6 +172,19 @@ def _fetch(opener, url, headers, content_type, limit):
     return raw
 
 
+def _source_status_capability(claim: ProviderResultClaim) -> str:
+    """Describe only the source field's shape, NEVER the actual final truth."""
+    if type(claim) is not ProviderResultClaim or claim.issuer != "openfoot":
+        _deny()
+    if (claim.status, claim.result_kind) == ("finished", "played"):
+        return "explicit_played_field"
+    if (claim.status, claim.result_kind) == (
+        "score_displayed_unverified", "unknown"
+    ):
+        return "unknown_played_field"
+    _deny()
+
+
 def main():
     global STAGE
     key = _gate()
@@ -205,11 +219,10 @@ def main():
         )
         # Aggregate ONLY the presence of the explicit source status field.
         # This is NOT authentication of real played/technical final status.
-        if (primary.status, primary.result_kind) == ("finished", "played"):
+        status_bucket = _source_status_capability(primary)
+        if status_bucket == "explicit_played_field":
             openfoot_played_field_count += 1
-        elif (primary.status, primary.result_kind) == (
-            "score_displayed_unverified", "unknown"
-        ):
+        elif status_bucket == "unknown_played_field":
             openfoot_unknown_field_count += 1
         else:
             _deny()
