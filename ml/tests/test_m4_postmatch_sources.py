@@ -14,9 +14,13 @@ from football_forecast.evaluation.m4_result_admission import (
 from football_forecast.evaluation.m4_postmatch_sources import (
     A5PostmatchAnchor,
     MATCHTV_MATCH_IDS,
-    MATCHTV_PATHS,
     parse_matchtv_result_candidate,
     parse_openfoot_result_candidate,
+)
+from football_forecast.research.m4_future_rpl_identity import DIRECTED
+from football_forecast.research.m4_future_rpl_independent import (
+    MATCHTV_DAYS,
+    MATCHTV_NAMES,
 )
 
 KICKOFF = datetime(2026, 11, 21, 14, 30, tzinfo=UTC)
@@ -59,18 +63,30 @@ def _openfoot_blob(row=None, *, authenticated=True, count=1):
     }, ensure_ascii=False, separators=(",", ":")).encode()
 
 
-def _matchtv_blob(title="Рубин (Казань) — Зенит (Санкт-Петербург)",
-                  score="3:1", status="Завершён",
-                  kickoff="21 нояб, 17:30", extra=""):
-    return (
-        '<html><body><h1>' + title + '</h1>'
-        '<a>Альфа-Банк Российская Премьер-Лига, Тур 15</a>'
-        '<div>Рубин Казань</div><p>' + status + '</p>'
-        '<div>' + score + '</div><div>' + kickoff + '</div>'
-        '<div>Зенит Санкт-Петербург</div>' + extra +
-        '<h2>Прошлые матчи</h2>' + ('0:0 2025/26 ' * 100) +
-        '</body></html>'
-    ).encode()
+def _matchtv_blob():
+    known = {
+        "2026-11-20T16:30:00Z": (3, 0),
+        "2026-11-21T10:00:00Z": (0, 2),
+        "2026-11-21T12:15:00Z": (0, 2),
+        "2026-11-21T14:30:00Z": (3, 1),
+        "2026-11-21T16:45:00Z": (1, 2),
+        "2026-11-22T11:00:00Z": (1, 1),
+        "2026-11-22T13:30:00Z": (1, 1),
+        "2026-11-22T16:00:00Z": (0, 1),
+    }
+    rows = ["<h3>Тур 15</h3>"]
+    for marker, day in MATCHTV_DAYS:
+        rows.append("<h4>" + marker + "</h4>")
+        for kickoff, (home, away) in DIRECTED.items():
+            if not kickoff.startswith(day):
+                continue
+            h, a = known[kickoff]
+            rows.append(
+                "<a>" + MATCHTV_NAMES[home] + " " + str(h) + " " +
+                MATCHTV_NAMES[away] + " " + str(a) + "</a>"
+            )
+    return ("<html><body>" + "".join(rows) + "<h3>Тур 16</h3>" +
+            "x" * 2048 + "</body></html>").encode()
 
 
 def _parsed():
@@ -143,29 +159,37 @@ def test_openfoot_envelope_must_be_one_authenticated_exact_match(override):
         )
 
 
-@pytest.mark.parametrize("change", [
-    {"title": "Зенит — Рубин"},
-    {"title": "Рубин — Динамо М"},
-    {"title": "Рубин — Рубин"},
-    {"score": "-:-"},
-    {"score": "30:1"},
-    {"status": "Не начался"},
-    {"status": "Отменён"},
-    {"kickoff": "21 нояб, 17:31"},
-    {"kickoff": "20 нояб, 17:30"},
-    {"extra": "<div>Матч завершён технической победой</div>"},
-    {"extra": "<div>Окончательный результат присуждён</div>"},
+@pytest.mark.parametrize("before,after", [
+    ("Рубин 3 Зенит 1", "Зенит 1 Рубин 3"),
+    ("Рубин 3 Зенит 1", "Рубин Зенит 17:30"),
+    ("Рубин 3 Зенит 1", "Рубин 30 Зенит 1"),
+    ("Рубин 3 Зенит 1", "Рубин 3 Зенит 1 Рубин 3 Зенит 1"),
+    ("Рубин 3 Зенит 1", "Рубин 3 Зенит 0 Рубин 3 Зенит 1"),
+    ("Рубин 3 Зенит 1", "Рубин 3 Ахмат 1"),
+    ("Тур 15", "Тур 14"),
+    ("21 ноября суббота", "20 ноября пятница"),
+    ("21 ноября суббота", "21 ноября суббота техническая победа"),
 ])
-def test_matchtv_rejects_wrong_status_direction_time_award_or_score(change):
+def test_matchtv_calendar_rejects_wrong_round_status_direction_or_goals(
+    before, after,
+):
+    html = _matchtv_blob().decode()
+    assert before in html
     with pytest.raises(DataError):
-        parse_matchtv_result_candidate(_matchtv_blob(**change), _anchor(), OBSERVED)
+        parse_matchtv_result_candidate(
+            html.replace(before, after).encode(), _anchor(), OBSERVED,
+        )
 
 
-def test_matchtv_historical_h2h_goals_cannot_be_misread_as_current():
-    invalid = _matchtv_blob(status="Не начался", score="-:-")
-    assert b"2025/26" in invalid
+def test_matchtv_cannot_use_old_or_hidden_scheduled_kickoff_as_final_score():
+    html = _matchtv_blob().decode()
+    html = html.replace("Рубин 3 Зенит 1", "Рубин Зенит 17:30")
+    # A hidden script showing a fabricated played result is not evidence.
+    html = html.replace(
+        "</body>", "<script>Рубин 3 Зенит 1</script></body>",
+    )
     with pytest.raises(DataError):
-        parse_matchtv_result_candidate(invalid, _anchor(), OBSERVED)
+        parse_matchtv_result_candidate(html.encode(), _anchor(), OBSERVED)
 
 
 @pytest.mark.parametrize("body", [
@@ -173,7 +197,7 @@ def test_matchtv_historical_h2h_goals_cannot_be_misread_as_current():
     b"x" * 8_000_001,
     b"\xff" * 1024,
 ])
-def test_matchtv_rejects_invalid_or_bounded_html(body):
+def test_matchtv_calendar_rejects_invalid_or_bounded_html(body):
     with pytest.raises(DataError):
         parse_matchtv_result_candidate(body, _anchor(), OBSERVED)
 
@@ -204,11 +228,9 @@ def test_untrusted_local_clock_and_early_postgame_denied():
             parse_openfoot_result_candidate(_openfoot_blob(), _anchor(), observed)
 
 
-def test_two_distinct_pinned_matchtv_paths_for_each_direction():
-    assert len(MATCHTV_MATCH_IDS) == len(MATCHTV_PATHS) == 8
+def test_eight_fixed_independent_ids_have_no_cross_fixture_reuse():
+    assert len(MATCHTV_MATCH_IDS) == 8
     assert len(set(MATCHTV_MATCH_IDS.values())) == 8
-    assert all(path.startswith("/football/rpl/" + match_id + "-")
-               for match_id, path in MATCHTV_PATHS.items())
 
 
 def test_no_network_database_or_public_prediction_side_effects():
@@ -224,6 +246,9 @@ def test_no_network_database_or_public_prediction_side_effects():
 
 def test_independent_score_disagreement_is_denied_before_candidate_settlement():
     a = parse_openfoot_result_candidate(_openfoot_blob(), _anchor(), OBSERVED)
-    b = parse_matchtv_result_candidate(_matchtv_blob(score="3:0"), _anchor(), OBSERVED)
+    b = parse_matchtv_result_candidate(
+        _matchtv_blob().replace(b"Рубин 3 Зенит 1", b"Рубин 3 Зенит 0"),
+        _anchor(), OBSERVED,
+    )
     with pytest.raises(DataError):
         compare_provisional_played_claims(_anchor().fixture, a, b, OBSERVED)
