@@ -13,11 +13,11 @@ from datetime import datetime, timedelta
 from types import MappingProxyType
 
 from football_forecast.data.contracts import DataError
+from football_forecast.evaluation.m4_postmatch_sources import MATCHTV_MATCH_IDS
 from football_forecast.evaluation.m4_result_admission import (
     FrozenFixtureIdentity,
     ProviderResultClaim,
 )
-from football_forecast.evaluation.m4_postmatch_sources import MATCHTV_MATCH_IDS
 from football_forecast.research.m4_future_rpl_identity import DIRECTED
 
 # Current-season, current-round CLUB-operated pages found on 2026-11-23.
