@@ -299,3 +299,5 @@ synthetic-only tests include wrong match IDs/club direction/kickoff, award,
 disagreement, duplicate/untrusted forms, scheduled-versus-scored ambiguity and invalid UTC.
 Real worker acquisition, protected owner execution and real A5 ledger linkage
 remain separate required gates; the A6 live SQL tables remain undeployed.
+
+**Source-capability blocker (2026-11-23):** The public [OpenFoot API documentation](https://openfootapi.com/docs) describes `finished` and `score` but does not document an independent `resultKind=played` proof distinguishing on-field outcomes from administrative/technical awards. The parser deliberately **requires** explicit `played` and fails closed when missing. A successful public scoreboard is not authorization to manufacture that field or to score M4 forecasts. Before any protected live result evaluation, review actual newly fetched 2026/27 schema privately and obtain independent official played-versus-technical evidence; do not weaken the rule.
