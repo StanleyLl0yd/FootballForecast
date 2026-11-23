@@ -193,7 +193,7 @@ def test_matchtv_cannot_use_old_or_hidden_scheduled_kickoff_as_final_score():
 
 
 @pytest.mark.parametrize("body", [
-    b"<html><h1>Рубин - Зенит</h1><div>Завершён 3:1</div></html>",
+    "<html><h1>Рубин - Зенит</h1><div>Завершён 3:1</div></html>".encode(),
     b"x" * 8_000_001,
     b"\xff" * 1024,
 ])
