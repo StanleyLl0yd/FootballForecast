@@ -16,6 +16,7 @@ from football_forecast.evaluation.m4_result_admission import (
     FrozenFixtureIdentity,
     ProviderResultClaim,
 )
+from football_forecast.evaluation.m4_postmatch_sources import MATCHTV_MATCH_IDS
 from football_forecast.research.m4_future_rpl_identity import DIRECTED
 
 # Current-season, current-round CLUB-operated pages found on 2026-11-23.
@@ -189,8 +190,9 @@ def _guard_source(
     elif (
         claim.status != "score_displayed_unverified"
         or claim.result_kind != "unknown"
-        or type(claim.source_fixture_ref) is not str
-        or not claim.source_fixture_ref.startswith("matchtv:")
+        or claim.source_fixture_ref != (
+            "matchtv:" + MATCHTV_MATCH_IDS[fixture.fixture_key]
+        )
     ):
         _deny("MatchTV calendar cannot assert played final")
 
