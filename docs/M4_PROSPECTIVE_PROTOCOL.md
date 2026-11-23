@@ -465,3 +465,26 @@ An independent, current-season official RPL/RFS match-protocol
 verification plus defensible KDK decision/revision monitoring remains
 required to close #333. Migration 0017, actual settlement, post-match
 metrics and public forecasting remain forbidden.
+
+
+## A6 live third-source connectivity — 2026-11-23
+
+The first protected real owner-only read-only run
+[#45173060342](https://github.com/StanleyLl0yd/FootballForecast/actions/runs/45173060342)
+**FAILED CLOSED** at sorted current-season club #7 (the pinned Spartak
+Dynamo-Makhachkala 22 Nov 2026 match broadcast URL). Six earlier source
+response byte-clock proofs succeeded during this volatile attempt, but the
+batch was rejected **before any aggregate receipt**; the eighth page was
+not checked. No private database credentials, A6 rows, settlement, scoring,
+public forecasts, or held-out 2025/26 fixtures were used. The existing
+failure code exposed only the source ordinal, not whether the site returned
+HTTP 403, an unexpected redirect, wrong MIME or another transport error.
+
+The follow-up adds only an *allowlisted safe transport failure reason* on
+the same exact pinned, no-redirect HTTPS paths: HTTP status class, redirect,
+wrong HTML MIME, bounded body size or generic transport. **No response
+headers, body, URL, redirect target, exceptions or JWTs are ever logged**.
+The full eight-source batch still fails closed for any individual failure,
+and even a successful fetch authenticates no on-field played result or
+disciplinary clearance. Future work must correct the actual source
+availability issue without broadening URL discovery or reading historic H2H.
