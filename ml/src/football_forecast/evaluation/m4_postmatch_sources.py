@@ -19,7 +19,9 @@ from football_forecast.evaluation.m4_result_admission import (
 )
 from football_forecast.research.m4_future_rpl_identity import DIRECTED, _club
 from football_forecast.research.m4_future_rpl_independent import (
-    MATCHTV_DAYS, MATCHTV_NAMES, VisibleText,
+    MATCHTV_DAYS,
+    MATCHTV_NAMES,
+    VisibleText,
 )
 from football_forecast.research.m4_future_rpl_source import (
     COMPETITION,
