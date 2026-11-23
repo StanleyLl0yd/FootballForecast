@@ -151,7 +151,10 @@ def parse_matchtv_result_candidate(
 
     Individual MatchTV detail pages embed historical H2H matches from the
     sealed 2025/26 season, so the protected worker MUST NOT fetch those pages.
-    A displayed score does not prove a played rather than an awarded final.
+    A displayed score does not prove a played rather than an awarded final,
+    so output deliberately uses status=score_displayed_unverified and
+    result_kind=unknown. The A6 candidate comparator MUST reject it until
+    separately authenticated, genuinely played-final evidence exists.
     """
     fixture = _verify_anchor(anchor, observed_at)
     if type(body) is not bytes or not 512 <= len(body) <= MAX_MATCHTV_BYTES:
@@ -214,6 +217,9 @@ def parse_matchtv_result_candidate(
         fixture_key=fixture.fixture_key, kickoff_at=fixture.kickoff_at,
         home_club_key=fixture.home_club_key,
         away_club_key=fixture.away_club_key, observed_at=observed_at,
-        source_response_sha256=sha256(body).hexdigest(), status="finished",
-        result_kind="played", home_goals=home_goals, away_goals=away_goals,
+        # A calendar score can NEVER, by itself, assert played/finished.
+        # Both claims must be separately established before A6 admission.
+        source_response_sha256=sha256(body).hexdigest(),
+        status="score_displayed_unverified", result_kind="unknown",
+        home_goals=home_goals, away_goals=away_goals,
     )
