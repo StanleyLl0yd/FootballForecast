@@ -1,0 +1,103 @@
+name: M4-A6 owner-only club article raw-digest READONLY
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'M4_CLUB_READONLY only; no writes, no scoring'
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+permissions: {contents: read}
+concurrency:
+  group: m4-a6-owner-club-raw-digest-readonly
+  cancel-in-progress: false
+jobs:
+  protected-current-season-club-readonly:
+    if: >-
+      github.repository == 'StanleyLl0yd/FootballForecast' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'StanleyLl0yd' &&
+      github.actor_id == '131160519' &&
+      github.triggering_actor == 'StanleyLl0yd' &&
+      (
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.confirmation == 'M4_CLUB_READONLY') ||
+        (github.event_name == 'issue_comment' &&
+         github.event.action == 'created' &&
+         github.event.issue.number == 333 &&
+         !github.event.issue.pull_request &&
+         github.event.comment.user.id == 131160519 &&
+         github.event.comment.user.login == 'StanleyLl0yd' &&
+         github.event.comment.author_association == 'OWNER' &&
+         github.event.comment.body == '/m4-club-digests-readonly')
+      )
+    permissions: {contents: read, id-token: write}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: m1-source-import
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5 pinned
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6 pinned
+        with: {python-version: '3.13'}
+      - name: Install pinned GitHub RS256 verifier (no database client)
+        run: python -m pip install -e './ml[oidc]'
+      - name: Authenticate eight current-season club response digests (READONLY)
+        shell: bash
+        env:
+          M4_CLUB_READONLY_GATE: 'true'
+          M4_CLUB_READONLY_MODE: M4_CLUB_READONLY
+          PYTHONPATH: ml/src
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONNOUSERSITE: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_REPOSITORY" == 'StanleyLl0yd/FootballForecast' ]]
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$GITHUB_ACTOR" == 'StanleyLl0yd' ]]
+          [[ "$GITHUB_ACTOR_ID" == '131160519' ]]
+          [[ "$GITHUB_TRIGGERING_ACTOR" == 'StanleyLl0yd' ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          [[ "$M4_CLUB_READONLY_MODE" == 'M4_CLUB_READONLY' ]]
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          python scripts/m4-owner-club-report-digests.py > "$work/club-receipt.json"
+          python - "$work/club-receipt.json" <<'PY'
+          import json,os,re,sys
+          from pathlib import Path
+          raw=Path(sys.argv[1]).read_bytes()
+          if not 360<=len(raw)<=1400:
+              raise SystemExit('FAIL: invalid bounded readonly club receipt')
+          row=json.loads(raw)
+          exact={'kind','runId','codeSha','clubBodies','batchTokenDigestSha256',
+                 'githubDigestTimeVerified','publisherFirstServingAttested',
+                 'officialMatchProtocolAttested','onFieldPlayedAttested',
+                 'kdkClearanceAttested','databaseWrite','settlementAuthorized',
+                 'scoringAuthorized','modelApproved','publicationAuthorized',
+                 'holdout2025_26Read'}
+          if (set(row)!=exact or
+              row['kind']!='M4_PRIVATE_CLUB_RAW_DIGESTS_UNATTESTED_READONLY' or
+              row['runId']!=os.environ['GITHUB_RUN_ID'] or
+              row['codeSha']!=os.environ['GITHUB_SHA'] or
+              type(row['clubBodies']) is not int or row['clubBodies']!=8 or
+              not re.fullmatch(r'[a-f0-9]{64}',row['batchTokenDigestSha256']) or
+              row['githubDigestTimeVerified'] is not True or
+              any(row[k] is not False for k in (
+                  'publisherFirstServingAttested','officialMatchProtocolAttested',
+                  'onFieldPlayedAttested','kdkClearanceAttested','databaseWrite',
+                  'settlementAuthorized','scoringAuthorized','modelApproved',
+                  'publicationAuthorized','holdout2025_26Read'))):
+              raise SystemExit('FAIL: unauthorized readonly club evidence claim')
+          print('M4_A6_CLUB_STATE='+row['kind'])
+          print('M4_A6_CLUB_DIGEST_SHA256='+row['batchTokenDigestSha256'])
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as out:
+              out.write('## M4-A6 candidate club pages, owner-only READONLY\n')
+              out.write('Eight pinned 2026/27 candidate URL requests returned ')
+              out.write('bounded HTTPS HTML; page match identity/content UNVERIFIED.\n')
+              out.write('GitHub signed only the received raw response digests.\n')
+              out.write('Neither publisher first-serving time nor actual played-final ')
+              out.write('and KDK clearance is attested. No private database access, ')
+              out.write('score processing, settlement, holdout or forecasts.\n')
+          PY
