@@ -43,8 +43,8 @@ CLUB_REPORTS = MappingProxyType({
         "krasnodar", "https://www.fckrasnodar.ru/team/news/object/?object_id=154573",
     ),
     "rpl-2026-27-r15-20261122-1330": (
-        "spartak",
-        "https://spartak.com/matches/5f5730c0-3698-4a75-a13a-158157ea11c7/broadcast",
+        "dynamo_makhachkala",
+        "https://dinamo-mx.ru/news/dinamo-sygralo-vnichyu-so-spartakom-2/",
     ),
     "rpl-2026-27-r15-20261122-1600": (
         "lokomotiv", "https://www.fclm.ru/news/n/rodina-lokomotiv-rpl-2026-27-match-summary/",
@@ -57,6 +57,17 @@ assert set(CLUB_REPORTS) == {
     for slot in DIRECTED
 }
 assert len({url for _, url in CLUB_REPORTS.values()}) == 8
+# Published league match protocol hosted by the home club; reference ONLY.
+# NOT fetched by the HTML digest worker and NOT evidence of later KDK clearance.
+# PDF source bytes/identity and legal use require separate owner-only review.
+MATCH_PROTOCOL_REFERENCES = MappingProxyType({
+    "rpl-2026-27-r15-20261122-1330": (
+        "114",
+        "https://dinamo-mx.ru/wp-content/uploads/2026/11/"
+        "rpl_2026-2027_md15_dmh-spa_fr_ru.pdf",
+    ),
+})
+
 RFS_OFFICIAL_APPOINTMENTS = "https://www.rfs.ru/news/225626"
 RFS_KDK_ARCHIVE = "https://www.rfs.ru/archive?tags=16"
 

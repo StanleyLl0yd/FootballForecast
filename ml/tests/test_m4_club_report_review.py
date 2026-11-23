@@ -282,3 +282,24 @@ def test_no_network_database_scoring_or_exporting_sealed_holdout():
         "2025/26?", "SELECT *", "write_text(", "httpx.get",
     ):
         assert forbidden not in text
+
+
+def test_new_home_club_report_and_protocol_reference_do_not_grant_authority():
+    from football_forecast.evaluation.m4_club_report_review import (
+        MATCH_PROTOCOL_REFERENCES,
+    )
+
+    key = "rpl-2026-27-r15-20261122-1330"
+    assert CLUB_REPORTS[key][0] == "dynamo_makhachkala"
+    assert CLUB_REPORTS[key][1].startswith("https://dinamo-mx.ru/news/")
+    assert MATCH_PROTOCOL_REFERENCES[key][0] == "114"
+    assert DIRECTED["2026-11-22T13:30:00Z"] == (
+        "dynamo_makhachkala", "spartak",
+    )
+    with pytest.raises(TypeError):
+        MATCH_PROTOCOL_REFERENCES[key] = ("0", "https://untrusted.example/")
+    assert all(not getattr(_assess(), flag) for flag in (
+        "publisher_authenticated", "played_final_attested",
+        "kdk_clearance_attested", "settlement_authorized",
+        "scoring_authorized", "publication_authorized",
+    ))
