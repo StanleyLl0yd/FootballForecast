@@ -424,3 +424,44 @@ league match-protocol/disciplinary decision status. A future official
 match-protocol *claim* is still not final until independently authenticated.
 NEVER infer affirmative clearance from KDK silence. No migration 0017 or A6
 write/scoring is authorized by this technical preparation.
+
+
+## A6 owner-only club source-body byte-clock observation (separate from scoring)
+
+The prospective third-source club articles listed above can be probed by
+the separate protected manual workflow
+
+`.github/workflows/m4-owner-club-report-digests.yml`. No execution occurs
+on PRs, releases, schedules, site visits or ordinary issue comments.
+Only the exact owner's explicit GitHub Actions dispatch with
+`M4_CLUB_READONLY`, or the exact owner-only issue #333 comment
+`/m4-club-digests-readonly`, can start it from protected `main`.
+
+The ephemeral runner has only `contents: read`, `id-token: write` and
+the protected `m1-source-import` environment. It receives **no Supabase
+credentials**, no OpenFoot token, no private A5 fixture rows, and no A6 write
+authority. It fetches the eight fixed HTTPS **2026/27 round-15 club-owned
+article URLs only**, with TLS validation, redirect denial and an 8 MB
+upper bound. It binds the exact received source bytes to distinct GitHub
+RS256 OIDC JWT audiences under the new fixed workflow identity, rejecting
+wrong repository/actor/ref/run, JWKS/signature, stale/early clocks or
+mismatched digest. On success the ephemeral response bytes/JWTs stay out
+of logs: only **one bounded aggregate eight-source receipt**, plus an opaque
+batch digest, is printed. On failure the job shows only a constant safe
+stage/ordinal and refuses the entire batch.
+
+**Epistemic limit:** GitHub signs that a protected runner requested token(s)
+for its own claimed raw SHA-256 digest at a given time, NOT the external club's
+original server-time or the authenticity/completeness of the article's match
+events. This workflow doesn't parse goal scorers or prove on-field activity,
+and deliberately does **not** query RFS KDK/disciplinary evidence; a
+successful eight-source fetch is **not** official played-final certification.
+All output authorization flags remain false, including
+`onFieldPlayedAttested`, `kdkClearanceAttested`, `databaseWrite`,
+`settlementAuthorized`, `scoringAuthorized`, `modelApproved`,
+`publicationAuthorized` and `holdout2025_26Read`.
+
+An independent, current-season official RPL/RFS match-protocol
+verification plus defensible KDK decision/revision monitoring remains
+required to close #333. Migration 0017, actual settlement, post-match
+metrics and public forecasting remain forbidden.

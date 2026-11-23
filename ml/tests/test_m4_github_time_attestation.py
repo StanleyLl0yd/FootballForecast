@@ -11,6 +11,7 @@ from football_forecast.data.contracts import DataError
 from football_forecast.research.m4_github_time_attestation import (
     ACTOR,
     ACTOR_ID,
+    CLUB_REPORT_WORKFLOW,
     ENVIRONMENT,
     ISSUER,
     PROSPECTIVE_WORKFLOW,
@@ -153,3 +154,34 @@ def test_local_clock_and_origin_boundaries_fail_closed():
         validate(token, jwks, verified=NOW + timedelta(minutes=6))
     with pytest.raises(DataError):
         validate(token, jwks, env={**ENV, "GITHUB_REF": "refs/heads/not-main"})
+
+
+def test_club_report_workflow_identity_is_separate_and_pinned():
+    audience = "ff-m4-2026-27-club-report-sha256-" + "f" * 64
+    token, keys = signed_case(changes={
+        "workflow_ref": CLUB_REPORT_WORKFLOW,
+        "aud": audience,
+    })
+    issued, key = verify_github_time_jwt(
+        token, audience, keys, ENV,
+        NOW - timedelta(seconds=2), NOW + timedelta(seconds=2),
+        workflow_ref=CLUB_REPORT_WORKFLOW,
+    )
+    assert issued == NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+    assert loads(key)["kid"] == "m4-fixed-test"
+    # Owner postmatch workflow and club-report read-only workflow cannot
+    # exchange JWTs even though both were signed by the same GitHub issuer.
+    with pytest.raises(DataError):
+        verify_github_time_jwt(
+            token, audience, keys, ENV,
+            NOW - timedelta(seconds=2), NOW + timedelta(seconds=2),
+        )
+    with pytest.raises(DataError):
+        verify_github_time_jwt(
+            token, AUD, keys, ENV,
+            NOW - timedelta(seconds=2), NOW + timedelta(seconds=2),
+            workflow_ref=CLUB_REPORT_WORKFLOW,
+        )
+    assert "m4-owner-club-report-digests.yml@refs/heads/main" in (
+        CLUB_REPORT_WORKFLOW
+    )
