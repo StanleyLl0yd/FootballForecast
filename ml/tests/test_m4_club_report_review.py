@@ -216,6 +216,7 @@ def test_record_has_no_dynamic_url_resolution(attr, value):
     ("primary", {"observed_at": KICKOFF}),
     ("independent", {"status": "finished", "result_kind": "played"}),
     ("independent", {"source_response_sha256": "a" * 64}),
+    ("independent", {"source_fixture_ref": "matchtv:wrong"}),
     ("independent", {"away_goals": 2}),
     ("independent", {"season": "2025/26"}),
 ])
