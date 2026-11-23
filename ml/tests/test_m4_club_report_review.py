@@ -107,6 +107,11 @@ def test_eight_exact_current_season_club_owned_urls_predeclared():
         assert "head-to-head" not in url
 
 
+def test_pinned_club_source_registry_cannot_be_mutated():
+    with pytest.raises(TypeError):
+        CLUB_REPORTS[KEY] = ("fake", "https://attacker.example/match")
+
+
 def test_three_matching_public_score_shapes_still_never_authorize_scoring():
     r = _assess()
     assert r.classification == "PRIVATE_CLUB_REPORTED_PLAY_KDK_UNRESOLVED"
@@ -251,6 +256,7 @@ def test_disciplined_source_fields_deny_unpinned_or_mutated(attr, value):
     ("observed_at", KICKOFF),
     ("disposition", "APPROVED_CLEAR"),
     ("disposition", "NO_SANCTIONS"),
+    ("disposition", ["TECHNICAL_AWARD"]),
 ])
 def test_false_kdk_clearance_claim_refused(attr, value):
     with pytest.raises(DataError):
