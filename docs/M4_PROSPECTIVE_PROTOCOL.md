@@ -290,10 +290,13 @@ the entire batch. The displayed MatchTV score is only an untrusted claim; it
 does not prove a genuine played result, original publication time or publisher
 authentication.
 
-Both parsers produce **untrusted** `ProviderResultClaim` objects only. Even
-when scores agree, `compare_provisional_played_claims` and separately signed
-GitHub raw-response-digest time produce an **unattested private candidate**,
-not a certified played outcome. No automatic result writes, performance scoring,
+Both parsers produce **untrusted** `ProviderResultClaim` objects only.
+Crucially, the MatchTV calendar parser returns
+`status=score_displayed_unverified` and `result_kind=unknown`, **never**
+`played` inferred from a score link. Even when both observed scores agree,
+`compare_provisional_played_claims` MUST reject this pair. An independently
+reviewed, authentic played-final source is mandatory before any A6 candidate
+can be admitted. GitHub OIDC signed-byte clocks do not alter this requirement. No automatic result writes, performance scoring,
 model approval, historical backfill or publication are authorized. The
 synthetic-only tests include wrong match IDs/club direction/kickoff, award,
 disagreement, duplicate/untrusted forms, scheduled-versus-scored ambiguity and invalid UTC.
