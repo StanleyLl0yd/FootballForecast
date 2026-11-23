@@ -240,14 +240,14 @@ def test_no_network_database_or_public_prediction_side_effects():
             "src/football_forecast/evaluation/m4_postmatch_sources.py")
     source = path.read_text()
     for forbidden in ("psycopg.connect", "urllib.request", "requests.get",
-                      "public.ff_forecasts", "openfootapi.com/v1", "2025/26 holdout"):
+                      "public.ff_forecasts", "openfootapi.com/v1", "season=2025/26"):
         assert forbidden not in source
 
 
 def test_independent_score_disagreement_is_denied_before_candidate_settlement():
     a = parse_openfoot_result_candidate(_openfoot_blob(), _anchor(), OBSERVED)
     b = parse_matchtv_result_candidate(
-        _matchtv_blob().replace(b"Рубин 3 Зенит 1", b"Рубин 3 Зенит 0"),
+        _matchtv_blob().replace("Рубин 3 Зенит 1".encode(), "Рубин 3 Зенит 0".encode()),
         _anchor(), OBSERVED,
     )
     with pytest.raises(DataError):
