@@ -12,6 +12,7 @@ from football_forecast.evaluation.m4_postmatch_sources import (
     A5PostmatchAnchor,
     parse_matchtv_result_candidate,
     parse_openfoot_result_candidate,
+    parse_openfoot_score_observation,
 )
 from football_forecast.evaluation.m4_result_admission import (
     FrozenFixtureIdentity,
@@ -259,3 +260,24 @@ def test_matchtv_calendar_score_stays_unverified_even_when_both_scores_agree():
     assert matchtv.status != "finished"
     assert matchtv.result_kind != "played"
     assert matchtv.home_goals == 3 and matchtv.away_goals == 1
+
+
+def test_openfoot_missing_played_metadata_is_only_an_unverified_score():
+    row = _openfoot_row()
+    del row["resultKind"]
+    body = _openfoot_blob(row)
+    observation = parse_openfoot_score_observation(body, _anchor(), OBSERVED)
+    assert observation.source_response_sha256 == sha256(body).hexdigest()
+    assert observation.status == "score_displayed_unverified"
+    assert observation.result_kind == "unknown"
+    assert (observation.home_goals, observation.away_goals) == (3, 1)
+    with pytest.raises(DataError):
+        parse_openfoot_result_candidate(body, _anchor(), OBSERVED)
+
+
+def test_openfoot_score_observation_rejects_administrative_award():
+    body = _openfoot_blob(_openfoot_row() | {
+        "resultKind": "awarded", "awarded": True,
+    })
+    with pytest.raises(DataError):
+        parse_openfoot_score_observation(body, _anchor(), OBSERVED)

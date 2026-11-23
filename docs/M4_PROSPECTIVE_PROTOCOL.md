@@ -304,3 +304,47 @@ Real worker acquisition, protected owner execution and real A5 ledger linkage
 remain separate required gates; the A6 live SQL tables remain undeployed.
 
 **Source-capability blocker (2026-11-23):** The public [OpenFoot API documentation](https://openfootapi.com/docs) describes `finished` and `score` but does not document an independent `resultKind=played` proof distinguishing on-field outcomes from administrative/technical awards. The parser deliberately **requires** explicit `played` and fails closed when missing. A successful public scoreboard is not authorization to manufacture that field or to score M4 forecasts. Before any protected live result evaluation, review actual newly fetched 2026/27 schema privately and obtain independent official played-versus-technical evidence; do not weaken the rule.
+
+## A6 owner-only post-match READONLY experimental workflow (not settlement)
+
+The separate `.github/workflows/m4-owner-postmatch-observe.yml` can only be
+activated by the exact repository owner on protected `main` via an explicit
+`M4_RESULT_READONLY` dispatch or the exact issue-304 comment
+`/m4-result-readonly`. It is not automatic. The workflow has no write
+authorization in its own output contract: the bound receipt must show zero
+database writes, zero score/settlement/model/publication authorizations and
+zero 2025/26 access. It uses the existing pinned Supabase root CA, a read-only
+PostgreSQL 17 transaction with `default_transaction_read_only=on`,
+private A5 capture/source-ID/club-ID provenance, and the frozen unapproved
+model identity. Exactly eight A5 records are expected, with six FORECAST and
+two ABSTAIN; neither ABSTAIN can be scored.
+
+The runner newly fetches only the eight precisely scoped 2026/27 OpenFoot
+single-fixture API responses and the fixed MatchTV 2026/27 round-15 calendar.
+Individual match-detail pages must NEVER be fetched because they contain
+historic head-to-head rows including the consumed 2025/26 holdout. Redirects, duplicate or ambiguous
+club IDs, wrong match/season/round, early/awarded/postponed outcomes, non-JSON,
+incorrect HTML/status/time, inconsistent score, stale GitHub OIDC time or
+unavailable independent sources cause a complete **refusal**. Missing OpenFoot
+`resultKind=played` is recorded internally as **UNKNOWN** for digest-only
+observation; it MUST NOT be promoted to final played evidence or settlement.
+The current-season MatchTV score always remains **UNKNOWN** played status.
+Each private pair is separately cryptographically bound to two fresh GitHub
+RS256 JWT audiences for the exact raw source bytes and the protected owner
+workflow identity.
+
+A successful run proves only a **current GitHub-signed response-digest
+comparison and immutable A5 linkage**. The returned object is an unattested
+byte-clock, not a result-candidate settlement; both sources may have missing
+played semantics. GitHub signs the evidence time, NOT
+the publisher's original timestamp or football result. It is not an
+independent played-final certification. Only an aggregate count, code/run
+identifiers and opaque batch digest can appear in the job summary; no
+individual scores, private forecasts, source bodies, JWTs, API credentials
+or crosswalk IDs may be printed or uploaded. No SQL migration 0017, no A6
+observation rows, no calibration/LogLoss/Brier/RPS and no production score
+approval are performed. After any genuine owner run, examine the complete
+attested aggregate result and separately review final played-vs-technical
+semantics before authorizing future private A6 settlement.
+
+**Source-capability blocker (2026-11-23):** The public [OpenFoot API documentation](https://openfootapi.com/docs) describes `finished` and `score` but does not document an independent `resultKind=played` proof distinguishing on-field outcomes from administrative/technical awards. The parser deliberately **requires** explicit `played` and fails closed when missing. A successful public scoreboard is not authorization to manufacture that field or to score M4 forecasts. Before any protected live result evaluation, review actual newly fetched 2026/27 schema privately and obtain independent official played-versus-technical evidence; do not weaken the rule.
