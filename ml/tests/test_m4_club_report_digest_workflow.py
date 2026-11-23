@@ -360,3 +360,37 @@ def test_untrusted_reason_never_escapes_allowlisted_codes():
     error = module._ClubSourceRefusal("Dynamic server error unknown input")
     assert error.cause == "HTTP_OTHER"
     assert "Dynamic server error" not in str(error)
+
+
+def test_club_seven_source_is_home_club_only_and_old_403_page_is_refused():
+    """A changed source must be an explicit new pin, not a runtime fallback."""
+    key = "rpl-2026-27-r15-20261122-1330"
+    publisher, url = CLUB_REPORTS[key]
+    assert publisher == "dynamo_makhachkala"
+    assert url == "https://dinamo-mx.ru/news/dinamo-sygralo-vnichyu-so-spartakom-2/"
+    assert len(CLUB_REPORTS) == 8
+    assert len({page for _, page in CLUB_REPORTS.values()}) == 8
+    old = "https://spartak.com/matches/5f5730c0-3698-4a75-a13a-158157ea11c7/broadcast"
+    opener = MagicMock()
+    with pytest.raises(DataError):
+        _module()._fetch_html(opener, old)
+    opener.open.assert_not_called()
+
+
+def test_protocol_pdf_is_not_accepted_by_html_digest_worker():
+    """Reference PDF is kept distinct from read-only HTML digest receipts."""
+    from football_forecast.evaluation.m4_club_report_review import (
+        MATCH_PROTOCOL_REFERENCES,
+    )
+
+    assert tuple(MATCH_PROTOCOL_REFERENCES) == ("rpl-2026-27-r15-20261122-1330",)
+    number, pdf = MATCH_PROTOCOL_REFERENCES["rpl-2026-27-r15-20261122-1330"]
+    assert number == "114"
+    assert pdf == (
+        "https://dinamo-mx.ru/wp-content/uploads/2026/11/"
+        "rpl_2026-2027_md15_dmh-spa_fr_ru.pdf"
+    )
+    opener = MagicMock()
+    with pytest.raises(DataError):
+        _module()._fetch_html(opener, pdf)
+    opener.open.assert_not_called()
