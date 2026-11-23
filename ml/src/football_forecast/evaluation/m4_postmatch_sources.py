@@ -92,13 +92,14 @@ def _score(home, away):
         _deny()
 
 
-def parse_openfoot_result_candidate(
+def parse_openfoot_score_observation(
     body: bytes, anchor: A5PostmatchAnchor, observed_at: datetime,
 ) -> ProviderResultClaim:
-    """Require a *single* exact A5 provider fixture with explicit played kind.
+    """Extract an exact A5-linked score with explicit UNKNOWN played semantics.
 
-    If OpenFoot provides only a final score/status and no independently
-    verifiable 'played' kind, fail closed rather than invent the missing fact.
+    Missing OpenFoot resultKind can be observed ONLY as an unverified score
+    for a read-only digest probe, never a candidate played-final settlement.
+    Technical/awarded/revised/status-mismatched replies still fail closed.
     """
     fixture = _verify_anchor(anchor, observed_at)
     envelope = _json(body)
@@ -117,7 +118,7 @@ def parse_openfoot_result_candidate(
             or match.get("season") != SEASON
             or _utc(match.get("kickoffAt")) != fixture.kickoff_at
             or match.get("status") != "finished"
-            or match.get("resultKind") != "played"
+            or match.get("resultKind") not in (None, "played")
             or any(match.get(k) not in (None, False)
                    for k in ("awarded", "technical", "abandoned", "walkover"))
             or type(match.get("homeTeam")) is not dict
@@ -139,9 +140,22 @@ def parse_openfoot_result_candidate(
         fixture_key=fixture.fixture_key, kickoff_at=fixture.kickoff_at,
         home_club_key=fixture.home_club_key,
         away_club_key=fixture.away_club_key, observed_at=observed_at,
-        source_response_sha256=sha256(body).hexdigest(), status="finished",
-        result_kind="played", home_goals=h, away_goals=a,
+        source_response_sha256=sha256(body).hexdigest(),
+        status=("finished" if match.get("resultKind") == "played"
+                else "score_displayed_unverified"),
+        result_kind=("played" if match.get("resultKind") == "played" else "unknown"),
+        home_goals=h, away_goals=a,
     )
+
+
+def parse_openfoot_result_candidate(
+    body: bytes, anchor: A5PostmatchAnchor, observed_at: datetime,
+) -> ProviderResultClaim:
+    """The strict played-claim path; never accepts an undocumented kind."""
+    observation = parse_openfoot_score_observation(body, anchor, observed_at)
+    if observation.result_kind != "played" or observation.status != "finished":
+        _deny()
+    return observation
 
 
 def parse_matchtv_result_candidate(
