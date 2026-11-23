@@ -266,3 +266,36 @@ The A6 candidate-only schema in migration 0017 and its rollback-only PG17 tests 
 The pure verifier in `ml/src/football_forecast/evaluation/m4_result_oidc.py` pins the separate future `m4-owner-postmatch-observe.yml` GitHub workflow identity and accepts only two independently collected, in-scope *candidate* response bodies whose raw SHA-256 matches the individually declared source claims. It verifies two distinct RS256 GitHub OIDC JWTs against the exact OpenFoot/MatchTV raw-body digest audiences, expected owner, repository ID, protected `main` SHA, run attempt, environment, workflow and short issuance windows. JWKs must come from GitHub's fixed HTTPS OIDC discovery and JWKS endpoint; headers, provider bodies, UI or user input must never select keys. Only GitHub-issued proof of digest commitment time is attested, not original publisher publication time.
 
 The module performs **no network, live parsing, PostgreSQL writes, scoring, model approval or publication**. Its returned evidence explicitly leaves publisher authenticity, independent played-final status and all settlement, scoring, publication and holdout permissions **false**. Tests use synthetic locally signed JWTs, scores and source bytes only. A subsequently reviewed owner-only workflow MUST authenticate each publisher response separately, parse both result semantics against the immutable A5 source match ID, verify two independent played-final observations, obtain new actual GitHub tokens from the trusted runner, and durably store the complete private evidence before anyone can consider A6 acceptance. Missing, ambiguous, awarded, abandoned, revised or stale results must fail closed. Nothing may be backfilled from the consumed 2025/26 holdout.
+
+
+## A6 distinct result-source parsing preflight (unattested)
+
+`ml/src/football_forecast/evaluation/m4_postmatch_sources.py` parses exactly the
+A5-anchored 15th-round 2026/27 RPL OpenFoot match response and one pinned
+MatchTV fixture detail page. The eight MatchTV page IDs were obtained from
+the independently published round-15 calendar, and may not be substituted
+using provider-controlled links. These URLs are *source identifiers*, not
+proof of the current publisher's response time or final played status.
+
+OpenFoot input is one newly retrieved authenticated fixture envelope with a
+stable original A5 provider match ID, identical kickoff, team names and exact
+provider-team IDs. Only an explicit `finished` + `resultKind=played` and
+bounded integer `score.home/away` is a structural candidate. If the live
+provider omits an explicit distinction between a played and awarded outcome,
+it MUST fail closed: a `finished` score alone does not establish that truth.
+The independent MatchTV detail requires the exact home/away directed identity,
+round 15, explicit displayed `Завершён`, plausible full-time score and Moscow
+calendar minute matching immutable A5. Prior H2H/archival score tables are
+excluded from the parsed current match header. Reported technical/awarded,
+abandoned, cancelled and altered identities are refused. Neither source
+proves its own first-serving timestamp.
+
+Both parsers produce **untrusted** `ProviderResultClaim` objects only. Even
+when scores agree, `compare_provisional_played_claims` and separately signed
+GitHub raw-response-digest time produce an **unattested private candidate**,
+not a certified played outcome. No automatic result writes, performance scoring,
+model approval, historical backfill or publication are authorized. The
+synthetic-only tests include wrong match IDs/club direction/kickoff, award,
+disagreement, duplicate/untrusted forms, H2H contamination and invalid UTC.
+Real worker acquisition, protected owner execution and real A5 ledger linkage
+remain separate required gates; the A6 live SQL tables remain undeployed.
