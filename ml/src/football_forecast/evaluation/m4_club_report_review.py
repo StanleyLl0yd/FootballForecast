@@ -308,3 +308,205 @@ def assess_club_on_field_claim(
         state, fixture.fixture_key, club.response_sha256, kdk_digest,
         club_event_claim_present=True,
     )
+
+
+# Owner-approved practical standard (24 Nov 2026). These are additional
+# reference-only, current-season official club locators, NOT fetch authority.
+# No inference of source identity from arbitrary caller URLs.
+SECOND_CLUB_REPORTS = MappingProxyType({
+    "rpl-2026-27-r15-20261120-1630": (
+        "krylya", "https://pfcks.ru/news/novosti_5155.html",
+    ),
+    "rpl-2026-27-r15-20261121-1000": (
+        "orenburg",
+        "https://fcorenburg.ru/matchs/2026-2027/rossijskaya-premer-liga/15-tur.html",
+    ),
+    "rpl-2026-27-r15-20261121-1215": (
+        "fakel", "https://fakelfc.ru/index.php/news/view/10420-obygrali-akron",
+    ),
+    "rpl-2026-27-r15-20261121-1645": (
+        "akhmat",
+        "https://fc-akhmat.ru/news/fc-akhmat/novosti-osnovy/"
+        "akhmat-obygral-na-vyezde-moskovskiy-tsska/",
+    ),
+    "rpl-2026-27-r15-20261122-1100": (
+        "dynamo_moscow",
+        "https://fcdynamo.ru/news/"
+        "dynamovcy-sygrali-vniciu-s-krasnodarom-i-vozglavili-turnirnuiu-tablicu/",
+    ),
+})
+
+# RFS announcement is an agenda, NOT an issued disposition. Preserve this
+# known pending scope until a separately reviewed decision is available.
+RFS_ROUND15_KDK_AGENDA = "https://www.rfs.ru/news/225644"
+PENDING_KDK_FIXTURES = frozenset({
+    "rpl-2026-27-r15-20261121-1000",
+    "rpl-2026-27-r15-20261121-1215",
+    "rpl-2026-27-r15-20261121-1645",
+    "rpl-2026-27-r15-20261122-1100",
+})
+
+
+@dataclass(frozen=True, slots=True)
+class DirectedGoalClaim:
+    """A counted goal, with directed home/away running score; not a VAR event."""
+
+    credited_club: str
+    home_goals: int
+    away_goals: int
+
+
+@dataclass(frozen=True, slots=True)
+class OfficialReportClaim:
+    """Untrusted parsed semantics, never proof of publisher authority."""
+
+    fixture_key: str
+    publisher: str
+    url: str
+    response_sha256: str
+    season: str
+    round_number: int
+    kickoff_at: datetime
+    observed_at: datetime
+    home_club: str
+    away_club: str
+    home_goals: int
+    away_goals: int
+    events: tuple[str, ...]
+    goals: tuple[DirectedGoalClaim, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class PracticalResultReview:
+    """Structural sufficiency only; no authenticated evidence or authority."""
+
+    classification: str
+    fixture_key: str
+    witness_digests: tuple[str, ...]
+    evidence_route: str
+    publisher_authenticated: bool = False
+    played_final_attested: bool = False
+    kdk_clearance_attested: bool = False
+    settlement_authorized: bool = False
+    scoring_authorized: bool = False
+    model_approved: bool = False
+    publication_authorized: bool = False
+    holdout_2025_26_read: bool = False
+
+
+def _guard_goal_progression(report: OfficialReportClaim) -> None:
+    # Require a complete directed sequence, including an explicit empty tuple
+    # for 0:0. Own goals use the team credited with the goal. Do not silently
+    # reverse the source's scoreboard or reconstruct a missing progression.
+    if type(report.goals) is not tuple or len(report.goals) != (
+        report.home_goals + report.away_goals
+    ):
+        _deny("incomplete counted goal progression")
+    home = away = 0
+    for goal in report.goals:
+        if type(goal) is not DirectedGoalClaim:
+            _deny("invalid counted goal claim")
+        if goal.credited_club == report.home_club:
+            home += 1
+        elif goal.credited_club == report.away_club:
+            away += 1
+        else:
+            _deny("unknown credited club")
+        if (
+            type(goal.home_goals) is not int
+            or type(goal.away_goals) is not int
+            or (goal.home_goals, goal.away_goals) != (home, away)
+        ):
+            _deny("directed running score contradicts counted goal")
+    if (home, away) != (report.home_goals, report.away_goals):
+        _deny("counted goals contradict full-time score")
+
+
+def assess_practical_result_claims(
+    fixture: FrozenFixtureIdentity,
+    primary: ProviderResultClaim,
+    independent: ProviderResultClaim,
+    witnesses: tuple[OfficialReportClaim, ...],
+    inspected_at: datetime,
+) -> PracticalResultReview:
+    """Review either pinned protocol or opposing-club reports, without I/O.
+
+    Exact source pins and structural consistency are not authentication.
+    Protocol references must still be verified as league-issued; independent
+    club reports must still be reviewed for actual editorial independence.
+    Missing/contradictory semantics fail closed. No result or scoring authority.
+    """
+    _guard_fixture(fixture, inspected_at)
+    _guard_source(fixture, primary, "openfoot", inspected_at)
+    _guard_source(fixture, independent, "matchtv", inspected_at)
+    if (
+        primary.source_response_sha256 == independent.source_response_sha256
+        or (primary.home_goals, primary.away_goals) != (
+            independent.home_goals, independent.away_goals
+        )
+    ):
+        _deny("original source scores disagree")
+    key = fixture.fixture_key
+    if type(witnesses) is not tuple or len(witnesses) not in (1, 2):
+        _deny("missing or unexpected official witness count")
+    if any(type(w) is not OfficialReportClaim for w in witnesses):
+        _deny("invalid official witness")
+    if len(witnesses) == 1:
+        protocol = MATCH_PROTOCOL_REFERENCES.get(key)
+        if protocol is None:
+            _deny("no pinned protocol reference")
+        expected = {("rpl_protocol:" + protocol[0], protocol[1])}
+        route = "PROTOCOL_REFERENCE"
+    else:
+        second = SECOND_CLUB_REPORTS.get(key)
+        if second is None:
+            _deny("no pinned opposing-club reference")
+        expected = {CLUB_REPORTS[key], second}
+        if {publisher for publisher, _ in expected} != {
+            fixture.home_club_key, fixture.away_club_key
+        }:
+            _deny("official club publishers are not opposing clubs")
+        route = "OPPOSING_CLUB_REPORTS"
+    if any(type(w.publisher) is not str or type(w.url) is not str for w in witnesses):
+        _deny("invalid official witness locator")
+    if {(w.publisher, w.url) for w in witnesses} != expected:
+        _deny("official witness reference mismatch")
+    digests = {primary.source_response_sha256, independent.source_response_sha256}
+    for report in witnesses:
+        if (
+            report.fixture_key != key
+            or report.season != fixture.season
+            or type(report.round_number) is not int
+            or report.round_number != 15
+            or not _utc(report.kickoff_at)
+            or report.kickoff_at != fixture.kickoff_at
+            or not _utc(report.observed_at)
+            or not fixture.kickoff_at + timedelta(minutes=90)
+                <= report.observed_at <= inspected_at
+            or (report.home_club, report.away_club) != (
+                fixture.home_club_key, fixture.away_club_key
+            )
+            or type(report.home_goals) is not int
+            or type(report.away_goals) is not int
+            or (report.home_goals, report.away_goals) != (
+                primary.home_goals, primary.away_goals
+            )
+            or report.events != _ON_FIELD_EVENTS
+            or not _sha(report.response_sha256)
+            or report.response_sha256 in digests
+        ):
+            _deny("official witness identity, time, events or score mismatch")
+        _guard_goal_progression(report)
+        digests.add(report.response_sha256)
+    if len(witnesses) == 2 and witnesses[0].goals != witnesses[1].goals:
+        _deny("official directed counted goal sequences disagree")
+    return PracticalResultReview(
+        classification=(
+            "PRIVATE_PRACTICAL_CANDIDATE_KDK_PENDING"
+            if key in PENDING_KDK_FIXTURES
+            else "PRIVATE_PRACTICAL_CANDIDATE_KDK_UNREVIEWED"
+        ),
+        fixture_key=key,
+        witness_digests=tuple(sorted(w.response_sha256 for w in witnesses)),
+        evidence_route=route,
+    )
