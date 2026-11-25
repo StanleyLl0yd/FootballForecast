@@ -20,6 +20,9 @@ create table ff_private.ff_m4_result_observations (
      source_locator ~ '^https://[A-Za-z0-9.-]+/[^[:space:]#]+$')),
   source_response_sha256 text not null check (
     source_response_sha256 ~ '^[a-f0-9]{64}$'),
+  -- Exact canonical metadata bytes, never a raw publisher body.
+  source_context_manifest bytea,
+  source_context_manifest_sha256 text,
   source_oidc_jwt text not null
     check (length(source_oidc_jwt) between 400 and 10000),
   source_jwk jsonb not null check (jsonb_typeof(source_jwk) = 'object'),
@@ -55,6 +58,13 @@ create table ff_private.ff_m4_result_observations (
   publication_allowed boolean not null default false check (publication_allowed = false),
   holdout_2025_26_read boolean not null default false check (holdout_2025_26_read = false),
   check ((home_goals is null) = (away_goals is null)),
+  check ((source_context_manifest is null) = (source_context_manifest_sha256 is null)),
+  check (source_context_manifest is null or (
+    source_issuer in ('official_club','rpl_protocol') and
+    status='on_field_full_time_claim' and
+    octet_length(source_context_manifest) between 2 and 32768 and
+    source_context_manifest_sha256 ~ '^[a-f0-9]{64}$' and
+    source_context_manifest_sha256=encode(sha256(source_context_manifest),'hex'))),
   check ((kdk_decision_ref is null) = (kdk_decision_sha256 is null)),
   check (
     (source_issuer='openfoot' and source_publisher='openfoot' and
@@ -146,6 +156,11 @@ declare
   v_home integer := 0;
   v_away integer := 0;
   v_prior_kdk ff_private.ff_m4_result_observations%rowtype;
+  v_context jsonb;
+  v_claim jsonb;
+  v_expected_goals jsonb;
+  v_receipt_publisher text;
+  v_observed timestamptz;
 begin
   -- Both appenders serialize on the immutable capture row. At READ COMMITTED
   -- subsequent queries in these volatile trigger functions see committed
@@ -205,6 +220,63 @@ begin
     end loop;
     if v_home is distinct from new.home_goals or v_away is distinct from new.away_goals then
       raise exception 'M4 invalid counted goal sequence';
+    end if;
+  end if;
+  if new.source_context_manifest is not null then
+    -- Structural linkage only, not signature or canonical encoding validation.
+    if new.source_issuer not in ('official_club','rpl_protocol')
+       or new.status<>'on_field_full_time_claim'
+       or octet_length(new.source_context_manifest) not between 2 and 32768 then
+      raise exception 'M4 context manifest requires bounded official full-time claim';
+    end if;
+    v_context := convert_from(new.source_context_manifest,'UTF8')::jsonb;
+    v_receipt_publisher := case when new.source_issuer='rpl_protocol'
+      then 'rpl_protocol:'||new.source_fixture_ref else new.source_publisher end;
+    if jsonb_typeof(v_context) is distinct from 'object'
+       or v_context->>'schema' is distinct from 'ff-m4-official-witness-context-v1'
+       or v_context->>'receiptPublisher' is distinct from v_receipt_publisher
+       or (v_context->'fixture' @> jsonb_build_object(
+         'fixtureKey',v_cap.fixture_key,'sourceMatchId',v_proof.source_match_id,
+         'competition',v_cap.competition,'season',v_cap.season,'round',15,
+         'homeClub',v_cap.home_club_key,'awayClub',v_cap.away_club_key)) is distinct from true
+       or (v_context#>>'{fixture,kickoffAt}')::timestamptz is distinct from v_cap.kickoff_at
+       or jsonb_typeof(v_context->'providerClaims') is distinct from 'array'
+       or jsonb_typeof(v_context->'witnessClaims') is distinct from 'array' then
+      raise exception 'M4 context manifest identity mismatch';
+    end if;
+    if jsonb_array_length(v_context->'providerClaims')<>2
+       or v_context#>>'{providerClaims,0,issuer}' is distinct from 'openfoot'
+       or v_context#>>'{providerClaims,1,issuer}' is distinct from 'matchtv'
+       or (new.source_issuer='rpl_protocol' and (
+         v_context->>'evidenceRoute' is distinct from 'PROTOCOL_REFERENCE'
+         or jsonb_array_length(v_context->'witnessClaims')<>1))
+       or (new.source_issuer='official_club' and (
+         v_context->>'evidenceRoute' is distinct from 'OPPOSING_CLUB_REPORTS'
+         or jsonb_array_length(v_context->'witnessClaims')<>2
+         or (v_context->'witnessClaims' @> jsonb_build_array(
+           jsonb_build_object('publisher',v_cap.home_club_key),
+           jsonb_build_object('publisher',v_cap.away_club_key))) is distinct from true)) then
+      raise exception 'M4 context manifest route mismatch';
+    end if;
+    select value into v_claim from jsonb_array_elements(v_context->'witnessClaims')
+      where value->>'publisher'=v_receipt_publisher;
+    select coalesce(jsonb_agg(jsonb_build_array(g.club,g.h,g.a) order by g.ord),'[]'::jsonb)
+      into v_expected_goals
+      from (select club,ord,
+        count(*) filter (where club=new.home_club_key) over (order by ord) as h,
+        count(*) filter (where club=new.away_club_key) over (order by ord) as a
+        from unnest(new.counted_goal_clubs) with ordinality as goal(club,ord)) g;
+    v_observed := (v_claim->>'observedAt')::timestamptz;
+    if v_claim is null or v_claim->>'locator' is distinct from new.source_locator
+       or v_claim->>'bodySha256' is distinct from new.source_response_sha256
+       or v_claim->'score' is distinct from to_jsonb(array[new.home_goals,new.away_goals])
+       or v_claim->'events' is distinct from
+          jsonb_build_array('KICKOFF','HALF_TIME','SECOND_HALF','FULL_TIME')
+       or v_claim->'goals' is distinct from v_expected_goals
+       or v_observed is null or v_observed<new.kickoff_at+interval '90 minutes'
+       or date_trunc('second',v_observed)>new.source_issued_at
+       or v_observed<new.source_issued_at-interval '5 minutes' then
+      raise exception 'M4 context manifest witness mismatch';
     end if;
   end if;
   if new.source_issuer='rfs_kdk' then
@@ -269,6 +341,8 @@ declare
   v_previous ff_private.ff_m4_result_candidate_settlements%rowtype;
   v_ids uuid[];
   v_now timestamptz;
+  v_context jsonb;
+  v_peer_context jsonb;
 begin
   if current_setting('transaction_isolation') <> 'read committed' then
     raise exception 'M4 result evidence requires read committed';
@@ -373,6 +447,35 @@ begin
            or o.away_goals is distinct from v_primary.away_goals
            or o.counted_goal_clubs is distinct from v_official.counted_goal_clubs)) then
     raise exception 'M4 duplicate, stale or contradictory result evidence';
+  end if;
+  -- Never combine a context-bound witness with a raw-only peer or a
+  -- different batch. Raw-only candidates remain UNATTESTED structural rows,
+  -- not a permitted operational fallback for a future protected worker.
+  if v_official.source_context_manifest is not null
+     or v_second.source_context_manifest is not null then
+    if v_official.source_context_manifest is null
+       or (v_second.id is not null and v_second.source_context_manifest is null) then
+      raise exception 'M4 context manifest batch incomplete';
+    end if;
+    v_context := convert_from(v_official.source_context_manifest,'UTF8')::jsonb;
+    if v_second.id is not null then
+      v_peer_context := convert_from(v_second.source_context_manifest,'UTF8')::jsonb;
+      if (v_context-'receiptPublisher') is distinct from (v_peer_context-'receiptPublisher') then
+        raise exception 'M4 context manifest batch mismatch';
+      end if;
+    end if;
+    if (v_context->'providerClaims'->0 @> jsonb_build_object(
+          'issuer','openfoot','sourceFixtureRef',v_primary.source_fixture_ref,
+          'bodySha256',v_primary.source_response_sha256,'status',v_primary.status,
+          'resultKind',v_primary.result_kind,
+          'score',to_jsonb(array[v_primary.home_goals,v_primary.away_goals]))) is distinct from true
+       or (v_context->'providerClaims'->1 @> jsonb_build_object(
+          'issuer','matchtv','sourceFixtureRef',v_other.source_fixture_ref,
+          'bodySha256',v_other.source_response_sha256,'status',v_other.status,
+          'resultKind',v_other.result_kind,
+          'score',to_jsonb(array[v_other.home_goals,v_other.away_goals]))) is distinct from true then
+      raise exception 'M4 context manifest provider mismatch';
+    end if;
   end if;
   return new;
 end;
