@@ -19,10 +19,17 @@ both provider claims, complete official witness set, pinned locators,
 observed UTC times, directed scores, full-time events and counted goals,
 and the receipt publisher. Witness order is canonical. The function
 does not issue or verify a JWT; its output explicitly denies all attestation
-and authority. A later protected verifier must recompute the manifest from
-independently parsed retained bytes and verify the exact audience and
-protected repository/workflow/environment/SHA/run/attempt with trusted GitHub
-JWKS. A signature still proves only the protected runner's commitment, not a
+and authority. The pure `verify_official_witness_receipts` verifier now recomputes all
+manifests and verifies exact audiences and protected repository/workflow/
+environment/SHA/run/attempt with caller-supplied trusted GitHub JWKS. It
+requires a complete distinct receipt batch, each official body observed
+within five minutes, and issuance no earlier than the latest claim. It
+pins the existing owner club workflow identity, whose actual raw-digest
+receipts deliberately do not match these audiences. No workflow change or
+live issuance is introduced. A future reviewed worker must independently
+parse retained bodies and fetch trusted GitHub JWKS; provider signatures,
+source rights and provenance remain separate gates. In-process verification
+is not durable replay protection. A signature still proves only the protected runner's commitment, not a
 publisher signature or original first-serving time.
 
 ## Prerequisites for an actual worker
