@@ -28,14 +28,22 @@ select 1 / case when (
     'ff_private.ff_m4_result_candidate_settlements'::regclass)
     and c.relrowsecurity and c.relforcerowsecurity
 )=2
-and not has_table_privilege(
-  'anon'::regrole, 'ff_private.ff_m4_result_observations'::regclass, 'SELECT')
-and not has_table_privilege(
-  'authenticated'::regrole, 'ff_private.ff_m4_result_observations'::regclass, 'INSERT')
-and not has_table_privilege(
-  'service_role'::regrole, 'ff_private.ff_m4_result_candidate_settlements'::regclass, 'SELECT')
-and not has_table_privilege(
-  'service_role'::regrole, 'ff_private.ff_m4_result_candidate_settlements'::regclass, 'INSERT')
+and not exists (
+  select 1 from unnest(array['anon','authenticated','service_role']) as roles(role_name)
+  cross join unnest(array[
+    'ff_private.ff_m4_result_observations','ff_private.ff_m4_result_candidate_settlements'
+  ]) as relations(relation_name)
+  cross join unnest(array['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER']) as privileges(privilege_name)
+  where has_table_privilege(role_name::regrole,relation_name::regclass,privilege_name)
+)
+and not exists (
+  select 1 from unnest(array['anon','authenticated','service_role']) as roles(role_name)
+  cross join unnest(array[
+    'ff_private.ff_m4_result_observation_insert_guard()',
+    'ff_private.ff_m4_result_candidate_insert_guard()'
+  ]) as functions(function_name)
+  where has_function_privilege(role_name::regrole,function_name::regprocedure,'EXECUTE')
+)
 then 1 else 0 end as private_result_rls_denial;
 
 begin;
@@ -117,243 +125,323 @@ alter table ff_private.ff_m4_time_proofs
 alter table ff_private.ff_m4_shadow_entries
   enable trigger ff_m4_entry_pre_kickoff;
 
--- Fake JWTs are never verified as signatures in DB: this is ONLY a constraint
--- and linkage test. Protected workers must authenticate RS256 and source bodies.
-insert into ff_private.ff_m4_result_observations (
-  capture_id,source_issuer,source_fixture_ref,source_response_sha256,
-  source_oidc_jwt,source_jwk,source_token_sha256,source_issued_at,
-  github_run_id,github_run_attempt,code_sha,
-  fixture_key,kickoff_at,home_club_key,away_club_key,
-  status,result_kind,home_goals,away_goals,recorded_at
-)
-select c.id,'openfoot','match-synthetic-a6',repeat('6',64),
-  repeat('c',512),'{"kid":"c","kty":"RSA"}'::jsonb,
-  encode(sha256(convert_to(repeat('c',512),'UTF8')),'hex'),
-  clock_timestamp()-interval '15 seconds',989876502,1,repeat('7',40),
-  c.fixture_key,c.kickoff_at,c.home_club_key,c.away_club_key,
-  'finished','played',2,1,'2010-01-01'::timestamptz
-from ff_private.ff_m4_future_captures c;
-insert into ff_private.ff_m4_result_observations (
-  capture_id,source_issuer,source_fixture_ref,source_response_sha256,
-  source_oidc_jwt,source_jwk,source_token_sha256,source_issued_at,
-  github_run_id,github_run_attempt,code_sha,
-  fixture_key,kickoff_at,home_club_key,away_club_key,
-  status,result_kind,home_goals,away_goals,recorded_at
-)
-select c.id,'matchtv','round-15-editorial',repeat('8',64),
-  repeat('d',512),'{"kid":"d","kty":"RSA"}'::jsonb,
-  encode(sha256(convert_to(repeat('d',512),'UTF8')),'hex'),
-  clock_timestamp()-interval '15 seconds',989876502,1,repeat('7',40),
-  c.fixture_key,c.kickoff_at,c.home_club_key,c.away_club_key,
-  'finished','played',2,1,'2010-01-01'::timestamptz
-from ff_private.ff_m4_future_captures c;
+-- Fake JWTs are used ONLY to test DB structure/linkage, never authenticity.
+create temporary table a6_test_scope (unused boolean) on commit drop;
+-- The synthetic fixture deliberately has no real score or provider body.
+create function pg_temp.a6_observe(
+  p_issuer text,p_publisher text,p_ref text,p_status text,p_kind text,
+  p_home integer,p_away integer,p_goals text[],p_tag text,p_run bigint,
+  p_decision text default null,p_decision_digest text default null,
+  p_issued timestamptz default null,p_body_tag text default null
+) returns uuid language plpgsql as $test$
+declare
+  v_id uuid;
+  v_issued timestamptz := coalesce(p_issued,clock_timestamp()-interval '1 second');
+  v_token text := repeat('synthetic-token-',32)||p_tag;
+begin
+  insert into ff_private.ff_m4_result_observations (
+    capture_id,source_issuer,source_publisher,source_fixture_ref,source_locator,
+    source_response_sha256,source_oidc_jwt,source_jwk,source_token_sha256,
+    source_issued_at,github_run_id,github_run_attempt,code_sha,fixture_key,kickoff_at,
+    home_club_key,away_club_key,status,result_kind,home_goals,away_goals,
+    counted_goal_clubs,kdk_scope_from,kdk_scope_through,kdk_scope_sha256,
+    kdk_decision_ref,kdk_decision_sha256,observation_revision,recorded_at
+  )
+  select c.id,p_issuer,p_publisher,p_ref,
+    case when p_issuer='rfs_kdk' then 'https://www.rfs.ru/archive?tags=16'
+         when p_issuer in ('official_club','rpl_protocol') then 'https://synthetic.invalid/'||p_ref
+         else null end,
+    encode(sha256(convert_to('synthetic-body:'||coalesce(p_body_tag,p_tag),'UTF8')),'hex'),
+    v_token,'{"kid":"synthetic","kty":"RSA"}'::jsonb,
+    encode(sha256(convert_to(v_token,'UTF8')),'hex'),
+    v_issued,p_run,1,repeat('7',40),c.fixture_key,c.kickoff_at,
+    c.home_club_key,c.away_club_key,p_status,p_kind,p_home,p_away,p_goals,
+    case when p_issuer='rfs_kdk' then c.kickoff_at end,
+    case when p_issuer='rfs_kdk' then v_issued end,
+    case when p_issuer='rfs_kdk' then encode(sha256(convert_to('scope:'||p_tag,'UTF8')),'hex') end,
+    p_decision,p_decision_digest,999,'2010-01-01'::timestamptz
+  from ff_private.ff_m4_future_captures c
+  where c.fixture_key=concat('rpl-','synthetic-a6-result-1') returning id into v_id;
+  return v_id;
+end;
+$test$;
 
-insert into ff_private.ff_m4_result_candidate_settlements (
-  capture_id,shadow_entry_id,primary_observation_id,
-  corroboration_observation_id,revision,home_goals,away_goals,recorded_at
-)
-select c.id,e.id,p.id,m.id,1,2,1,'2010-01-01'::timestamptz
-from ff_private.ff_m4_future_captures c
-join ff_private.ff_m4_shadow_entries e on e.capture_id=c.id
-join ff_private.ff_m4_result_observations p
-  on p.capture_id=c.id and p.source_issuer='openfoot'
-join ff_private.ff_m4_result_observations m
-  on m.capture_id=c.id and m.source_issuer='matchtv';
+create function pg_temp.a6_candidate(
+  p_revision integer,p_previous uuid,p_primary uuid,p_other uuid,
+  p_official uuid,p_second uuid,p_kdk uuid,
+  p_state text default 'PRIVATE_RESULT_CANDIDATE_UNATTESTED',
+  p_reason text default null,p_entry uuid default null,
+  p_home integer default 2,p_away integer default 1,p_authorize boolean default false
+) returns uuid language plpgsql as $test$
+declare v_id uuid;
+begin
+  insert into ff_private.ff_m4_result_candidate_settlements (
+    capture_id,shadow_entry_id,primary_observation_id,corroboration_observation_id,
+    official_observation_id,second_official_observation_id,kdk_observation_id,
+    revision,previous_settlement_id,evidence_cutoff_revision,home_goals,away_goals,
+    state,blocking_reason,recorded_at,scoring_authorized
+  )
+  select c.id,coalesce(p_entry,e.id),p_primary,p_other,p_official,p_second,p_kdk,
+    p_revision,p_previous,999,
+    case when p_state='PRIVATE_RESULT_BLOCKED' then null else p_home end,
+    case when p_state='PRIVATE_RESULT_BLOCKED' then null else p_away end,
+    p_state,p_reason,'2010-01-01'::timestamptz,p_authorize
+  from ff_private.ff_m4_future_captures c
+  join ff_private.ff_m4_shadow_entries e on e.capture_id=c.id and e.revision=1
+  where c.fixture_key=concat('rpl-','synthetic-a6-result-1') returning id into v_id;
+  return v_id;
+end;
+$test$;
 
-select 1 / case when
-  (select count(*) from ff_private.ff_m4_result_observations
-     where recorded_at > '2026-11-11T11:04:56Z'::timestamptz
-       and result_attested=false and publication_allowed=false)=2
-  and
-  (select count(*) from ff_private.ff_m4_result_candidate_settlements
-     where recorded_at > '2026-11-11T11:04:56Z'::timestamptz
-       and state='PRIVATE_RESULT_CANDIDATE_UNATTESTED'
-       and settlement_authorized=false and model_approved=false
-       and publication_allowed=false and holdout_2025_26_read=false)=1
-then 1 else 0 end as one_unattested_private_candidate;
+-- A test must fail if the command succeeds, or if it fails for an unrelated
+-- reason. Constant synthetic SQL only; never callable from production roles.
+create function pg_temp.a6_reject(p_command text,p_expected text)
+returns void language plpgsql as $test$
+declare v_error text; v_state text;
+begin
+  begin
+    execute p_command;
+  exception when others then
+    get stacked diagnostics v_error=message_text,v_state=returned_sqlstate;
+    if v_error=p_expected or v_state=p_expected then return; end if;
+    raise exception 'Unexpected rejection (%): %',v_state,v_error;
+  end;
+  raise exception 'Expected rejection but command succeeded: %',p_expected;
+end;
+$test$;
 
 do $m4$
 declare
- v_cap uuid;
- v_entry uuid;
- v_primary uuid;
- v_other uuid;
- v_abstain uuid;
- v_existing_settlement uuid;
+  p uuid; m uuid; w1 uuid; w2 uuid; k uuid; s1 uuid; s2 uuid; s3 uuid; s4 uuid;
+  pending uuid; conflicting uuid; wrong_goals uuid; old_k uuid; new_p uuid;
+  protocol uuid; v_abstain uuid; v_cap uuid; v_entry uuid;
+  candidate_state constant text := 'PRIVATE_RESULT_CANDIDATE_UNATTESTED';
+  blocked_state constant text := 'PRIVATE_RESULT_BLOCKED';
+  consistent_error constant text := 'M4 candidate lacks consistent official/KDK evidence';
+  role_error constant text := 'M4 result evidence role or capture mismatch';
+  stale_error constant text := 'M4 duplicate, stale or contradictory result evidence';
+  lineage_error constant text := 'M4 result revision lineage invalid';
 begin
-  select id into v_cap from ff_private.ff_m4_future_captures limit 1;
-  select id into v_entry from ff_private.ff_m4_shadow_entries limit 1;
-  select id into v_primary from ff_private.ff_m4_result_observations
-    where source_issuer='openfoot';
-  select id into v_other from ff_private.ff_m4_result_observations
-    where source_issuer='matchtv';
+  select id into v_cap from ff_private.ff_m4_future_captures;
+  select id into v_entry from ff_private.ff_m4_shadow_entries;
+  p := pg_temp.a6_observe('openfoot','openfoot','match-synthetic-a6',
+    'score_displayed_unverified','unknown',2,1,null,'p',989876502);
+  m := pg_temp.a6_observe('matchtv','matchtv','matchtv:123456789',
+    'score_displayed_unverified','unknown',2,1,null,'m',989876503);
+  if (select count(*) from ff_private.ff_m4_result_observations
+       where result_kind='unknown' and status='score_displayed_unverified'
+         and result_attested=false and recorded_at>source_issued_at
+         and observation_revision in (1,2))<>2 then
+    raise exception 'Provider UNKNOWN was not preserved or DB clock/ordinal was not used';
+  end if;
 
-  -- A technical/awarded match must never be admitted as played.
-  begin
-    insert into ff_private.ff_m4_result_observations (
-      capture_id,source_issuer,source_fixture_ref,source_response_sha256,
-      source_oidc_jwt,source_jwk,source_token_sha256,source_issued_at,
-      github_run_id,github_run_attempt,code_sha,fixture_key,
-      kickoff_at,home_club_key,away_club_key,
-      status,result_kind,home_goals,away_goals
-    ) select c.id,'openfoot','match-synthetic-a6',repeat('9',64),
-      repeat('e',512),'{}'::jsonb,
-      encode(sha256(convert_to(repeat('e',512),'UTF8')),'hex'),
-      clock_timestamp()-interval '15 seconds',989876503,1,repeat('7',40),
-      c.fixture_key,c.kickoff_at,c.home_club_key,c.away_club_key,
-      'awarded','technical',3,0
-      from ff_private.ff_m4_future_captures c;
-    raise exception 'TECHNICAL_RESULT_WAS_WRITTEN';
-  exception when check_violation then null;
-  end;
+  -- Neither two agreeing providers nor a fabricated MatchTV played field is proof.
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(1,null,%L,%L,null,null,null)',p,m),consistent_error);
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'matchtv','matchtv','matchtv:123456789','finished','played',2,1,null,
+    'fake-played',989876504)$q$,'23514');
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'openfoot','openfoot','wrong-match-reference','score_displayed_unverified','unknown',
+    2,1,null,'wrong-id',989876504)$q$,'M4 result observation lacks fresh A5-linked postgame proof');
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'openfoot','openfoot','match-synthetic-a6','score_displayed_unverified','unknown',
+    2,1,null,'stale-clock',989876504,null,null,clock_timestamp()-interval '1 hour')$q$,
+    'M4 result observation lacks fresh A5-linked postgame proof');
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'openfoot','openfoot','match-synthetic-a6','awarded','technical',3,0,null,
+    'technical',989876504)$q$,'23514');
 
-  -- Claiming a different OpenFoot match ID refuses despite a plausible score.
-  begin
-    insert into ff_private.ff_m4_result_observations (
-      capture_id,source_issuer,source_fixture_ref,source_response_sha256,
-      source_oidc_jwt,source_jwk,source_token_sha256,source_issued_at,
-      github_run_id,github_run_attempt,code_sha,fixture_key,
-      kickoff_at,home_club_key,away_club_key,
-      status,result_kind,home_goals,away_goals
-    ) select c.id,'openfoot','wrong-match-reference',repeat('9',64),
-      repeat('e',512),'{}'::jsonb,
-      encode(sha256(convert_to(repeat('e',512),'UTF8')),'hex'),
-      clock_timestamp()-interval '15 seconds',989876503,1,repeat('7',40),
-      c.fixture_key,c.kickoff_at,c.home_club_key,c.away_club_key,
-      'finished','played',2,1
-      from ff_private.ff_m4_future_captures c;
-    raise exception 'WRONG_PROVIDER_MATCH_WAS_WRITTEN';
-  exception when raise_exception then
-    if sqlerrm <>
-       'M4 result observation lacks fresh A5-linked postgame proof'
-    then raise; end if;
-  end;
+  w1 := pg_temp.a6_observe('official_club','zenit','club-synthetic-home',
+    'on_field_full_time_claim','played',2,1,array['zenit','rubin','zenit'],'w1',989876504);
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'official_club','rubin','club-synthetic-away','on_field_full_time_claim','played',
+    2,1,array['rubin','rubin','zenit'],'wrong-direction',989876505)$q$,
+    'M4 invalid counted goal sequence');
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'official_club','not-a-participant','club-synthetic-away','on_field_full_time_claim','played',
+    2,1,array['zenit','rubin','zenit'],'wrong-publisher',989876505)$q$,
+    'M4 result observation lacks fresh A5-linked postgame proof');
+  w2 := pg_temp.a6_observe('official_club','rubin','club-synthetic-away',
+    'on_field_full_time_claim','played',2,1,array['zenit','rubin','zenit'],'w2',989876505);
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(1,null,%L,%L,%L,%L,null)',p,m,w1,w2),consistent_error);
 
-  -- A forged earlier source issuance must not pass server-time controls.
-  begin
-    insert into ff_private.ff_m4_result_observations (
-      capture_id,source_issuer,source_fixture_ref,source_response_sha256,
-      source_oidc_jwt,source_jwk,source_token_sha256,source_issued_at,
-      github_run_id,github_run_attempt,code_sha,fixture_key,
-      kickoff_at,home_club_key,away_club_key,
-      status,result_kind,home_goals,away_goals
-    ) select c.id,'openfoot','match-synthetic-a6',repeat('9',64),
-      repeat('e',512),'{}'::jsonb,
-      encode(sha256(convert_to(repeat('e',512),'UTF8')),'hex'),
-      c.kickoff_at+interval '45 minutes',989876503,1,repeat('7',40),
-      c.fixture_key,c.kickoff_at,c.home_club_key,c.away_club_key,
-      'finished','played',2,1
-      from ff_private.ff_m4_future_captures c;
-    raise exception 'EARLY_RESULT_WAS_WRITTEN';
-  exception when raise_exception then
-    if sqlerrm <>
-       'M4 result observation lacks fresh A5-linked postgame proof'
-    then raise; end if;
-  end;
+  pending := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-pending',
+    'kdk_pending','unknown',null,null,null,'pending',989876506);
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(1,null,%L,%L,%L,%L,%L)',p,m,w1,w2,pending),consistent_error);
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'rfs_kdk','rfs','scope-synthetic-cleared','kdk_reviewed_no_adverse_claim','unknown',
+    null,null,null,'missing-decision',989876507)$q$,
+    'M4 unresolved KDK proceeding requires issued decision evidence');
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'rfs_kdk','rfs','scope-synthetic-cleared','kdk_reviewed_no_adverse_claim','unknown',
+    null,null,null,'agenda',989876507,'https://www.rfs.ru/news/225644',repeat('a',64))$q$,'23514');
 
-  begin
-    insert into ff_private.ff_m4_result_candidate_settlements (
-      capture_id,shadow_entry_id,primary_observation_id,
-      corroboration_observation_id,revision,home_goals,away_goals)
-    values (v_cap,v_entry,v_other,v_primary,2,2,1);
-    raise exception 'SWAPPED_SOURCES_WERE_SETTLED';
-  exception when raise_exception then
-    if sqlerrm <>
-       'M4 candidate settlement has no consistent A5/played evidence'
-    then raise; end if;
-  end;
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k',989876507,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
+  -- Single club, duplicate witness, swapped providers and wrong score fail.
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(1,null,%L,%L,%L,null,%L)',p,m,w1,k),consistent_error);
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(1,null,%L,%L,%L,%L,%L)',p,m,w1,w1,k),consistent_error);
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(1,null,%L,%L,%L,%L,%L)',m,p,w1,w2,k),role_error);
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(1,null,%L,%L,%L,%L,%L,%L,null,null,3,1)',
+    p,m,w1,w2,k,candidate_state),consistent_error);
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(1,null,%L,%L,%L,%L,%L,%L,null,null,2,1,true)',
+    p,m,w1,w2,k,candidate_state),'23514');
+  s1 := pg_temp.a6_candidate(1,null,p,m,w1,w2,k);
+  if not exists (select 1 from ff_private.ff_m4_result_candidate_settlements s
+       where s.id=s1 and s.evidence_cutoff_revision=6 and s.revision=1
+         and s.recorded_at>'2026-11-13T16:30:00Z'::timestamptz
+         and not s.settlement_authorized and not s.scoring_authorized
+         and not s.played_final_attested and not s.kdk_clearance_attested
+         and not s.model_approved and not s.publication_allowed and not s.holdout_2025_26_read) then
+    raise exception 'Candidate was not strictly unattested or DB cutoff was spoofable';
+  end if;
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(2,%L,%L,%L,%L,%L,%L)',s1,p,m,w1,w2,k),lineage_error);
 
-  begin
-    insert into ff_private.ff_m4_result_candidate_settlements (
-      capture_id,shadow_entry_id,primary_observation_id,
-      corroboration_observation_id,revision,home_goals,away_goals)
-    values (v_cap,v_entry,v_primary,v_other,2,3,1);
-    raise exception 'WRONG_SCORE_WAS_SETTLED';
-  exception when raise_exception then
-    if sqlerrm <>
-       'M4 candidate settlement has no consistent A5/played evidence'
-    then raise; end if;
-  end;
+  -- Repeated unchanged provider body in a *different run* is retained.
+  -- Reusing the token or same capture/publisher/run is refused.
+  new_p := pg_temp.a6_observe('openfoot','openfoot','match-synthetic-a6',
+    'score_displayed_unverified','unknown',2,1,null,'p-later',989876508,null,null,null,'p');
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'openfoot','openfoot','match-synthetic-a6','score_displayed_unverified','unknown',
+    2,1,null,'late-older',989876521,null,null,clock_timestamp()-interval '5 minutes')$q$,
+    'M4 publisher observation clock did not advance');
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'openfoot','openfoot','match-synthetic-a6','score_displayed_unverified','unknown',
+    2,1,null,'p',989876509)$q$,'23505');
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'openfoot','openfoot','match-synthetic-a6','score_displayed_unverified','unknown',
+    2,1,null,'same-run',989876508)$q$,'23505');
+  if not exists (select 1 from ff_private.ff_m4_result_candidate_settlements s
+       where s.id=s1 and s.evidence_cutoff_revision <
+         (select max(observation_revision) from ff_private.ff_m4_result_observations
+          where capture_id=s.capture_id)) then
+    raise exception 'New evidence did not make the previous cutoff stale';
+  end if;
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(2,%L,%L,%L,%L,%L,%L)',s1,new_p,m,w1,w2,k),consistent_error);
 
-  begin
-    insert into ff_private.ff_m4_result_candidate_settlements (
-      capture_id,shadow_entry_id,primary_observation_id,
-      corroboration_observation_id,revision,home_goals,away_goals)
-    values (v_cap,v_entry,v_primary,v_other,2,2,1);
-    raise exception 'INVALID_REVISION_WAS_SETTLED';
-  exception when raise_exception then
-    if sqlerrm <> 'M4 result revision lineage invalid' then raise; end if;
-  end;
+  conflicting := pg_temp.a6_observe('official_club','rubin','club-synthetic-away',
+    'official_unresolved','unknown',2,1,null,'conflict',989876509);
+  old_k := k;
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-new',989876510,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(2,%L,%L,%L,%L,%L,%L)',s1,new_p,m,w1,w2,k),stale_error);
+  protocol := pg_temp.a6_observe('rpl_protocol','rpl','protocol-synthetic',
+    'on_field_full_time_claim','played',2,1,array['zenit','rubin','zenit'],'protocol',989876511);
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-protocol',989876512,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
+  -- A protocol cannot hide a newer unresolved official club report.
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(2,%L,%L,%L,%L,null,%L)',s1,new_p,m,protocol,k),stale_error);
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(3,%L,%L,%L,%L,null,%L,%L,%L)',
+    s1,new_p,m,protocol,k,blocked_state,'CONTRADICTORY_EVIDENCE'),lineage_error);
+  s2 := pg_temp.a6_candidate(2,s1,new_p,m,w1,conflicting,k,blocked_state,
+    'CONTRADICTORY_EVIDENCE');
 
-  -- Disposable-only synthetic A4 revision: a later ABSTAIN invalidates
-  -- even a previously valid FORECAST for this fixture. The real A4 trigger
-  -- refuses past-time inserts; disable it ONLY within this rollback.
-  alter table ff_private.ff_m4_shadow_entries
-    disable trigger ff_m4_entry_pre_kickoff;
+  -- Correction from the same publisher keeps the old claim but can supersede it.
+  wrong_goals := pg_temp.a6_observe('official_club','rubin','club-synthetic-away',
+    'on_field_full_time_claim','played',2,1,array['rubin','zenit','zenit'],'other-order',989876513);
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-order',989876514,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(3,%L,%L,%L,%L,%L,%L)',s2,new_p,m,w1,wrong_goals,k),consistent_error);
+  w2 := pg_temp.a6_observe('official_club','rubin','club-synthetic-away',
+    'on_field_full_time_claim','played',2,1,array['zenit','rubin','zenit'],
+    'duplicate-body',989876519,null,null,null,'w1');
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-duplicate',989876520,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(3,%L,%L,%L,%L,%L,%L)',s2,new_p,m,w1,w2,k),stale_error);
+  w2 := pg_temp.a6_observe('official_club','rubin','club-synthetic-away',
+    'on_field_full_time_claim','played',2,1,array['zenit','rubin','zenit'],'corrected',989876515);
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-corrected',989876516,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
+  -- The league-protocol route works only as an UNATTESTED structural candidate.
+  s3 := pg_temp.a6_candidate(3,s2,new_p,m,protocol,null,k);
+  if (select count(*) from ff_private.ff_m4_result_candidate_settlements)<>3 or
+     not exists (select 1 from ff_private.ff_m4_result_candidate_settlements
+       where id=s2 and previous_settlement_id=s1 and state=blocked_state
+         and home_goals is null and away_goals is null and blocking_reason='CONTRADICTORY_EVIDENCE') or
+     not exists (select 1 from ff_private.ff_m4_result_candidate_settlements
+       where id=s3 and previous_settlement_id=s2 and state=candidate_state) or
+     not exists (select 1 from ff_private.ff_m4_result_observations
+       where id=conflicting and result_kind='unknown') then
+    raise exception 'Append-only blocked/corrected lineage was not retained';
+  end if;
+
+  -- A later provenance review may revoke a candidate without new raw bytes.
+  -- No positive candidate or repeated block can reuse that unchanged cutoff.
+  s4 := pg_temp.a6_candidate(4,s3,new_p,m,protocol,null,k,blocked_state,'REVIEW_REQUIRED');
+  if not exists (
+    select 1 from ff_private.ff_m4_result_candidate_settlements b
+    join ff_private.ff_m4_result_candidate_settlements a on a.id=b.previous_settlement_id
+    where b.id=s4 and a.id=s3 and b.evidence_cutoff_revision=a.evidence_cutoff_revision
+      and b.state=blocked_state and b.home_goals is null and b.away_goals is null
+  ) then raise exception 'Same-cutoff fail-closed revocation not retained'; end if;
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(5,%L,%L,%L,%L,null,%L)',s4,new_p,m,protocol,k),lineage_error);
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(5,%L,%L,%L,%L,null,%L,%L,%L)',
+    s4,new_p,m,protocol,k,blocked_state,'REVIEW_REQUIRED'),lineage_error);
+
+  -- An adverse issued decision cannot be cleared by citing itself.
+  pending := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-adverse',
+    'kdk_adverse','unknown',null,null,null,'adverse',989876517,
+    'https://www.rfs.ru/news/999999998',repeat('b',64));
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(5,%L,%L,%L,%L,null,%L)',s4,new_p,m,protocol,pending),consistent_error);
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'rfs_kdk','rfs','scope-synthetic-reviewed','kdk_reviewed_no_adverse_claim','unknown',
+    null,null,null,'self-clear',989876518,'https://www.rfs.ru/news/999999998',repeat('b',64))$q$,
+    'M4 adverse decision cannot clear itself');
+
+  -- A superseding ABSTAIN is never itself a candidate, even a BLOCKED one.
+  alter table ff_private.ff_m4_shadow_entries disable trigger ff_m4_entry_pre_kickoff;
   insert into ff_private.ff_m4_shadow_entries (
     capture_id,model_id,fixture_key,revision,previous_entry_id,
     idempotency_sha256,entry_kind,abstention_reason,committed_at
-  ) select e.capture_id,e.model_id,e.fixture_key,2,e.id,
-           repeat('e',64),'ABSTAIN','UNKNOWN_MODEL_CLUB_ID',
-           e.committed_at+interval '1 minute'
-    from ff_private.ff_m4_shadow_entries e where e.id=v_entry
-    returning id into v_abstain;
-  alter table ff_private.ff_m4_shadow_entries
-    enable trigger ff_m4_entry_pre_kickoff;
-  select id into v_existing_settlement
-    from ff_private.ff_m4_result_candidate_settlements
-    where capture_id=v_cap and revision=1;
-  begin
-    insert into ff_private.ff_m4_result_candidate_settlements (
-      capture_id,shadow_entry_id,primary_observation_id,
-      corroboration_observation_id,revision,previous_settlement_id,
-      home_goals,away_goals
-    ) values (
-      v_cap,v_abstain,v_primary,v_other,2,v_existing_settlement,2,1
-    );
-    raise exception 'ABSTAIN_WAS_SETTLED';
-  exception when raise_exception then
-    if sqlerrm <> 'M4 candidate settlement has no consistent A5/played evidence'
-    then raise; end if;
-  end;
+  ) select e.capture_id,e.model_id,e.fixture_key,2,e.id,repeat('e',64),
+    'ABSTAIN','UNKNOWN_MODEL_CLUB_ID',e.committed_at+interval '1 minute'
+    from ff_private.ff_m4_shadow_entries e where e.id=v_entry returning id into v_abstain;
+  alter table ff_private.ff_m4_shadow_entries enable trigger ff_m4_entry_pre_kickoff;
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'new-decision',989876518,
+    'https://www.rfs.ru/news/999999997',repeat('c',64));
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(5,%L,%L,%L,%L,null,%L,%L,null,%L)',
+    s4,new_p,m,protocol,k,candidate_state,v_abstain),
+    'M4 candidate lacks valid pregame FORECAST or evidence');
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(5,%L,%L,%L,%L,null,%L)',s4,new_p,m,protocol,k),consistent_error);
 
-  -- An earlier FORECAST superseded by ABSTAIN cannot be settled either,
-  -- even when two independent source observations agree about the score.
-  begin
-    insert into ff_private.ff_m4_result_candidate_settlements (
-      capture_id,shadow_entry_id,primary_observation_id,
-      corroboration_observation_id,revision,previous_settlement_id,
-      home_goals,away_goals
-    ) values (
-      v_cap,v_entry,v_primary,v_other,2,v_existing_settlement,2,1
-    );
-    raise exception 'SUPERSEDED_FORECAST_WAS_SETTLED';
-  exception when raise_exception then
-    if sqlerrm <> 'M4 candidate settlement has no consistent A5/played evidence'
-    then raise; end if;
-  end;
-
-  begin
-    update ff_private.ff_m4_result_observations
-    set source_issuer='matchtv' where id=v_primary;
-    raise exception 'OBSERVATION_WAS_MUTABLE';
-  exception when raise_exception then
-    if sqlerrm <> 'Source snapshot history is append-only' then raise; end if;
-  end;
-  begin
-    delete from ff_private.ff_m4_result_candidate_settlements;
-    raise exception 'SETTLEMENT_WAS_MUTABLE';
-  exception when raise_exception then
-    if sqlerrm <> 'Source snapshot history is append-only' then raise; end if;
-  end;
-  begin
-    -- A6 settlement rows reference these observations. CASCADE must still
-    -- invoke the append-only TRUNCATE denial, not stop at FK prevalidation.
-    truncate ff_private.ff_m4_result_observations cascade;
-    raise exception 'OBSERVATIONS_WERE_TRUNCATED';
-  exception when raise_exception then
-    if sqlerrm <> 'Source snapshot history is append-only' then raise; end if;
-  end;
+  -- Even structurally valid rows cannot be authorized, edited, or truncated.
+  perform pg_temp.a6_reject(format(
+    'update ff_private.ff_m4_result_observations set result_kind=%L where id=%L','played',p),
+    'Source snapshot history is append-only');
+  perform pg_temp.a6_reject(format(
+    'update ff_private.ff_m4_result_candidate_settlements set scoring_authorized=true where id=%L',s3),
+    'Source snapshot history is append-only');
+  perform pg_temp.a6_reject('delete from ff_private.ff_m4_result_candidate_settlements',
+    'Source snapshot history is append-only');
+  perform pg_temp.a6_reject('truncate ff_private.ff_m4_result_observations cascade',
+    'Source snapshot history is append-only');
 end;
 $m4$;
 rollback;
@@ -365,4 +453,4 @@ select 1 / case when
   and (select count(*) from ff_private.ff_m4_time_proofs)=0
   and (select count(*) from ff_private.ff_m4_shadow_entries)=0
 then 1 else 0 end as all_a6_synthetic_rows_rolled_back;
-\echo 'PASS: A6 candidate result evidence RLS, true clock, immutable lineage'
+\echo 'PASS: A6 UNKNOWN, independent official witnesses, dated KDK, blocked/corrected immutable revisions'
