@@ -132,7 +132,8 @@ create function pg_temp.a6_observe(
   p_issuer text,p_publisher text,p_ref text,p_status text,p_kind text,
   p_home integer,p_away integer,p_goals text[],p_tag text,p_run bigint,
   p_decision text default null,p_decision_digest text default null,
-  p_issued timestamptz default null,p_body_tag text default null
+  p_issued timestamptz default null,p_body_tag text default null,
+  p_context bytea default null,p_context_digest text default null
 ) returns uuid language plpgsql as $test$
 declare
   v_id uuid;
@@ -145,7 +146,8 @@ begin
     source_issued_at,github_run_id,github_run_attempt,code_sha,fixture_key,kickoff_at,
     home_club_key,away_club_key,status,result_kind,home_goals,away_goals,
     counted_goal_clubs,kdk_scope_from,kdk_scope_through,kdk_scope_sha256,
-    kdk_decision_ref,kdk_decision_sha256,observation_revision,recorded_at
+    kdk_decision_ref,kdk_decision_sha256,observation_revision,recorded_at,
+    source_context_manifest,source_context_manifest_sha256
   )
   select c.id,p_issuer,p_publisher,p_ref,
     case when p_issuer='rfs_kdk' then 'https://www.rfs.ru/archive?tags=16'
@@ -159,7 +161,8 @@ begin
     case when p_issuer='rfs_kdk' then c.kickoff_at end,
     case when p_issuer='rfs_kdk' then v_issued end,
     case when p_issuer='rfs_kdk' then encode(sha256(convert_to('scope:'||p_tag,'UTF8')),'hex') end,
-    p_decision,p_decision_digest,999,'2010-01-01'::timestamptz
+    p_decision,p_decision_digest,999,'2010-01-01'::timestamptz,
+    p_context,coalesce(p_context_digest,encode(sha256(p_context),'hex'))
   from ff_private.ff_m4_future_captures c
   where c.fixture_key=concat('rpl-','synthetic-a6-result-1') returning id into v_id;
   return v_id;
@@ -193,6 +196,41 @@ begin
 end;
 $test$;
 
+-- Synthetic JSONB bytes test SQL structure, never canonical encoding or JWT.
+create function pg_temp.a6_context(
+  p_primary uuid,p_other uuid,p_reports jsonb,p_receipt text,p_route text
+) returns jsonb language sql as $test$
+  select jsonb_build_object(
+    'schema','ff-m4-official-witness-context-v1',
+    'fixture',jsonb_build_object('fixtureKey',c.fixture_key,'sourceMatchId',t.source_match_id,
+      'competition',c.competition,'season',c.season,'round',15,'kickoffAt',c.kickoff_at,
+      'homeClub',c.home_club_key,'awayClub',c.away_club_key),
+    'providerClaims',jsonb_build_array(
+      jsonb_build_object('issuer',p.source_issuer,'sourceFixtureRef',p.source_fixture_ref,
+        'bodySha256',p.source_response_sha256,'observedAt',p.source_issued_at,
+        'status',p.status,'resultKind',p.result_kind,'score',array[p.home_goals,p.away_goals]),
+      jsonb_build_object('issuer',m.source_issuer,'sourceFixtureRef',m.source_fixture_ref,
+        'bodySha256',m.source_response_sha256,'observedAt',m.source_issued_at,
+        'status',m.status,'resultKind',m.result_kind,'score',array[m.home_goals,m.away_goals])),
+    'evidenceRoute',p_route,'witnessClaims',p_reports,'receiptPublisher',p_receipt)
+  from ff_private.ff_m4_result_observations p
+  join ff_private.ff_m4_result_observations m on m.capture_id=p.capture_id
+  join ff_private.ff_m4_future_captures c on c.id=p.capture_id
+  join ff_private.ff_m4_time_proofs t on t.capture_id=c.id
+  where p.id=p_primary and m.id=p_other;
+$test$;
+
+create function pg_temp.a6_context_report(
+  p_publisher text,p_ref text,p_body_tag text,p_observed timestamptz
+) returns jsonb language sql as $test$
+  select jsonb_build_object('publisher',p_publisher,
+    'locator','https://synthetic.invalid/'||p_ref,
+    'bodySha256',encode(sha256(convert_to('synthetic-body:'||p_body_tag,'UTF8')),'hex'),
+    'observedAt',p_observed,'score',array[2,1],
+    'events',jsonb_build_array('KICKOFF','HALF_TIME','SECOND_HALF','FULL_TIME'),
+    'goals','[["zenit",1,0],["rubin",1,1],["zenit",2,1]]'::jsonb);
+$test$;
+
 -- A test must fail if the command succeeds, or if it fails for an unrelated
 -- reason. Constant synthetic SQL only; never callable from production roles.
 create function pg_temp.a6_reject(p_command text,p_expected text)
@@ -215,6 +253,8 @@ declare
   p uuid; m uuid; w1 uuid; w2 uuid; k uuid; s1 uuid; s2 uuid; s3 uuid; s4 uuid;
   pending uuid; conflicting uuid; wrong_goals uuid; old_k uuid; new_p uuid;
   protocol uuid; v_abstain uuid; v_cap uuid; v_entry uuid;
+  v_context jsonb; v_reports jsonb; v_bytes bytea; v_observed timestamptz;
+  v_trial uuid;
   candidate_state constant text := 'PRIVATE_RESULT_CANDIDATE_UNATTESTED';
   blocked_state constant text := 'PRIVATE_RESULT_BLOCKED';
   consistent_error constant text := 'M4 candidate lacks consistent official/KDK evidence';
@@ -373,7 +413,99 @@ begin
   k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
     'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-corrected',989876516,
     'https://www.rfs.ru/news/999999999',repeat('a',64));
-  -- The league-protocol route works only as an UNATTESTED structural candidate.
+  -- Mixed raw/context witnesses and different complete contexts are refused.
+  v_observed := clock_timestamp()-interval '2 seconds';
+  v_reports := jsonb_build_array(
+    pg_temp.a6_context_report('zenit','club-synthetic-home','w1',v_observed),
+    pg_temp.a6_context_report('rubin','club-synthetic-away','context-away',v_observed));
+  v_context := pg_temp.a6_context(new_p,m,v_reports,'rubin','OPPOSING_CLUB_REPORTS');
+  w2 := pg_temp.a6_observe('official_club','rubin','club-synthetic-away',
+    'on_field_full_time_claim','played',2,1,array['zenit','rubin','zenit'],
+    'context-away',989876530,null,null,null,null,convert_to(v_context::text,'UTF8'));
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-mixed',989876531,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(3,%L,%L,%L,%L,%L,%L)',s2,new_p,m,w1,w2,k),
+    'M4 context manifest batch incomplete');
+
+  v_reports := jsonb_build_array(
+    pg_temp.a6_context_report('zenit','club-synthetic-home','context-home',v_observed),
+    pg_temp.a6_context_report('rubin','club-synthetic-away','context-away',v_observed));
+  v_context := pg_temp.a6_context(new_p,m,v_reports,'zenit','OPPOSING_CLUB_REPORTS');
+  w1 := pg_temp.a6_observe('official_club','zenit','club-synthetic-home',
+    'on_field_full_time_claim','played',2,1,array['zenit','rubin','zenit'],
+    'context-home',989876532,null,null,null,null,convert_to(v_context::text,'UTF8'));
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-context-mismatch',989876533,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(3,%L,%L,%L,%L,%L,%L)',s2,new_p,m,w1,w2,k),
+    'M4 context manifest batch mismatch');
+
+  v_context := jsonb_set(v_context,'{receiptPublisher}',to_jsonb('rubin'::text));
+  w2 := pg_temp.a6_observe('official_club','rubin','club-synthetic-away',
+    'on_field_full_time_claim','played',2,1,array['zenit','rubin','zenit'],
+    'context-away-rebound',989876534,null,null,null,'context-away',
+    convert_to(v_context::text,'UTF8'));
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-context-pair',989876535,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
+  -- The earlier consistent raw-only protocol must not be used to bypass
+  -- retained contextual evidence, even though all score claims agree.
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(3,%L,%L,%L,%L,null,%L)',s2,new_p,m,protocol,k),
+    'M4 context manifest downgrade refused');
+  begin
+    v_trial := pg_temp.a6_candidate(3,s2,new_p,m,w1,w2,k);
+    if v_trial is null then raise exception 'Context pair not retained'; end if;
+    raise exception using errcode='ZX001',message='Rollback synthetic context pair trial';
+  exception when sqlstate 'ZX001' then null;
+  end;
+
+  v_observed := clock_timestamp()-interval '2 seconds';
+  v_context := pg_temp.a6_context(new_p,m,jsonb_build_array(
+    pg_temp.a6_context_report('rpl_protocol:999999','999999','context-protocol',v_observed)),
+    'rpl_protocol:999999','PROTOCOL_REFERENCE');
+  v_bytes := convert_to(v_context::text,'UTF8');
+  perform pg_temp.a6_reject(format(
+    $q$select pg_temp.a6_observe('rpl_protocol','rpl','999999','on_field_full_time_claim',
+      'played',2,1,array['zenit','rubin','zenit'],'context-protocol',989876536,
+      null,null,null,null,%L::bytea,%L)$q$,v_bytes,repeat('f',64)),'23514');
+  perform pg_temp.a6_reject(format(
+    $q$select pg_temp.a6_observe('rpl_protocol','rpl','999999','on_field_full_time_claim',
+      'played',2,1,array['zenit','rubin','zenit'],'context-protocol',989876536,
+      null,null,null,null,%L::bytea)$q$,
+    convert_to(jsonb_set(v_context,'{fixture,sourceMatchId}',to_jsonb('wrong'::text))::text,'UTF8')),
+    'M4 context manifest identity mismatch');
+  perform pg_temp.a6_reject(format(
+    $q$select pg_temp.a6_observe('rpl_protocol','rpl','999999','on_field_full_time_claim',
+      'played',2,1,array['zenit','rubin','zenit'],'context-protocol',989876536,
+      null,null,null,null,%L::bytea)$q$,
+    convert_to(jsonb_set(v_context,'{witnessClaims,0,goals}','[]'::jsonb)::text,'UTF8')),
+    'M4 context manifest witness mismatch');
+  protocol := pg_temp.a6_observe('rpl_protocol','rpl','999999',
+    'on_field_full_time_claim','played',2,1,array['zenit','rubin','zenit'],
+    'context-protocol-wrong-provider',989876536,null,null,null,'context-protocol',
+    convert_to(jsonb_set(v_context,'{providerClaims,0,bodySha256}',
+      to_jsonb(repeat('e',64)))::text,'UTF8'));
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-context-provider',989876537,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(3,%L,%L,%L,%L,null,%L)',s2,new_p,m,protocol,k),
+    'M4 context manifest provider mismatch');
+  protocol := pg_temp.a6_observe('rpl_protocol','rpl','999999',
+    'on_field_full_time_claim','played',2,1,array['zenit','rubin','zenit'],
+    'context-protocol-corrected',989876538,null,null,null,'context-protocol',v_bytes);
+  if not exists (select 1 from ff_private.ff_m4_result_observations o
+    where o.id=protocol and o.source_context_manifest=v_bytes and
+      o.source_context_manifest_sha256=encode(sha256(v_bytes),'hex') and not o.result_attested) then
+    raise exception 'Exact context manifest bytes not retained';
+  end if;
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
+    'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-context-final',989876539,
+    'https://www.rfs.ru/news/999999999',repeat('a',64));
   s3 := pg_temp.a6_candidate(3,s2,new_p,m,protocol,null,k);
   if (select count(*) from ff_private.ff_m4_result_candidate_settlements)<>3 or
      not exists (select 1 from ff_private.ff_m4_result_candidate_settlements

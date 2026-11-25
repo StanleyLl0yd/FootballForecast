@@ -45,8 +45,9 @@ publisher signature or original first-serving time.
 | Ledger | Verify exact A5 capture and latest eligible FORECAST, lock capture, append observations and blocked/unattested candidate revisions, verify returned cutoff and lineage. All flags false; separate approval for migration and any live write. |
 
 The canonical manifest format is a proposal, not a live receipt format.
-SQL 0017 currently stores raw-body hashes and tokens, not the canonical
-manifest itself: a reviewed private storage and retrieval design is still
-required. Prior aggregate digests cannot reconstruct the original bytes or
+The [private context retention proposal](M4_A6_CONTEXT_RECEIPT_RETENTION.md)
+extends unapplied SQL 0017 with exact canonical manifest bytes, digest and
+structural linkage. Reviewed permitted raw-body storage, retrieval and
+historical verification are still required. Prior aggregate digests cannot reconstruct the original bytes or
 per-source tokens. No changes to OIDC workflow allowlist or production
 database, no new fetching code, no actual settlement/scoring. A6–A8 OPEN.
