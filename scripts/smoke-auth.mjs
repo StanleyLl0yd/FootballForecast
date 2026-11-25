@@ -134,6 +134,11 @@ async function testServer(name, overrides) {
     assert.ok([303,307,308].includes(research.status),
       `${name}: owner research console must redirect before rendering`);
     assert.equal(new URL(research.headers.get('location'),origin).pathname, '/setup');
+    const prospective = await get('/admin/prospective');
+    assert.ok([303,307,308].includes(prospective.status),
+      `${name}: M4 owner console must redirect before rendering`);
+    assert.equal(new URL(prospective.headers.get('location'),origin).pathname, '/setup');
+    assert.doesNotMatch(await prospective.text(), /Приватный проспективный контроль|FORECAST:/);
     const callback = await get('/auth/callback?code=ci-synthetic');
     assert.equal(callback.status, 503);
     assert.deepEqual(await callback.json(), {error: 'setup_required'});
