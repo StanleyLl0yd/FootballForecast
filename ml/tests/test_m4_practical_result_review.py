@@ -259,3 +259,136 @@ def test_official_witness_binding_inherits_structural_denials():
     ):
         with pytest.raises(DataError):
             _bindings((f, a, b, (bad, w[1]), bodies))
+
+
+@pytest.fixture(scope="module")
+def _receipt_signer():
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from json import loads
+    from jwt.algorithms import RSAAlgorithm
+
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    jwk = loads(RSAAlgorithm.to_jwk(key.public_key()))
+    jwk.update(kid="synthetic-witness-context", alg="RS256", use="sig")
+    return key, jwk
+
+
+def _signed_context_case(signer, *, protocol=False):
+    import jwt
+    from football_forecast.research.m4_github_time_attestation import (
+        ACTOR, ACTOR_ID, CLUB_REPORT_WORKFLOW, ENVIRONMENT, ISSUER, REPO, REPO_ID,
+    )
+
+    key, jwk = signer
+    now = datetime.now(UTC).replace(microsecond=0)
+    f, a, b, w, bodies = _binding_case(protocol=protocol)
+    w = tuple(replace(report, observed_at=now - timedelta(seconds=2)) for report in w)
+    case = (f, a, b, w, bodies)
+    env = {
+        "GITHUB_REPOSITORY": REPO, "GITHUB_REF": "refs/heads/main",
+        "GITHUB_ACTOR": ACTOR, "GITHUB_EVENT_NAME": "issue_comment",
+        "GITHUB_SHA": "a" * 40, "GITHUB_RUN_ID": "988876512",
+        "GITHUB_RUN_ATTEMPT": "1",
+    }
+
+    def sign(audience, **changes):
+        stamp = int(now.timestamp())
+        claims = {
+            "iss": ISSUER, "aud": audience,
+            "sub": f"repo:{REPO}:environment:{ENVIRONMENT}",
+            "iat": stamp, "nbf": stamp, "exp": stamp + 300,
+            "jti": "synthetic-context-" + audience[-20:],
+            "repository": REPO, "repository_id": REPO_ID,
+            "actor": ACTOR, "actor_id": ACTOR_ID,
+            "ref": "refs/heads/main", "sha": env["GITHUB_SHA"],
+            "run_id": env["GITHUB_RUN_ID"], "run_attempt": env["GITHUB_RUN_ATTEMPT"],
+            "environment": ENVIRONMENT, "workflow_ref": CLUB_REPORT_WORKFLOW,
+            "event_name": env["GITHUB_EVENT_NAME"],
+        }
+        claims.update(changes)
+        return jwt.encode(
+            claims, key, algorithm="RS256", headers={"kid": jwk["kid"]},
+        )
+
+    bindings = _bindings(case, now)
+    tokens = tuple(sign(binding.audience) for binding in bindings)
+    return case, tokens, (jwk,), env, now, bindings, sign
+
+
+def _verify_context(case, tokens, keys, env, now):
+    from football_forecast.evaluation.m4_official_witness_binding import (
+        verify_official_witness_receipts,
+    )
+
+    return verify_official_witness_receipts(*case, tokens, keys, env, now)
+
+
+@pytest.mark.parametrize("protocol", [False, True])
+def test_official_context_receipts_verify_only_runner_commitments(_receipt_signer, protocol):
+    from hashlib import sha256
+
+    case, tokens, keys, env, now, bindings, _ = _signed_context_case(
+        _receipt_signer, protocol=protocol,
+    )
+    rows = _verify_context(case, tokens, keys, env, now)
+    assert len(rows) == len(tokens)
+    for row, token, binding in zip(rows, tokens, bindings, strict=True):
+        assert row.manifest_sha256 == binding.manifest_sha256
+        assert row.body_sha256 == binding.body_sha256
+        assert row.token_sha256 == sha256(token.encode("ascii")).hexdigest()
+        assert row.issued_at == now
+        assert row.github_digest_time_attested is True
+        _assert_no_authority(row)
+        assert token not in repr(row)
+        assert "signing_jwk_json" not in repr(row)
+
+
+def test_official_context_receipts_deny_raw_digest_tokens_and_replay(_receipt_signer):
+    from football_forecast.research.m4_github_time_attestation import POSTMATCH_WORKFLOW
+
+    case, tokens, keys, env, now, bindings, sign = _signed_context_case(_receipt_signer)
+    first, second = bindings
+    bad_batches = (
+        (), tokens[:1], (tokens[0], tokens[0]), tuple(reversed(tokens)),
+        (sign("ff-m4-2026-27-club-report-sha256-" + first.body_sha256), tokens[1]),
+        (sign(first.audience, workflow_ref=POSTMATCH_WORKFLOW), tokens[1]),
+        (sign(first.audience, run_attempt="2"), tokens[1]),
+        (sign(first.audience, sha="b" * 40), tokens[1]),
+        (sign(second.audience), tokens[1]),
+        ("invalid", tokens[1]), ("\u0442\u043e\u043a\u0435\u043d", tokens[1]),
+    )
+    for invalid in bad_batches:
+        with pytest.raises(DataError):
+            _verify_context(case, invalid, keys, env, now)
+    for changed in (
+        {**env, "GITHUB_RUN_ID": "988876513"},
+        {**env, "GITHUB_RUN_ATTEMPT": "2"},
+        {**env, "GITHUB_REF": "refs/heads/untrusted"},
+    ):
+        with pytest.raises(DataError):
+            _verify_context(case, tokens, keys, changed, now)
+
+
+def test_official_context_receipts_deny_tampering_and_stale_clocks(_receipt_signer):
+    case, tokens, keys, env, now, bindings, sign = _signed_context_case(_receipt_signer)
+    f, a, b, w, bodies = case
+    for changed in (
+        (f, a, b, w, (bodies[0] + b"x", bodies[1])),
+        (f, replace(a, source_response_sha256="f" * 64), b, w, bodies),
+        (f, a, b, (replace(w[0], observed_at=now - timedelta(seconds=1)), w[1]), bodies),
+    ):
+        with pytest.raises(DataError):
+            _verify_context(changed, tokens, keys, env, now)
+    with pytest.raises(DataError):
+        _verify_context(case, tokens, keys, env, now + timedelta(minutes=6))
+    # A correctly signed receipt that predates another claimed observation
+    # by one second is refused even within the shared verifier's clock skew.
+    before = int((now - timedelta(seconds=3)).timestamp())
+    early = sign(bindings[0].audience, iat=before, nbf=before)
+    with pytest.raises(DataError):
+        _verify_context(case, (early, tokens[1]), keys, env, now)
+    with pytest.raises(DataError):
+        _verify_context(case, tokens, (), env, now)
+    other_key = {**keys[0], "kid": "unknown"}
+    with pytest.raises(DataError):
+        _verify_context(case, tokens, (other_key,), env, now)

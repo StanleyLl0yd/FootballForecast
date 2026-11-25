@@ -2,11 +2,11 @@
 
 A digest-only receipt can be detached from the fixture, publisher, locator
 and parsed claims. This contract commits those inputs together for a future
-reviewed worker. No token issuance/verification, source authentication, parser,
+reviewed worker. No token issuance, source authentication, parser,
 fetch, persistence or permission to run that worker is introduced.
 """
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from hashlib import sha256
 from json import dumps
 
@@ -18,6 +18,10 @@ from football_forecast.evaluation.m4_club_report_review import (
 from football_forecast.evaluation.m4_result_admission import (
     FrozenFixtureIdentity,
     ProviderResultClaim,
+)
+from football_forecast.research.m4_github_time_attestation import (
+    CLUB_REPORT_WORKFLOW,
+    verify_github_time_jwt,
 )
 
 AUDIENCE_PREFIX = "ff-m4-2026-27-official-witness-context-v1-sha256-"
@@ -134,3 +138,97 @@ def prepare_official_witness_bindings(
             audience=AUDIENCE_PREFIX + digest,
         ))
     return tuple(bindings)
+
+
+MAX_WITNESS_AGE = timedelta(minutes=5)
+
+
+@dataclass(frozen=True, slots=True)
+class VerifiedOfficialWitnessReceipt:
+    """A runner commitment to untrusted context; never publisher attestation."""
+
+    manifest_sha256: str
+    body_sha256: str
+    token_sha256: str
+    issued_at: datetime
+    signing_jwk_json: str = field(repr=False)
+    github_digest_time_attested: bool = field(default=True, init=False)
+    publisher_authenticated: bool = field(default=False, init=False)
+    played_final_attested: bool = field(default=False, init=False)
+    kdk_clearance_attested: bool = field(default=False, init=False)
+    settlement_authorized: bool = field(default=False, init=False)
+    scoring_authorized: bool = field(default=False, init=False)
+    model_approved: bool = field(default=False, init=False)
+    publication_authorized: bool = field(default=False, init=False)
+    holdout_2025_26_read: bool = field(default=False, init=False)
+
+
+def verify_official_witness_receipts(
+    fixture: FrozenFixtureIdentity,
+    primary: ProviderResultClaim,
+    corroboration: ProviderResultClaim,
+    witnesses: tuple[OfficialReportClaim, ...],
+    bodies: tuple[bytes, ...],
+    tokens: tuple[str, ...],
+    trusted_github_jwks: tuple[dict, ...],
+    github_env: dict[str, str],
+    verified_at: datetime,
+) -> tuple[VerifiedOfficialWitnessReceipt, ...]:
+    """Recompute context and verify all positional receipts or refuse the batch.
+
+    This is a prospective verification contract for the existing owner club
+    workflow identity, not a new workflow or permission to issue tokens.
+    The currently deployed club probe issues raw-digest-only audiences;
+    those tokens are deliberately incompatible with this verifier.
+    Official bodies must all be freshly observed in the reviewed future run.
+    Earlier provider claims may be retained; their signatures, provenance
+    and parsing are NOT verified by this function. A later protected caller
+    must independently establish those facts and trusted GitHub JWKS.
+    No raw token, manifest or body is returned. No I/O or durable replay
+    ledger; cross-run token reuse fails the pinned identity check.
+    """
+    if (
+        type(verified_at) is not datetime
+        or verified_at.tzinfo != UTC
+        or type(tokens) is not tuple
+        or type(trusted_github_jwks) is not tuple
+        or type(github_env) is not dict
+    ):
+        raise DataError("M4-A6 official receipt inputs refused")
+    bindings = prepare_official_witness_bindings(
+        fixture, primary, corroboration, witnesses, bodies, verified_at,
+    )
+    if (
+        len(tokens) != len(bindings)
+        or any(type(token) is not str or not token.isascii() for token in tokens)
+        or len(set(tokens)) != len(tokens)
+        or any(
+            verified_at - report.observed_at > MAX_WITNESS_AGE
+            for report in witnesses
+        )
+    ):
+        raise DataError("M4-A6 official receipt batch or clock refused")
+    # Each audience commits the complete witness set and both provider
+    # claims. A receipt must not predate ANY claimed observation, even
+    # when its own body arrived earlier.
+    latest = max(
+        primary.observed_at, corroboration.observed_at,
+        *(report.observed_at for report in witnesses),
+    ).astimezone(UTC)
+    receipts = []
+    for binding, token in zip(bindings, tokens, strict=True):
+        issued, jwk = verify_github_time_jwt(
+            token, binding.audience, trusted_github_jwks, github_env,
+            latest, verified_at, workflow_ref=CLUB_REPORT_WORKFLOW,
+        )
+        issued_at = datetime.fromisoformat(issued.replace("Z", "+00:00"))
+        if not latest.replace(microsecond=0) <= issued_at <= verified_at:
+            raise DataError("M4-A6 official receipt issuance clock refused")
+        receipts.append(VerifiedOfficialWitnessReceipt(
+            manifest_sha256=binding.manifest_sha256,
+            body_sha256=binding.body_sha256,
+            token_sha256=sha256(token.encode("ascii")).hexdigest(),
+            issued_at=issued_at,
+            signing_jwk_json=jwk,
+        ))
+    return tuple(receipts)
