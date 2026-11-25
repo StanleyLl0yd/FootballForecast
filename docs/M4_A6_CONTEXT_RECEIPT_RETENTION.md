@@ -18,8 +18,10 @@ Protocol publisher label in the manifest is rpl_protocol:<source_fixture_ref>;
 the row publisher remains rpl. For a context-bound candidate both selected
 club witnesses must share the same JSON context except receiptPublisher.
 Mixed raw/context pairs and mismatching selected provider metadata fail.
-Raw-only structural candidates remain explicitly UNATTESTED, never an
-operational fallback. The future worker must require contextual receipts.
+Once any context is retained for a capture, a positive raw-only candidate
+is refused even through a different publisher/route. Raw-only structural
+candidates for captures with no retained context remain explicitly
+UNATTESTED, never an operational fallback. The future worker must require contextual receipts.
 SQL does not verify cryptography, canonical encoding, trusted key provenance,
 source authenticity, parsing, editorial independence or rights. The v1
 manifest commits provider claims/digests, not their exact JWTs or IDs.

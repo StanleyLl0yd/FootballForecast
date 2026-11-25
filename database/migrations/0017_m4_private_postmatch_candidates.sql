@@ -451,6 +451,12 @@ begin
   -- Never combine a context-bound witness with a raw-only peer or a
   -- different batch. Raw-only candidates remain UNATTESTED structural rows,
   -- not a permitted operational fallback for a future protected worker.
+  if v_official.source_context_manifest is null
+     and v_second.source_context_manifest is null
+     and exists (select 1 from ff_private.ff_m4_result_observations o
+       where o.capture_id=new.capture_id and o.source_context_manifest is not null) then
+    raise exception 'M4 context manifest downgrade refused';
+  end if;
   if v_official.source_context_manifest is not null
      or v_second.source_context_manifest is not null then
     if v_official.source_context_manifest is null

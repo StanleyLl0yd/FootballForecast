@@ -451,6 +451,11 @@ begin
   k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-reviewed',
     'kdk_reviewed_no_adverse_claim','unknown',null,null,null,'k-context-pair',989876535,
     'https://www.rfs.ru/news/999999999',repeat('a',64));
+  -- The earlier consistent raw-only protocol must not be used to bypass
+  -- retained contextual evidence, even though all score claims agree.
+  perform pg_temp.a6_reject(format(
+    'select pg_temp.a6_candidate(3,%L,%L,%L,%L,null,%L)',s2,new_p,m,protocol,k),
+    'M4 context manifest downgrade refused');
   begin
     v_trial := pg_temp.a6_candidate(3,s2,new_p,m,w1,w2,k);
     if v_trial is null then raise exception 'Context pair not retained'; end if;
