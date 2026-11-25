@@ -155,3 +155,107 @@ def test_two_sources_must_still_agree_and_technical_claim_refused():
     for invalid in (replace(a, result_kind="technical"), replace(a, away_goals=0)):
         with pytest.raises(DataError):
             _assess((f, invalid, b, w))
+
+
+# Context binding tests share the same synthetic structural claims above.
+def _binding_case(*, protocol=False):
+    from hashlib import sha256
+
+    f, a, b, w = _case(
+        "2026-11-22T13:30:00Z" if protocol else "2026-11-21T12:15:00Z",
+        protocol=protocol,
+    )
+    bodies = tuple(
+        ("synthetic official witness " + str(i)).encode() * 40
+        for i in range(len(w))
+    )
+    w = tuple(
+        replace(report, response_sha256=sha256(body).hexdigest())
+        for report, body in zip(w, bodies, strict=True)
+    )
+    return f, a, b, w, bodies
+
+
+def _bindings(case=None, inspected_at=NOW):
+    from football_forecast.evaluation.m4_official_witness_binding import (
+        prepare_official_witness_bindings,
+    )
+
+    return prepare_official_witness_bindings(
+        *(_binding_case() if case is None else case), inspected_at,
+    )
+
+
+@pytest.mark.parametrize("protocol", [False, True])
+def test_official_witness_context_binding_is_canonical_and_unattested(protocol):
+    from hashlib import sha256
+    from json import loads
+
+    case = _binding_case(protocol=protocol)
+    f, a, b, witnesses, bodies = case
+    rows = _bindings(case)
+    assert len(rows) == len(witnesses)
+    assert len({row.audience for row in rows}) == len(rows)
+    for row, report in zip(rows, witnesses, strict=True):
+        assert row.manifest_sha256 == sha256(row.manifest_bytes).hexdigest()
+        assert row.audience.endswith(row.manifest_sha256)
+        assert row.body_sha256 == report.response_sha256
+        doc = loads(row.manifest_bytes)
+        assert doc["fixture"]["sourceMatchId"] == f.source_match_id
+        assert doc["fixture"]["fixtureKey"] == f.fixture_key
+        assert doc["receiptPublisher"] == report.publisher
+        assert len(doc["witnessClaims"]) == len(witnesses)
+        assert doc["providerClaims"][0]["resultKind"] == "unknown"
+        assert doc["providerClaims"][1]["resultKind"] == "unknown"
+        assert row.github_digest_time_attested is False
+        _assert_no_authority(row)
+        assert "manifest_bytes" not in repr(row)
+    assert rows == _bindings(case, NOW + timedelta(seconds=1))
+    assert rows == tuple(reversed(_bindings(
+        (f, a, b, tuple(reversed(witnesses)), tuple(reversed(bodies))),
+    )))
+
+
+def test_official_witness_binding_refuses_missing_swapped_or_changed_bytes():
+    f, a, b, w, bodies = _binding_case()
+    for invalid in (
+        (), bodies[:1], tuple(reversed(bodies)),
+        (bodies[0] + b"x", bodies[1]),
+        (bytearray(bodies[0]), bodies[1]),
+        (b"", bodies[1]),
+    ):
+        with pytest.raises(DataError):
+            _bindings((f, a, b, w, invalid))
+
+
+def test_official_witness_binding_changes_with_valid_context_even_for_same_bytes():
+    f, a, b, w, bodies = _binding_case()
+    original = _bindings((f, a, b, w, bodies))
+    # Same body digests with a different claimed observation time, A5 identity
+    # or provider digest must produce a different future token audience.
+    changes = (
+        (f, a, b, (
+            replace(w[0], observed_at=w[0].observed_at + timedelta(seconds=1)), w[1],
+        ), bodies),
+        (
+            replace(f, source_match_id="synthetic:other"),
+            replace(a, source_fixture_ref="synthetic:other"), b, w, bodies,
+        ),
+        (f, replace(a, source_response_sha256="e" * 64), b, w, bodies),
+    )
+    for case in changes:
+        revised = _bindings(case)
+        assert all(x.audience != y.audience for x, y in zip(original, revised, strict=True))
+        assert all(x.body_sha256 == y.body_sha256 for x, y in zip(original, revised, strict=True))
+
+
+def test_official_witness_binding_inherits_structural_denials():
+    f, a, b, w, bodies = _binding_case()
+    for bad in (
+        replace(w[0], publisher="untrusted"),
+        replace(w[0], url="https://synthetic.invalid/other"),
+        replace(w[0], events=("KICKOFF", "FULL_TIME")),
+        replace(w[0], goals=()),
+    ):
+        with pytest.raises(DataError):
+            _bindings((f, a, b, (bad, w[1]), bodies))
