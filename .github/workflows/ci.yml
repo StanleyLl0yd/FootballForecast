@@ -166,6 +166,8 @@ jobs:
         run: |
           bash -n scripts/m4-private-ledger-concurrency-ci.sh
           bash scripts/m4-private-ledger-concurrency-ci.sh "${{ job.services.postgres.id }}"
+          bash -n scripts/m4-result-evidence-concurrency-ci.sh
+          bash scripts/m4-result-evidence-concurrency-ci.sh "${{ job.services.postgres.id }}"
 
 
   web:
