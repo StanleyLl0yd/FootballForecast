@@ -231,6 +231,7 @@ def verify_github_time_jwt(
     verified = verified_at.timestamp()
     if (not_before > issued + 5 or expires <= issued or expires > issued + 900
             or issued + 5 < observed or issued > verified + 5
+            or not_before > verified + 5 or expires <= verified - 5
             or verified - issued > MAX_PROOF_AGE):
         _deny()
     return datetime.fromtimestamp(issued, UTC).strftime("%Y-%m-%dT%H:%M:%SZ"), dumps(

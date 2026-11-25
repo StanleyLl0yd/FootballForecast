@@ -36,7 +36,7 @@ size/expiry policy, no public URLs, overwrites, body/JWT logs or public
 artifacts. No such store is authorized here. Missing bytes make independent
 review unavailable, never implicitly valid.
 
-The live verifier checks current JWT expiry. Historical verification needs
+The live verifier checks current JWT expiry. See the [historical receipt trust boundary](M4_A6_HISTORICAL_RECEIPT_VERIFICATION.md). Historical verification needs
 a separate reviewed path anchored to immutable original verification time
 and trusted archived GitHub key provenance, not an option disabling expiry
 for fresh evidence. A stored JWK or caller clock is not independently trusted.

@@ -185,3 +185,30 @@ def test_club_report_workflow_identity_is_separate_and_pinned():
     assert "m4-owner-club-report-digests.yml@refs/heads/main" in (
         CLUB_REPORT_WORKFLOW
     )
+
+def test_expired_token_cannot_be_revived_by_historical_caller_clock():
+    past = NOW - timedelta(hours=1)
+    secs = int(past.timestamp())
+    token, keys = signed_case(changes={
+        "iat": secs, "nbf": secs, "exp": secs + 300,
+    })
+    with pytest.raises(DataError):
+        validate(token, keys, observed=past - timedelta(seconds=2),
+                 verified=past + timedelta(seconds=2))
+
+
+def test_receipt_must_be_valid_at_supplied_verification_time_as_well_as_now():
+    token, keys = signed_case(changes={"exp": int(NOW.timestamp()) + 60})
+    with pytest.raises(DataError):
+        validate(token, keys, verified=NOW + timedelta(seconds=70))
+
+
+def test_not_before_must_also_cover_supplied_verification_time():
+    issued = NOW - timedelta(seconds=10)
+    secs = int(issued.timestamp())
+    token, keys = signed_case(changes={
+        "iat": secs, "nbf": secs + 5, "exp": secs + 300,
+    })
+    with pytest.raises(DataError):
+        validate(token, keys, observed=issued - timedelta(seconds=2),
+                 verified=issued - timedelta(seconds=1))
