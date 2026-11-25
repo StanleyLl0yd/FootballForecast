@@ -234,8 +234,13 @@ def test_official_witness_binding_changes_with_valid_context_even_for_same_bytes
     # Same body digests with a different claimed observation time, A5 identity
     # or provider digest must produce a different future token audience.
     changes = (
-        (f, a, b, (replace(w[0], observed_at=w[0].observed_at + timedelta(seconds=1)), w[1]), bodies),
-        (replace(f, source_match_id="synthetic:other"), replace(a, source_fixture_ref="synthetic:other"), b, w, bodies),
+        (f, a, b, (
+            replace(w[0], observed_at=w[0].observed_at + timedelta(seconds=1)), w[1],
+        ), bodies),
+        (
+            replace(f, source_match_id="synthetic:other"),
+            replace(a, source_fixture_ref="synthetic:other"), b, w, bodies,
+        ),
         (f, replace(a, source_response_sha256="e" * 64), b, w, bodies),
     )
     for case in changes:
