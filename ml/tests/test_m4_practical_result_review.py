@@ -263,8 +263,9 @@ def test_official_witness_binding_inherits_structural_denials():
 
 @pytest.fixture(scope="module")
 def _receipt_signer():
-    from cryptography.hazmat.primitives.asymmetric import rsa
     from json import loads
+
+    from cryptography.hazmat.primitives.asymmetric import rsa
     from jwt.algorithms import RSAAlgorithm
 
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -275,8 +276,15 @@ def _receipt_signer():
 
 def _signed_context_case(signer, *, protocol=False):
     import jwt
+
     from football_forecast.research.m4_github_time_attestation import (
-        ACTOR, ACTOR_ID, CLUB_REPORT_WORKFLOW, ENVIRONMENT, ISSUER, REPO, REPO_ID,
+        ACTOR,
+        ACTOR_ID,
+        CLUB_REPORT_WORKFLOW,
+        ENVIRONMENT,
+        ISSUER,
+        REPO,
+        REPO_ID,
     )
 
     key, jwk = signer
