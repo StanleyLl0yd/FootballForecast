@@ -133,7 +133,8 @@ create function pg_temp.a6_observe(
   p_home integer,p_away integer,p_goals text[],p_tag text,p_run bigint,
   p_decision text default null,p_decision_digest text default null,
   p_issued timestamptz default null,p_body_tag text default null,
-  p_context bytea default null,p_context_digest text default null
+  p_context bytea default null,p_context_digest text default null,
+  p_kdk_manifest bytea default null,p_kdk_digest text default null
 ) returns uuid language plpgsql as $test$
 declare
   v_id uuid;
@@ -147,7 +148,7 @@ begin
     home_club_key,away_club_key,status,result_kind,home_goals,away_goals,
     counted_goal_clubs,kdk_scope_from,kdk_scope_through,kdk_scope_sha256,
     kdk_decision_ref,kdk_decision_sha256,observation_revision,recorded_at,
-    source_context_manifest,source_context_manifest_sha256
+    source_context_manifest,source_context_manifest_sha256,kdk_scope_manifest
   )
   select c.id,p_issuer,p_publisher,p_ref,
     case when p_issuer='rfs_kdk' then 'https://www.rfs.ru/archive?tags=16'
@@ -160,9 +161,10 @@ begin
     c.home_club_key,c.away_club_key,p_status,p_kind,p_home,p_away,p_goals,
     case when p_issuer='rfs_kdk' then c.kickoff_at end,
     case when p_issuer='rfs_kdk' then v_issued end,
-    case when p_issuer='rfs_kdk' then encode(sha256(convert_to('scope:'||p_tag,'UTF8')),'hex') end,
+    case when p_issuer='rfs_kdk' then coalesce(p_kdk_digest,
+      encode(sha256(p_kdk_manifest),'hex'),encode(sha256(convert_to('scope:'||p_tag,'UTF8')),'hex')) end,
     p_decision,p_decision_digest,999,'2010-01-01'::timestamptz,
-    p_context,coalesce(p_context_digest,encode(sha256(p_context),'hex'))
+    p_context,coalesce(p_context_digest,encode(sha256(p_context),'hex')),p_kdk_manifest
   from ff_private.ff_m4_future_captures c
   where c.fixture_key=concat('rpl-','synthetic-a6-result-1') returning id into v_id;
   return v_id;
@@ -562,6 +564,93 @@ begin
     'M4 candidate lacks valid pregame FORECAST or evidence');
   perform pg_temp.a6_reject(format(
     'select pg_temp.a6_candidate(5,%L,%L,%L,%L,null,%L)',s4,new_p,m,protocol,k),consistent_error);
+
+  -- V1 scope manifests are incomplete: exact bytes, never clearance.
+  v_observed := clock_timestamp()-interval '1 second';
+  select jsonb_build_object('schema','ff-m4-kdk-scope-v1',
+    'fixture',jsonb_build_object('fixtureKey',c.fixture_key,'sourceMatchId',t.source_match_id,
+      'competition',c.competition,'season',c.season,'round',15,'kickoffAt',c.kickoff_at,
+      'homeClub',c.home_club_key,'awayClub',c.away_club_key),
+    'scopeFrom',c.kickoff_at,'scopeThrough',v_observed,
+    'latestEvidenceAt',v_observed,'inspectedAt',v_observed,
+    'knownPendingAgenda',false,'scopeComplete',false,
+    'classification','PRIVATE_KDK_SCOPE_UNREVIEWED',
+    'documents',jsonb_build_array(jsonb_build_object('kind','ARCHIVE',
+      'locator','https://www.rfs.ru/archive?tags=16',
+      'bodySha256',encode(sha256(convert_to('synthetic-body:kdk-v1','UTF8')),'hex'),
+      'observedAt',v_observed,'issuedAt',null,'disposition',null,'fixtureKey',null)))
+    into v_context from ff_private.ff_m4_future_captures c
+    join ff_private.ff_m4_time_proofs t on t.capture_id=c.id
+    where c.id=v_cap;
+  v_bytes := convert_to(v_context::text,'UTF8');
+  perform pg_temp.a6_reject(format(
+    $q$select pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-v1','kdk_ambiguous','unknown',
+      null,null,null,'kdk-v1',989876540,null,null,%L::timestamptz,null,null,null,%L::bytea,%L)$q$,
+    v_observed,v_bytes,repeat('f',64)),'23514');
+  perform pg_temp.a6_reject(format(
+    $q$select pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-v1','kdk_ambiguous','unknown',
+      null,null,null,'kdk-v1',989876540,null,null,%L::timestamptz,null,null,null,%L::bytea)$q$,
+    v_observed,convert_to(jsonb_set(v_context,'{scopeComplete}','true'::jsonb)::text,'UTF8')),
+    'M4 KDK scope manifest identity or clock mismatch');
+  perform pg_temp.a6_reject(format(
+    $q$select pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-v1','kdk_ambiguous','unknown',
+      null,null,null,'kdk-v1',989876540,null,null,%L::timestamptz,null,null,null,%L::bytea)$q$,
+    v_observed,convert_to(jsonb_set(v_context,'{documents,0,bodySha256}',
+       to_jsonb(repeat('f',64)))::text,'UTF8')),
+    'M4 KDK scope manifest archive mismatch');
+  perform pg_temp.a6_reject(format(
+    $q$select pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-v1','kdk_pending','unknown',
+      null,null,null,'kdk-v1',989876540,null,null,%L::timestamptz,null,null,null,%L::bytea)$q$,
+    v_observed,v_bytes),'M4 KDK scope manifest classification mismatch');
+  perform pg_temp.a6_reject(format(
+    $q$select pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-v1','kdk_reviewed_no_adverse_claim','unknown',
+      null,null,null,'kdk-v1',989876540,null,null,%L::timestamptz,null,null,null,%L::bytea)$q$,
+    v_observed,v_bytes),'M4 KDK scope manifest clearance or downgrade refused');
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-v1','kdk_ambiguous','unknown',
+    null,null,null,'kdk-v1',989876540,null,null,v_observed,null,null,null,v_bytes);
+  if not exists (select 1 from ff_private.ff_m4_result_observations o
+    where o.id=k and o.kdk_scope_manifest=v_bytes
+      and o.kdk_scope_sha256=encode(sha256(v_bytes),'hex') and not o.result_attested) then
+    raise exception 'Exact KDK scope manifest bytes not retained';
+  end if;
+  perform pg_temp.a6_reject($q$select pg_temp.a6_observe(
+    'rfs_kdk','rfs','scope-synthetic-reviewed','kdk_reviewed_no_adverse_claim','unknown',
+    null,null,null,'kdk-v1-downgrade',989876541,'https://www.rfs.ru/news/999999996',
+    repeat('d',64))$q$,'M4 KDK scope manifest clearance or downgrade refused');
+
+  -- Keep adverse disposition linkage explicit; a different decision hash or
+  -- a duplicate document cannot stand in for the selected adverse decision.
+  v_observed := clock_timestamp()-interval '1 second';
+  v_reports := jsonb_build_array(
+    jsonb_set(v_context->'documents'->0,'{observedAt}',to_jsonb(v_observed)),
+    jsonb_build_object('kind','DECISION','locator','https://www.rfs.ru/news/999999995',
+      'bodySha256',repeat('e',64),'observedAt',v_observed,
+      'issuedAt',v_observed,'disposition','ADVERSE',
+      'fixtureKey',v_context#>>'{fixture,fixtureKey}'));
+  v_context := v_context || jsonb_build_object(
+    'scopeThrough',v_observed,'latestEvidenceAt',v_observed,'inspectedAt',v_observed,
+    'documents',v_reports,'classification','PRIVATE_KDK_ADVERSE_CLAIM_BLOCKED');
+  v_bytes := convert_to(v_context::text,'UTF8');
+  perform pg_temp.a6_reject(format(
+    $q$select pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-v1','kdk_adverse','unknown',
+      null,null,null,'kdk-v1-adverse',989876542,'https://www.rfs.ru/news/999999995',
+      %L,%L::timestamptz,'kdk-v1',null,null,%L::bytea)$q$,
+    repeat('f',64),v_observed,v_bytes),'M4 KDK scope manifest required document missing');
+  perform pg_temp.a6_reject(format(
+    $q$select pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-v1','kdk_adverse','unknown',
+      null,null,null,'kdk-v1-adverse',989876542,'https://www.rfs.ru/news/999999995',
+      %L,%L::timestamptz,'kdk-v1',null,null,%L::bytea)$q$,
+    repeat('e',64),v_observed,convert_to(jsonb_set(v_context,'{documents}',
+      v_reports || jsonb_build_array(v_reports->1))::text,'UTF8')),
+    'M4 KDK scope manifest duplicate or missing documents');
+  k := pg_temp.a6_observe('rfs_kdk','rfs','scope-synthetic-v1','kdk_adverse','unknown',
+    null,null,null,'kdk-v1-adverse',989876542,'https://www.rfs.ru/news/999999995',
+    repeat('e',64),v_observed,'kdk-v1',null,null,v_bytes);
+  if not exists (select 1 from ff_private.ff_m4_result_observations o
+    where o.id=k and o.status='kdk_adverse' and o.kdk_scope_manifest=v_bytes
+      and o.kdk_decision_sha256=repeat('e',64) and not o.result_attested) then
+    raise exception 'Adverse KDK scope decision linkage not retained';
+  end if;
 
   -- Even structurally valid rows cannot be authorized, edited, or truncated.
   perform pg_temp.a6_reject(format(

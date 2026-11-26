@@ -49,6 +49,8 @@ create table ff_private.ff_m4_result_observations (
   kdk_scope_from timestamptz,
   kdk_scope_through timestamptz,
   kdk_scope_sha256 text check (kdk_scope_sha256 ~ '^[a-f0-9]{64}$'),
+  -- Exact separate candidate-only KDK scope bytes; never a publisher body.
+  kdk_scope_manifest bytea,
   kdk_decision_ref text check (
     kdk_decision_ref ~ '^https://www[.]rfs[.]ru/news/[0-9]+$' and
     kdk_decision_ref <> 'https://www.rfs.ru/news/225644'),
@@ -66,6 +68,11 @@ create table ff_private.ff_m4_result_observations (
     source_context_manifest_sha256 ~ '^[a-f0-9]{64}$' and
     source_context_manifest_sha256=encode(sha256(source_context_manifest),'hex'))),
   check ((kdk_decision_ref is null) = (kdk_decision_sha256 is null)),
+  check (kdk_scope_manifest is null or (
+    source_issuer='rfs_kdk' and status in ('kdk_pending','kdk_ambiguous','kdk_adverse') and
+    octet_length(kdk_scope_manifest) between 2 and 32768 and
+    kdk_scope_sha256 is not null and
+    kdk_scope_sha256=encode(sha256(kdk_scope_manifest),'hex'))),
   check (
     (source_issuer='openfoot' and source_publisher='openfoot' and
      home_goals is not null and counted_goal_clubs is null and
@@ -161,6 +168,19 @@ declare
   v_expected_goals jsonb;
   v_receipt_publisher text;
   v_observed timestamptz;
+  v_kdk_manifest jsonb;
+  v_doc jsonb;
+  v_inspected timestamptz;
+  v_latest timestamptz;
+  v_known_pending boolean;
+  v_archive_count integer := 0;
+  v_agenda_count integer := 0;
+  v_has_adverse boolean := false;
+  v_has_ambiguous boolean := false;
+  v_has_pending boolean := false;
+  v_has_decision_link boolean := false;
+  v_classification text;
+  v_expected_status text;
 begin
   -- Both appenders serialize on the immutable capture row. At READ COMMITTED
   -- subsequent queries in these volatile trigger functions see committed
@@ -293,6 +313,121 @@ begin
     select * into v_prior_kdk from ff_private.ff_m4_result_observations
       where capture_id=new.capture_id and source_issuer='rfs_kdk'
       order by observation_revision desc limit 1;
+    -- V1 scope manifests are explicitly incomplete. They cannot clear KDK.
+    -- The existing capture lock prevents a later raw-only positive downgrade.
+    if new.status='kdk_reviewed_no_adverse_claim' and (
+       new.kdk_scope_manifest is not null or exists (
+         select 1 from ff_private.ff_m4_result_observations o
+         where o.capture_id=new.capture_id and o.kdk_scope_manifest is not null)) then
+      raise exception 'M4 KDK scope manifest clearance or downgrade refused';
+    end if;
+    if new.kdk_scope_manifest is not null then
+      if octet_length(new.kdk_scope_manifest) not between 2 and 32768 then
+        raise exception 'M4 KDK scope manifest size refused';
+      end if;
+      v_kdk_manifest := convert_from(new.kdk_scope_manifest,'UTF8')::jsonb;
+      v_known_pending := v_cap.fixture_key in (
+        'rpl-2026-27-r15-20261121-1000','rpl-2026-27-r15-20261121-1215',
+        'rpl-2026-27-r15-20261121-1645','rpl-2026-27-r15-20261122-1100');
+      v_inspected := (v_kdk_manifest->>'inspectedAt')::timestamptz;
+      v_latest := (v_kdk_manifest->>'latestEvidenceAt')::timestamptz;
+      if jsonb_typeof(v_kdk_manifest) is distinct from 'object'
+         or v_kdk_manifest->>'schema' is distinct from 'ff-m4-kdk-scope-v1'
+         or (v_kdk_manifest->'fixture' @> jsonb_build_object(
+           'fixtureKey',v_cap.fixture_key,'sourceMatchId',v_proof.source_match_id,
+           'competition',v_cap.competition,'season',v_cap.season,'round',15,
+           'homeClub',v_cap.home_club_key,'awayClub',v_cap.away_club_key)) is distinct from true
+         or (v_kdk_manifest#>>'{fixture,kickoffAt}')::timestamptz is distinct from v_cap.kickoff_at
+         or v_kdk_manifest->'knownPendingAgenda' is distinct from to_jsonb(v_known_pending)
+         or v_kdk_manifest->'scopeComplete' is distinct from 'false'::jsonb
+         or (v_kdk_manifest->>'scopeFrom')::timestamptz is distinct from new.kdk_scope_from
+         or (v_kdk_manifest->>'scopeThrough')::timestamptz is distinct from new.kdk_scope_through
+         or v_latest is null or v_latest<new.kickoff_at+interval '90 minutes'
+         or v_latest>new.kdk_scope_through
+         or v_inspected is null or v_inspected<new.kdk_scope_through
+         or v_inspected>new.kdk_scope_through+interval '5 minutes'
+         or date_trunc('second',v_inspected)>new.source_issued_at
+         or v_inspected<new.source_issued_at-interval '5 minutes'
+         or jsonb_typeof(v_kdk_manifest->'documents') is distinct from 'array' then
+        raise exception 'M4 KDK scope manifest identity or clock mismatch';
+      end if;
+      if jsonb_array_length(v_kdk_manifest->'documents') not between 1 and 16
+         or (select count(distinct value->>'locator') from
+             jsonb_array_elements(v_kdk_manifest->'documents'))
+              <>jsonb_array_length(v_kdk_manifest->'documents')
+         or (select count(distinct value->>'bodySha256') from
+             jsonb_array_elements(v_kdk_manifest->'documents'))
+              <>jsonb_array_length(v_kdk_manifest->'documents') then
+        raise exception 'M4 KDK scope manifest duplicate or missing documents';
+      end if;
+      for v_doc in select value from jsonb_array_elements(v_kdk_manifest->'documents') loop
+        v_observed := (v_doc->>'observedAt')::timestamptz;
+        if jsonb_typeof(v_doc) is distinct from 'object'
+           or (v_doc->>'bodySha256' ~ '^[a-f0-9]{64}$') is distinct from true
+           or v_observed is null or v_observed<new.kdk_scope_through
+           or v_observed>v_inspected then
+          raise exception 'M4 KDK scope manifest document mismatch';
+        end if;
+        if v_doc->>'kind'='ARCHIVE' then
+          if v_doc->>'locator' is distinct from 'https://www.rfs.ru/archive?tags=16'
+             or new.source_locator is distinct from v_doc->>'locator'
+             or new.source_response_sha256 is distinct from v_doc->>'bodySha256'
+             or v_doc->>'issuedAt' is not null or v_doc->>'disposition' is not null
+             or v_doc->>'fixtureKey' is not null then
+            raise exception 'M4 KDK scope manifest archive mismatch';
+          end if;
+          v_archive_count := v_archive_count+1;
+        elsif v_doc->>'kind'='AGENDA' then
+          if v_doc->>'locator' is distinct from 'https://www.rfs.ru/news/225644'
+             or v_doc->>'issuedAt' is not null or v_doc->>'disposition' is not null
+             or v_doc->>'fixtureKey' is not null then
+            raise exception 'M4 KDK scope manifest agenda mismatch';
+          end if;
+          v_agenda_count := v_agenda_count+1;
+        elsif v_doc->>'kind'='DECISION' then
+          v_observed := (v_doc->>'issuedAt')::timestamptz;
+          if (v_doc->>'locator' ~ '^https://www[.]rfs[.]ru/news/[0-9]{1,12}$') is distinct from true
+             or v_doc->>'locator'='https://www.rfs.ru/news/225644'
+             or v_doc->>'fixtureKey' is distinct from new.fixture_key
+             or v_observed is null or v_observed<new.kickoff_at
+             or v_observed>new.kdk_scope_through
+             or (v_known_pending and v_observed<'2026-11-26T00:00:00Z'::timestamptz)
+             or (v_doc->>'disposition' in ('ADVERSE','AMBIGUOUS','PENDING','NO_ADVERSE_CLAIM'))
+                is distinct from true then
+            raise exception 'M4 KDK scope manifest decision mismatch';
+          end if;
+          v_has_adverse := v_has_adverse or (v_doc->>'disposition'='ADVERSE');
+          v_has_ambiguous := v_has_ambiguous or (v_doc->>'disposition'='AMBIGUOUS');
+          v_has_pending := v_has_pending or (v_doc->>'disposition'='PENDING');
+          if new.kdk_decision_ref=v_doc->>'locator'
+             and new.kdk_decision_sha256=v_doc->>'bodySha256'
+             and (new.status<>'kdk_adverse' or v_doc->>'disposition'='ADVERSE') then
+            v_has_decision_link := true;
+          end if;
+        else
+          raise exception 'M4 KDK scope manifest document kind refused';
+        end if;
+      end loop;
+      if v_archive_count<>1 or (v_known_pending and v_agenda_count<>1)
+         or ((new.kdk_decision_ref is not null or new.status='kdk_adverse')
+             and not v_has_decision_link) then
+        raise exception 'M4 KDK scope manifest required document missing';
+      end if;
+      v_classification := case
+        when v_has_adverse then 'PRIVATE_KDK_ADVERSE_CLAIM_BLOCKED'
+        when v_has_ambiguous then 'PRIVATE_KDK_AMBIGUOUS_CLAIM_BLOCKED'
+        when v_known_pending or v_has_pending then 'PRIVATE_KDK_PENDING_REVIEW_REQUIRED'
+        else 'PRIVATE_KDK_SCOPE_UNREVIEWED' end;
+      v_expected_status := case
+        when v_has_adverse then 'kdk_adverse'
+        when v_has_ambiguous then 'kdk_ambiguous'
+        when v_known_pending or v_has_pending then 'kdk_pending'
+        else 'kdk_ambiguous' end;
+      if v_kdk_manifest->>'classification' is distinct from v_classification
+         or new.status is distinct from v_expected_status then
+        raise exception 'M4 KDK scope manifest classification mismatch';
+      end if;
+    end if;
     if new.status='kdk_reviewed_no_adverse_claim' then
       -- A scheduled hearing date passing, or a generic archive search, is not
       -- a resolution. Known pending round-15 cases require a claimed issued
