@@ -22,7 +22,9 @@ forecasts, or access the sealed 2025/26 holdout**.
   from every retained official publisher must not contradict the selected
   score or counted-goal sequence. A protocol cannot hide a newer conflict.
 - KDK review is dated and scoped. The scope digest commits a separately
-  retained review manifest; source digest and OIDC receipt remain
+  retained review manifest; exact v1 manifest bytes can be retained in the
+  unapplied schema (see [KDK retention](M4_A6_KDK_SCOPE_RETENTION.md)).
+  V1 manifests are incomplete and cannot clear KDK; source digest and OIDC receipt remain
   independent raw-body observation evidence. The candidate requires the
   latest KDK no-adverse *claim*, covering all earlier recorded evidence.
   The four known round-15 agenda fixtures and previously unresolved cases
